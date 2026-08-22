@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.4.dev31+ga5eb9ca6 documentation</title>
+    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.4.dev32+gb2797956 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=55501ebc"></script>
+    <script src="../../../_static/documentation_options.js?v=6328bea7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev31" />
+  <meta name="docsearch:version" content="2.4.4.dev32" />
   </head>
   
   
@@ -1194,41 +1194,69 @@
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Secondary function to regularize an ensemble for input to robust</span>
 <span class="sd">    stacking algorithm.  ASsumes all data have the same sample rate.</span>
-<span class="sd">    Uses WindowData to assumre all data are inside the common</span>
-<span class="sd">    range startime:endtime.  Silently drops dead data.</span>
+<span class="sd">    Uses WindowData to assure all data are inside the common</span>
+<span class="sd">    range starttime:endtime.  Dead data are dropped with one summary</span>
+<span class="sd">    posted to the output ensemble.  Errors created while windowing a</span>
+<span class="sd">    dropped live member are copied back to that input member, but this</span>
+<span class="sd">    helper does not change the member's pre-call live/dead state.  Dropping</span>
+<span class="sd">    some members is a nonfatal Complaint; the summary is Invalid only when</span>
+<span class="sd">    no member survives and the returned ensemble is dead.</span>
 <span class="sd">    """</span>
     <span class="n">ensout</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">ensemble</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span>
+    <span class="n">dropped_indices</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="n">member</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">((</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
-                <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="o">-</span> <span class="n">endtime</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">dt</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">((</span><span class="n">member</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">member</span><span class="o">.</span><span class="n">dt</span>
+                <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="o">-</span> <span class="n">endtime</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">member</span><span class="o">.</span><span class="n">dt</span>
             <span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">WindowData_autopad</span><span class="p">(</span>
-                    <span class="n">d</span><span class="p">,</span>
+                    <span class="n">member</span><span class="p">,</span>
                     <span class="n">starttime</span><span class="p">,</span>
                     <span class="n">endtime</span><span class="p">,</span>
                     <span class="n">pad_fraction_cutoff</span><span class="o">=</span><span class="n">pad_fraction_cutoff</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Dropped member number </span><span class="si">{}</span><span class="s2"> because undefined data range exceeded limit of </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">i</span><span class="p">,</span> <span class="n">pad_fraction_cutoff</span>
-                    <span class="p">)</span>
                     <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">member</span><span class="p">:</span>
+                        <span class="n">member_error_count</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+                        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()[</span><span class="n">member_error_count</span><span class="p">:]:</span>
+                            <span class="n">member</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                                <span class="n">error</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">badness</span>
+                            <span class="p">)</span>
+                    <span class="n">dropped_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Dropped member number </span><span class="si">{}</span><span class="s2"> that was marked dead on input"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">dropped_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dropped_indices</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"regularize_ensemble: dropped </span><span class="si">{}</span><span class="s2"> member(s) at indices </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">dropped_indices</span><span class="p">),</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dropped_indices</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                 <span class="s2">"regularize_ensemble"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
             <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ensout</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensout</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">ensout</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ensout</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ensout</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_logged_dead_timeseries</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return an empty dead TimeSeries with one Invalid diagnostic."""</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">()</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <div class="viewcode-block" id="robust_stack">
@@ -1347,7 +1375,9 @@
 <span class="sd">        from the (optional) stack_md argument.   Component 1 is defined only</span>
 <span class="sd">        for the dbxcor method in which case it is a numpy array containing the</span>
 <span class="sd">        robust weights returned by the dbxcor algorithm.  If the method is</span>
-<span class="sd">        set to "median" component 1 will be returned as a None type.</span>
+<span class="sd">        set to "median" component 1 will be returned as a None type.  With no</span>
+<span class="sd">        live ensemble members, component 0 is a logged dead `TimeSeries`,</span>
+<span class="sd">        component 1 is `None`, and the input ensemble is marked dead and logged.</span>
 <span class="sd">    """</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">"robust_stack"</span>
     <span class="c1"># if other values for method are added they need to be added here</span>
@@ -1355,14 +1385,14 @@
         <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span> <span class="o">+</span> <span class="s2">":  Illegal value for argument method=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Currently must be either median or dbxcor"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="c1"># don't test type - if we get illegal type let it thro0w an exception</span>
-    <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="n">d_bad</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">()</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">"Received an input ensemble marked dead - cannot compute a stack"</span>
-        <span class="n">d_bad</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="c1"># this isn't currently required by better to be explicit</span>
-        <span class="n">d_bad</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">d_bad</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="c1"># don't test type - if we get illegal type let it throw an exception</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"robust_stack: input ensemble contains no live members"</span>
+        <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_logged_dead_timeseries</span><span class="p">(</span><span class="n">message</span><span class="p">),</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">live_member</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">timespan_method</span> <span class="o">==</span> <span class="s2">"stack0"</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">stack0</span><span class="p">:</span>
             <span class="c1"># intentionally don't test type of stack0</span>
@@ -1387,9 +1417,8 @@
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
-    <span class="c1"># below we clone common stuff form member[0] if ensemble</span>
-    <span class="c1"># that is safe only because this function guarantees member 0 is not dead</span>
-    <span class="c1"># or irregular</span>
+    <span class="c1"># A live member supplies the common sampling attributes.  It need not be</span>
+    <span class="c1"># member 0 because dead members are allowed in the input.</span>
     <span class="c1"># TODO:   removing this for a test - I don't think this is needed with a</span>
     <span class="c1"># change in the algorithm.  If that proves true remove this function</span>
     <span class="c1"># from this module and remove this comment and the call to regularize_ensemble</span>
@@ -1397,11 +1426,10 @@
     <span class="c1">#    ensemble, timespan.start, timespan.end, pad_fraction_cutoff</span>
     <span class="c1"># )</span>
     <span class="c1"># the above can remove some members</span>
-    <span class="n">M</span> <span class="o">=</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
     <span class="n">M_e</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
     <span class="c1"># can now assume they are all the same length and don't need to worry about empty ensembles</span>
     <span class="c1"># N = ensemble.member[0].npts</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">live_member</span><span class="o">.</span><span class="n">dt</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">timespan</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="n">timespan</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="k">if</span> <span class="n">stack0</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"dbxcor"</span><span class="p">:</span>
@@ -1433,9 +1461,9 @@
             <span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">stack_md</span><span class="p">)</span>
         <span class="n">stack</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">timespan</span><span class="o">.</span><span class="n">start</span>
         <span class="c1"># this works because we can assume ensemble is not empty and clean</span>
-        <span class="n">stack</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">stack</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">live_member</span><span class="o">.</span><span class="n">dt</span>
         <span class="c1"># Make sure the stack has the same time base as the input</span>
-        <span class="n">stack</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tref</span>
+        <span class="n">stack</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">live_member</span><span class="o">.</span><span class="n">tref</span>
         <span class="c1"># Always compute the median stack as a starting point</span>
         <span class="c1"># that was the algorithm of dbxcor and there are good reasons for it</span>
         <span class="n">data_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">])</span>
@@ -1879,7 +1907,8 @@
 <span class="sd">        with positive final weight also have ``robust_weight_key``; members</span>
 <span class="sd">        killed by sampling or windowing failures are marked dead.  Component 1</span>
 <span class="sd">        is the computed stack windowed to the range defined by</span>
-<span class="sd">        ``output_stack_window``.</span>
+<span class="sd">        ``output_stack_window``.  Empty and all-dead inputs return the same</span>
+<span class="sd">        ensemble identity marked dead and a separately logged dead `TimeSeries`.</span>
 <span class="sd">    """</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">"align_and_stack"</span>
     <span class="c1"># xcor ensemble has the initial start time posted to each</span>
@@ -1900,8 +1929,11 @@
         <span class="n">message</span> <span class="o">=</span> <span class="n">alg</span> <span class="o">+</span> <span class="s2">":  illegal type for arg1 (beam) = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">beam</span><span class="p">)))</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be a TimeSeries"</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">number_live</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"align_and_stack: input ensemble contains no live members"</span>
+        <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">_logged_dead_timeseries</span><span class="p">(</span><span class="n">message</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">beam</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">"ensemble was marked live but beam input was marked dead - cannot process this ensemble"</span>
         <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
@@ -1914,7 +1946,8 @@
         <span class="n">abort_on_error</span><span class="o">=</span><span class="n">abort_irregular_sampling</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"align_and_stack: sampling regularization removed all live members"</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">_logged_dead_timeseries</span><span class="p">(</span><span class="n">message</span><span class="p">)]</span>
     <span class="c1"># we need to make sure this is part of a valid set of algorithms</span>
     <span class="k">if</span> <span class="n">robust_stack_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"dbxcor"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">]:</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">"Invalid value for robust_stack_method=</span><span class="si">{}</span><span class="s2">.  See docstring"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -3077,6 +3110,11 @@
     <span class="c1"># A tricky but fast way to initialize the data vector to all zeros</span>
     <span class="c1"># warning this depends upon a special property of the C++ implementation</span>
     <span class="n">beam</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">beam0</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">number_live</span><span class="p">(</span><span class="n">xcorens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">"_update_xcor_beam: input ensemble contains no live members"</span>
+        <span class="n">beam</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
+        <span class="n">beam</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">beam</span>
     <span class="c1"># Cautioniously copy these to beam.   Maybe should log an error if they</span>
     <span class="c1"># aren't defined but for now do this silently.   Possible</span>
     <span class="c1"># maintenace issue if these keys ever change in MCXcorPPrep.</span>

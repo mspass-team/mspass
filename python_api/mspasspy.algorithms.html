@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev31+ga5eb9ca6 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev32+gb2797956 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=55501ebc"></script>
+    <script src="../_static/documentation_options.js?v=6328bea7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev31" />
+  <meta name="docsearch:version" content="2.4.4.dev32" />
   </head>
   
   
@@ -1307,7 +1307,8 @@ On a successful return, every member still live has the key defined by
 with positive final weight also have <code class="docutils literal notranslate"><span class="pre">robust_weight_key</span></code>; members
 killed by sampling or windowing failures are marked dead.  Component 1
 is the computed stack windowed to the range defined by
-<code class="docutils literal notranslate"><span class="pre">output_stack_window</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">output_stack_window</span></code>.  Empty and all-dead inputs return the same
+ensemble identity marked dead and a separately logged dead <cite>TimeSeries</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1714,8 +1715,13 @@ Metadata container of the output.</p>
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">regularize_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starttime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endtime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_fraction_cutoff</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><span class="pre">TimeSeriesEnsemble</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#regularize_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.regularize_ensemble" title="Link to this definition">#</a></dt>
 <dd><p>Secondary function to regularize an ensemble for input to robust
 stacking algorithm.  ASsumes all data have the same sample rate.
-Uses WindowData to assumre all data are inside the common
-range startime:endtime.  Silently drops dead data.</p>
+Uses WindowData to assure all data are inside the common
+range starttime:endtime.  Dead data are dropped with one summary
+posted to the output ensemble.  Errors created while windowing a
+dropped live member are copied back to that input member, but this
+helper does not change the member’s pre-call live/dead state.  Dropping
+some members is a nonfatal Complaint; the summary is Invalid only when
+no member survives and the returned ensemble is dead.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1863,7 +1869,9 @@ stack is returned as a <cite>TimeSeries</cite>  with optional Metadata copied
 from the (optional) stack_md argument.   Component 1 is defined only
 for the dbxcor method in which case it is a numpy array containing the
 robust weights returned by the dbxcor algorithm.  If the method is
-set to “median” component 1 will be returned as a None type.</p>
+set to “median” component 1 will be returned as a None type.  With no
+live ensemble members, component 0 is a logged dead <cite>TimeSeries</cite>,
+component 1 is <cite>None</cite>, and the input ensemble is marked dead and logged.</p>
 </dd>
 </dl>
 </dd></dl>
