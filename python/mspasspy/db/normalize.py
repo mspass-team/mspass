@@ -2481,7 +2481,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         self.t0offset = t0offset
         self.tolerance = tolerance
         self.data_time_key = data_time_key
-        self.source_time_key = source_time_key
+        self.source_time_key = "time" if source_time_key is None else source_time_key
         if query is None:
             query = {}
         if isinstance(query, dict):
@@ -2542,7 +2542,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         # as python dictionary
         query = copy.deepcopy(self.query)
 
-        query["time"] = {
+        query[self.source_time_key] = {
             "$gte": test_time - self.tolerance,
             "$lte": test_time + self.tolerance,
         }
@@ -2711,6 +2711,16 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             message += "Required for matching with waveform start times"
             raise MsPASSError(message, ErrorSeverity.Fatal)
 
+    def _get_test_time(self, mspass_object):
+        """Return the configured data time adjusted by ``t0offset``."""
+        if self.data_time_key is None:
+            test_time = mspass_object.t0
+        elif mspass_object.is_defined(self.data_time_key):
+            test_time = mspass_object[self.data_time_key]
+        else:
+            return None
+        return test_time - self.t0offset
+
     def subset(self, mspass_object) -> pd.DataFrame:
         """
         Implementation of subset method requried by inheritance from
@@ -2728,16 +2738,9 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             if mspass_object.dead():
                 return pd.DataFrame()
 
-        if self.data_time_key is None:
-            # this maybe should have a test to assure UTC time standard
-            # but will defer for now
-            test_time = mspass_object.t0
-        else:
-            if mspass_object.is_defined(self.data_time_key):
-                test_time = mspass_object[self.data_time_key]
-            else:
-                return pd.DataFrame()
-        test_time -= self.t0offset
+        test_time = self._get_test_time(mspass_object)
+        if test_time is None:
+            return pd.DataFrame()
 
         tmin = test_time - self.tolerance
         tmax = test_time + self.tolerance
@@ -2833,17 +2836,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         for md in mdlist:
             dt[i] = md[time_key]
             i += 1
-        # always use t0 if possile.
-        # this logic, however, allows mspass_object to be a
-        # plain Metadata container or a python dictionary
-        # intentinally let this throw an exception for Metadata if the
-        # required key is missing.  If t0 is not defined it tries to
-        # use self.data_time_key (normaly "startttme")
-        if hasattr(mspass_object, "t0"):
-            test_time = mspass_object.t0
-        else:
-            test_time = mspass_object[self.data_time_key]
-        test_time -= self.t0offset
+        test_time = self._get_test_time(mspass_object)
         dt -= test_time
         dt = np.abs(dt)
         component_to_use = np.argmin(dt)
