@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
+import math
+
 import xarray as xr
 import dask.array as da
 import dask
@@ -207,14 +210,14 @@ class BasicGather(ABC):
             self.npts,
             self.array_type,
             self.num_components,
-            self.ensemble_metadata,
+            self._ensemble_metadata,
             self.member_metadata,
             self.is_parallel,
             self.is_compact,
             self.npartitions,
             self.elog,
             self.member_data,
-            self.column_values,
+            self._column_values,
         )
 
     def __default_constructor__(
@@ -274,13 +277,13 @@ class BasicGather(ABC):
         self.size = 0
         self.array_type = array_type
         self.num_components = num_components
-        self.ensemble_metadata = None
+        self._ensemble_metadata = None
         self.member_metadata = None
         self.member_data = None
         self.is_compact = is_compact
         self.npartitions = npartitions
         self.elog = ErrorLogger()
-        self.column_values = None
+        self._column_values = None
 
         supported_array_types = [
             "numpy",
@@ -355,12 +358,13 @@ class BasicGather(ABC):
         self.size = 0
         self.array_type = array_type
         self.num_components = 0
-        self.ensemble_metadata = None
+        self._ensemble_metadata = None
         self.member_metadata = None
         self.member_data = None
         self.is_compact = is_compact
         self.npartitions = npartitions
         self.elog = ErrorLogger()
+        self._column_values = None
 
         supported_types = (da.Array, np.ndarray)
         if not isinstance(input_data, supported_types):
@@ -505,7 +509,7 @@ class BasicGather(ABC):
             )
 
         # Add the ensemble's metadata
-        self.ensemble_metadata = dict(input_obj)
+        self._ensemble_metadata = deepcopy(dict(input_obj))
 
         # Extract Member Metadata from old ensemble
         # Add the members' metadata
@@ -553,7 +557,9 @@ class BasicGather(ABC):
 
         :param npts:  length in samples of all members.  This parameter
           is required and there is no default due to the expected use only
-          by subclasses
+          by subclasses.  When ``input_obj`` is supplied, the value is derived
+          after any requested resampling or regularization.  A supplied
+          nonzero value must match that post-transformation length.
         :type npts:  integer
 
         :param dt:  sample interval of all data in ensemble.  Default is
@@ -583,6 +589,58 @@ class BasicGather(ABC):
         :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
 
         """
+
+        # Resampling and regularization can change the number of samples.
+        # Apply those transformations before deriving or validating dimensions so
+        # ``npts`` always describes the array that will actually be stored.
+        if input_obj is not None:
+            if resample or regularize:
+                input_obj = deepcopy(input_obj)
+            if resample:
+                input_obj = resample_ensemble(input_obj, dt)
+            if regularize:
+                input_obj = regularize_ensemble(input_obj, regularizer)
+            resample = False
+            regularize = False
+
+        derived_dimensions = None
+        if input_obj is not None and len(input_obj.member) > 0:
+            derived_size = len(input_obj.member)
+            derived_dimensions = {
+                "capacity": derived_size,
+                "size": derived_size,
+                "npts": input_obj.member[0].npts,
+                "num_components": (
+                    1 if isinstance(input_obj, TimeSeriesEnsemble) else 3
+                ),
+            }
+        elif input_data is not None:
+            derived_dimensions = {
+                "capacity": input_data.shape[0],
+                "size": input_data.shape[0],
+                "npts": input_data.shape[2],
+                "num_components": input_data.shape[1],
+            }
+
+        if derived_dimensions is not None:
+            supplied_dimensions = {
+                "capacity": capacity,
+                "size": size,
+                "npts": npts,
+                "num_components": num_components,
+            }
+            for name, derived_value in derived_dimensions.items():
+                supplied_value = supplied_dimensions[name]
+                if supplied_value not in (None, 0) and supplied_value != derived_value:
+                    raise ValueError(
+                        "{}={} conflicts with the value {} derived from input data".format(
+                            name, supplied_value, derived_value
+                        )
+                    )
+            capacity = derived_dimensions["capacity"]
+            size = derived_dimensions["size"]
+            npts = derived_dimensions["npts"]
+            num_components = derived_dimensions["num_components"]
 
         self.capacity = capacity
         self.size = size
@@ -622,7 +680,10 @@ class BasicGather(ABC):
         self.npts = npts
         self.array_type = array_type
         self.num_components = num_components
-        self.ensemble_metadata = ensemble_metadata
+        if ensemble_metadata is not None:
+            if not isinstance(ensemble_metadata, (dict, Metadata)):
+                raise TypeError("ensemble metadata should be a dict-like object")
+            self._ensemble_metadata = deepcopy(dict(ensemble_metadata))
         if self.member_metadata is None:
             self.member_metadata = member_metadata
         self.is_parallel = is_parallel
@@ -632,12 +693,11 @@ class BasicGather(ABC):
 
         if dt is None:
             dt = self.member_metadata["delta"][0]
-        if self.ensemble_metadata is None:  # default setting for the metadata
-            self.ensemble_metadata = {
-                "is_live": False,
-                "is_utc": False,
-                "dt": dt,
-            }
+        if self._ensemble_metadata is None:
+            self._ensemble_metadata = {}
+        self._ensemble_metadata.setdefault("is_live", False)
+        self._ensemble_metadata.setdefault("is_utc", False)
+        self._ensemble_metadata.setdefault("dt", dt)
 
     def append(self, mspass_object):
         """
@@ -690,10 +750,10 @@ class BasicGather(ABC):
         should be allowed to be anything, however, to handle things
         like variable offset record sections.
         """
-        if self.column_values is None:
+        if self._column_values is None:
             return list(range(self.size))
         else:
-            return self.column_values
+            return self._column_values
 
     def set_column_values(self, x):
         """
@@ -703,13 +763,13 @@ class BasicGather(ABC):
         # Sanity check: the input be a list
         if type(x) != list:
             raise TypeError("The column values should be a list")
-        self.column_values = x
+        self._column_values = deepcopy(x)
 
     def dt(self):
         """
         Return the sample rate of the ensemble
         """
-        return self.ensemble_metadata["dt"]
+        return self._ensemble_metadata["dt"]
 
     # The following names match BasicTimeSeries because the match in
     # concept.  starttime above doesn't really because in a single object
@@ -736,15 +796,19 @@ class BasicGather(ABC):
         :param x: a list of column names
         :param time: the time (row) value
         """
-        indexes = [self.column_values.index(i) for i in x]
-        ans = [(time - self.starttime()[ind]) / self.dt() for ind in indexes]
-        return np.asarray(ans)
+        column_values = self.column_values()
+        indexes = [column_values.index(i) for i in x]
+        sample_numbers = []
+        for index in indexes:
+            q = (time - self.starttime()[index]) / self.dt()
+            sample_numbers.append(math.floor(q + 0.5) if q >= 0 else math.ceil(q - 0.5))
+        return np.asarray(sample_numbers, dtype=int)
 
     def time_is_UTC(self):
         """
         Returns True if the time standard for the data is set as UTC
         """
-        return self.ensemble_metadata["is_utc"]
+        return self._ensemble_metadata["is_utc"]
 
     def time_is_relative(self):
         """
@@ -791,7 +855,7 @@ class BasicGather(ABC):
         self.member_metadata["starttime"].applymap(lambda x: (x + self.t0shift))
 
         self.t0shift = 0
-        self.ensemble_metadata["is_utc"] = True
+        self._ensemble_metadata["is_utc"] = True
 
     def ator(self, shift):
         """
@@ -846,8 +910,15 @@ class BasicGather(ABC):
 
     def set_metadata(self, j, md):
         """
-        Setter for metadata of member j.   md is the new continer that would
-        replace current conent.  Most useful for constructors.
+        Replace the metadata of member ``j`` with the content of ``md``.
+
+        Member metadata are stored in a rectangular DataFrame.  Consequently,
+        columns used by other members remain in the table, but keys omitted
+        from ``md`` become missing values in row ``j``.  Values are copied so
+        later edits to mutable objects held by the caller do not alter the
+        gather.  This full-row replacement is most useful for constructors;
+        use :meth:`edit_metadata` for a partial update.
+
         :param j: index of member
         :type j: int
         :param md: the metadata to set, dict or metadata
@@ -855,16 +926,28 @@ class BasicGather(ABC):
         """
         if not isinstance(md, (dict, Metadata)):
             raise TypeError("The metadata should be a dict-like object")
-        if isinstance(md, Metadata):
-            md = md.to_dict()
-        md_df = pd.DataFrame.from_dict(md)
-        self.member_metadata.loc[j] = md_df
+        replacement = deepcopy(dict(md))
+        for key in replacement:
+            if key not in self.member_metadata.columns:
+                self.member_metadata[key] = None
+        missing_keys = [
+            key for key in self.member_metadata.columns if key not in replacement
+        ]
+        if missing_keys:
+            self.member_metadata[missing_keys] = self.member_metadata[
+                missing_keys
+            ].astype(object)
+        self.member_metadata.loc[j] = pd.Series(replacement, dtype=object)
 
     def edit_metadata(self, j, md):
         """
-        Differs from set_metadata in that the contents of md are added to
-        the current and do not fully repalce them.   Needed for updating
-        metadata after costruction
+        Add the contents of ``md`` to the current metadata for member ``j``.
+
+        Unlike :meth:`set_metadata`, this method leaves every omitted key
+        unchanged.  It only accepts keys already represented by the member
+        metadata table and copies mutable values from the caller.  This is
+        intended for updating metadata after construction.
+
         :param j: index of member
         :type j: int
         :param md: the metadata to edit, dict or metadata
@@ -872,15 +955,13 @@ class BasicGather(ABC):
         """
         if not isinstance(md, (dict, Metadata)):
             raise TypeError("The metadata should be a dict-like object")
-        if isinstance(md, Metadata):
-            md = md.to_dict()
-        for key, val in md:
+        for key, val in dict(md).items():
             # We assume that user shouldn't add new metadata
             if key not in self.member_metadata.columns:
                 raise TypeError(
                     "key {} is not presented in the member metadata".format(key)
                 )
-            self.member_metadata[key][j] = val
+            self.member_metadata.at[j, key] = deepcopy(val)
 
     @abstractmethod
     def member(self, j):
@@ -915,9 +996,9 @@ class BasicGather(ABC):
                 )
             )
         if return_type == "dict":
-            return self.ensemble_metadata
+            return self._ensemble_metadata
         elif return_type == "metadata":
-            return Metadata(self.ensemble_metadata)
+            return Metadata(self._ensemble_metadata)
 
     def sync_metadata(self):
         """
@@ -925,8 +1006,10 @@ class BasicGather(ABC):
         ensemble key-value pairs to the members.  It is debatable that
         this would be needed but would be trivial to implement.
         """
-        for key, val in self.ensemble_metadata:
-            self.member_metadata = self.member_metadata.assign(key=val)
+        for key, val in self._ensemble_metadata.items():
+            self.member_metadata[key] = [
+                deepcopy(val) for _ in range(len(self.member_metadata))
+            ]
 
     # not sure if we can make this member abstract.  It needs to
     # be in this design to allow different signatures for scalar and 3c data
