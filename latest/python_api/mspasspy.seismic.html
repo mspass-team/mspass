@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
+    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev41+g18a88528 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=0f164397"></script>
+    <script src="../_static/documentation_options.js?v=c1ce97e7"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev40" />
+  <meta name="docsearch:version" content="2.4.4.dev41" />
   </head>
   
   
@@ -885,16 +885,48 @@ zarr_arr_name : str, the name of the zarr array
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.regularize_ensemble">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">regularize_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#regularize_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.regularize_ensemble" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.seismic.gather.</span></span><span class="sig-name descname"><span class="pre">regularize_ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'snap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#regularize_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.regularize_ensemble" title="Link to this definition">#</a></dt>
 <dd><p>A helper function to regularize all the member data in an ensemble.
 The purpose of this function is to set all member data to have the same start
 time.
 By default, the regularization is carried out by simply applying a time window
-on each member.
-:param regularizer: A function object defined by user that regularize all data
-members in the ensemble, it should take only one argument (a timeseries/seismogram)
-and return the regularized object.
-:type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</p>
+on each live member.  The default window is the inclusive physical
+intersection of the live member time ranges.  Consequently, an intersection
+with equal start and end times contains one sample when all members share that
+sample.  Dead members are not used to define the intersection and are returned
+unchanged.</p>
+<p>The output members must resolve to the same sampled time axis.  This is
+checked on copied members before replacing any ensemble
+member, so a disjoint interval or incompatible sample grids leave the input
+ensemble unchanged.  By default, members with a common sample interval are
+snapped to the first live member’s nearest sample grid without changing sample
+values.  Set <code class="docutils literal notranslate"><span class="pre">grid_alignment=&quot;interpolate&quot;</span></code> to linearly interpolate those
+members onto that grid instead.  Members with different sample intervals must
+be resampled first.  A user-supplied <code class="docutils literal notranslate"><span class="pre">regularizer</span></code> retains control of member
+selection and replacement and is called with every member as in the original
+API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ens</strong> – input TimeSeriesEnsemble or SeismogramEnsemble.  The object is
+modified in place and returned.</p></li>
+<li><p><strong>regularizer</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><em>TimeSeries</em></a><em>|</em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><em>Seismogram</em></a><em>]</em><em>, </em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><em>TimeSeries</em></a><em>|</em><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><em>Seismogram</em></a><em>]</em>) – A function object defined by user that regularize all data
+members in the ensemble, it should take only one argument (a
+timeseries/seismogram) and return the regularized object.</p></li>
+<li><p><strong>grid_alignment</strong> – <code class="docutils literal notranslate"><span class="pre">&quot;snap&quot;</span></code> (default) preserves sample values and moves
+each selected window to the common grid.  <code class="docutils literal notranslate"><span class="pre">&quot;interpolate&quot;</span></code> linearly
+interpolates off-grid windows onto that grid.  Ignored when <code class="docutils literal notranslate"><span class="pre">regularizer</span></code>
+is supplied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – if <code class="docutils literal notranslate"><span class="pre">ens</span></code> is not an MsPASS ensemble object.</p></li>
+<li><p><strong>ValueError</strong> – when live members have no common physical sample or the
+common window has incompatible sample intervals.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

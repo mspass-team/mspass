@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
+    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev41+g18a88528 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=0f164397"></script>
+    <script src="../../../_static/documentation_options.js?v=c1ce97e7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev40" />
+  <meta name="docsearch:version" content="2.4.4.dev41" />
   </head>
   
   
@@ -476,6 +476,7 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
@@ -504,6 +505,33 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.algorithms.resample</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span><span class="p">,</span> <span class="n">ScipyDecimator</span><span class="p">,</span> <span class="n">ScipyResampler</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_finite_number</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_to_grid</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">npts</span><span class="p">):</span>
+    <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">source_times</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">t0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span> <span class="o">*</span> <span class="n">sample_interval</span>
+    <span class="n">target_times</span> <span class="o">=</span> <span class="n">starttime</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span> <span class="o">*</span> <span class="n">sample_interval</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">target_times</span><span class="p">,</span> <span class="n">source_times</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">source_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">member</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">target_times</span><span class="p">,</span> <span class="n">source_times</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">source_data</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">starttime</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <div class="viewcode-block" id="isOldEnsembleObject">
@@ -551,25 +579,53 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Can't resample the object, not an old ensemble object"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
-    <span class="n">decimator</span> <span class="o">=</span> <span class="n">ScipyDecimator</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">resampler</span> <span class="o">=</span> <span class="n">ScipyResampler</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_finite_number</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"target dt must be a finite positive number"</span><span class="p">)</span>
+    <span class="n">sampling_rate</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
+    <span class="n">decimator</span> <span class="o">=</span> <span class="n">ScipyDecimator</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">)</span>
+    <span class="n">resampler</span> <span class="o">=</span> <span class="n">ScipyResampler</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">resample</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">decimator</span><span class="p">,</span> <span class="n">resampler</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="regularize_ensemble">
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.regularize_ensemble">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">regularize_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">regularize_ensemble</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_alignment</span><span class="o">=</span><span class="s2">"snap"</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A helper function to regularize all the member data in an ensemble.</span>
 <span class="sd">    The purpose of this function is to set all member data to have the same start</span>
 <span class="sd">    time.</span>
 <span class="sd">    By default, the regularization is carried out by simply applying a time window</span>
-<span class="sd">    on each member.</span>
+<span class="sd">    on each live member.  The default window is the inclusive physical</span>
+<span class="sd">    intersection of the live member time ranges.  Consequently, an intersection</span>
+<span class="sd">    with equal start and end times contains one sample when all members share that</span>
+<span class="sd">    sample.  Dead members are not used to define the intersection and are returned</span>
+<span class="sd">    unchanged.</span>
+
+<span class="sd">    The output members must resolve to the same sampled time axis.  This is</span>
+<span class="sd">    checked on copied members before replacing any ensemble</span>
+<span class="sd">    member, so a disjoint interval or incompatible sample grids leave the input</span>
+<span class="sd">    ensemble unchanged.  By default, members with a common sample interval are</span>
+<span class="sd">    snapped to the first live member's nearest sample grid without changing sample</span>
+<span class="sd">    values.  Set ``grid_alignment="interpolate"`` to linearly interpolate those</span>
+<span class="sd">    members onto that grid instead.  Members with different sample intervals must</span>
+<span class="sd">    be resampled first.  A user-supplied ``regularizer`` retains control of member</span>
+<span class="sd">    selection and replacement and is called with every member as in the original</span>
+<span class="sd">    API.</span>
+
+<span class="sd">    :param ens: input TimeSeriesEnsemble or SeismogramEnsemble.  The object is</span>
+<span class="sd">      modified in place and returned.</span>
 <span class="sd">    :param regularizer: A function object defined by user that regularize all data</span>
-<span class="sd">    members in the ensemble, it should take only one argument (a timeseries/seismogram)</span>
-<span class="sd">    and return the regularized object.</span>
+<span class="sd">      members in the ensemble, it should take only one argument (a</span>
+<span class="sd">      timeseries/seismogram) and return the regularized object.</span>
 <span class="sd">    :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</span>
+<span class="sd">    :param grid_alignment: ``"snap"`` (default) preserves sample values and moves</span>
+<span class="sd">      each selected window to the common grid.  ``"interpolate"`` linearly</span>
+<span class="sd">      interpolates off-grid windows onto that grid.  Ignored when ``regularizer``</span>
+<span class="sd">      is supplied.</span>
+<span class="sd">    :raises TypeError: if ``ens`` is not an MsPASS ensemble object.</span>
+<span class="sd">    :raises ValueError: when live members have no common physical sample or the</span>
+<span class="sd">      common window has incompatible sample intervals.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isOldEnsembleObject</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Can't resample the object, not an old ensemble object"</span><span class="p">)</span>
@@ -579,10 +635,48 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">):</span>
             <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">regularizer</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">starttime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">)])</span>
-        <span class="n">endtime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">)])</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">):</span>
-            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid_alignment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"snap"</span><span class="p">,</span> <span class="s2">"interpolate"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'grid_alignment must be either "snap" or "interpolate"'</span><span class="p">)</span>
+        <span class="n">live_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nmembers</span><span class="p">)</span> <span class="k">if</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">live_indexes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ens</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">live_indexes</span><span class="p">)</span>
+        <span class="n">endtime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">live_indexes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">endtime</span> <span class="o">&lt;</span> <span class="n">starttime</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"ensemble members do not have a common time interval"</span><span class="p">)</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">live_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span> <span class="o">!=</span> <span class="n">reference</span><span class="o">.</span><span class="n">dt</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">live_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"ensemble members do not share a common sample interval"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">grid_alignment</span> <span class="o">==</span> <span class="s2">"interpolate"</span><span class="p">:</span>
+            <span class="n">start_coordinate</span> <span class="o">=</span> <span class="p">(</span><span class="n">starttime</span> <span class="o">-</span> <span class="n">reference</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">reference</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">end_coordinate</span> <span class="o">=</span> <span class="p">(</span><span class="n">endtime</span> <span class="o">-</span> <span class="n">reference</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">reference</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">sample_tolerance</span> <span class="o">=</span> <span class="mf">1.0e-6</span>
+            <span class="n">start_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">start_coordinate</span> <span class="o">-</span> <span class="n">sample_tolerance</span><span class="p">)</span>
+            <span class="n">end_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">end_coordinate</span> <span class="o">+</span> <span class="n">sample_tolerance</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">end_index</span> <span class="o">&lt;</span> <span class="n">start_index</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"ensemble members do not share a common reference-grid sample"</span>
+                <span class="p">)</span>
+            <span class="n">target_start</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">start_index</span><span class="p">)</span>
+            <span class="n">target_npts</span> <span class="o">=</span> <span class="n">end_index</span> <span class="o">-</span> <span class="n">start_index</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">regularized_members</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">_interpolate_to_grid</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">target_start</span><span class="p">,</span> <span class="n">target_npts</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">live_indexes</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">regularized_members</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">WindowData</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">starttime</span><span class="p">,</span> <span class="n">endtime</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">live_indexes</span>
+            <span class="p">]</span>
+            <span class="n">reference</span> <span class="o">=</span> <span class="n">regularized_members</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">regularized_members</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">member</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">t0</span>
+                <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="n">reference</span><span class="o">.</span><span class="n">npts</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">"ensemble members could not be snapped to a common grid"</span>
+                    <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">live_indexes</span><span class="p">,</span> <span class="n">regularized_members</span><span class="p">):</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">member</span>
     <span class="k">return</span> <span class="n">ens</span></div>
 
 
@@ -1380,18 +1474,19 @@
 <span class="sd">        Convert the relative time to absolute time</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_is_relative</span><span class="p">():</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="bp">self</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">&lt;=</span> <span class="mf">100.0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">"time shift to return to UTC time is not defined"</span><span class="p">,</span> <span class="s2">"Invalid"</span>
-            <span class="p">)</span>
+        <span class="n">shift_key</span> <span class="o">=</span> <span class="s2">"starttime_shift"</span>
+        <span class="k">if</span> <span class="n">shift_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"ensemble metadata does not define starttime_shift"</span><span class="p">)</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="n">shift_key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_finite_number</span><span class="p">(</span><span class="n">shift</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"starttime_shift must be a finite number"</span><span class="p">)</span>
 
-        <span class="c1"># TODO: do we need to check if the items are live or dead here?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">+</span> <span class="n">shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="n">shift_key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.ator">
@@ -1401,9 +1496,14 @@
 <span class="sd">        Convert the absolut time to relative time</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_is_UTC</span><span class="p">():</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">=</span> <span class="n">shift</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span><span class="p">))</span></div>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_finite_number</span><span class="p">(</span><span class="n">shift</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"shift must be a finite number"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">-</span> <span class="n">shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"starttime_shift"</span><span class="p">]</span> <span class="o">=</span> <span class="n">shift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.shift">
@@ -1414,9 +1514,16 @@
 <span class="sd">        :param timeshift: the shift time range</span>
 <span class="sd">        :type timeshift: float</span>
 <span class="sd">        """</span>
-        <span class="n">old_t0shift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_finite_number</span><span class="p">(</span><span class="n">timeshift</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"timeshift must be a finite number"</span><span class="p">)</span>
+        <span class="n">shift_key</span> <span class="o">=</span> <span class="s2">"starttime_shift"</span>
+        <span class="n">old_shift</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="n">shift_key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">shift_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span>
+            <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rtoa</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">old_t0shift</span> <span class="o">+</span> <span class="n">timeshift</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ator</span><span class="p">(</span><span class="n">old_shift</span> <span class="o">+</span> <span class="n">timeshift</span><span class="p">)</span></div>
 
 
     <span class="c1"># The following methods in BasicTimeSeries are optional.  It isn't</span>
