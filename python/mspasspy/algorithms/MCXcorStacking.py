@@ -8,6 +8,8 @@ Created on Tue Jul  9 05:37:40 2024
 @author: pavlis
 """
 
+from functools import wraps
+
 import numpy as np
 from scipy import signal
 from mspasspy.util.decorators import mspass_func_wrapper
@@ -1693,6 +1695,62 @@ def align_and_stack(
 
 
 # these are intended to use only on the output from align_and stack
+_SAMPLE_GRID_TOLERANCE = 1.0e-6
+
+
+def _validate_sample_grid_compatibility(d, beam):
+    dt_scale = max(abs(d.dt), abs(beam.dt))
+    if d.dt <= 0.0 or beam.dt <= 0.0:
+        raise ValueError(
+            "d and beam sample intervals are incompatible across their sample "
+            "span; resample before comparison"
+        )
+    paired_intervals = max(0, min(d.npts, beam.npts) - 1)
+    accumulated_drift = abs(d.dt - beam.dt) * paired_intervals / dt_scale
+    if accumulated_drift > _SAMPLE_GRID_TOLERANCE:
+        raise ValueError(
+            "d and beam sample intervals are incompatible across their sample "
+            "span; resample before comparison"
+        )
+    offset_in_samples = (d.t0 - beam.t0) / dt_scale
+    if abs(offset_in_samples - round(offset_in_samples)) > _SAMPLE_GRID_TOLERANCE:
+        raise ValueError("d and beam start times are on incompatible sample grids")
+
+
+def _inclusive_sample_bounds(d, start, end):
+    first = int(np.ceil((start - d.t0) / d.dt - _SAMPLE_GRID_TOLERANCE))
+    last = int(np.floor((end - d.t0) / d.dt + _SAMPLE_GRID_TOLERANCE))
+    return max(0, first), min(d.npts - 1, last)
+
+
+def _common_sample_interval(d, beam, window=None):
+    _validate_sample_grid_compatibility(d, beam)
+    overlap_start = max(d.t0, beam.t0)
+    overlap_end = min(d.endtime(), beam.endtime())
+    if window:
+        overlap_start = max(overlap_start, window.start)
+        overlap_end = min(overlap_end, window.end)
+    if overlap_start > overlap_end:
+        return None
+
+    d_start, d_end = _inclusive_sample_bounds(d, overlap_start, overlap_end)
+    beam_start, beam_end = _inclusive_sample_bounds(beam, overlap_start, overlap_end)
+    sample_count = min(d_end - d_start + 1, beam_end - beam_start + 1)
+    if sample_count <= 0:
+        return None
+    return d_start, beam_start, sample_count
+
+
+def _overlap_vectors(d, beam, window=None):
+    indices = _common_sample_interval(d, beam, window)
+    if indices is None:
+        return None
+    d_start, beam_start, sample_count = indices
+    d_vector = np.asarray(d.data[d_start : d_start + sample_count])
+    beam_vector = np.asarray(beam.data[beam_start : beam_start + sample_count])
+    return d_vector, beam_vector
+
+
 def beam_correlation(d, beam, window=None, aligned=True) -> float:
     """
     Computes normalized peak cross-correlation value a datum with an array stack.
@@ -1713,32 +1771,33 @@ def beam_correlation(d, beam, window=None, aligned=True) -> float:
         message = alg
         message += ":  arg0 must be a TimeSeries. Actual type={}".format(type(beam))
         raise TypeError(message)
-    # assume beam is live but don't assume d is
-    if d.dead():
+    if d.dead() or beam.dead():
         return 0.0
-    if window:
-        d1 = WindowData(d, window.start, window.end, short_segment_handling="pad")
-        d2 = WindowData(beam, window.start, window.end, short_segment_handling="pad")
-    else:
-        d1 = TimeSeries(d)
-        d2 = TimeSeries(beam)
-    nrm1 = np.linalg.norm(d1.data)
-    d1.data /= nrm1
-    nrm2 = np.linalg.norm(d2.data)
-    d2.data /= nrm2
     if not aligned:
-        timelag = _xcor_shift(d1, d2)
-        d1.shift(timelag)
-    t0max = max(d1.t0, d2.t0)
-    etmin = min(d1.endtime(), d2.endtime())
-    d1s = d1.sample_number(t0max)
-    d2s = d2.sample_number(t0max)
-    d1e = d1.sample_number(etmin)
-    d2e = d2.sample_number(etmin)
-    # this may not be necessary but with rounding errors it could be needed
-    N = min(d1e - d1s, d2e - d2s)
-    xcor_0 = np.dot(d1.data[0:N], d2.data[0:N])
-    return abs(xcor_0)
+        _validate_sample_grid_compatibility(d, beam)
+        d_for_shift = TimeSeries(d)
+        beam_for_shift = TimeSeries(beam)
+        if window:
+            d_for_shift = WindowData(
+                d, window.start, window.end, short_segment_handling="pad"
+            )
+            beam_for_shift = WindowData(
+                beam, window.start, window.end, short_segment_handling="pad"
+            )
+        shifted_d = TimeSeries(d)
+        timelag = _xcor_shift(d_for_shift, beam_for_shift)
+        shifted_d.set_t0(shifted_d.t0 - timelag)
+        vectors = _overlap_vectors(shifted_d, beam, window)
+    else:
+        vectors = _overlap_vectors(d, beam, window)
+    if vectors is None:
+        return 0.0
+    d_vector, beam_vector = vectors
+    nrm1 = np.linalg.norm(d_vector)
+    nrm2 = np.linalg.norm(beam_vector)
+    if nrm1 <= 0.0 or nrm2 <= 0.0:
+        return 0.0
+    return abs(np.dot(d_vector, beam_vector) / (nrm1 * nrm2))
 
 
 def beam_coherence(d, beam, window=None) -> float:
@@ -1746,8 +1805,12 @@ def beam_coherence(d, beam, window=None) -> float:
     Compute time-domain coherence of a datum relative to the stack.
 
     Time domain coherence is a measure of misfit between a signal and a
-    a reference signal (normally a stack).   The formula is
-    1.0 - norm(residual)/norm(beam) where residual=d-beam.
+    reference signal (normally a stack).  On the physical overlap, let
+    ``bhat = beam / norm(beam)``, ``a = d dot bhat``, and
+    ``residual = d - a*bhat``.  This implementation returns
+    ``max(0, 1 - norm(residual)/norm(d))``.  Thus the measure compares the
+    residual after the best scalar projection on the beam with the energy in
+    the datum; it is not the unscaled ``d - beam`` residual.
 
     This function has an optional window parameter that computes the
     coherence with a specified time window.  By default the entire
@@ -1766,30 +1829,20 @@ def beam_coherence(d, beam, window=None) -> float:
     # assume beam is live but don't assume d is
     if d.dead() or beam.dead():
         return 0.0
-    if window is None:
-        st = min(d.t0, beam.t0)
-        et = max(d.endtime(), beam.endtime())
-        window = TimeWindow(st, et)
-    # Making a blatant assumption d and beam are on the same time base here
-    d1 = WindowData(d, window.start, window.end, short_segment_handling="pad")
-    d2 = WindowData(beam, window.start, window.end, short_segment_handling="pad")
-    # return 0 immediately if the data vector is all zeros
-    nrmd1 = np.linalg.norm(d1.data)
+    vectors = _overlap_vectors(d, beam, window)
+    if vectors is None:
+        return 0.0
+    d_vector, beam_vector = vectors
+    nrmd1 = np.linalg.norm(d_vector)
     if nrmd1 <= 0.0:
         return 0.0
-    # make d2 a unit vector
-    nrmd2 = np.linalg.norm(d2.data)
+    nrmd2 = np.linalg.norm(beam_vector)
     if nrmd2 <= 0.0:
         return 0.0
-    else:
-        d2 *= 1.0 / nrmd2
-    # this may not be necessary but more robust - assumes window can
-    # return inconsistent lengths due to subsample rounding issue
-    N = min(d1.npts, d2.npts)
-    amp = np.dot(d1.data[0:N], d2.data[0:N])
-    d2 *= amp
-    r = d1 - d2
-    coh = 1.0 - np.linalg.norm(r.data) / nrmd1
+    normalized_beam = beam_vector / nrmd2
+    amp = np.dot(d_vector, normalized_beam)
+    residual = d_vector - amp * normalized_beam
+    coh = 1.0 - np.linalg.norm(residual) / nrmd1
     if coh < 0.0:
         coh = 0.0
     return coh
@@ -1800,12 +1853,12 @@ def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
     Compute and return amplitude relative to the stack (beam).
 
     dbxcor computed a useful metric of amplitude relative to the beam
-    (stack) as `(d dot beam)/N` where "dot" means vector dot product with
-    between the sample vectbeam_coherence(d,beam,window=None,filter=True)ors of b and beam and N is vector size.   The formula
-    requires the beam to be normalized so its L2 norm is 1.  By default it assumes
-    that but that can be overriden with the normalize_beam argument.
-    Default assumes d and beam cover the same time span.  If they aren't
-    the minimum overlap of the two signals is used.
+    (stack) as ``(d dot beam)/N``, where ``dot`` is the vector dot product
+    over the physical sample overlap and ``N`` is the number of samples in
+    that overlap.  Relative-amplitude use normally requires a unit-L2 beam,
+    so by default this function normalizes the overlapping beam vector first.
+    That normalization can be disabled with ``normalize_beam=False`` when the
+    caller has already prepared the desired beam scaling.
 
     :param d:  datum for which the relative amplitude is to be computed.
     :type d:  `TimeSeries` assumed - will throw an exception if it isn't
@@ -1819,26 +1872,24 @@ def amplitude_relative_to_beam(d, beam, normalize_beam=True, window=None):
        if beam is already normalized.
     :type normalize_beam:  boolean
 
-    :return:  float value of amplitude.  A negative number indicates an error.
+    :return: float amplitude.  ``-1.0`` indicates dead input, no physical
+      overlap, or a zero-norm beam when normalization was requested.  A
+      zero-norm datum has the valid dot-product amplitude ``0.0``.  With
+      ``normalize_beam=False``, a zero-norm beam also yields ``0.0`` because
+      no division by its norm is required.
     """
     if d.dead() or beam.dead():
         return -1.0
-    if window is None:
-        st = min(d.t0, beam.t0)
-        et = max(d.endtime(), beam.endtime())
-        window = TimeWindow(st, et)
-    # Making a blatant assumption d and beam are on the same time base here
-    d1 = WindowData(d, window.start, window.end, short_segment_handling="pad")
-    d2 = WindowData(beam, window.start, window.end, short_segment_handling="pad")
+    vectors = _overlap_vectors(d, beam, window)
+    if vectors is None:
+        return -1.0
+    d_vector, beam_vector = vectors
     if normalize_beam:
-        nrm_beam = np.linalg.norm(d2.data)
+        nrm_beam = np.linalg.norm(beam_vector)
         if nrm_beam <= 0.0:
             return -1.0
-        d2 *= 1.0 / nrm_beam
-
-    # careful of subsample t0 value causing an off by one roundoff problem
-    N = min(d1.npts, d2.npts)
-    return np.dot(d1.data[0:N], d2.data[0:N]) / float(N)
+        beam_vector = beam_vector / nrm_beam
+    return np.dot(d_vector, beam_vector) / float(len(d_vector))
 
 
 def phase_time(
@@ -2112,6 +2163,22 @@ def demean_residuals(
     return ensemble
 
 
+def _require_incident_grid_compatibility(func):
+    @wraps(func)
+    def checked(d, beam, *args, **kwargs):
+        if (
+            isinstance(d, TimeSeries)
+            and isinstance(beam, TimeSeries)
+            and d.live
+            and beam.live
+        ):
+            _validate_sample_grid_compatibility(d, beam)
+        return func(d, beam, *args, **kwargs)
+
+    return checked
+
+
+@_require_incident_grid_compatibility
 @mspass_func_wrapper
 def remove_incident_wavefield(d, beam, *args, handles_ensembles=True, **kwargs):
     """
@@ -2157,24 +2224,18 @@ def remove_incident_wavefield(d, beam, *args, handles_ensembles=True, **kwargs):
     """
     if beam.dead() or d.dead():
         return d
-    st = max(d.t0, beam.t0)
-    et = min(d.endtime(), beam.endtime())
-    isd = d.sample_number(st)
-    isb = beam.sample_number(st)
-    ied = d.sample_number(et)
-    ieb = beam.sample_number(et)
-    # necessary to use : notation to prevent subsample t0 value rounding
-    # from causing an indexing error
-    Nd = ied - isd + 1
-    Nb = ieb - isb + 1
-    if Nd < Nb:
-        ieb = Nd + isb - 1
-    elif Nd > Nb:
-        ied = Nb + isd - 1
-    amp = np.dot(d.data[ied:ieb], beam.data[ieb:ied])
-    x = DoubleVector(beam.data[ieb:ied])
+    indices = _common_sample_interval(d, beam)
+    if indices is None:
+        return d
+    d_start, beam_start, sample_count = indices
+    d_vector = np.asarray(d.data[d_start : d_start + sample_count])
+    beam_vector = np.asarray(beam.data[beam_start : beam_start + sample_count])
+    if np.linalg.norm(d_vector) <= 0.0 or np.linalg.norm(beam_vector) <= 0.0:
+        return d
+    amp = np.dot(d_vector, beam_vector)
+    x = DoubleVector(beam.data[beam_start : beam_start + sample_count])
     x *= amp
-    d.data[ied:ieb] -= x
+    d.data[d_start : d_start + sample_count] -= x
     return d
 
 
