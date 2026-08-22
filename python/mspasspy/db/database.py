@@ -5303,8 +5303,8 @@ class Database(pymongo.database.Database):
                     rec = geoJSON_doc(loc_lat, loc_lon, doc=rec, key="location")
                     rec["elev"] = loc_elev
                     rec["edepth"] = loc_edepth
-                    rec["starttime"] = starttime.timestamp
-                    rec["endtime"] = endtime.timestamp
+                    rec["starttime"] = loc_stime.timestamp
+                    rec["endtime"] = loc_etime.timestamp
                     if (
                         latitude != loc_lat
                         or longitude != loc_lon
@@ -5373,11 +5373,11 @@ class Database(pymongo.database.Database):
                     # done with site now handle channel
                     # Because many features are shared we can copy rec
                     # note this has to be a deep copy
-                    chanrec = copy.deepcopy(rec)
-                    # We don't want this baggage in the channel documents
-                    # keep them only in the site collection
-                    # del chanrec['serialized_inventory']
                     for chan in chans:
+                        if chan.location_code != loc:
+                            continue
+                        chanrec = copy.deepcopy(rec)
+                        chanrec.pop("_id", None)
                         chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
@@ -5399,19 +5399,10 @@ class Database(pymongo.database.Database):
                             picklestr = pickle.dumps(chan)
                             chanrec["serialized_channel_data"] = picklestr
                             result = dbchannel.insert_one(chanrec)
-                            # insert_one has an obnoxious behavior in that it
-                            # inserts the ObjectId in chanrec.  In this loop
-                            # we reuse chanrec so we have to delete the id field
-                            # howeveer, we first want to update the record to
-                            # have chan_id provide an  alternate key to that id
-                            # object_id - that makes this consistent with site
-                            # we actually use the return instead of pulling from
-                            # chanrec
                             idobj = result.inserted_id
                             dbchannel.update_one(
                                 {"_id": idobj}, {"$set": {"chan_id": idobj}}
                             )
-                            del chanrec["_id"]
                             n_chan_saved += 1
                             if verbose:
                                 print(
@@ -5596,13 +5587,21 @@ class Database(pymongo.database.Database):
         search though the list of docs returned for a match to
         loc being conscious of the null string oddity.
 
-        The (optional) time arg is used for a range match to find
-        period between the site startime and endtime.  If not used
-        the first occurence will be returned (usually ill adivsed)
+        The (optional) time arg is used for a range match to find the
+        period between the channel start time and end time.  If it is
+        omitted, the first occurrence may be returned (usually ill advised).
         Returns None if there is no match.  Although the time argument
-        is technically option it usually a bad idea to not include
-        a time stamp because most stations saved as seed data have
-        time variable channel metadata.
+        is technically optional, it is usually a bad idea to omit it because
+        most stations saved as SEED data have time-variable channel metadata.
+
+        An explicit ``loc`` makes the four SEED codes an exact selector.  If
+        more than one document still matches that selector, the channel
+        collection contains ambiguous duplicate metadata and this method
+        raises :class:`MsPASSError` with ``Invalid`` severity.  When ``loc``
+        is omitted, the legacy null/empty-location recovery described above
+        remains in effect; depending on whether ``time`` was supplied, that
+        path either returns the first documented recovery match or reports
+        the existing ambiguity error.
 
         Note this method may be DEPRICATED in the future as it has been
         largely superceded by BasicMatcher implementations in the
@@ -5618,8 +5617,12 @@ class Database(pymongo.database.Database):
            print warning message when the match is ambiguous - multiple
            docs match the specified keys.  The default is False.
 
-        :return: handle to query return
-        :rtype:  MondoDB Cursor object of query result.
+        :return: matching MongoDB channel document, or ``None`` when there is
+          no match.
+        :rtype: dict or None
+        :raises MsPASSError: if an explicit location query has multiple
+          matches, or if the legacy null-location recovery cannot select a
+          unique document without a time constraint.
         """
         dbchannel = self.channel
         query = {}
@@ -5639,6 +5642,20 @@ class Database(pymongo.database.Database):
             return dbchannel.find_one(query)
         else:
             # Note we only land here when the above yields multiple matches
+            if loc is not None:
+                raise MsPASSError(
+                    "get_seed_channel: explicit location query returned "
+                    + str(matchsize)
+                    + " matches for "
+                    + net
+                    + ":"
+                    + sta
+                    + ":"
+                    + loc
+                    + ":"
+                    + chan,
+                    ErrorSeverity.Invalid,
+                )
             if loc == None:
                 # We could get here one of two ways.  There could
                 # be multiple loc codes and the user didn't specify
