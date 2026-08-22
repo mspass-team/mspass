@@ -70,6 +70,7 @@ RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		ca-certificates \
+		curl \
 		dirmngr \
 		gnupg \
 		jq \
@@ -106,18 +107,6 @@ RUN set -ex; \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-RUN set -ex; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	set -- '39BD841E4BE5FB195A65400E6A26B1AE64C3C388'; \
-	for key; do \
-		gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
-	done; \
-	mkdir -p /etc/apt/keyrings; \
-	gpg --batch --export "$@" > /etc/apt/keyrings/mongodb.gpg; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" \
-	&& docker-clean
-
 # Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
 # Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
 # Options for MONGO_REPO: repo.mongodb.org OR repo.mongodb.com
@@ -126,12 +115,15 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
-ENV MONGO_MAJOR=6.0
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
-
-# https://docs.mongodb.org/master/release-notes/6.0/
-ENV MONGO_VERSION=6.0.5
-# 03/08/2023, https://github.com/mongodb/mongo/tree/c9a99c120371d4d4c52cbb15dac34a36ce8d3b1d
+# MongoDB skipped the unpublished 8.0.27 package; 8.0.29 is the exact
+# supported patch available for Ubuntu 22.04 on both amd64 and arm64.
+ENV MONGO_MAJOR=8.0
+ENV MONGO_VERSION=8.0.29
+RUN set -eux; \
+	curl -fsSL "https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc" \
+		| gpg --dearmor -o "/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg"; \
+	echo "deb [ arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg ] https://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" \
+		> "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
@@ -326,8 +318,8 @@ ARG NB_USER=jovyan
 ARG NB_UID=1000
 ARG NB_GID=1000
 ARG NB_HOME=/home/jovyan
-ARG MONGO_MAJOR=6.0
-ARG MONGO_VERSION=6.0.5
+ARG MONGO_MAJOR=8.0
+ARG MONGO_VERSION=8.0.29
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID} \
