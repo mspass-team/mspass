@@ -841,14 +841,23 @@ def WindowData(
 def _validate_windowdata_autopad_grid(func):
     @wraps(func)
     def validated(d, stime, etime, *args, **kwargs):
-        if isinstance(d, (TimeSeries, Seismogram)):
-            if not math.isfinite(d.dt) or d.dt <= 0.0:
-                raise ValueError(
-                    "WindowData_autopad: input dt must be finite and positive"
-                )
+        if isinstance(
+            d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+        ):
             if stime > etime:
                 raise ValueError(
                     "WindowData_autopad: stime must be less than or equal to etime"
+                )
+            members = (
+                (d,)
+                if isinstance(d, (TimeSeries, Seismogram))
+                else (member for member in d.member if member.live)
+            )
+            if any(
+                not math.isfinite(member.dt) or member.dt <= 0.0 for member in members
+            ):
+                raise ValueError(
+                    "WindowData_autopad: input dt must be finite and positive"
                 )
         return func(d, stime, etime, *args, **kwargs)
 

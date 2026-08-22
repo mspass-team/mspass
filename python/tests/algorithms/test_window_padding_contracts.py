@@ -5,7 +5,12 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    SeismogramEnsemble,
+    TimeSeries,
+    TimeSeriesEnsemble,
+)
 from mspasspy.algorithms import window as window_module
 
 
@@ -133,6 +138,36 @@ def test_windowdata_autopad_rejects_invalid_dt_before_allocation(
 
     window_data.assert_not_called()
     _assert_unchanged(datum, before)
+
+
+@pytest.mark.parametrize(
+    "ensemble_type,waveform_type",
+    [
+        (TimeSeriesEnsemble, TimeSeries),
+        (SeismogramEnsemble, Seismogram),
+    ],
+)
+@pytest.mark.parametrize("invalid_request", ["window", "dt"])
+def test_windowdata_autopad_prevalidates_ensembles_before_allocation(
+    monkeypatch, ensemble_type, waveform_type, invalid_request
+):
+    ensemble = ensemble_type()
+    ensemble.member.append(_waveform(waveform_type))
+    ensemble.member.append(
+        _waveform(waveform_type, dt=0.0 if invalid_request == "dt" else 1.0)
+    )
+    ensemble.set_live()
+    before = [_snapshot(member) for member in ensemble.member]
+    window_data = Mock(side_effect=AssertionError("WindowData must not be called"))
+    monkeypatch.setattr(window_module, "WindowData", window_data)
+
+    stime, etime = (2.0, 1.0) if invalid_request == "window" else (1.0, 2.0)
+    with pytest.raises(ValueError):
+        window_module.WindowData_autopad(ensemble, stime, etime)
+
+    window_data.assert_not_called()
+    for member, snapshot in zip(ensemble.member, before):
+        _assert_unchanged(member, snapshot)
 
 
 def test_window_mspasserror_calls_use_message_and_severity():
