@@ -6,6 +6,7 @@ import json
 import os
 import yaml
 import collections
+import copy
 from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
 
@@ -55,15 +56,68 @@ def test_get_branch_keys():
     assert keys == ["pf"]
 
 
-def test_prune():
-    gTree = build_helper()
-    leaf_key, leaf_val = leaf_helper()
-    pruned_leaf_val = gTree.prune(leaf_key)
-    assert pruned_leaf_val == leaf_val
-    #   Test to prune a branch
-    branch_key, branch_val = branch_helper()
-    pruned_branch_val = gTree.prune(branch_key)
-    assert pruned_branch_val == branch_val
+def build_prune_tree():
+    return ParameterGTree(
+        collections.OrderedDict(
+            [
+                ("first_leaf", ["first"]),
+                (
+                    "middle_branch",
+                    collections.OrderedDict(
+                        [
+                            ("nested_leaf", ["nested"]),
+                            (
+                                "nested_branch",
+                                collections.OrderedDict([("deep_leaf", "deep")]),
+                            ),
+                        ]
+                    ),
+                ),
+                ("middle_leaf", ["middle"]),
+                (
+                    "final_branch",
+                    collections.OrderedDict([("final_leaf", ["final"])]),
+                ),
+            ]
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    "key", ["first_leaf", "middle_branch", "middle_leaf", "final_branch"]
+)
+def test_prune_removes_only_requested_key(key):
+    gTree = build_prune_tree()
+    before = copy.deepcopy(gTree.asdict())
+    expected_tree = copy.deepcopy(before)
+    del expected_tree[key]
+
+    pruned_value = gTree.prune(key)
+
+    assert pruned_value == before[key]
+    assert gTree.asdict() == expected_tree
+
+
+def test_prune_nested_leaf_preserves_full_tree():
+    gTree = build_prune_tree()
+    before = copy.deepcopy(gTree.asdict())
+    expected_tree = copy.deepcopy(before)
+    del expected_tree["middle_branch"]["nested_leaf"]
+
+    pruned_value = gTree["middle_branch"].prune("nested_leaf")
+
+    assert pruned_value == before["middle_branch"]["nested_leaf"]
+    assert gTree.asdict() == expected_tree
+
+
+def test_prune_missing_key_preserves_full_tree():
+    gTree = build_prune_tree()
+    before = copy.deepcopy(gTree.asdict())
+
+    with pytest.raises(KeyError):
+        gTree.prune("missing")
+
+    assert gTree.asdict() == before
 
 
 def test_get_leaf():
