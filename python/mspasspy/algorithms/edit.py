@@ -56,7 +56,7 @@ class Executioner(ABC):
     class as it has no functionality by itself.
     """
 
-    def __call__(self, d):
+    def __call__(self, d, *args, **kwargs):
         """
         This method can make the object callable and easier to use.
         After an instance is iniated, instead of explicitly calling
@@ -66,7 +66,7 @@ class Executioner(ABC):
         We can just call this:
         int_tester(enscpy, apply_to_members=True)
         """
-        self.kill_if_true(d)
+        return self.kill_if_true(d, *args, **kwargs)
 
     @abstractmethod
     def kill_if_true(self, d):
@@ -829,23 +829,19 @@ class FiringSquad(Executioner):
         are copied to a python list container so this the contents of
         executioner_list are treated as immutable.
 
-        The constructor will throw a MsPASSError exception if any of the
-        contents of executioner_list is not a child of the
-        Executioner class.
+        The constructor will throw a TypeError exception if executioner_list
+        is not iterable or if any of its contents is not an Executioner with
+        a callable kill_if_true method.
         """
-        for ex in executioner_list:
-            if not isinstance(ex, Executioner):
-                raise MsPASSError(
-                    "FiringSquad constructor:  invalid input.  Expected array of Executioners",
-                    ErrorSeverity.Fatal,
-                )
-
-        # to allow flexibility of the structure used for input we should
-        # copy the executioner_list.  Further, this assure the
-        # result will iterate correctly and allow for append
-        self.executioners = list()
-        for ex in executioner_list:
-            self.executioners.append(ex)
+        executioners = list(executioner_list)
+        if any(
+            not isinstance(ex, Executioner) or not callable(ex.kill_if_true)
+            for ex in executioners
+        ):
+            raise TypeError(
+                "FiringSquad constructor: expected an iterable of Executioners"
+            )
+        self.executioners = executioners
 
     @mspass_method_wrapper
     def kill_if_true(
@@ -2579,23 +2575,19 @@ class MetadataOperatorChain(MetadataOperator):
         operator_list sent to the constructor are treated not unintentionally
         modified.
 
-        The constructor will throw a MsPASSError exception if any of the
-        contents of operator_list is not a child of the
-        MetadataOperator base class.
+        The constructor will throw a TypeError exception if operator_list is
+        not iterable or if any of its contents is not a MetadataOperator with
+        a callable apply method.
         """
-        for ex in operator_list:
-            if not isinstance(ex, MetadataOperator):
-                raise MsPASSError(
-                    "MetadataOperatorChain constructor:  invalid input.  Expected iterable container of MetadataOperator objects",
-                    ErrorSeverity.Fatal,
-                )
-
-        # to allow flexibility of the structure used for input we should
-        # copy the operator_list.  Further, this assure the
-        # result will iterate correctly and allow for append
-        self.oplist = list()
-        for ex in operator_list:
-            self.oplist.append(ex)
+        operators = list(operator_list)
+        if any(
+            not isinstance(op, MetadataOperator) or not callable(op.apply)
+            for op in operators
+        ):
+            raise TypeError(
+                "MetadataOperatorChain constructor: expected an iterable of MetadataOperators"
+            )
+        self.oplist = operators
 
     @mspass_method_wrapper
     def apply(
