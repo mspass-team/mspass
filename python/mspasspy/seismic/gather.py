@@ -594,6 +594,8 @@ class BasicGather(ABC):
         # Apply those transformations before deriving or validating dimensions so
         # ``npts`` always describes the array that will actually be stored.
         if input_obj is not None:
+            if resample or regularize:
+                input_obj = deepcopy(input_obj)
             if resample:
                 input_obj = resample_ensemble(input_obj, dt)
             if regularize:

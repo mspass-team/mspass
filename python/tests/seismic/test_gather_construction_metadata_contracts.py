@@ -184,6 +184,8 @@ def test_ensemble_dimensions_are_derived_after_resampling(
     assert result.npts == 50
     assert result.member_data.shape == (2, component_count, 50)
     assert result.member_metadata["npts"].tolist() == [50, 50]
+    assert [datum.npts for datum in source.member] == [100, 100]
+    assert [datum.dt for datum in source.member] == [0.25, 0.25]
 
     conflicting = _ensemble(gather_class, size=2, npts=100)
     uninitialized = gather_class.__new__(gather_class)
@@ -199,7 +201,11 @@ def test_ensemble_dimensions_are_derived_after_resampling(
         )
 
     assert vars(uninitialized) == {}
-    assert calls == [(id(source), 0.5), (id(conflicting), 0.5)]
+    assert [datum.npts for datum in conflicting.member] == [100, 100]
+    assert [datum.dt for datum in conflicting.member] == [0.25, 0.25]
+    assert [requested_dt for _, requested_dt in calls] == [0.5, 0.5]
+    assert calls[0][0] != id(source)
+    assert calls[1][0] != id(conflicting)
 
 
 def _scalar_gather(ensemble_metadata=None, starttimes=None):
