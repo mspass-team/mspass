@@ -7,6 +7,8 @@ Created on Wed Nov 13 14:56:53 2024
 """
 
 import os
+from pathlib import Path
+
 import yaml
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.seismic import (
@@ -69,10 +71,13 @@ class Janitor:
     keys "TimeSeries" and "Seismogram".   See the default in
     mspass/data/yaml/Janitor.yaml to see the format.
 
-    :param keeper_file:   yaml file containing the keys to be retained
-      for TimeSeries and Seismogram objects.
-    :type keeper_file:  string defining yaml file name.  Default is None
-      which assumed a default path of $MSPASS_HOME/data/yaml/Janitor.yaml.
+    :param keepers_file:   yaml file containing the keys to be retained
+      for TimeSeries and Seismogram objects.  Relative paths are resolved
+      against the caller's current working directory.  A bare filename that
+      is absent there falls back to the installed package-data directory.
+    :type keepers_file:  string defining yaml file name.  Default is None,
+      which uses $MSPASS_HOME/data/yaml/Janitor.yaml when MSPASS_HOME is set
+      and the installed package-data Janitor.yaml otherwise.
     :param TimeSeries_keepers:  Use to override list defined in yaml
       file for TimeSeries objects.  If defined, it
       should be list of attributes to be retained.  Use this option
@@ -116,27 +121,33 @@ class Janitor:
         ensemble_keepers=None,
         process_ensemble_members=True,
     ):
+        package_data_directory = Path(__file__).resolve().parent.parent / "data/yaml"
+        if not package_data_directory.is_dir() and "MSPASS_HOME" in os.environ:
+            package_data_directory = (
+                Path(os.environ["MSPASS_HOME"]).resolve() / "data/yaml"
+            )
         if keepers_file is None:
             if "MSPASS_HOME" in os.environ:
-                keepers_file = (
-                    os.path.abspath(os.environ["MSPASS_HOME"])
-                    + "/data/yaml/Janitor.yaml"
+                keepers_path = (
+                    Path(os.environ["MSPASS_HOME"]).resolve() / "data/yaml/Janitor.yaml"
                 )
             else:
-                keepers_file = os.path.abspath(
-                    os.path.dirname(__file__) + "/../data/yaml/Janitor.yaml"
-                )
-        elif not os.path.isfile(keepers_file):
-            if "MSPASS_HOME" in os.environ:
-                keepers_file = os.path.join(
-                    os.path.abspath(os.environ["MSPASS_HOME"]),
-                    "data/yaml",
-                    keepers_file,
-                )
+                keepers_path = package_data_directory / "Janitor.yaml"
         else:
-            keepers_file = os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "../data/yaml", keepers_file)
-            )
+            requested_path = Path(keepers_file).expanduser()
+            if requested_path.is_absolute():
+                keepers_path = requested_path
+            else:
+                caller_path = Path.cwd() / requested_path
+                if caller_path.is_file():
+                    keepers_path = caller_path
+                elif requested_path.parent == Path("."):
+                    keepers_path = package_data_directory / requested_path.name
+                else:
+                    keepers_path = caller_path
+        if not keepers_path.is_file():
+            raise FileNotFoundError(keepers_path)
+        keepers_file = str(keepers_path.resolve())
         try:
             with open(keepers_file, "r") as stream:
                 keepers_dict = yaml.safe_load(stream)
@@ -146,19 +157,21 @@ class Janitor:
                 + keepers_file,
                 "Fatal",
             ) from e
-        except EnvironmentError as e:
+        except FileNotFoundError:
+            raise
+        except OSError as e:
             raise MsPASSError(
                 "Janitor constructor:  Cannot open keepers_file = " + keepers_file,
                 "Fatal",
             ) from e
         self._parse_yaml_file(keepers_dict)
         self.process_ensemble_members = process_ensemble_members
-        if TimeSeries_keepers:
+        if TimeSeries_keepers is not None:
             self.TimeSeries_keepers = TimeSeries_keepers
-        if Seismogram_keepers:
+        if Seismogram_keepers is not None:
             self.Seismogram_keepers = Seismogram_keepers
-        if ensemble_keepers:
-            self.ensemle_keepers = ensemble_keepers
+        if ensemble_keepers is not None:
+            self.ensemble_keepers = ensemble_keepers
 
     def clean(self, datum):
         """
