@@ -74,7 +74,7 @@ MathJax.Hub.Config({
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MsPASS C++ API
-   &#160;<span id="projectnumber">2.4.4.dev23+g431f9624</span>
+   &#160;<span id="projectnumber">2.4.4.dev24+g76d703a1</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -396,7 +396,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">  150</span>    <span class="keywordflow">for</span> (t = t0tail; t &gt;= t1tail; t -= d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#af31c96c0e2173d7581e1c3a3f8bcfde8">dt</a>()) {</div>
 <div class="line"><span class="lineno">  151</span>      is = d.<a class="code hl_function" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a>(t);</div>
 <div class="line"><span class="lineno">  152</span>      <span class="keywordflow">if</span> (is &gt;= 0) {</div>
-<div class="line"><span class="lineno">  153</span>        wt = rampslope * (t - t1tail);</div>
+<div class="line"><span class="lineno">  153</span>        wt = rampslope * (t0tail - t);</div>
 <div class="line"><span class="lineno">  154</span>        <span class="keywordflow">for</span> (k = 0; k &lt; 3; ++k)</div>
 <div class="line"><span class="lineno">  155</span>          d.<a class="code hl_variable" href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">u</a>(k, is) *= wt;</div>
 <div class="line"><span class="lineno">  156</span>      }</div>
