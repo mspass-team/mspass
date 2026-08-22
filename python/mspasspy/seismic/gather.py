@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 import math
-from numbers import Real
+from numbers import Integral, Real
 
 import xarray as xr
 import dask.array as da
@@ -66,6 +66,31 @@ def isOldEnsembleObject(obj):
 
 def isMsPassObject(obj):
     return isinstance(obj, (TimeSeries, Seismogram))
+
+
+def _array_dimensions(shape, is_compact):
+    if len(shape) != 3:
+        raise ValueError("Gather sample arrays must be three-dimensional")
+    if is_compact:
+        return shape[0], shape[1], shape[2]
+    return shape[0], shape[2], shape[1]
+
+
+def _validate_partitions(array_type, npartitions):
+    if array_type in ("dask", "xarray") and (
+        isinstance(npartitions, bool)
+        or not isinstance(npartitions, Integral)
+        or npartitions < 1
+    ):
+        raise ValueError("npartitions must be a positive integer for Dask arrays")
+
+
+def _dask_chunks(shape, capacity, npartitions):
+    return (
+        max(1, math.ceil(capacity / npartitions)),
+        shape[1],
+        shape[2],
+    )
 
 
 def extractDataFromMsPassObject(mspass_object):
@@ -314,6 +339,25 @@ class BasicGather(ABC):
             self._column_values,
         )
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        elog = state.pop("elog")
+        state["_serialized_elog_job_id"] = elog.get_job_id()
+        state["_serialized_elog"] = [
+            (entry.algorithm, entry.message, entry.badness)
+            for entry in elog.get_error_log()
+        ]
+        return state
+
+    def __setstate__(self, state):
+        job_id = state.pop("_serialized_elog_job_id")
+        entries = state.pop("_serialized_elog")
+        self.__dict__.update(state)
+        self.elog = ErrorLogger()
+        self.elog.set_job_id(job_id)
+        for algorithm, message, severity in entries:
+            self.elog.log_error(algorithm, message, severity)
+
     def __default_constructor__(
         self,
         capacity,
@@ -366,6 +410,8 @@ class BasicGather(ABC):
         :param npartitions: The number of desired partitions for Dask or xarray.
         :type npartitions: :class:`int`
         """
+        _validate_partitions(array_type, npartitions)
+
         self.capacity = capacity
         self.npts = npts
         self.size = 0
@@ -392,26 +438,26 @@ class BasicGather(ABC):
                 )
             )
 
-        if (
-            num_components == 1
-        ):  # For the scalar data, we don't need to do rearrangement
-            is_compact = False
-
         shape = (
-            [capacity, num_components, npts]
+            (capacity, num_components, npts)
             if is_compact
-            else [capacity, npts, num_components]
+            else (capacity, npts, num_components)
         )
 
         if array_type == "xarray":
-            self.member_data = xr.DataArray()
-            chunksize = [shape[0] // npartitions, shape[1], shape[2]]
-            self.member_data.data = da.empty(shape=shape, chunks=chunksize)
+            self.member_data = xr.DataArray(
+                da.empty(
+                    shape=shape,
+                    chunks=_dask_chunks(shape, capacity, npartitions),
+                )
+            )
         elif array_type == "numpy":
             self.member_data = np.empty(shape)
         elif array_type == "dask":
-            chunksize = [shape[0] // npartitions, shape[1], shape[2]]
-            self.member_data = da.empty(shape=shape, chunks=chunksize)
+            self.member_data = da.empty(
+                shape=shape,
+                chunks=_dask_chunks(shape, capacity, npartitions),
+            )
 
     def __constructor_from_input_data(
         self,
@@ -447,6 +493,8 @@ class BasicGather(ABC):
         :param npartitions: The number of desired partitions for Dask or xarray.
         :type npartitions: :class:`int`
         """
+        _validate_partitions(array_type, npartitions)
+
         self.capacity = 0
         self.npts = 0
         self.size = 0
@@ -460,13 +508,15 @@ class BasicGather(ABC):
         self.elog = ErrorLogger()
         self._column_values = None
 
-        supported_types = (da.Array, np.ndarray)
+        supported_types = (xr.DataArray, da.Array, np.ndarray)
         if not isinstance(input_data, supported_types):
             raise TypeError(
                 "The array type should be one of the follows: {}".format(
                     supported_types
                 )
             )
+        if isinstance(input_data, xr.DataArray):
+            input_data = input_data.data
 
         supported_array_types = [
             "numpy",
@@ -481,45 +531,31 @@ class BasicGather(ABC):
                 )
             )
 
+        size, num_components, npts = _array_dimensions(input_data.shape, is_compact)
+        shape = tuple(input_data.shape)
+
         if array_type == "numpy":
             if isinstance(input_data, da.Array):
                 self.member_data = input_data.compute()
             elif isinstance(input_data, np.ndarray):
                 self.member_data = input_data
         elif array_type == "xarray":
-            self.member_data = xr.DataArray()
-            chunksize = [
-                input_data.shape[0] // self.npartitions,
-                input_data.shape[1],
-                input_data.shape[2],
-            ]
+            chunksize = _dask_chunks(shape, size, npartitions)
             if isinstance(input_data, da.Array):
-                self.member_data.data = input_data.rechunk(chunks=chunksize)
+                data = input_data.rechunk(chunks=chunksize)
             elif isinstance(input_data, np.ndarray):
-                self.member_data.data = da.from_array(input_data, chunks=chunksize)
+                data = da.from_array(input_data, chunks=chunksize)
+            self.member_data = xr.DataArray(data)
         elif array_type == "dask":
-            chunksize = [
-                input_data.shape[0] // self.npartitions,
-                input_data.shape[1],
-                input_data.shape[2],
-            ]
+            chunksize = _dask_chunks(shape, size, npartitions)
             if isinstance(input_data, da.Array):
                 self.member_data = input_data.rechunk(chunks=chunksize)
             elif isinstance(input_data, np.ndarray):
                 self.member_data = da.from_array(input_data, chunks=chunksize)
 
-        if self.is_compact:
-            self.member_data.transpose((0, 2, 1))
-
-        """
-        if is_compact: [size, num_components, npts]
-        else:          [size, npts, num_components]
-        """
-        self.size, self.num_components, self.npts = (
-            self.member_data.shape[0],
-            self.member_data.shape[1],
-            self.member_data.shape[2],
-        )
+        self.size = size
+        self.num_components = num_components
+        self.npts = npts
         self.capacity = self.size
 
     def __constructor_from_ensemble_obj__(
@@ -586,21 +622,15 @@ class BasicGather(ABC):
         if regularize:
             input_obj = regularize_ensemble(input_obj, regularizer)
 
-        if isinstance(input_obj, TimeSeriesEnsemble):
-            self.__constructor_from_input_data(
-                extractDataFromOldEnsemble(input_obj),
-                array_type,
-                is_compact,
-                npartitions,
-            )
-
-        elif isinstance(input_obj, SeismogramEnsemble):
-            self.__constructor_from_input_data(
-                extractDataFromOldEnsemble(input_obj),
-                array_type,
-                is_compact,
-                npartitions,
-            )
+        input_data = extractDataFromOldEnsemble(input_obj)
+        if not is_compact:
+            input_data = input_data.transpose((0, 2, 1))
+        self.__constructor_from_input_data(
+            input_data,
+            array_type,
+            is_compact,
+            npartitions,
+        )
 
         # Add the ensemble's metadata
         self._ensemble_metadata = deepcopy(dict(input_obj))
@@ -709,11 +739,14 @@ class BasicGather(ABC):
                 ),
             }
         elif input_data is not None:
+            derived_size, derived_components, derived_npts = _array_dimensions(
+                input_data.shape, is_compact
+            )
             derived_dimensions = {
-                "capacity": input_data.shape[0],
-                "size": input_data.shape[0],
-                "npts": input_data.shape[2],
-                "num_components": input_data.shape[1],
+                "capacity": derived_size,
+                "size": derived_size,
+                "npts": derived_npts,
+                "num_components": derived_components,
             }
 
         if derived_dimensions is not None:
@@ -780,7 +813,7 @@ class BasicGather(ABC):
             self._ensemble_metadata = deepcopy(dict(ensemble_metadata))
         if self.member_metadata is None:
             self.member_metadata = member_metadata
-        self.is_parallel = is_parallel
+        self.is_parallel = array_type in ("dask", "xarray")
         self.is_compact = is_compact
         self.npartitions = npartitions
         self.elog = ErrorLogger()
@@ -795,10 +828,10 @@ class BasicGather(ABC):
 
     def append(self, mspass_object):
         """
-        Appends data in mspass_object to internal array object.
-        For now, we don't handle resizing similar to std containers in C++
-        where allocs (in this case a resize) is triggered by filling.
-        Instead, we would just rely on the xarray/numpy's append.
+        Append one member along axis zero.
+
+        ``capacity`` is the allocated axis-zero length.  Unused rows are retained
+        until the array is full, then the backend grows to fit the new member.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -807,28 +840,64 @@ class BasicGather(ABC):
         ):
             raise TypeError("The components number doesn't match the input object")
 
-        new_data = extractDataFromMsPassObject(mspass_object)  # get the numpy data
-        if self.is_compact:
-            new_data.transpose()
+        if mspass_object.npts != self.npts:
+            raise ValueError("The input object npts does not match the Gather")
 
-        if self.size < self.capacity:
-            self.member_data[self.size] = new_data
+        new_data = extractDataFromMsPassObject(mspass_object)
+        if isinstance(mspass_object, TimeSeries):
+            new_data = (
+                new_data.reshape(1, 1, self.npts)
+                if self.is_compact
+                else new_data.reshape(1, self.npts, 1)
+            )
         else:
-            if self.array_type == "dask":
-                if self.is_compact:
-                    da.append(self.member_data, new_data, 2)
-                else:
-                    da.append(self.member_data, new_data, 1)
-            elif self.array_type == "numpy":
-                if self.is_compact:
-                    np.append(self.member_data, new_data, 2)
-                else:
-                    np.append(self.member_data, new_data, 1)
+            if not self.is_compact:
+                new_data = new_data.transpose()
+            new_data = new_data.reshape((1,) + new_data.shape)
 
-        self.member_metadata.loc[len(self.member_metadata.index)] = (
-            mspass_object.todict()
+        metadata = deepcopy(dict(mspass_object))
+        metadata.setdefault("starttime", mspass_object.t0)
+        metadata.setdefault("delta", mspass_object.dt)
+        metadata.setdefault("npts", mspass_object.npts)
+        metadata["is_live"] = mspass_object.live
+        new_member_metadata = pd.concat(
+            [self.member_metadata, pd.DataFrame([metadata])],
+            ignore_index=True,
+            sort=False,
         )
-        self.size += 1
+
+        new_size = self.size + 1
+        new_capacity = max(self.capacity, new_size)
+        if self.array_type == "numpy":
+            if new_capacity > self.capacity:
+                expanded = np.empty(
+                    (new_capacity,) + self.member_data.shape[1:],
+                    dtype=self.member_data.dtype,
+                )
+                expanded[: self.size] = self.member_data[: self.size]
+                self.member_data = expanded
+            self.member_data[self.size] = new_data[0]
+        else:
+            current_data = self.member_data
+            if self.array_type == "xarray":
+                current_data = self.member_data.data
+            pieces = [
+                current_data[: self.size],
+                da.from_array(new_data, chunks=new_data.shape),
+            ]
+            if new_size < new_capacity:
+                pieces.append(current_data[new_size:new_capacity])
+            appended = da.concatenate(pieces, axis=0)
+            appended = appended.rechunk(
+                _dask_chunks(appended.shape, new_capacity, self.npartitions)
+            )
+            self.member_data = (
+                xr.DataArray(appended) if self.array_type == "xarray" else appended
+            )
+
+        self.member_metadata = new_member_metadata
+        self.size = new_size
+        self.capacity = new_capacity
 
     def starttime(self) -> list:
         """
@@ -1201,11 +1270,15 @@ class Gather(BasicGather):
                 raise TypeError("The input object should be a TimeSeriesEnsemble")
 
         elif input_data is not None:
-            input_num_comp = input_data.shape[1]
+            _, input_num_comp, _ = _array_dimensions(input_data.shape, is_compact)
             if input_num_comp != 1:
                 raise TypeError(
                     "The input data shape is not valid, should be scalar data"
                 )
+        elif num_components in (None, 0):
+            num_components = 1
+        elif num_components != 1:
+            raise ValueError("Gather requires num_components=1")
 
         super().__init__(
             capacity=capacity,
@@ -1265,28 +1338,34 @@ class Gather(BasicGather):
         else:
             return col.flatten()
 
-    def subset(self, start, end) -> "Gather":
+    def subset(self, start, end=None) -> "Gather":
         """
-        Return a subset of the Gather with signals from start to end
-        (like start:end in F90 or matlab).
+        Return members selected by an index iterable or a ``start:end`` range.
+
+        Iterable selection preserves order and duplicate indices.  An empty
+        iterable returns an empty Gather with the same trailing axes/backend.
 
         :param start:   the start index of the subset
         :param end: specifies the index where the subset ends, excluding the
           value at this index just like array slicing.
         """
-        new_input_data = self.member_data[start:end]
-        new_member_metadata = self.member_metadata[start:end]
-        new_npartitions = end - start
-        if new_npartitions > self.npartitions:
-            npartitions = self.npartitions
+        indices = list(range(start, end)) if end is not None else list(start)
+        new_input_data = self.member_data[np.asarray(indices, dtype=int)]
+        new_member_metadata = self.member_metadata.iloc[indices].reset_index(drop=True)
 
         new_gather = Gather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            npartitions=new_npartitions,
+            npartitions=self.npartitions,
             member_metadata=new_member_metadata,
+            ensemble_metadata=self.ensemble_metadata(),
+            dt=self.dt(),
         )
+        if self._column_values is not None:
+            new_gather._column_values = [
+                deepcopy(self._column_values[index]) for index in indices
+            ]
         return new_gather
 
     def __getitem__(self, pos):
@@ -1382,11 +1461,15 @@ class SeismogramGather(BasicGather):
                 raise TypeError("The input object should be a TimeSeriesEnsemble")
 
         elif input_data is not None:
-            input_num_comp = input_data.shape[1]
+            _, input_num_comp, _ = _array_dimensions(input_data.shape, is_compact)
             if input_num_comp != 3:
                 raise TypeError(
-                    "The input data shape is not valid, should be scalar data"
+                    "The input data shape is not valid, should be three-component data"
                 )
+        elif num_components in (None, 0):
+            num_components = 3
+        elif num_components != 3:
+            raise ValueError("SeismogramGather requires num_components=3")
 
         super().__init__(
             capacity=capacity,
@@ -1441,35 +1524,38 @@ class SeismogramGather(BasicGather):
                 "The given index: {} is out of range.".format(j), "Invalid"
             )
         col = self.member_data[j]
-        if self.is_compact:
-            col.transpose()
         if self.is_parallel:
-            return col.compute()
-        else:
-            return col
+            col = col.compute()
+        return col if self.is_compact else col.transpose()
 
-    def subset(self, start, end) -> "SeismogramGather":
+    def subset(self, start, end=None) -> "SeismogramGather":
         """
-        Return a subset of the Gather with signals from start to end
-        (like start:end in F90 or matlab).
+        Return members selected by an index iterable or a ``start:end`` range.
+
+        Iterable selection preserves order and duplicate indices.  An empty
+        iterable returns an empty Gather with the same trailing axes/backend.
 
         :param start:   the start index of the subset
         :param end: specifies the index where the subset ends, excluding the
           value at this index just like array slicing.
         """
-        new_input_data = self.member_data[start:end]
-        new_member_metadata = self.member_metadata[start:end]
-        new_npartitions = end - start
-        if new_npartitions > self.npartitions:
-            npartitions = self.npartitions
+        indices = list(range(start, end)) if end is not None else list(start)
+        new_input_data = self.member_data[np.asarray(indices, dtype=int)]
+        new_member_metadata = self.member_metadata.iloc[indices].reset_index(drop=True)
 
         new_gather = SeismogramGather(
             input_data=new_input_data,
             array_type=self.array_type,
             is_compact=self.is_compact,
-            npartitions=new_npartitions,
+            npartitions=self.npartitions,
             member_metadata=new_member_metadata,
+            ensemble_metadata=self.ensemble_metadata(),
+            dt=self.dt(),
         )
+        if self._column_values is not None:
+            new_gather._column_values = [
+                deepcopy(self._column_values[index]) for index in indices
+            ]
         return new_gather
 
     def __getitem__(self, pos):

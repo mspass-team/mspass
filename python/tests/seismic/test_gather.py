@@ -189,21 +189,21 @@ class TestGather:
             capacity=5,
             size=5,
             npts=6,
-            num_components=3,
+            num_components=1,
             npartitions=3,
             member_metadata=self.md,
         )
-        assert default_gather.member_data.shape == (5, 3, 6)
+        assert default_gather.member_data.shape == (5, 1, 6)
         compact_gather = Gather(
             capacity=5,
             size=5,
             npts=6,
-            num_components=3,
+            num_components=1,
             npartitions=3,
             member_metadata=self.md,
             is_compact=False,
         )
-        assert compact_gather.member_data.shape == (5, 6, 3)
+        assert compact_gather.member_data.shape == (5, 6, 1)
 
         es_md = Metadata(self.md_dict)
         es = TimeSeriesEnsemble(es_md, 3)
@@ -226,7 +226,7 @@ class TestGather:
     def test_subset(self):
         ts_subset = self.gather.subset(0, 2)
         assert ts_subset.size == 2
-        assert ts_subset.npartitions == 2
+        assert ts_subset.npartitions == self.gather.npartitions
 
     def test_getitem(self):
         assert self.gather[0, 0] == 1
@@ -303,7 +303,7 @@ class TestSeismogramGather:
     def test_subset(self):
         ts_subset = self.gather.subset(0, 2)
         assert ts_subset.size == 2
-        assert ts_subset.npartitions == 2
+        assert ts_subset.npartitions == self.gather.npartitions
 
     def test_getitem(self):
         assert self.gather[0, 0, 0] == 2.0
