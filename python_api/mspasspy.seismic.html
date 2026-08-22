@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev41+g18a88528 documentation</title>
+    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev42+gf1cc7e74 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=c1ce97e7"></script>
+    <script src="../_static/documentation_options.js?v=33e72972"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev41" />
+  <meta name="docsearch:version" content="2.4.4.dev42" />
   </head>
   
   
@@ -517,10 +517,9 @@ headaches.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.append" title="Link to this definition">#</a></dt>
-<dd><p>Appends data in mspass_object to internal array object.
-For now, we don’t handle resizing similar to std containers in C++
-where allocs (in this case a resize) is triggered by filling.
-Instead, we would just rely on the xarray/numpy’s append.</p>
+<dd><p>Append one member along axis zero.</p>
+<p><code class="docutils literal notranslate"><span class="pre">capacity</span></code> is the allocated axis-zero length.  Unused rows are retained
+until the array is full, then the backend grows to fit the new member.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -745,9 +744,10 @@ Suggest data method for that purpose
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.Gather.subset">
-<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.Gather" title="mspasspy.seismic.gather.Gather"><span class="pre">Gather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather.subset" title="Link to this definition">#</a></dt>
-<dd><p>Return a subset of the Gather with signals from start to end
-(like start:end in F90 or matlab).</p>
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.Gather" title="mspasspy.seismic.gather.Gather"><span class="pre">Gather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#Gather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.Gather.subset" title="Link to this definition">#</a></dt>
+<dd><p>Return members selected by an index iterable or a <code class="docutils literal notranslate"><span class="pre">start:end</span></code> range.</p>
+<p>Iterable selection preserves order and duplicate indices.  An empty
+iterable returns an empty Gather with the same trailing axes/backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -791,9 +791,10 @@ Suggest data method for that purpose
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.SeismogramGather.subset">
-<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.SeismogramGather" title="mspasspy.seismic.gather.SeismogramGather"><span class="pre">SeismogramGather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather.subset" title="Link to this definition">#</a></dt>
-<dd><p>Return a subset of the Gather with signals from start to end
-(like start:end in F90 or matlab).</p>
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mspasspy.seismic.gather.SeismogramGather" title="mspasspy.seismic.gather.SeismogramGather"><span class="pre">SeismogramGather</span></a></span></span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#SeismogramGather.subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.SeismogramGather.subset" title="Link to this definition">#</a></dt>
+<dd><p>Return members selected by an index iterable or a <code class="docutils literal notranslate"><span class="pre">start:end</span></code> range.</p>
+<p>Iterable selection preserves order and duplicate indices.  An empty
+iterable returns an empty Gather with the same trailing axes/backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

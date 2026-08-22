@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev41+g18a88528 documentation</title>
+    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev42+gf1cc7e74 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=c1ce97e7"></script>
+    <script src="../../../_static/documentation_options.js?v=33e72972"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev41" />
+  <meta name="docsearch:version" content="2.4.4.dev42" />
   </head>
   
   
@@ -476,7 +476,7 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integral</span><span class="p">,</span> <span class="n">Real</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
@@ -547,6 +547,31 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">isMsPassObject</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">))</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_array_dimensions</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_compact</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Gather sample arrays must be three-dimensional"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_compact</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_partitions</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">array_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"dask"</span><span class="p">,</span> <span class="s2">"xarray"</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">npartitions</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">npartitions</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">npartitions</span> <span class="o">&lt;</span> <span class="mi">1</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"npartitions must be a positive integer for Dask arrays"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dask_chunks</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">capacity</span> <span class="o">/</span> <span class="n">npartitions</span><span class="p">)),</span>
+        <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="extractDataFromMsPassObject">
@@ -812,6 +837,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">elog</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">"_serialized_elog_job_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog</span><span class="o">.</span><span class="n">get_job_id</span><span class="p">()</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">"_serialized_elog"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">badness</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">state</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">job_id</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_serialized_elog_job_id"</span><span class="p">)</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_serialized_elog"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">set_job_id</span><span class="p">(</span><span class="n">job_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__default_constructor__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">capacity</span><span class="p">,</span>
@@ -864,6 +908,8 @@
 <span class="sd">        :param npartitions: The number of desired partitions for Dask or xarray.</span>
 <span class="sd">        :type npartitions: :class:`int`</span>
 <span class="sd">        """</span>
+        <span class="n">_validate_partitions</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">capacity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
@@ -890,26 +936,26 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">num_components</span> <span class="o">==</span> <span class="mi">1</span>
-        <span class="p">):</span>  <span class="c1"># For the scalar data, we don't need to do rearrangement</span>
-            <span class="n">is_compact</span> <span class="o">=</span> <span class="kc">False</span>
-
         <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">[</span><span class="n">capacity</span><span class="p">,</span> <span class="n">num_components</span><span class="p">,</span> <span class="n">npts</span><span class="p">]</span>
+            <span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">num_components</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">is_compact</span>
-            <span class="k">else</span> <span class="p">[</span><span class="n">capacity</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">num_components</span><span class="p">]</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="n">num_components</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"xarray"</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">()</span>
-            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">npartitions</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+                <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                    <span class="n">chunks</span><span class="o">=</span><span class="n">_dask_chunks</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"numpy"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="n">npartitions</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                <span class="n">chunks</span><span class="o">=</span><span class="n">_dask_chunks</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">),</span>
+            <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__constructor_from_input_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -945,6 +991,8 @@
 <span class="sd">        :param npartitions: The number of desired partitions for Dask or xarray.</span>
 <span class="sd">        :type npartitions: :class:`int`</span>
 <span class="sd">        """</span>
+        <span class="n">_validate_partitions</span><span class="p">(</span><span class="n">array_type</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
@@ -958,13 +1006,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">"The array type should be one of the follows: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">supported_types</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+            <span class="n">input_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">data</span>
 
         <span class="n">supported_array_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">"numpy"</span><span class="p">,</span>
@@ -979,45 +1029,31 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
+        <span class="n">size</span><span class="p">,</span> <span class="n">num_components</span><span class="p">,</span> <span class="n">npts</span> <span class="o">=</span> <span class="n">_array_dimensions</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_compact</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"numpy"</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span>
         <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"xarray"</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">()</span>
-            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="p">]</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="n">_dask_chunks</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">array_type</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-            <span class="n">chunksize</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="p">]</span>
+            <span class="n">chunksize</span> <span class="o">=</span> <span class="n">_dask_chunks</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">npartitions</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunksize</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        if is_compact: [size, num_components, npts]</span>
-<span class="sd">        else:          [size, npts, num_components]</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="n">num_components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__constructor_from_ensemble_obj__</span><span class="p">(</span>
@@ -1084,21 +1120,15 @@
         <span class="k">if</span> <span class="n">regularize</span><span class="p">:</span>
             <span class="n">input_obj</span> <span class="o">=</span> <span class="n">regularize_ensemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">regularizer</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
-                <span class="n">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">),</span>
-                <span class="n">array_type</span><span class="p">,</span>
-                <span class="n">is_compact</span><span class="p">,</span>
-                <span class="n">npartitions</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
-                <span class="n">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">),</span>
-                <span class="n">array_type</span><span class="p">,</span>
-                <span class="n">is_compact</span><span class="p">,</span>
-                <span class="n">npartitions</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">extractDataFromOldEnsemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_compact</span><span class="p">:</span>
+            <span class="n">input_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__constructor_from_input_data</span><span class="p">(</span>
+            <span class="n">input_data</span><span class="p">,</span>
+            <span class="n">array_type</span><span class="p">,</span>
+            <span class="n">is_compact</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># Add the ensemble's metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">input_obj</span><span class="p">))</span>
@@ -1207,11 +1237,14 @@
                 <span class="p">),</span>
             <span class="p">}</span>
         <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">derived_size</span><span class="p">,</span> <span class="n">derived_components</span><span class="p">,</span> <span class="n">derived_npts</span> <span class="o">=</span> <span class="n">_array_dimensions</span><span class="p">(</span>
+                <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_compact</span>
+            <span class="p">)</span>
             <span class="n">derived_dimensions</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">"capacity"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="s2">"size"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="s2">"npts"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                <span class="s2">"num_components"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="s2">"capacity"</span><span class="p">:</span> <span class="n">derived_size</span><span class="p">,</span>
+                <span class="s2">"size"</span><span class="p">:</span> <span class="n">derived_size</span><span class="p">,</span>
+                <span class="s2">"npts"</span><span class="p">:</span> <span class="n">derived_npts</span><span class="p">,</span>
+                <span class="s2">"num_components"</span><span class="p">:</span> <span class="n">derived_components</span><span class="p">,</span>
             <span class="p">}</span>
 
         <span class="k">if</span> <span class="n">derived_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1278,7 +1311,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">ensemble_metadata</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">member_metadata</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span> <span class="o">=</span> <span class="n">is_parallel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span> <span class="o">=</span> <span class="n">array_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"dask"</span><span class="p">,</span> <span class="s2">"xarray"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
@@ -1295,10 +1328,10 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.append">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Appends data in mspass_object to internal array object.</span>
-<span class="sd">        For now, we don't handle resizing similar to std containers in C++</span>
-<span class="sd">        where allocs (in this case a resize) is triggered by filling.</span>
-<span class="sd">        Instead, we would just rely on the xarray/numpy's append.</span>
+<span class="sd">        Append one member along axis zero.</span>
+
+<span class="sd">        ``capacity`` is the allocated axis-zero length.  Unused rows are retained</span>
+<span class="sd">        until the array is full, then the backend grows to fit the new member.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"only TimeSeries and Seismogram are supported"</span><span class="p">)</span>
@@ -1307,28 +1340,64 @@
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The components number doesn't match the input object"</span><span class="p">)</span>
 
-        <span class="n">new_data</span> <span class="o">=</span> <span class="n">extractDataFromMsPassObject</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>  <span class="c1"># get the numpy data</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
-            <span class="n">new_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The input object npts does not match the Gather"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">extractDataFromMsPassObject</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">new_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span>
+                <span class="k">else</span> <span class="n">new_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">"dask"</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
-                    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">"numpy"</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
+                <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">new_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">todict</span><span class="p">()</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"delta"</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"npts"</span><span class="p">,</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s2">"is_live"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span>
+        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">metadata</span><span class="p">])],</span>
+            <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+        <span class="n">new_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">new_capacity</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">,</span> <span class="n">new_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">"numpy"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_capacity</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">:</span>
+                <span class="n">expanded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">new_capacity</span><span class="p">,)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">expanded</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="n">expanded</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">"xarray"</span><span class="p">:</span>
+                <span class="n">current_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">pieces</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">current_data</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">],</span>
+                <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">new_data</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">new_size</span> <span class="o">&lt;</span> <span class="n">new_capacity</span><span class="p">:</span>
+                <span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_data</span><span class="p">[</span><span class="n">new_size</span><span class="p">:</span><span class="n">new_capacity</span><span class="p">])</span>
+            <span class="n">appended</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">pieces</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">appended</span> <span class="o">=</span> <span class="n">appended</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span>
+                <span class="n">_dask_chunks</span><span class="p">(</span><span class="n">appended</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">new_capacity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">appended</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">==</span> <span class="s2">"xarray"</span> <span class="k">else</span> <span class="n">appended</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">new_member_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">new_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">new_capacity</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.starttime">
@@ -1768,11 +1837,15 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The input object should be a TimeSeriesEnsemble"</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">input_num_comp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">input_num_comp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_array_dimensions</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_compact</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">input_num_comp</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="s2">"The input data shape is not valid, should be scalar data"</span>
                 <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">num_components</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">num_components</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">num_components</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Gather requires num_components=1"</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span>
@@ -1840,28 +1913,34 @@
 
 <div class="viewcode-block" id="Gather.subset">
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.Gather.subset">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Gather"</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Gather"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return a subset of the Gather with signals from start to end</span>
-<span class="sd">        (like start:end in F90 or matlab).</span>
+<span class="sd">        Return members selected by an index iterable or a ``start:end`` range.</span>
+
+<span class="sd">        Iterable selection preserves order and duplicate indices.  An empty</span>
+<span class="sd">        iterable returns an empty Gather with the same trailing axes/backend.</span>
 
 <span class="sd">        :param start:   the start index of the subset</span>
 <span class="sd">        :param end: specifies the index where the subset ends, excluding the</span>
 <span class="sd">          value at this index just like array slicing.</span>
 <span class="sd">        """</span>
-        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-        <span class="n">new_npartitions</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
-        <span class="k">if</span> <span class="n">new_npartitions</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">:</span>
-            <span class="n">npartitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span> <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)]</span>
+        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">new_gather</span> <span class="o">=</span> <span class="n">Gather</span><span class="p">(</span>
             <span class="n">input_data</span><span class="o">=</span><span class="n">new_input_data</span><span class="p">,</span>
             <span class="n">array_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
             <span class="n">is_compact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
-            <span class="n">npartitions</span><span class="o">=</span><span class="n">new_npartitions</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
             <span class="n">member_metadata</span><span class="o">=</span><span class="n">new_member_metadata</span><span class="p">,</span>
+            <span class="n">ensemble_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">(),</span>
+            <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">(),</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_gather</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span>
+            <span class="p">]</span>
         <span class="k">return</span> <span class="n">new_gather</span></div>
 
 
@@ -1961,11 +2040,15 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The input object should be a TimeSeriesEnsemble"</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">input_num_comp</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">input_num_comp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_array_dimensions</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">is_compact</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">input_num_comp</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">"The input data shape is not valid, should be scalar data"</span>
+                    <span class="s2">"The input data shape is not valid, should be three-component data"</span>
                 <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">num_components</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">num_components</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">num_components</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"SeismogramGather requires num_components=3"</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">capacity</span><span class="o">=</span><span class="n">capacity</span><span class="p">,</span>
@@ -2025,38 +2108,41 @@
                 <span class="s2">"The given index: </span><span class="si">{}</span><span class="s2"> is out of range."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="s2">"Invalid"</span>
             <span class="p">)</span>
         <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">:</span>
-            <span class="n">col</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">col</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">col</span></div>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">col</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="k">else</span> <span class="n">col</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SeismogramGather.subset">
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.SeismogramGather.subset">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"SeismogramGather"</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"SeismogramGather"</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Return a subset of the Gather with signals from start to end</span>
-<span class="sd">        (like start:end in F90 or matlab).</span>
+<span class="sd">        Return members selected by an index iterable or a ``start:end`` range.</span>
+
+<span class="sd">        Iterable selection preserves order and duplicate indices.  An empty</span>
+<span class="sd">        iterable returns an empty Gather with the same trailing axes/backend.</span>
 
 <span class="sd">        :param start:   the start index of the subset</span>
 <span class="sd">        :param end: specifies the index where the subset ends, excluding the</span>
 <span class="sd">          value at this index just like array slicing.</span>
 <span class="sd">        """</span>
-        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-        <span class="n">new_npartitions</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
-        <span class="k">if</span> <span class="n">new_npartitions</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">:</span>
-            <span class="n">npartitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span> <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">new_input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)]</span>
+        <span class="n">new_member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">new_gather</span> <span class="o">=</span> <span class="n">SeismogramGather</span><span class="p">(</span>
             <span class="n">input_data</span><span class="o">=</span><span class="n">new_input_data</span><span class="p">,</span>
             <span class="n">array_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
             <span class="n">is_compact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
-            <span class="n">npartitions</span><span class="o">=</span><span class="n">new_npartitions</span><span class="p">,</span>
+            <span class="n">npartitions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
             <span class="n">member_metadata</span><span class="o">=</span><span class="n">new_member_metadata</span><span class="p">,</span>
+            <span class="n">ensemble_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">(),</span>
+            <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">(),</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_gather</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span>
+            <span class="p">]</span>
         <span class="k">return</span> <span class="n">new_gather</span></div>
 
 
