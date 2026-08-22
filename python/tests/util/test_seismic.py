@@ -8,7 +8,7 @@ from mspasspy.util.seismic import (
     sort_ensemble,
 )
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble, Seismogram
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 import numpy as np
 
 
@@ -76,7 +76,9 @@ def test_has_live_data():
 def test_sort_ensemble_rejects_non_ensemble():
     with pytest.raises(MsPASSError) as err:
         sort_ensemble(TimeSeries(), "sta")
-    assert "arg0 must be a TimeSeriesEnsemble" in err.value.args[1]
+    assert "sort_ensemble: arg0 must be a TimeSeriesEnsemble" in err.value.message
+    assert "TimeSeries" in err.value.message
+    assert err.value.severity == ErrorSeverity.Fatal
 
 
 def test_sort_ensemble_returns_timeseries_ensemble():
