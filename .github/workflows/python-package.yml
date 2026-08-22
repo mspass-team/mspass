@@ -79,7 +79,7 @@ jobs:
     - name: Install
       env:
         MSPASS_CMAKE_BUILD_TYPE: Debug
-      run: python -m pip install --no-cache-dir --no-build-isolation -v '.[seisbench]'
+      run: python -m pip install --no-cache-dir --no-build-isolation -v '.[seisbench,test]'
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)
