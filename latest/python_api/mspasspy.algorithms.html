@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev20+ge7914590 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev21+g568586bf documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6efe2c9b"></script>
+    <script src="../_static/documentation_options.js?v=fe002cd6"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev20" />
+  <meta name="docsearch:version" content="2.4.4.dev21" />
   </head>
   
   
@@ -1321,12 +1321,12 @@ is the computed stack windowed to the range defined by
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">amplitude_relative_to_beam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_beam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#amplitude_relative_to_beam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.amplitude_relative_to_beam" title="Link to this definition">#</a></dt>
 <dd><p>Compute and return amplitude relative to the stack (beam).</p>
 <p>dbxcor computed a useful metric of amplitude relative to the beam
-(stack) as <cite>(d dot beam)/N</cite> where “dot” means vector dot product with
-between the sample vectbeam_coherence(d,beam,window=None,filter=True)ors of b and beam and N is vector size.   The formula
-requires the beam to be normalized so its L2 norm is 1.  By default it assumes
-that but that can be overriden with the normalize_beam argument.
-Default assumes d and beam cover the same time span.  If they aren’t
-the minimum overlap of the two signals is used.</p>
+(stack) as <code class="docutils literal notranslate"><span class="pre">(d</span> <span class="pre">dot</span> <span class="pre">beam)/N</span></code>, where <code class="docutils literal notranslate"><span class="pre">dot</span></code> is the vector dot product
+over the physical sample overlap and <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of samples in
+that overlap.  Relative-amplitude use normally requires a unit-L2 beam,
+so by default this function normalizes the overlapping beam vector first.
+That normalization can be disabled with <code class="docutils literal notranslate"><span class="pre">normalize_beam=False</span></code> when the
+caller has already prepared the desired beam scaling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1341,7 +1341,11 @@ if beam is already normalized.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>float value of amplitude.  A negative number indicates an error.</p>
+<dd class="field-even"><p>float amplitude.  <code class="docutils literal notranslate"><span class="pre">-1.0</span></code> indicates dead input, no physical
+overlap, or a zero-norm beam when normalization was requested.  A
+zero-norm datum has the valid dot-product amplitude <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.  With
+<code class="docutils literal notranslate"><span class="pre">normalize_beam=False</span></code>, a zero-norm beam also yields <code class="docutils literal notranslate"><span class="pre">0.0</span></code> because
+no division by its norm is required.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1399,8 +1403,12 @@ applied to the ensemble members.</p>
 <span class="sig-prename descclassname"><span class="pre">mspasspy.algorithms.MCXcorStacking.</span></span><span class="sig-name descname"><span class="pre">beam_coherence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/mspasspy/algorithms/MCXcorStacking.html#beam_coherence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MCXcorStacking.beam_coherence" title="Link to this definition">#</a></dt>
 <dd><p>Compute time-domain coherence of a datum relative to the stack.</p>
 <p>Time domain coherence is a measure of misfit between a signal and a
-a reference signal (normally a stack).   The formula is
-1.0 - norm(residual)/norm(beam) where residual=d-beam.</p>
+reference signal (normally a stack).  On the physical overlap, let
+<code class="docutils literal notranslate"><span class="pre">bhat</span> <span class="pre">=</span> <span class="pre">beam</span> <span class="pre">/</span> <span class="pre">norm(beam)</span></code>, <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">d</span> <span class="pre">dot</span> <span class="pre">bhat</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">residual</span> <span class="pre">=</span> <span class="pre">d</span> <span class="pre">-</span> <span class="pre">a*bhat</span></code>.  This implementation returns
+<code class="docutils literal notranslate"><span class="pre">max(0,</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">norm(residual)/norm(d))</span></code>.  Thus the measure compares the
+residual after the best scalar projection on the beam with the energy in
+the datum; it is not the unscaled <code class="docutils literal notranslate"><span class="pre">d</span> <span class="pre">-</span> <span class="pre">beam</span></code> residual.</p>
 <p>This function has an optional window parameter that computes the
 coherence with a specified time window.  By default the entire
 d and beam signals are used.   The default is done cautiously by
