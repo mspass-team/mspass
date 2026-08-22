@@ -654,11 +654,14 @@ def set_netcode_time_interval(
       arrival collection is large.
 
     :return: number of documents updated.
+    :raises ValueError: if sta or net is not a nonempty string.
     """
 
     basemessage = "set_netcode_time_interval:  "
-    if sta == None or net == None:
-        print(basemessage + "you must specify sta and net as required parameters")
+    if not isinstance(sta, str) or not sta:
+        raise ValueError(basemessage + "sta must be a nonempty string")
+    if not isinstance(net, str) or not net:
+        raise ValueError(basemessage + "net must be a nonempty string")
     dbarr = db[collection]
     query = {"sta": sta}
     if starttime == None or endtime == None:
@@ -686,6 +689,7 @@ def set_netcode_time_interval(
         tse = starttime.timestamp
         tee = endtime.timestamp
         query[time_filter_key] = {"$gte": tse, "$lte": tee}
+    count = 0
     n = dbarr.count_documents(query)
     if n == 0:
         print(
@@ -694,26 +698,26 @@ def set_netcode_time_interval(
             + collection
         )
         print(query)
-    else:
-        count = 0
     if use_immortal_cursor:
         curs = dbarr.find(query, no_cursor_timeout=True)
     else:
         curs = dbarr.find(query)
-        for doc in curs:
-            if "net" in doc:
-                print(
-                    basemessage + "WARNING found document with net code set to ",
-                    doc["net"],
-                )
-                # this check is required for robustness when time filter is off
-                if time_filter_key in doc:
-                    print("Problem document time=", UTCDateTime(doc[time_filter_key]))
-                print("Setting net in this document to requested net code=", net)
-            oid = doc["_id"]
-            updaterec = {"net": net}
-            dbarr.update_one({"_id": oid}, {"$set": updaterec})
-            count += 1
+    for doc in curs:
+        if "net" in doc:
+            print(
+                basemessage + "WARNING found document with net code set to ",
+                doc["net"],
+            )
+            # this check is required for robustness when time filter is off
+            if time_filter_key in doc:
+                print("Problem document time=", UTCDateTime(doc[time_filter_key]))
+            print("Setting net in this document to requested net code=", net)
+        oid = doc["_id"]
+        updaterec = {"net": net}
+        update_query = dict(query)
+        update_query["_id"] = oid
+        dbarr.update_one(update_query, {"$set": updaterec})
+        count += 1
     return count
 
 
@@ -933,11 +937,11 @@ def set_arrival_by_time_interval(
       arrival collection is large.
     :param verbose:  if true prints a bunch a few messages. Silent (default) otherwise
     :return: count of number of documents updated.
+    :raises ValueError: if sta or a matching site record's net is not a
+      nonempty string.
     """
-    if sta == None:
-        raise MsPASSError(
-            "Missing required parameter sta=station code to repair", "Fatal"
-        )
+    if not isinstance(sta, str) or not sta:
+        raise ValueError("set_arrival_by_time_interval: sta must be a nonempty string")
     dbarr = db.arrival
     dbsite = db.site
     query = {"sta": sta}
@@ -945,9 +949,16 @@ def set_arrival_by_time_interval(
         curs = dbsite.find(query, no_cursor_timeout=True).sort("starttime", 1)
     else:
         curs = dbsite.find(query).sort("starttime", 1)
+    site_docs = list(curs)
+    for doc in site_docs:
+        net = doc.get("net")
+        if not isinstance(net, str) or not net:
+            raise ValueError(
+                "set_arrival_by_time_interval: site net must be a nonempty string"
+            )
     # First make sure we don't have any overlapping time periods
     n = 0
-    for doc in curs:
+    for doc in site_docs:
         if n == 0:
             lastend = doc["endtime"]
             lastnet = doc["net"]
@@ -968,12 +979,13 @@ def set_arrival_by_time_interval(
             lastend = doc["endtime"]
             lastnet = doc["net"]
         n += 1
-    curs.rewind()
-    for doc in curs:
+    nupdates = 0
+    for doc in site_docs:
         net = doc["net"]
-        arquerry = dict()
-        arquerry["sta"] = sta
-        arquerry["time"] = {"$gte": doc["starttime"], "$lte": doc["endtime"]}
+        arrival_query = {
+            "sta": sta,
+            "time": {"$gte": doc["starttime"], "$lte": doc["endtime"]},
+        }
         if verbose:
             print(
                 "Setting net=",
@@ -982,13 +994,19 @@ def set_arrival_by_time_interval(
                 UTCDateTime(doc["starttime"]),
                 UTCDateTime(doc["endtime"]),
             )
-            nset = dbarr.count_documents(arquerry)
+            nset = dbarr.count_documents(arrival_query)
             print("Setting net code to ", net, " in ", nset, " documents")
-        arcursor = dbarr.find(query)
+        if use_immortal_cursor:
+            arcursor = dbarr.find(arrival_query, no_cursor_timeout=True)
+        else:
+            arcursor = dbarr.find(arrival_query)
         for ardoc in arcursor:
             # print(ardoc['sta'],UTCDateTime(ardoc['time']))
-            id = ardoc["_id"]
-            dbarr.update_one({"_id": id}, {"$set": {"net": net}})
+            update_query = dict(arrival_query)
+            update_query["_id"] = ardoc["_id"]
+            dbarr.update_one(update_query, {"$set": {"net": net}})
+            nupdates += 1
+    return nupdates
 
 
 def force_net(db, sta=None, net=None):
