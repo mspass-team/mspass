@@ -942,7 +942,7 @@ class TestDatabase:
         assert "storage_mode" in ts and ts["storage_mode"] == "gridfs"
         assert not ts["gridfs_id"] == old_gridfs_id
         assert not ts["history_object_id"] == old_history_object_id
-        assert not ts["elog_id"] == old_elog_id
+        assert ts["elog_id"] == old_elog_id
         # Changes for V2 modified the output of this test due to
         # an implementation detail.  V1 had the following:
         # should add 3 more elog entries(one in update_metadata, two in update_data)

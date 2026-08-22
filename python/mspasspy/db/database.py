@@ -4200,7 +4200,8 @@ class Database(pymongo.database.Database):
     ):
         """
         Save error log for a data object. Data objects in MsPASS contain an error log object used to post any
-        errors handled by processing functions. This function will delete the old elog entry if `elog_id` is given.
+        errors handled by processing functions.  If `elog_id` identifies an
+        existing record, that record is replaced atomically in place.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -4262,7 +4263,11 @@ class Database(pymongo.database.Database):
                             elog_doc["logdata"].append(x)
 
                     docentry["logdata"] = elog_doc["logdata"]
-                    self[collection].delete_one({"_id": elog_id})
+                    if wf_id_name not in docentry and wf_id_name in elog_doc:
+                        docentry[wf_id_name] = elog_doc[wf_id_name]
+                    docentry["_id"] = elog_id
+                    self[collection].replace_one({"_id": elog_id}, docentry)
+                    return elog_id
                 # note that is should be impossible for the old elog to have tombstone entry
                 # so we ignore the handling of that attribute here.
                 ret_elog_id = self[collection].insert_one(docentry).inserted_id
