@@ -47,9 +47,10 @@ MsPASS is distributed through multiple channels with different intended use case
 	- Published as `mspasspy` on Anaconda Cloud: [anaconda.org/mspass/mspasspy](https://anaconda.org/mspass/mspasspy)
 	- Appropriate when you need a local Conda-managed environment
 
-3. **PyPI (source distribution only)**
-	- The PyPI release is a source distribution (sdist), not a prebuilt binary runtime
-	- Best suited for packaging workflows and source-based consumers
+3. **PyPI (Linux x86_64 wheels and source distribution)**
+	- Native wheels are published for Linux x86_64 on CPython 3.10, 3.11, 3.12, and 3.13
+	- The source distribution remains available for source-based consumers
+	- PyPI wheels for macOS, Windows, and Linux arm64 are not supported
 
 ## Quick Start (Recommended: Docker)
 
@@ -87,9 +88,12 @@ Note: many workflows still rely on MongoDB and are easiest to operate via the Ms
 
 ## PyPI Package Status
 
-MsPASS publishes a **source distribution** to PyPI on tagged releases.
+MsPASS publishes a source distribution and native Linux x86_64 wheels for
+CPython 3.10 through 3.13 to PyPI on tagged releases.
 
-- This channel is intended for source consumption.
+- macOS, Windows, and Linux arm64 wheels are not published or supported.
+- Other platforms can use the source distribution with a compatible native
+  toolchain.
 - It is not the recommended end-user runtime path.
 - For the most complete and reproducible environment, use Docker.
 
@@ -115,7 +119,7 @@ For users interested in releases and package channels:
 
 - Docker image: [Docker Hub](https://hub.docker.com/r/mspass/mspass)
 - Conda package: [Anaconda Cloud](https://anaconda.org/mspass/mspasspy)
-- Source package: [PyPI](https://pypi.org/project/mspasspy/)
+- Python package: [PyPI](https://pypi.org/project/mspasspy/)
 - Container mirror: [GitHub Container Registry](https://github.com/mspass-team/mspass/pkgs/container/mspass)
 - Source repository: [GitHub](https://github.com/mspass-team/mspass)
 

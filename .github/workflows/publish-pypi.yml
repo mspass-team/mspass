@@ -1,6 +1,6 @@
 name: Publish to PyPI
 
-on:
+"on":
   pull_request:
     branches:
       - master
@@ -66,9 +66,65 @@ jobs:
           name: pypi-sdist
           path: dist/
 
+  build-wheels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install wheel build and inspection tools
+        run: python -m pip install cibuildwheel==4.1.1 twine auditwheel
+
+      - name: Build, repair, and clean-test Linux x86_64 wheels
+        env:
+          CIBW_PLATFORM: linux
+          CIBW_ARCHS_LINUX: x86_64
+          CIBW_BUILD: >-
+            cp310-manylinux_x86_64
+            cp311-manylinux_x86_64
+            cp312-manylinux_x86_64
+            cp313-manylinux_x86_64
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          # MsPASS CMake tests need libpython, which manylinux archives by default.
+          CIBW_BEFORE_ALL_LINUX: >-
+            dnf install -y gcc-gfortran gsl-devel lapack-devel &&
+            tar -xJf /opt/_internal/static-libs-for-embedding-only.tar.xz
+            -C /opt/_internal
+          CIBW_ENVIRONMENT: MSPASS_CMAKE_BUILD_TYPE=Release
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
+            auditwheel repair -w {dest_dir} {wheel}
+          CIBW_TEST_COMMAND: >-
+            python -c 'import mspasspy, mspasspy.ccore' &&
+            python -c 'from mspasspy.ccore.algorithms.amplitudes import PeakAmplitude; from mspasspy.ccore.seismic import TimeSeries; d = TimeSeries(3); d.set_live(); d.data[0] = -1.0; d.data[1] = 2.5; d.data[2] = 0.5; assert PeakAmplitude(d) == 2.5'
+        run: python -m cibuildwheel --output-dir wheelhouse
+
+      - name: Inspect and validate every repaired wheel
+        shell: bash
+        run: |
+          shopt -s nullglob
+          wheels=(wheelhouse/*.whl)
+          test "${#wheels[@]}" -eq 4
+          python -m twine check "${wheels[@]}"
+          for wheel in "${wheels[@]}"; do
+            auditwheel show "$wheel"
+          done
+
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-wheels-linux-x86_64
+          path: wheelhouse/*.whl
+
   publish-pypi:
     runs-on: ubuntu-latest
-    needs: build-sdist
+    needs: [build-sdist, build-wheels]
     if: startsWith(github.ref, 'refs/tags/v')
     environment: pypi
     permissions:
@@ -80,6 +136,19 @@ jobs:
         with:
           name: pypi-sdist
           path: dist/
+
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: pypi-wheels-linux-x86_64
+          path: dist/
+
+      - name: Require one sdist and exactly four wheels
+        shell: bash
+        run: |
+          test "$(find dist -maxdepth 1 -type f -name '*.tar.gz' | wc -l)" -eq 1
+          test "$(find dist -maxdepth 1 -type f -name '*.whl' | wc -l)" -eq 4
+          test "$(find dist -maxdepth 1 -type f | wc -l)" -eq 5
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
