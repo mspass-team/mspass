@@ -3060,6 +3060,14 @@ class ArrivalDBMatcher(DatabaseMatcher):
     :type query:  python dictionary or None.  None is equivalewnt to
       passing an empty dictionary.  A TypeError will be thrown if this
       argument is not None or a dict.
+
+    :param ensemble_starttime_key: Metadata key containing the inclusive
+      interval start for ensemble input.  Default is ``"starttime"``.
+    :type ensemble_starttime_key: string
+
+    :param ensemble_endtime_key: Metadata key containing the inclusive
+      interval end for ensemble input.  Default is ``"endtime"``.
+    :type ensemble_endtime_key: string
     """
 
     def __init__(
@@ -3072,6 +3080,8 @@ class ArrivalDBMatcher(DatabaseMatcher):
         require_unique_match=False,
         prepend_collection_name=True,
         query=None,
+        ensemble_starttime_key="starttime",
+        ensemble_endtime_key="endtime",
     ):
         super().__init__(
             db,
@@ -3091,6 +3101,8 @@ class ArrivalDBMatcher(DatabaseMatcher):
             raise TypeError(
                 "ArrivalDBMatcher constructor:  query arg must define a python dictionary"
             )
+        self.ensemble_starttime_key = ensemble_starttime_key
+        self.ensemble_endtime_key = ensemble_endtime_key
 
     def query_generator(self, mspass_object) -> dict:
         """
@@ -3101,8 +3113,8 @@ class ArrivalDBMatcher(DatabaseMatcher):
         class docstring.  That is, for atomic data the time span for
         the interval query is determined from the range of the waveform
         data received through mspass_object.   For ensembles the
-        algorithm fetches fields defined by self.startime_key and
-        self.endtime_key to define the time interval.
+        algorithm fetches fields defined by self.ensemble_starttime_key and
+        self.ensemble_endtime_key to define the time interval.
 
         The interval test is overlaid on the self.query input.  i.e.
         the query dict components derived are added to the self.query.
@@ -3124,8 +3136,27 @@ class ArrivalDBMatcher(DatabaseMatcher):
                 query["sta"] = sta
                 # intentionally ignore loc as option
                 return query
-        else:
-            return None
+        elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            if mspass_object.dead() or len(mspass_object.member) == 0:
+                return None
+            if not mspass_object.is_defined(
+                self.ensemble_starttime_key
+            ) or not mspass_object.is_defined(self.ensemble_endtime_key):
+                return None
+            sta = _get_with_readonly_recovery(mspass_object, "sta")
+            if sta is None:
+                return None
+            query = copy.deepcopy(self.query)
+            query["time"] = {
+                "$gte": mspass_object[self.ensemble_starttime_key],
+                "$lte": mspass_object[self.ensemble_endtime_key],
+            }
+            query["sta"] = sta
+            net = _get_with_readonly_recovery(mspass_object, "net")
+            if net is not None:
+                query["net"] = net
+            return query
+        return None
 
 
 class ArrivalMatcher(DataFrameCacheMatcher):
