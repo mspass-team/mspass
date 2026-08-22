@@ -19,6 +19,7 @@ from mspasspy.ccore.utility import AtomicType, ErrorSeverity, MsPASSError, dmatr
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
 from mspasspy.db.database import Database
+from mspasspy.io.distributed import write_distributed_data
 
 
 @pytest.fixture
@@ -317,3 +318,13 @@ def test_save_data_overwrite_updates_existing_ensemble_member_references(
         assert storage.exists(datum["gridfs_id"])
         reread = database.read_data(waveform_ids[index], collection=collection)
         np.testing.assert_allclose(samples(reread), samples(replacements[index]))
+
+
+@pytest.mark.parametrize("storage_mode", ["gridfs", "file"])
+def test_write_distributed_data_rejects_overwrite_before_execution(storage_mode):
+    database = object.__new__(Database)
+
+    with pytest.raises(ValueError, match="does not support overwrite=True"):
+        write_distributed_data(
+            None, database, storage_mode=storage_mode, overwrite=True
+        )
