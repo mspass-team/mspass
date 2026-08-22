@@ -991,12 +991,9 @@ def post_error_log(d, doc, other_elog=None, elog_key="error_log") -> dict:
     Note dead data are never handled by this mechanism.  They always
     end up in either the abortions or cemetery collections.
     """
-    elog = ErrorLogger()
-    if d.elog.size() > 0:
-        elog = d.elog
-    elif other_elog:
-        if other_elog.size() > 0:
-            elog += other_elog
+    elog = ErrorLogger(d.elog)
+    if other_elog and other_elog.size() > 0:
+        elog += other_elog
     if elog.size() > 0:
         elogdoc = elog2doc(elog)
         doc[elog_key] = elogdoc
@@ -1113,9 +1110,9 @@ def _save_ensemble_wfdocs(
                     doc.pop("_id")
                 # Handle the error log if it is not empty
                 # Either post it to the doc or push the entry to the database
-                if d.elog.size() > 0 or elog.size() > 0:
+                if post_elog:
                     doc = post_error_log(d, doc, other_elog=elog)
-                else:
+                elif d.elog.size() > 0 or elog.size() > 0:
                     if elog.size() > 0:
                         d.elog += elog
                     elog_id = db._save_elog(d)
@@ -1124,8 +1121,8 @@ def _save_ensemble_wfdocs(
                     if post_history:
                         # is_empty is part of ProcessingHistory
                         if not d.is_empty():
-                            doc = history2doc(d)
-                            doc[history_key] = doc
+                            history_doc = history2doc(d)
+                            doc[history_key] = history_doc
                     else:
                         history_id = db._save_history(d)
                         doc["history_id"] = history_id
@@ -1242,8 +1239,8 @@ def _atomic_extract_wf_document(
             if post_history:
                 # is_empty is part of ProcessingHistory
                 if not d.is_empty():
-                    doc = history2doc(d)
-                    doc[history_key] = doc
+                    history_doc = history2doc(d)
+                    doc[history_key] = history_doc
             else:
                 history_id = db._save_history(d)
                 doc["history_id"] = history_id
