@@ -5,7 +5,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    SeismogramEnsemble,
+    TimeSeries,
+    TimeSeriesEnsemble,
+)
 from mspasspy.seismic.gather import (
     Gather,
     regularize_ensemble,
@@ -195,11 +200,99 @@ def test_regularize_ensemble_with_no_live_members_is_an_exact_noop():
     _assert_ensemble_matches_snapshot(ensemble, before)
 
 
-def test_regularize_ensemble_rejects_incompatible_sample_grids_atomically():
+def test_regularize_ensemble_snaps_off_grid_members_without_changing_samples():
+    ensemble = _ensemble([(0.0, 6, 1.0, 0.0), (0.25, 6, 1.0, 100.0)])
+    samples_before = [np.array(member.data, copy=True) for member in ensemble.member]
+
+    result = regularize_ensemble(ensemble)
+
+    assert result is ensemble
+    assert [(member.t0, member.endtime(), member.npts) for member in result.member] == [
+        (0.0, 5.0, 6),
+        (0.0, 5.0, 6),
+    ]
+    for member, expected in zip(result.member, samples_before):
+        np.testing.assert_array_equal(member.data, expected)
+
+
+def test_regularize_ensemble_interpolates_off_grid_members_when_requested():
+    ensemble = _ensemble([(0.0, 6, 1.0, 0.0), (0.25, 6, 1.0, 100.0)])
+
+    result = regularize_ensemble(ensemble, grid_alignment="interpolate")
+
+    assert [(member.t0, member.endtime(), member.npts) for member in result.member] == [
+        (1.0, 5.0, 5),
+        (1.0, 5.0, 5),
+    ]
+    np.testing.assert_allclose(result.member[0].data, [1.0, 2.0, 3.0, 4.0, 5.0])
+    np.testing.assert_allclose(
+        result.member[1].data, [100.75, 101.75, 102.75, 103.75, 104.75]
+    )
+
+
+def test_interpolation_preserves_a_near_grid_boundary_sample():
+    ensemble = _ensemble([(0.0, 6, 0.1, 0.0), (0.30000000000000004, 3, 0.1, 100.0)])
+
+    result = regularize_ensemble(ensemble, grid_alignment="interpolate")
+
+    assert [member.npts for member in result.member] == [3, 3]
+    assert [member.t0 for member in result.member] == pytest.approx([0.3, 0.3])
+    np.testing.assert_allclose(result.member[0].data, [3.0, 4.0, 5.0])
+    np.testing.assert_allclose(result.member[1].data, [100.0, 101.0, 102.0])
+
+
+def test_regularize_ensemble_interpolates_three_component_members():
+    ensemble = SeismogramEnsemble()
+    for t0, offset in ((0.0, 0.0), (0.25, 100.0)):
+        member = Seismogram(6)
+        member.t0 = t0
+        member.dt = 1.0
+        member.set_live()
+        for component in range(3):
+            for sample in range(6):
+                member.data[component, sample] = offset + 10 * component + sample
+        ensemble.member.append(member)
+    ensemble.set_live()
+
+    result = regularize_ensemble(ensemble, grid_alignment="interpolate")
+
+    assert [(member.t0, member.endtime(), member.npts) for member in result.member] == [
+        (1.0, 5.0, 5),
+        (1.0, 5.0, 5),
+    ]
+    np.testing.assert_allclose(
+        result.member[0].data,
+        [
+            [1.0, 2.0, 3.0, 4.0, 5.0],
+            [11.0, 12.0, 13.0, 14.0, 15.0],
+            [21.0, 22.0, 23.0, 24.0, 25.0],
+        ],
+    )
+    np.testing.assert_allclose(
+        result.member[1].data,
+        [
+            [100.75, 101.75, 102.75, 103.75, 104.75],
+            [110.75, 111.75, 112.75, 113.75, 114.75],
+            [120.75, 121.75, 122.75, 123.75, 124.75],
+        ],
+    )
+
+
+def test_regularize_ensemble_rejects_invalid_alignment_mode_before_mutation():
     ensemble = _ensemble([(0.0, 6, 1.0, 0.0), (0.25, 6, 1.0, 100.0)])
     before = _ensemble_snapshot(ensemble)
 
-    with pytest.raises(ValueError, match="common sample grid"):
+    with pytest.raises(ValueError, match="grid_alignment"):
+        regularize_ensemble(ensemble, grid_alignment="invalid")
+
+    _assert_ensemble_matches_snapshot(ensemble, before)
+
+
+def test_regularize_ensemble_rejects_different_sample_intervals_atomically():
+    ensemble = _ensemble([(0.0, 6, 1.0, 0.0), (0.25, 12, 0.5, 100.0)])
+    before = _ensemble_snapshot(ensemble)
+
+    with pytest.raises(ValueError, match="common sample interval"):
         regularize_ensemble(ensemble)
 
     _assert_ensemble_matches_snapshot(ensemble, before)
@@ -248,7 +341,7 @@ def _gather(is_utc, starttime_shift=None):
 def _gather_snapshot(gather):
     return {
         "member_metadata": gather.member_metadata.copy(deep=True),
-        "ensemble_metadata": deepcopy(dict(gather.ensemble_metadata)),
+        "ensemble_metadata": deepcopy(dict(gather.ensemble_metadata())),
         "member_data": np.array(gather.member_data, copy=True),
         "fields": (
             gather.capacity,
@@ -280,7 +373,7 @@ def _assert_metadata_values_equal(actual, expected):
 def _assert_gather_matches_snapshot(gather, snapshot):
     pd.testing.assert_frame_equal(gather.member_metadata, snapshot["member_metadata"])
     _assert_metadata_values_equal(
-        dict(gather.ensemble_metadata), snapshot["ensemble_metadata"]
+        dict(gather.ensemble_metadata()), snapshot["ensemble_metadata"]
     )
     np.testing.assert_array_equal(gather.member_data, snapshot["member_data"])
     assert (
@@ -305,16 +398,16 @@ def test_ator_and_rtoa_are_exact_inverses_using_persisted_shift_metadata():
 
     assert gather.ator(2.5) is gather
     assert gather.member_metadata["starttime"].tolist() == [7.5, 17.5]
-    assert gather.ensemble_metadata["starttime_shift"] == 2.5
-    assert gather.ensemble_metadata["is_utc"] is False
+    assert gather.ensemble_metadata()["starttime_shift"] == 2.5
+    assert gather.ensemble_metadata()["is_utc"] is False
     assert "t0shift" not in vars(gather)
 
     assert gather.rtoa() is gather
     pd.testing.assert_series_equal(
         gather.member_metadata["starttime"], original_starttimes
     )
-    assert gather.ensemble_metadata["starttime_shift"] == 0.0
-    assert gather.ensemble_metadata["is_utc"] is True
+    assert gather.ensemble_metadata()["starttime_shift"] == 0.0
+    assert gather.ensemble_metadata()["is_utc"] is True
     assert "t0shift" not in vars(gather)
 
 
@@ -368,7 +461,7 @@ def test_rtoa_is_identity_on_already_utc_input_without_validating_stored_shift(
 ):
     gather = _gather(is_utc=True, starttime_shift=stored_shift)
     if stored_shift is None:
-        gather.ensemble_metadata.pop("starttime_shift", None)
+        gather.ensemble_metadata().pop("starttime_shift", None)
     before = _gather_snapshot(gather)
 
     assert gather.rtoa() is gather

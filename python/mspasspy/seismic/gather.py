@@ -1,11 +1,7 @@
 from abc import ABC, abstractmethod
-<<<<<<< HEAD
 from copy import deepcopy
 import math
-=======
-import math
 from numbers import Real
->>>>>>> 89c398e9 (Fix Gather resampling and time conversion)
 
 import xarray as xr
 import dask.array as da
@@ -40,6 +36,27 @@ def _is_finite_number(value):
     return (
         isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
     )
+
+
+def _interpolate_to_grid(member, starttime, npts):
+    sample_interval = member.dt
+    source_times = member.t0 + np.arange(member.npts) * sample_interval
+    target_times = starttime + np.arange(npts) * sample_interval
+    if isinstance(member, TimeSeries):
+        values = np.interp(target_times, source_times, np.asarray(member.data))
+        result = TimeSeries(member)
+        result.set_npts(npts)
+        result.data = DoubleVector(values)
+    else:
+        source_data = np.asarray(member.data)
+        values = np.vstack(
+            [np.interp(target_times, source_times, row) for row in source_data]
+        )
+        result = Seismogram(member)
+        result.set_npts(npts)
+        result.data = dmatrix(values)
+    result.t0 = starttime
+    return result
 
 
 def isOldEnsembleObject(obj):
@@ -84,7 +101,7 @@ def resample_ensemble(ens, dt=None):
     return resample(ens, decimator, resampler)
 
 
-def regularize_ensemble(ens, regularizer=None):
+def regularize_ensemble(ens, regularizer=None, grid_alignment="snap"):
     """
     A helper function to regularize all the member data in an ensemble.
     The purpose of this function is to set all member data to have the same start
@@ -96,10 +113,14 @@ def regularize_ensemble(ens, regularizer=None):
     sample.  Dead members are not used to define the intersection and are returned
     unchanged.
 
-    The windowed members must resolve to the same sampled time axis.  This is
-    checked after building all windowed copies and before replacing any ensemble
+    The output members must resolve to the same sampled time axis.  This is
+    checked on copied members before replacing any ensemble
     member, so a disjoint interval or incompatible sample grids leave the input
-    ensemble unchanged.  A user-supplied ``regularizer`` retains control of member
+    ensemble unchanged.  By default, members with a common sample interval are
+    snapped to the first live member's nearest sample grid without changing sample
+    values.  Set ``grid_alignment="interpolate"`` to linearly interpolate those
+    members onto that grid instead.  Members with different sample intervals must
+    be resampled first.  A user-supplied ``regularizer`` retains control of member
     selection and replacement and is called with every member as in the original
     API.
 
@@ -109,9 +130,13 @@ def regularize_ensemble(ens, regularizer=None):
       members in the ensemble, it should take only one argument (a
       timeseries/seismogram) and return the regularized object.
     :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]
+    :param grid_alignment: ``"snap"`` (default) preserves sample values and moves
+      each selected window to the common grid.  ``"interpolate"`` linearly
+      interpolates off-grid windows onto that grid.  Ignored when ``regularizer``
+      is supplied.
     :raises TypeError: if ``ens`` is not an MsPASS ensemble object.
     :raises ValueError: when live members have no common physical sample or the
-      common window resolves to incompatible sample grids.
+      common window has incompatible sample intervals.
     """
     if not isOldEnsembleObject(ens):
         raise TypeError("Can't resample the object, not an old ensemble object")
@@ -121,6 +146,8 @@ def regularize_ensemble(ens, regularizer=None):
         for i in range(nmembers):
             ens.member[i] = regularizer(ens.member[i])
     else:
+        if grid_alignment not in ("snap", "interpolate"):
+            raise ValueError('grid_alignment must be either "snap" or "interpolate"')
         live_indexes = [i for i in range(nmembers) if ens.member[i].live]
         if not live_indexes:
             return ens
@@ -128,17 +155,37 @@ def regularize_ensemble(ens, regularizer=None):
         endtime = min(ens.member[i].endtime() for i in live_indexes)
         if endtime < starttime:
             raise ValueError("ensemble members do not have a common time interval")
-        regularized_members = [
-            WindowData(ens.member[i], starttime, endtime) for i in live_indexes
-        ]
-        reference = regularized_members[0]
-        if any(
-            member.t0 != reference.t0
-            or member.dt != reference.dt
-            or member.npts != reference.npts
-            for member in regularized_members[1:]
-        ):
-            raise ValueError("ensemble members do not share a common sample grid")
+        reference = ens.member[live_indexes[0]]
+        if any(ens.member[i].dt != reference.dt for i in live_indexes[1:]):
+            raise ValueError("ensemble members do not share a common sample interval")
+
+        if grid_alignment == "interpolate":
+            start_coordinate = (starttime - reference.t0) / reference.dt
+            end_coordinate = (endtime - reference.t0) / reference.dt
+            sample_tolerance = 1.0e-6
+            start_index = math.ceil(start_coordinate - sample_tolerance)
+            end_index = math.floor(end_coordinate + sample_tolerance)
+            if end_index < start_index:
+                raise ValueError(
+                    "ensemble members do not share a common reference-grid sample"
+                )
+            target_start = reference.time(start_index)
+            target_npts = end_index - start_index + 1
+            regularized_members = [
+                _interpolate_to_grid(ens.member[i], target_start, target_npts)
+                for i in live_indexes
+            ]
+        else:
+            regularized_members = [
+                WindowData(ens.member[i], starttime, endtime) for i in live_indexes
+            ]
+            reference = regularized_members[0]
+            for member in regularized_members[1:]:
+                member.t0 = reference.t0
+                if member.npts != reference.npts:
+                    raise ValueError(
+                        "ensemble members could not be snapped to a common grid"
+                    )
         for i, member in zip(live_indexes, regularized_members):
             ens.member[i] = member
     return ens
@@ -894,24 +941,16 @@ class BasicGather(ABC):
             return self
 
         shift_key = "starttime_shift"
-        if shift_key not in self.ensemble_metadata:
+        if shift_key not in self._ensemble_metadata:
             raise ValueError("ensemble metadata does not define starttime_shift")
-        shift = self.ensemble_metadata[shift_key]
+        shift = self._ensemble_metadata[shift_key]
         if not _is_finite_number(shift):
             raise ValueError("starttime_shift must be a finite number")
 
-<<<<<<< HEAD
-        # TODO: do we need to check if the items are live or dead here?
-        self.member_metadata["starttime"].applymap(lambda x: (x + self.t0shift))
-
-        self.t0shift = 0
-        self._ensemble_metadata["is_utc"] = True
-=======
         self.member_metadata["starttime"] = self.member_metadata["starttime"] + shift
-        self.ensemble_metadata[shift_key] = 0.0
-        self.ensemble_metadata["is_utc"] = True
+        self._ensemble_metadata[shift_key] = 0.0
+        self._ensemble_metadata["is_utc"] = True
         return self
->>>>>>> 89c398e9 (Fix Gather resampling and time conversion)
 
     def ator(self, shift):
         """
@@ -923,8 +962,8 @@ class BasicGather(ABC):
             raise ValueError("shift must be a finite number")
 
         self.member_metadata["starttime"] = self.member_metadata["starttime"] - shift
-        self.ensemble_metadata["starttime_shift"] = shift
-        self.ensemble_metadata["is_utc"] = False
+        self._ensemble_metadata["starttime_shift"] = shift
+        self._ensemble_metadata["is_utc"] = False
         return self
 
     def shift(self, timeshift):
@@ -937,8 +976,8 @@ class BasicGather(ABC):
             raise ValueError("timeshift must be a finite number")
         shift_key = "starttime_shift"
         old_shift = (
-            self.ensemble_metadata[shift_key]
-            if shift_key in self.ensemble_metadata
+            self._ensemble_metadata[shift_key]
+            if shift_key in self._ensemble_metadata
             else 0.0
         )
         self.rtoa()
