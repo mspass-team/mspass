@@ -3374,7 +3374,7 @@ class Database(pymongo.database.Database):
                         "GridFS reference",
                         ErrorSeverity.Invalid,
                     )
-            except BaseException as original_error:
+            except Exception as original_error:
                 if old_gridfs_id is not None:
                     try:
                         gfsh = gridfs.GridFS(self)
