@@ -56,13 +56,15 @@ def accumulator_full(old, x, a, b=30):
         return old + x + a + b
 
 
-cluster = ddist.LocalCluster(
-    processes=False
-)  # processes=False is necessary to run this locally with pytest
-dask_client = cluster.get_client()
+@pytest.fixture(scope="module")
+def dask_client():
+    # processes=False is necessary to run this locally with pytest.
+    with ddist.LocalCluster(processes=False) as cluster:
+        with cluster.get_client() as client:
+            yield client
 
 
-def test_sliding_window_pipeline(capsys):
+def test_sliding_window_pipeline(capsys, dask_client):
     """
     Test function for `sliding_window_pipeline` function.
 
@@ -251,7 +253,7 @@ def test_sliding_window_pipeline(capsys):
     assert result == expected_result
 
 
-def test_swp_error_handlers():
+def test_swp_error_handlers(dask_client):
     """
     pytest function to exercise all error handlers that can be raised by
     the function `sliding_window_pipeline`.  Uses the set of function
