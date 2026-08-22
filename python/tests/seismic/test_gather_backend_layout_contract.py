@@ -69,6 +69,10 @@ def _stored_values(gather):
     return np.asarray(data)
 
 
+def _active_values(gather):
+    return _stored_values(gather)[: gather.size]
+
+
 def _expected_stored(canonical, is_compact):
     return canonical if is_compact else canonical.transpose((0, 2, 1))
 
@@ -89,11 +93,11 @@ def _assert_dask_chunks(gather):
         else gather.member_data
     )
     expected_member_chunk = max(1, int(np.ceil(gather.capacity / gather.npartitions)))
-    quotient, remainder = divmod(gather.size, expected_member_chunk)
+    quotient, remainder = divmod(gather.capacity, expected_member_chunk)
     expected_axis_zero = (expected_member_chunk,) * quotient
     if remainder:
         expected_axis_zero += (remainder,)
-    if not gather.size:
+    if not gather.capacity:
         expected_axis_zero = (0,)
     assert data.chunks[0] == expected_axis_zero
     assert data.chunks[1] == (data.shape[1],)
@@ -251,13 +255,14 @@ def test_append_installs_axis_zero_result_and_updates_size_capacity(
     second = _datum(gather_class, 4, 20.0)
 
     result.append(first)
-    first_snapshot = _stored_values(result).copy()
+    assert result.member_data.shape[0] == capacity
+    first_snapshot = _active_values(result).copy()
     result.append(second)
 
     assert result.size == 2
     assert result.capacity == max(capacity, 2)
-    assert result.member_data.shape[0] == 2
-    assert np.array_equal(_stored_values(result)[0:1], first_snapshot)
+    assert result.member_data.shape[0] == result.capacity
+    assert np.array_equal(_active_values(result)[0:1], first_snapshot)
     expected = []
     for datum in (first, second):
         values = np.asarray(datum.data)
@@ -266,11 +271,33 @@ def test_append_installs_axis_zero_result_and_updates_size_capacity(
         elif not is_compact:
             values = values.transpose()
         expected.append(values)
-    assert np.array_equal(_stored_values(result), np.stack(expected))
+    assert np.array_equal(_active_values(result), np.stack(expected))
     assert result.member_metadata["row"].tolist() == [10, 20]
     _assert_backend(result, array_type)
     if array_type in ("dask", "xarray"):
         _assert_dask_chunks(result)
+
+
+def test_append_preserves_new_metadata_columns_and_copies_values():
+    result = Gather(
+        input_data=np.zeros((1, 1, 4)),
+        member_metadata=_member_metadata(1, 4),
+        ensemble_metadata={"dt": 0.25},
+        array_type="numpy",
+        npartitions=1,
+    )
+    datum = _datum(Gather, 4, 10.0)
+    datum["new_field"] = {"tags": ["new"]}
+
+    result.append(datum)
+    datum["new_field"]["tags"].append("caller mutation")
+
+    assert "new_field" in result.member_metadata.columns
+    assert pd.isna(result.member_metadata.loc[0, "new_field"])
+    assert result.member_metadata.loc[1, "new_field"] == {"tags": ["new"]}
+    assert result.size == 2
+    assert result.capacity == 2
+    assert result.member_data.shape[0] == 2
 
 
 @pytest.mark.parametrize("gather_class", [Gather, SeismogramGather])
@@ -309,22 +336,33 @@ def test_subset_preserves_order_duplicates_empty_shape_and_backend(
 def test_pickle_round_trip_preserves_backend_layout_and_partition_state(
     gather_class, array_type, is_compact
 ):
-    source, canonical = _new_gather(
-        gather_class, array_type, is_compact, size=4, npartitions=3
+    components = 1 if gather_class is Gather else 3
+    source = gather_class(
+        capacity=7,
+        size=0,
+        npts=5,
+        num_components=components,
+        npartitions=3,
+        member_metadata=pd.DataFrame(),
+        ensemble_metadata={"name": "contract", "dt": 0.25},
+        dt=0.25,
+        array_type=array_type,
+        is_compact=is_compact,
     )
-    source.capacity = 7
+    for offset in range(4):
+        source.append(_datum(gather_class, 5, float(offset)))
     source.set_column_values(["a", "b", "c", "d"])
     source.elog.set_job_id(17)
     source.elog.log_error("contract", "round trip", ErrorSeverity.Complaint)
+    source_values = _active_values(source).copy()
 
     restored = pickle.loads(pickle.dumps(source))
 
     _assert_backend(restored, array_type)
     assert restored.is_compact is is_compact
     assert restored.member_data.shape == source.member_data.shape
-    assert np.array_equal(
-        _stored_values(restored), _expected_stored(canonical, is_compact)
-    )
+    assert restored.member_data.shape[0] == 7
+    assert np.array_equal(_active_values(restored), source_values)
     assert restored.size == 4
     assert restored.capacity == 7
     assert restored.npartitions == 3

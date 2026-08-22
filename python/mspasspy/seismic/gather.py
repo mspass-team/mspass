@@ -828,10 +828,10 @@ class BasicGather(ABC):
 
     def append(self, mspass_object):
         """
-        Append one member along axis zero and install the returned backend array.
+        Append one member along axis zero.
 
-        The stored array contains only active members.  ``capacity`` remains a
-        reservation hint and grows when the appended size exceeds it.
+        ``capacity`` is the allocated axis-zero length.  Unused rows are retained
+        until the array is full, then the backend grows to fit the new member.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -855,18 +855,39 @@ class BasicGather(ABC):
                 new_data = new_data.transpose()
             new_data = new_data.reshape((1,) + new_data.shape)
 
-        current_data = self.member_data[: self.size]
+        metadata = deepcopy(dict(mspass_object))
+        metadata.setdefault("starttime", mspass_object.t0)
+        metadata.setdefault("delta", mspass_object.dt)
+        metadata.setdefault("npts", mspass_object.npts)
+        metadata["is_live"] = mspass_object.live
+        new_member_metadata = pd.concat(
+            [self.member_metadata, pd.DataFrame([metadata])],
+            ignore_index=True,
+            sort=False,
+        )
+
         new_size = self.size + 1
         new_capacity = max(self.capacity, new_size)
         if self.array_type == "numpy":
-            self.member_data = np.concatenate((current_data, new_data), axis=0)
+            if new_capacity > self.capacity:
+                expanded = np.empty(
+                    (new_capacity,) + self.member_data.shape[1:],
+                    dtype=self.member_data.dtype,
+                )
+                expanded[: self.size] = self.member_data[: self.size]
+                self.member_data = expanded
+            self.member_data[self.size] = new_data[0]
         else:
+            current_data = self.member_data
             if self.array_type == "xarray":
-                current_data = current_data.data
-            appended = da.concatenate(
-                (current_data, da.from_array(new_data, chunks=new_data.shape)),
-                axis=0,
-            )
+                current_data = self.member_data.data
+            pieces = [
+                current_data[: self.size],
+                da.from_array(new_data, chunks=new_data.shape),
+            ]
+            if new_size < new_capacity:
+                pieces.append(current_data[new_size:new_capacity])
+            appended = da.concatenate(pieces, axis=0)
             appended = appended.rechunk(
                 _dask_chunks(appended.shape, new_capacity, self.npartitions)
             )
@@ -874,15 +895,7 @@ class BasicGather(ABC):
                 xr.DataArray(appended) if self.array_type == "xarray" else appended
             )
 
-        metadata = dict(mspass_object)
-        metadata.setdefault("starttime", mspass_object.t0)
-        metadata.setdefault("delta", mspass_object.dt)
-        metadata.setdefault("npts", mspass_object.npts)
-        metadata["is_live"] = mspass_object.live
-        if self.member_metadata.empty and len(self.member_metadata.columns) == 0:
-            self.member_metadata = pd.DataFrame([metadata])
-        else:
-            self.member_metadata.loc[len(self.member_metadata.index)] = metadata
+        self.member_metadata = new_member_metadata
         self.size = new_size
         self.capacity = new_capacity
 
