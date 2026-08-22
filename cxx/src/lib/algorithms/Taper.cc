@@ -150,7 +150,7 @@ int LinearTaper::apply(Seismogram &d) {
     for (t = t0tail; t >= t1tail; t -= d.dt()) {
       is = d.sample_number(t);
       if (is >= 0) {
-        wt = rampslope * (t - t1tail);
+        wt = rampslope * (t0tail - t);
         for (k = 0; k < 3; ++k)
           d.u(k, is) *= wt;
       }
