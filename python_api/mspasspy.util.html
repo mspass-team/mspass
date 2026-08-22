@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev30+g5bc1b1f8 documentation</title>
+    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev31+ga5eb9ca6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=75bc0ee0"></script>
+    <script src="../_static/documentation_options.js?v=55501ebc"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.seismic" href="mspasspy.seismic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev30" />
+  <meta name="docsearch:version" content="2.4.4.dev31" />
   </head>
   
   
@@ -1422,7 +1422,7 @@ or all of them are still alive.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_copy_helper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seis2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_copy_helper" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seis1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seis2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_time_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_copy_helper" title="Link to this definition">#</a></dt>
 <dd><p>Copy converted seismogram state back to the original object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1439,7 +1439,7 @@ or all of them are still alive.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.seismogram_ensemble_copy_helper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">seismogram_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_time_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_ensemble_copy_helper" title="Link to this definition">#</a></dt>
 <dd><p>Copy converted seismogram ensemble state back to the original object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1456,12 +1456,13 @@ or all of them are still alive.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_copy_helper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_copy_helper" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_time_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_copy_helper" title="Link to this definition">#</a></dt>
+<dd><p>Copy processed samples and sampling state into a TimeSeries.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.util.decorators.timeseries_ensemble_copy_helper">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.util.decorators.</span></span><span class="sig-name descname"><span class="pre">timeseries_ensemble_copy_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">es1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">es2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_time_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_copy_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_copy_helper" title="Link to this definition">#</a></dt>
 <dd><p>Copy converted time-series ensemble state back to the original object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

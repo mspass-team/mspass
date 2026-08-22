@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.decorators &#8212; MsPASS 2.4.4.dev30+g5bc1b1f8 documentation</title>
+    <title>mspasspy.util.decorators &#8212; MsPASS 2.4.4.dev31+ga5eb9ca6 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=75bc0ee0"></script>
+    <script src="../../../_static/documentation_options.js?v=55501ebc"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev30" />
+  <meta name="docsearch:version" content="2.4.4.dev31" />
   </head>
   
   
@@ -473,7 +473,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.util.decorators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">decorator</span><span class="w"> </span><span class="kn">import</span> <span class="n">decorator</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">decorator</span><span class="w"> </span><span class="kn">import</span> <span class="n">decorator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream2Seismogram</span><span class="p">,</span> <span class="n">Trace2TimeSeries</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
@@ -1203,35 +1205,95 @@
 
 
 
+<span class="n">_CONVERTER_METADATA_KEYS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"CONVERTER_ENSEMBLE_KEYS"</span><span class="p">,</span>
+    <span class="s2">"_mspass_time_reference"</span><span class="p">,</span>
+    <span class="s2">"_mspass_t0_shift"</span><span class="p">,</span>
+    <span class="s2">"_mspass_relative_t0"</span><span class="p">,</span>
+    <span class="s2">"_mspass_live"</span><span class="p">,</span>
+    <span class="s2">"_mspass_member_index"</span><span class="p">,</span>
+    <span class="s2">"_mspass_component_index"</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_capture_time_state</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Capture state that ObsPy cannot represent without loss."""</span>
+    <span class="n">shift_key</span> <span class="o">=</span> <span class="s2">"starttime_shift"</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"tref"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">tref</span><span class="p">,</span>
+        <span class="s2">"t0"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
+        <span class="s2">"shifted"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">shifted</span><span class="p">(),</span>
+        <span class="s2">"t0_shift"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">get_t0shift</span><span class="p">(),</span>
+        <span class="s2">"shift_key_defined"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">shift_key</span><span class="p">),</span>
+        <span class="s2">"shift_key_value"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">shift_key</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">shift_key</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">"live"</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">live</span><span class="p">,</span>
+        <span class="s2">"relative_t0_anchor"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_post_time_state</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">member_index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">component_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Post MsPASS-only state and ordering information to an ObsPy Trace."""</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_time_reference"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"Relative"</span> <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span> <span class="k">else</span> <span class="s2">"UTC"</span>
+    <span class="p">)</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_t0_shift"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"t0_shift"</span><span class="p">]</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_live"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_relative_t0"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"t0"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">member_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_member_index"</span><span class="p">]</span> <span class="o">=</span> <span class="n">member_index</span>
+    <span class="k">if</span> <span class="n">component_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"_mspass_component_index"</span><span class="p">]</span> <span class="o">=</span> <span class="n">component_index</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_restore_time_state</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Restore state that was saved before conversion to ObsPy."""</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"tref"</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"shifted"</span><span class="p">]:</span>
+        <span class="n">destination</span><span class="o">.</span><span class="n">force_t0_shift</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">"t0_shift"</span><span class="p">])</span>
+    <span class="n">shift_key</span> <span class="o">=</span> <span class="s2">"starttime_shift"</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"shift_key_defined"</span><span class="p">]:</span>
+        <span class="n">destination</span><span class="p">[</span><span class="n">shift_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"shift_key_value"</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">destination</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">shift_key</span><span class="p">):</span>
+        <span class="n">destination</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">shift_key</span><span class="p">)</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_atomic_state</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Copy a processed atomic datum while keeping its core state coherent."""</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_CONVERTER_METADATA_KEYS</span><span class="p">:</span>
+            <span class="n">destination</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">_CONVERTER_METADATA_KEYS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">destination</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="c1"># set_npts allocates and clears the sample buffer, so data must follow it.</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">npts</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">destination</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">dt</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"relative_t0_anchor"</span><span class="p">]:</span>
+        <span class="n">destination</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">"t0"</span><span class="p">]</span> <span class="o">+</span> <span class="n">source</span><span class="o">.</span><span class="n">t0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">destination</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">t0</span>
+    <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"endtime"</span><span class="p">):</span>
+        <span class="n">destination</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">destination</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+    <span class="n">_restore_time_state</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="timeseries_copy_helper">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_copy_helper">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_copy_helper</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">""" """</span>
-    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
-    <span class="c1"># to simplify additions later</span>
-    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"CONVERTER_ENSEMBLE_KEYS"</span><span class="p">]</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">npts</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">dt</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">tref</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">live</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">t0</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ts2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
-            <span class="c1"># because this is used only in decorator we can assure</span>
-            <span class="c1"># overrides are consistent</span>
-            <span class="n">ts1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-    <span class="c1"># We need to clear this/these too as if they were already there the</span>
-    <span class="c1"># above logic preserves them</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ts1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-            <span class="n">ts1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">ts1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">data</span></div>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_copy_helper</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">,</span> <span class="n">_time_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Copy processed samples and sampling state into a TimeSeries."""</span>
+    <span class="k">if</span> <span class="n">_time_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_time_state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">ts1</span><span class="p">)</span>
+    <span class="n">_copy_atomic_state</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">,</span> <span class="n">_time_state</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="timeseries_ensemble_copy_helper">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.timeseries_ensemble_copy_helper">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">,</span> <span class="n">_time_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Copy converted time-series ensemble state back to the original object.</span>
 
@@ -1239,14 +1301,65 @@
 <span class="sd">    :param es2: source ensemble reconstructed after conversion.</span>
 <span class="sd">    :return: ``None``; ``es1`` is modified in place.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Processed Stream member count does not match the input "</span>
+            <span class="s2">"TimeSeriesEnsemble"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">_time_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_time_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
-        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="c1"># fixme: not sure in what algorithm the length of es1 and es2 would be different</span>
-    <span class="c1"># also, the following does not address uninitiated history issues in the extended elements</span>
-    <span class="c1"># same problem applies to the seismogram_ensemble_copy_helper</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
-        <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_timeseries_to_trace</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">member_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert through an isolated copy and post MsPASS-only state."""</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">source</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span><span class="p">:</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">"relative_t0_anchor"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">toTrace</span><span class="p">()</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+    <span class="n">_post_time_state</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">member_index</span><span class="o">=</span><span class="n">member_index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trace</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_timeseries_ensemble_to_stream</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert an ensemble without mutating its members during conversion."""</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="n">member</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span><span class="p">:</span>
+            <span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">"relative_t0_anchor"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+        <span class="n">_post_time_state</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">member_index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_timeseries_ensemble_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">member_count</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="o">!=</span> <span class="n">member_count</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Processed Stream member count does not match the input "</span>
+            <span class="s2">"TimeSeriesEnsemble"</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_mspass_member_index"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">index</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Processed Stream member order does not match the input "</span>
+                <span class="s2">"TimeSeriesEnsemble"</span>
+            <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_return_ensemble_identity</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">conversions</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">original</span><span class="p">,</span> <span class="n">converted</span> <span class="ow">in</span> <span class="n">conversions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">result</span> <span class="ow">is</span> <span class="n">converted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">original</span>
+    <span class="k">return</span> <span class="n">result</span>
 
 
 <span class="nd">@decorator</span>
@@ -1263,37 +1376,50 @@
 <span class="sd">    :param kwargs: extra kv arguments</span>
 <span class="sd">    :return: the output of func</span>
 <span class="sd">    """</span>
+
     <span class="k">if</span> <span class="n">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span>
     <span class="n">converted_args</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">time_states</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">kw_time_states</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toTrace</span><span class="p">())</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_timeseries_to_trace</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
             <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTrace</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_timeseries_to_trace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">converted</span>
             <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
+    <span class="n">converted_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
-        <span class="n">ts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+        <span class="n">converted_results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">converted_kw_results</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
-        <span class="n">ts</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">ts</span><span class="p">)</span>
+        <span class="n">converted_kw_results</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">Trace2TimeSeries</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted_results</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">timeseries_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted_kw_results</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">res</span>
 
 
 <div class="viewcode-block" id="seismogram_copy_helper">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_copy_helper">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_copy_helper</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_copy_helper</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">,</span> <span class="n">_time_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Copy converted seismogram state back to the original object.</span>
 
@@ -1301,31 +1427,15 @@
 <span class="sd">    :param seis2: source seismogram reconstructed after conversion.</span>
 <span class="sd">    :return: ``None``; ``seis1`` is modified in place.</span>
 <span class="sd">    """</span>
-    <span class="c1"># keys in this list are ignored - for now only one but made a list</span>
-    <span class="c1"># to simplify additions later</span>
-    <span class="n">metadata_to_ignore</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"CONVERTER_ENSEMBLE_KEYS"</span><span class="p">]</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">npts</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">dt</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">tref</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">tref</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">live</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">t0</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">seis2</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># other metadata copy</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
-            <span class="c1"># because this is used only in decorator we can assure</span>
-            <span class="c1"># overrides are consistent</span>
-            <span class="n">seis1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-    <span class="c1"># We need to clear this/these too as if they were already there the</span>
-    <span class="c1"># above logic preserves them</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metadata_to_ignore</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">seis1</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-            <span class="n">seis1</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">seis1</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis2</span><span class="o">.</span><span class="n">data</span></div>
+    <span class="k">if</span> <span class="n">_time_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_time_state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">seis1</span><span class="p">)</span>
+    <span class="n">_copy_atomic_state</span><span class="p">(</span><span class="n">seis1</span><span class="p">,</span> <span class="n">seis2</span><span class="p">,</span> <span class="n">_time_state</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="seismogram_ensemble_copy_helper">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.seismogram_ensemble_copy_helper">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="p">,</span> <span class="n">es2</span><span class="p">,</span> <span class="n">_time_states</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Copy converted seismogram ensemble state back to the original object.</span>
 
@@ -1333,11 +1443,75 @@
 <span class="sd">    :param es2: source ensemble reconstructed after conversion.</span>
 <span class="sd">    :return: ``None``; ``es1`` is modified in place.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Processed Stream member count does not match the input "</span>
+            <span class="s2">"SeismogramEnsemble"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">_time_states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_time_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
-        <span class="n">seismogram_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
-        <span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="p">:])</span></div>
+        <span class="n">seismogram_copy_helper</span><span class="p">(</span><span class="n">es1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">es2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_seismogram_to_stream</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">member_index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert through an isolated copy and post MsPASS-only state."""</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">source</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span><span class="p">:</span>
+        <span class="n">state</span><span class="p">[</span><span class="s2">"relative_t0_anchor"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">component_index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+        <span class="n">_post_time_state</span><span class="p">(</span>
+            <span class="n">trace</span><span class="p">,</span>
+            <span class="n">state</span><span class="p">,</span>
+            <span class="n">member_index</span><span class="o">=</span><span class="n">member_index</span><span class="p">,</span>
+            <span class="n">component_index</span><span class="o">=</span><span class="n">component_index</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_seismogram_ensemble_to_stream</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Convert an ensemble without mutating its members during conversion."""</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">member</span><span class="p">):</span>
+        <span class="n">member</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">"tref"</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Relative"</span><span class="p">:</span>
+            <span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="s2">"relative_t0_anchor"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">member</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">trace_index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+        <span class="n">member_index</span><span class="p">,</span> <span class="n">component_index</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">trace_index</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">_post_time_state</span><span class="p">(</span>
+            <span class="n">trace</span><span class="p">,</span>
+            <span class="n">states</span><span class="p">[</span><span class="n">member_index</span><span class="p">],</span>
+            <span class="n">member_index</span><span class="o">=</span><span class="n">member_index</span><span class="p">,</span>
+            <span class="n">component_index</span><span class="o">=</span><span class="n">component_index</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_seismogram_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">member_count</span><span class="p">,</span> <span class="n">ensemble_name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">member_count</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Processed Stream member count does not match the input "</span> <span class="o">+</span> <span class="n">ensemble_name</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">trace_index</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+        <span class="n">member_index</span><span class="p">,</span> <span class="n">component_index</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">trace_index</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_mspass_component_index"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">component_index</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Processed Stream component order does not match the input "</span>
+                <span class="o">+</span> <span class="n">ensemble_name</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">member_count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"_mspass_member_index"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">member_index</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"Processed Stream member order does not match the input "</span>
+                <span class="o">+</span> <span class="n">ensemble_name</span>
+            <span class="p">)</span>
 
 
 <span class="nd">@decorator</span>
@@ -1359,37 +1533,43 @@
     <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">time_states</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">kw_time_states</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_seismogram_to_stream</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
             <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">_capture_time_state</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_seismogram_to_stream</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">state</span><span class="p">)</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">converted</span>
             <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
-        <span class="c1"># todo save relative time attribute</span>
-        <span class="c1"># fixme cardinal here</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
-            <span class="n">seis</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">data</span>
-            <span class="c1"># metadata copy</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">seis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
-            <span class="n">seis</span> <span class="o">=</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">seis</span><span class="o">.</span><span class="n">data</span>
-            <span class="c1"># metadata copy</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seis</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">_validate_seismogram_stream</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Seismogram"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">_validate_seismogram_stream</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Seismogram"</span><span class="p">)</span>
+    <span class="n">converted_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span>
+    <span class="p">}</span>
+    <span class="n">converted_kw_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">seismogram_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted_results</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">seismogram_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted_kw_results</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">res</span>
 
 
@@ -1412,30 +1592,47 @@
     <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">time_states</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">kw_time_states</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">conversions</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
-            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_timeseries_ensemble_to_stream</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">states</span><span class="p">)</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
             <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span>
+            <span class="n">conversions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
-            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_timeseries_ensemble_to_stream</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">states</span><span class="p">)</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">converted</span>
             <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span>
+            <span class="n">conversions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
-            <span class="n">tse</span> <span class="o">=</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span>
-            <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tse</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
-            <span class="n">tse</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span>
-            <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">tse</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">_validate_timeseries_ensemble_stream</span><span class="p">(</span><span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">_validate_timeseries_ensemble_stream</span><span class="p">(</span><span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">))</span>
+    <span class="n">converted_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span>
+    <span class="p">}</span>
+    <span class="n">converted_kw_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toTimeSeriesEnsemble</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted_results</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">timeseries_ensemble_copy_helper</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted_kw_results</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_return_ensemble_identity</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">conversions</span><span class="p">)</span>
 
 
 <span class="nd">@decorator</span>
@@ -1457,30 +1654,51 @@
     <span class="n">converted_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">converted_args_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">converted_kwargs_keys</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">converted</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">time_states</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">kw_time_states</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">conversions</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">())</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_seismogram_ensemble_to_stream</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">states</span><span class="p">)</span>
+            <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
             <span class="n">converted_args_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span>
+            <span class="n">conversions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toStream</span><span class="p">()</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="n">_capture_time_state</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">]</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="n">_seismogram_ensemble_to_stream</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">states</span><span class="p">)</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">converted</span>
             <span class="n">converted_kwargs_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">converted</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">states</span>
+            <span class="n">conversions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">converted_args</span><span class="p">,</span> <span class="o">**</span><span class="n">converted_kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">converted</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
-            <span class="n">seis_e</span> <span class="o">=</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span>
-            <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">seis_e</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
-            <span class="n">seis_e</span> <span class="o">=</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span>
-            <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">seis_e</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">_validate_seismogram_stream</span><span class="p">(</span>
+            <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">),</span> <span class="s2">"SeismogramEnsemble"</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">_validate_seismogram_stream</span><span class="p">(</span>
+            <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">member</span><span class="p">),</span> <span class="s2">"SeismogramEnsemble"</span>
+        <span class="p">)</span>
+    <span class="n">converted_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">converted_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span>
+    <span class="p">}</span>
+    <span class="n">converted_kw_results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">k</span><span class="p">:</span> <span class="n">converted_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">converted_args_ids</span><span class="p">:</span>
+        <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">converted_results</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">time_states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">converted_kwargs_keys</span><span class="p">:</span>
+        <span class="n">seismogram_ensemble_copy_helper</span><span class="p">(</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">converted_kw_results</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">kw_time_states</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_return_ensemble_identity</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">conversions</span><span class="p">)</span>
 
 
 <span class="nd">@decorator</span>
