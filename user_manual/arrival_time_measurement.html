@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.4.dev29+g3ea520b7 documentation</title>
+    <title>Arrival Time Measurement Techniques in MsPASS &#8212; MsPASS 2.4.4.dev30+g5bc1b1f8 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f5c69315"></script>
+    <script src="../_static/documentation_options.js?v=75bc0ee0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
     <link rel="prev" title="Signal to Noise Ratio Estimation" href="signal_to_noise.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev29" />
+  <meta name="docsearch:version" content="2.4.4.dev30" />
   </head>
   
   
@@ -840,23 +840,15 @@ show the full function signature for <code class="docutils literal notranslate">
   <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The current implementation accepts <code class="docutils literal notranslate"><span class="pre">use_median_initial_stack</span></code> and
-<code class="docutils literal notranslate"><span class="pre">abort_irregular_sampling</span></code>, but does not forward either value to the
-underlying stack or sampling-validation calls.  Consequently, the robust
-stack currently always starts from a median stack, and irregularly sampled
-members follow the default behavior of being logged and killed.  Do not rely
-on setting either argument to change those behaviors until the implementation
-is updated.</p>
-</div>
 <p>The parameters of note are:</p>
 <ol class="arabic simple">
-<li><p>The robust stack currently starts from the median stack of the ensemble
+<li><p>By default the robust stack starts from the median stack of the ensemble
 aligned to the beam computed in the previous iteration.  This is a stable
-starting estimate.  As noted above, <code class="docutils literal notranslate"><span class="pre">use_median_initial_stack=False</span></code> is
-accepted by the API but does not currently select the previous beam as the
-starting estimate.</p></li>
+starting estimate.  Set <code class="docutils literal notranslate"><span class="pre">use_median_initial_stack=False</span></code> to use the
+supplied beam as the initial stack estimate instead.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">abort_irregular_sampling=True</span></code> to abort processing when any live
+member has an incompatible sample interval.  The default <code class="docutils literal notranslate"><span class="pre">False</span></code> logs and
+kills only the incompatible members and continues while live members remain.</p></li>
 <li><p><em>residual_norm_floor</em> implements a concept not recognized when
 we developed the original <em>dbxcor</em> program.
 It relates to a
@@ -890,7 +882,7 @@ the residual term makes the weighting more aggressively
 downweight any datum that differs significantly from the stack.
 That is desirable and a reason this algorithm can handle wildly variable
 quality data.  The dark side to recognize, however, is that it makes
-the result strongly history dependent.  The current median-started behavior
+the result strongly history dependent.  The default median-started behavior
 produces a stack that is close to the median stack.  How “close” is controlled by the
 setting of <em>residual_norm_floor</em>.   When <em>residual_norm_floor</em> is
 1.0 the residual weighting term is disabled.  As the floor becomes smaller,

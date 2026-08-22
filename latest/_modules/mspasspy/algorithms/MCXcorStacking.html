@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.4.dev29+g3ea520b7 documentation</title>
+    <title>mspasspy.algorithms.MCXcorStacking &#8212; MsPASS 2.4.4.dev30+g5bc1b1f8 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5c69315"></script>
+    <script src="../../../_static/documentation_options.js?v=75bc0ee0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev29" />
+  <meta name="docsearch:version" content="2.4.4.dev30" />
   </head>
   
   
@@ -498,7 +498,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy.taup</span><span class="w"> </span><span class="kn">import</span> <span class="n">TauPyModel</span>
 
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorLogger</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">Metadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorLogger</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">MsPASSError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TimeSeries</span><span class="p">,</span>
     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
@@ -1470,6 +1470,16 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_relative_stack_change</span><span class="p">(</span><span class="n">new_stack</span><span class="p">,</span> <span class="n">previous_stack</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return the relative L2 change between two stack estimates."""</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">new_stack</span> <span class="o">-</span> <span class="n">previous_stack</span>
+    <span class="n">delta_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">previous_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">previous_stack</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">previous_norm</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">delta_norm</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">return</span> <span class="n">delta_norm</span> <span class="o">/</span> <span class="n">previous_norm</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_dbxcor_stacker</span><span class="p">(</span>
     <span class="n">ensemble</span><span class="p">,</span>
     <span class="n">stack0</span><span class="p">,</span>
@@ -1498,13 +1508,15 @@
 <span class="sd">    :type residual_norm_floor:   float (default 0.1)</span>
 <span class="sd">    """</span>
     <span class="n">stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack0</span><span class="p">)</span>
+    <span class="n">previous_stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack0</span><span class="p">)</span>
     <span class="c1"># useful shorthands</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">stack0</span><span class="o">.</span><span class="n">npts</span>
     <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># needed to keep this symbol from going out of scope before return</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxiterations</span><span class="p">):</span>
-        <span class="c1"># this requires stack0 not be altered in this function</span>
-        <span class="n">wts</span> <span class="o">=</span> <span class="n">dbxcor_weights</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">stack0</span><span class="p">,</span> <span class="n">residual_norm_floor</span><span class="o">=</span><span class="n">residual_norm_floor</span><span class="p">)</span>
+        <span class="n">wts</span> <span class="o">=</span> <span class="n">dbxcor_weights</span><span class="p">(</span>
+            <span class="n">ensemble</span><span class="p">,</span> <span class="n">previous_stack</span><span class="p">,</span> <span class="n">residual_norm_floor</span><span class="o">=</span><span class="n">residual_norm_floor</span>
+        <span class="p">)</span>
         <span class="c1"># newstack = np.zeros(N)</span>
         <span class="c1"># this is just a fast way to initalize to 0s</span>
         <span class="n">stack</span><span class="o">.</span><span class="n">set_npts</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
@@ -1523,19 +1535,12 @@
             <span class="n">stack</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="n">wts</span><span class="p">]</span>
         <span class="c1"># newstack /= sumwts</span>
-        <span class="c1"># order may matter here.  In this case delta becomes a numpy</span>
-        <span class="c1"># array which is cleaner in this context</span>
-        <span class="c1"># delta = newstack - stack.data</span>
-        <span class="n">delta</span> <span class="o">=</span> <span class="n">stack</span> <span class="o">-</span> <span class="n">stack0</span>
-        <span class="n">relative_delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">stack0</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="c1"># normalize by sample size or there is a window length dependency</span>
-        <span class="n">relative_delta</span> <span class="o">/=</span> <span class="n">N</span>
-        <span class="c1"># update stack here so if we break loop we don't have to repeat</span>
-        <span class="c1"># this copying.  Force one iteration to make this a do-while loop</span>
-        <span class="c1"># newstack is a numpy vector so this cast is necesary</span>
-        <span class="n">stack0</span> <span class="o">=</span> <span class="n">stack</span>
+        <span class="c1"># Compare against the same immutable estimate used for the weights.</span>
+        <span class="n">relative_delta</span> <span class="o">=</span> <span class="n">_relative_stack_change</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">previous_stack</span><span class="p">)</span>
+        <span class="c1"># Force one iteration to make this a do-while loop.</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">relative_delta</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span>
             <span class="k">break</span>
+        <span class="n">previous_stack</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">stack</span><span class="p">,</span> <span class="n">wts</span><span class="p">]</span>
 
 
@@ -1717,15 +1722,14 @@
 <span class="sd">            stack that is defined.   Note recent experience has shown</span>
 <span class="sd">            that with large, consistent ensembles the dbxcor robust</span>
 <span class="sd">            estimate tends to focus on the signal closest to the median</span>
-<span class="sd">            stack.  The reason is that the median stack</span>
-<span class="sd">            is always used as the initial estimator.   Hence, it can</span>
-<span class="sd">            be thought of as a median stack that uses the full data</span>
-<span class="sd">            set more completely.</span>
+<span class="sd">            stack.  By default the median stack is used as the initial</span>
+<span class="sd">            estimator; ``use_median_initial_stack=False`` instead uses the</span>
+<span class="sd">            supplied beam.</span>
 <span class="sd">        3.  dbxcor required the user to pick a seed signal to use as</span>
-<span class="sd">            the initial beam estimate.  That approach is NOT used here</span>
-<span class="sd">            but idea is to have some estimate passed to the algorithm</span>
-<span class="sd">            via the beam (arg1) argument.  In MsPASS the working model</span>
-<span class="sd">            is to apply the  broadband_snr_QC function to the data before</span>
+<span class="sd">            the initial beam estimate.  This function receives that estimate</span>
+<span class="sd">            through the beam (arg1) argument and uses it as the robust-stack</span>
+<span class="sd">            seed when ``use_median_initial_stack=False``.  In MsPASS the</span>
+<span class="sd">            working model is to apply the broadband_snr_QC function before</span>
 <span class="sd">            running this function and select the initial seed (beam) from</span>
 <span class="sd">            one or more of the computed snr metrics.   In addition,</span>
 <span class="sd">            with this approach I envision a two-stage computation where</span>
@@ -1834,9 +1838,9 @@
 <span class="sd">        computing the robust stack.  Currently accepted value are:</span>
 <span class="sd">        "dbxcor" (default) and "median".</span>
 <span class="sd">    :type robust_stack_method:  string  - must be one of options listed above.</span>
-<span class="sd">    :param use_median_initial_stack: currently has no effect.  The implementation</span>
-<span class="sd">        always uses a median stack as the initial estimate, including when this</span>
-<span class="sd">        value is False.</span>
+<span class="sd">    :param use_median_initial_stack: when True, initialize robust stacking with</span>
+<span class="sd">        the member median.  When False, use the supplied beam as the initial</span>
+<span class="sd">        stack estimate.</span>
 <span class="sd">    :type use_median_initial_stack: boolean (default True)</span>
 <span class="sd">    :param time_shift_key:  the time shift applied relative to the starting</span>
 <span class="sd">        point is posted to each live member with this key.  It is</span>
@@ -1854,14 +1858,11 @@
 <span class="sd">        this value will be truncated to this value with the sign</span>
 <span class="sd">        of the shift preserved.</span>
 <span class="sd">    :type time_shift_limit:  float</span>
-<span class="sd">    :param abort_irregular_sampling: currently has no effect.  This function uses</span>
-<span class="sd">        a generous test for sample rate mismatch.  A mismatch is</span>
-<span class="sd">        detected only if the computed time skew over the time span of</span>
-<span class="sd">        the input beam signal is more than half of the beam sample interval</span>
-<span class="sd">        (``beam.dt``).  Offending ensemble members are always killed and a</span>
-<span class="sd">        message is posted; setting this value to True does not currently raise</span>
-<span class="sd">        ``ValueError``.  The input ensemble can therefore return with fewer</span>
-<span class="sd">        live members.</span>
+<span class="sd">    :param abort_irregular_sampling: passed to ``regularize_sampling`` as</span>
+<span class="sd">        ``abort_on_error``.  When True, any irregular live member causes that</span>
+<span class="sd">        helper to abort; when False, offending members are killed and</span>
+<span class="sd">        processing continues if live members remain.  Exceptions use this</span>
+<span class="sd">        function's standard decorator error handling.</span>
 <span class="sd">    :type abort_irregular_sampling: boolean (default False)</span>
 <span class="sd">    :param residual_norm_floor: floor on residuals used to compute dbxcor weight</span>
 <span class="sd">        function.  See docstring for `dbxcor_weights` for details.</span>
@@ -1886,8 +1887,7 @@
     <span class="c1"># xcorens has function scope</span>
     <span class="n">it0_key</span> <span class="o">=</span> <span class="s2">"_initial_t0_value_"</span>
     <span class="n">ensemble_index_key</span> <span class="o">=</span> <span class="s2">"_ensemble_i0_"</span>
-    <span class="c1"># maximum iterations.  could be passed as an argument but I have</span>
-    <span class="c1"># never seen this algorithm not converge in 20 interation</span>
+    <span class="c1"># maximum iterations before the stack is returned dead</span>
     <span class="n">MAXITERATION</span> <span class="o">=</span> <span class="mi">20</span>
     <span class="c1"># Enformce types of ensemble and beam</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">):</span>
@@ -1907,7 +1907,12 @@
         <span class="n">ensemble</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
-    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">regularize_sampling</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">Nsamp</span><span class="o">=</span><span class="n">beam</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">regularize_sampling</span><span class="p">(</span>
+        <span class="n">ensemble</span><span class="p">,</span>
+        <span class="n">beam</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">Nsamp</span><span class="o">=</span><span class="n">beam</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span>
+        <span class="n">abort_on_error</span><span class="o">=</span><span class="n">abort_irregular_sampling</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
     <span class="c1"># we need to make sure this is part of a valid set of algorithms</span>
@@ -2086,7 +2091,7 @@
 
     <span class="c1"># above guarantees this cannot return a dead datum</span>
     <span class="n">rbeam0</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">beam</span><span class="p">,</span> <span class="n">rwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">rwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
-    <span class="n">nrm_rbeam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rbeam0</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAXITERATION</span><span class="p">):</span>
         <span class="n">ensemble</span> <span class="o">=</span> <span class="n">beam_align</span><span class="p">(</span>
             <span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">,</span> <span class="n">xcorwin</span><span class="p">,</span> <span class="n">time_shift_limit</span><span class="o">=</span><span class="n">time_shift_limit</span>
@@ -2099,16 +2104,14 @@
         <span class="n">rbeam</span><span class="p">,</span> <span class="n">wts</span> <span class="o">=</span> <span class="n">robust_stack</span><span class="p">(</span>
             <span class="n">rens</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="n">robust_stack_method</span><span class="p">,</span>
+            <span class="n">stack0</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">use_median_initial_stack</span> <span class="k">else</span> <span class="n">rbeam0</span><span class="p">,</span>
             <span class="n">residual_norm_floor</span><span class="o">=</span><span class="n">residual_norm_floor</span><span class="p">,</span>
             <span class="n">timespan_method</span><span class="o">=</span><span class="s2">"ensemble_median"</span><span class="p">,</span>
             <span class="n">stack_md</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">rbeam0</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">delta_rbeam</span> <span class="o">=</span> <span class="n">rbeam</span> <span class="o">-</span> <span class="n">rbeam0</span>
-        <span class="n">nrm_delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_rbeam</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">nrm_rbeam</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">nrm_delta</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-                <span class="k">break</span>
-        <span class="k">elif</span> <span class="n">nrm_delta</span> <span class="o">/</span> <span class="n">nrm_rbeam</span> <span class="o">&lt;</span> <span class="n">convergence</span><span class="p">:</span>
+        <span class="n">relative_change</span> <span class="o">=</span> <span class="n">_relative_stack_change</span><span class="p">(</span><span class="n">rbeam</span><span class="p">,</span> <span class="n">rbeam0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">relative_change</span> <span class="o">&lt;</span> <span class="n">convergence</span><span class="p">:</span>
+            <span class="n">converged</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">break</span>
         <span class="c1"># this updates the always longer beam signal for correlation</span>
         <span class="c1"># use rbeam is used for convergence testing</span>
@@ -2119,11 +2122,13 @@
             <span class="n">beam</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
         <span class="n">rbeam0</span> <span class="o">=</span> <span class="n">rbeam</span>
-        <span class="n">nrm_rbeam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rbeam0</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">MAXITERATION</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">converged</span><span class="p">:</span>
         <span class="n">beam</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="n">message</span> <span class="o">=</span> <span class="s2">"robust_stack iterative loop did not converge"</span>
-        <span class="n">beam</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"align_and_stack: robust_stack iterative loop did not converge "</span>
+            <span class="s2">"after 20 iterations"</span>
+        <span class="p">)</span>
+        <span class="n">beam</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">))</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">beam</span><span class="p">]</span>
 
     <span class="c1"># apply time shifts to original ensemble that we will return</span>
@@ -2141,8 +2146,6 @@
                 <span class="n">tshift</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span> <span class="o">-</span> <span class="n">initial_starttime</span>
                 <span class="n">allshifts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tshift</span><span class="p">)</span>
         <span class="n">tshift_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">allshifts</span><span class="p">)</span>
-        <span class="c1"># debug</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Applying average time shift of "</span><span class="p">,</span> <span class="n">tshift_mean</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                 <span class="c1"># this method alters the t0 values of the ensemble members</span>

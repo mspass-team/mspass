@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev29+g3ea520b7 documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev30+g5bc1b1f8 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f5c69315"></script>
+    <script src="../_static/documentation_options.js?v=75bc0ee0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev29" />
+  <meta name="docsearch:version" content="2.4.4.dev30" />
   </head>
   
   
@@ -1160,15 +1160,14 @@ signal-to-noise data with pure junk and produce a clean
 stack that is defined.   Note recent experience has shown
 that with large, consistent ensembles the dbxcor robust
 estimate tends to focus on the signal closest to the median
-stack.  The reason is that the median stack
-is always used as the initial estimator.   Hence, it can
-be thought of as a median stack that uses the full data
-set more completely.</p></li>
+stack.  By default the median stack is used as the initial
+estimator; <code class="docutils literal notranslate"><span class="pre">use_median_initial_stack=False</span></code> instead uses the
+supplied beam.</p></li>
 <li><p>dbxcor required the user to pick a seed signal to use as
-the initial beam estimate.  That approach is NOT used here
-but idea is to have some estimate passed to the algorithm
-via the beam (arg1) argument.  In MsPASS the working model
-is to apply the  broadband_snr_QC function to the data before
+the initial beam estimate.  This function receives that estimate
+through the beam (arg1) argument and uses it as the robust-stack
+seed when <code class="docutils literal notranslate"><span class="pre">use_median_initial_stack=False</span></code>.  In MsPASS the
+working model is to apply the broadband_snr_QC function before
 running this function and select the initial seed (beam) from
 one or more of the computed snr metrics.   In addition,
 with this approach I envision a two-stage computation where
@@ -1271,9 +1270,9 @@ each live member with this key.</p></li>
 <li><p><strong>robust_stack_method</strong> (<em>string  - must be one</em><em> of </em><em>options listed above.</em>) – keyword defining the method to use for
 computing the robust stack.  Currently accepted value are:
 “dbxcor” (default) and “median”.</p></li>
-<li><p><strong>use_median_initial_stack</strong> (<em>boolean</em><em> (</em><em>default True</em><em>)</em>) – currently has no effect.  The implementation
-always uses a median stack as the initial estimate, including when this
-value is False.</p></li>
+<li><p><strong>use_median_initial_stack</strong> (<em>boolean</em><em> (</em><em>default True</em><em>)</em>) – when True, initialize robust stacking with
+the member median.  When False, use the supplied beam as the initial
+stack estimate.</p></li>
 <li><p><strong>time_shift_key</strong> (<em>string</em><em>  (</em><em>default &quot;arrival_time_correction&quot;</em><em>)</em>) – the time shift applied relative to the starting
 point is posted to each live member with this key.  It is
 IMPORTANT to realize this is the time for this pass.  If this function
@@ -1287,14 +1286,11 @@ unless you deeply understand the algorithm.</p></li>
 correlation algorithm any estimated time shift larger than
 this value will be truncated to this value with the sign
 of the shift preserved.</p></li>
-<li><p><strong>abort_irregular_sampling</strong> (<em>boolean</em><em> (</em><em>default False</em><em>)</em>) – currently has no effect.  This function uses
-a generous test for sample rate mismatch.  A mismatch is
-detected only if the computed time skew over the time span of
-the input beam signal is more than half of the beam sample interval
-(<code class="docutils literal notranslate"><span class="pre">beam.dt</span></code>).  Offending ensemble members are always killed and a
-message is posted; setting this value to True does not currently raise
-<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.  The input ensemble can therefore return with fewer
-live members.</p></li>
+<li><p><strong>abort_irregular_sampling</strong> (<em>boolean</em><em> (</em><em>default False</em><em>)</em>) – passed to <code class="docutils literal notranslate"><span class="pre">regularize_sampling</span></code> as
+<code class="docutils literal notranslate"><span class="pre">abort_on_error</span></code>.  When True, any irregular live member causes that
+helper to abort; when False, offending members are killed and
+processing continues if live members remain.  Exceptions use this
+function’s standard decorator error handling.</p></li>
 <li><p><strong>residual_norm_floor</strong> (<em>float</em><em> (</em><em>default 0.1</em><em>)</em>) – floor on residuals used to compute dbxcor weight
 function.  See docstring for <cite>dbxcor_weights</cite> for details.</p></li>
 <li><p><strong>demean_residuals</strong> – boolean controlling if the computed shifts

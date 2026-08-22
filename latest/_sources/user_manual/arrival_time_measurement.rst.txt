@@ -366,23 +366,15 @@ show the full function signature for ``align_and_stack``:
     **kwargs,
     ) -> list:
 
-.. note::
-
-   The current implementation accepts ``use_median_initial_stack`` and
-   ``abort_irregular_sampling``, but does not forward either value to the
-   underlying stack or sampling-validation calls.  Consequently, the robust
-   stack currently always starts from a median stack, and irregularly sampled
-   members follow the default behavior of being logged and killed.  Do not rely
-   on setting either argument to change those behaviors until the implementation
-   is updated.
-
 The parameters of note are:
 
-#. The robust stack currently starts from the median stack of the ensemble
+#. By default the robust stack starts from the median stack of the ensemble
    aligned to the beam computed in the previous iteration.  This is a stable
-   starting estimate.  As noted above, ``use_median_initial_stack=False`` is
-   accepted by the API but does not currently select the previous beam as the
-   starting estimate.
+   starting estimate.  Set ``use_median_initial_stack=False`` to use the
+   supplied beam as the initial stack estimate instead.
+#. Set ``abort_irregular_sampling=True`` to abort processing when any live
+   member has an incompatible sample interval.  The default ``False`` logs and
+   kills only the incompatible members and continues while live members remain.
 #. *residual_norm_floor* implements a concept not recognized when
    we developed the original *dbxcor* program.
    It relates to a
@@ -418,7 +410,7 @@ the residual term makes the weighting more aggressively
 downweight any datum that differs significantly from the stack.
 That is desirable and a reason this algorithm can handle wildly variable
 quality data.  The dark side to recognize, however, is that it makes
-the result strongly history dependent.  The current median-started behavior
+the result strongly history dependent.  The default median-started behavior
 produces a stack that is close to the median stack.  How "close" is controlled by the
 setting of *residual_norm_floor*.   When *residual_norm_floor* is
 1.0 the residual weighting term is disabled.  As the floor becomes smaller,
