@@ -57,6 +57,7 @@ def mspass_func_wrapper(
     handles_ensembles=True,
     checks_arg0_type=False,
     handles_dead_data=True,
+    propagate_exceptions=False,
     **kwargs,
 ):
     """
@@ -174,6 +175,9 @@ def mspass_func_wrapper(
       can hangle ensemble objects directly.   When False
       this decorator applies the atomic function to each ensemble member in
       a loop over membes.
+    :param propagate_exceptions: when True, RuntimeError and other unexpected
+      exceptions are re-raised without logging or killing arg0.  The default
+      False preserves the standard wrapper behavior.
     :param kwargs: extra kv arguments
     :return: modified seismic data object.  Can be a different type than
        the input.   If function_return_key is used only the Metadata
@@ -298,6 +302,8 @@ def mspass_func_wrapper(
     # On failure log arg0, kill it, and return it so callers never see implicit None.
     # Fatal MsPASSError is re-raised and does not use this handler.
     except RuntimeError as err:
+        if propagate_exceptions:
+            raise
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
@@ -314,6 +320,8 @@ def mspass_func_wrapper(
         data.kill()
         return data
     except Exception as exc:
+        if propagate_exceptions:
+            raise
         if not isinstance(data, _MSPASS_WRAPPER_DATA_TYPES):
             raise exc
         if isinstance(data, (Seismogram, TimeSeries)):

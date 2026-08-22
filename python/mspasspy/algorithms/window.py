@@ -34,7 +34,7 @@ def ensemble_error_post(d, alg, message, severity):
     This is a small helper function useful for error handlers in except
     blocks for ensemble objects.  If a function is called on an ensemble
     object that throws an exception this function will post the message
-    posted to all ensemble members.  It silently does nothing if the
+    to all live ensemble members.  It silently does nothing if the
     ensemble is empty.
 
     :param d: is the ensemble data to be handled.  It print and error message
@@ -49,7 +49,8 @@ def ensemble_error_post(d, alg, message, severity):
         if n <= 0:
             return
         for i in range(n):
-            d.member[i].elog.log_error(alg, str(message), severity)
+            if d.member[i].live:
+                d.member[i].elog.log_error(alg, str(message), severity)
     else:
         print(
             "Coding error - ensemble_error_post was passed an unexpected data type of",
@@ -64,11 +65,11 @@ def _post_amplitude(d, method, amp):
     computed amplitudes to metadata with a different key for each method
     used to compute amplitude.
     """
-    if method == "rms" or method == "RMS":
+    if method == ScalingMethod.RMS:
         d["rms_amplitude"] = amp
-    elif method == "perc":
+    elif method == ScalingMethod.ClipPerc:
         d["perc_amplitude"] = amp
-    elif method == "MAD" or method == "mad":
+    elif method == ScalingMethod.MAD:
         d["mad_amplitude"] = amp
     else:
         d["amplitude"] = amp
@@ -95,6 +96,7 @@ def scale(
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
+    propagate_exceptions=True,
     **kwargs,
 ):
     """
@@ -154,6 +156,9 @@ def scale(
       True.   The algorithm used in that case has an option to use the mean
       log amplitude for scaling the section instead of the default median
       amplitude.
+    :param propagate_exceptions: when True (default), unexpected Python
+      exceptions propagate without logging or killing input data.  Documented
+      MsPASSError data failures are still logged as Invalid and kill live data.
 
     :return: Data scaled to specified level.  Note the scaling always preserves
       absolute amplitude by adjusting the value of the calib attribute of the
@@ -206,7 +211,7 @@ def scale(
                 ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
             else:
                 d.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
-                level = 1.0
+            level = 1.0
     else:
         if level <= 0.0:
             message = "{meth} scaling method given illegal value={slevel}\nDefaulted to 1.0".format(
@@ -240,7 +245,7 @@ def scale(
     if method == "rms" or method == "RMS":
         method_to_use = ScalingMethod.RMS
     elif method == "perc":
-        method_to_use = ScalingMethod.perc
+        method_to_use = ScalingMethod.ClipPerc
     elif method == "MAD" or method == "mad":
         method_to_use = ScalingMethod.MAD
     try:
@@ -279,20 +284,11 @@ def scale(
         # if we add any other supported data objects we could have a
         # problem here.  This assumes what lands here is an ensemble
         else:
-            ensemble_error_post(d, alg_name, err)
+            ensemble_error_post(d, alg_name, err, ErrorSeverity.Invalid)
             for x in d.member:
-                x.kill()
+                if x.live:
+                    x.kill()
         return d
-    # this is needed to handle an oddity recommended on this
-    # web site:  http://effbot.org/zone/stupid-exceptions-keyboardinterrupt.htm
-    except KeyboardInterrupt:
-        raise
-    except:
-        message = "Something threw an unexpected exception\nThat is a bug that needs to be fixed - contact authors"
-        if isinstance(d, Seismogram) or isinstance(d, TimeSeries):
-            d.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
-        else:
-            ensemble_error_post(d, alg_name, message, ErrorSeverity.Invalid)
 
 
 # not decorated for reasons given in docstring below
