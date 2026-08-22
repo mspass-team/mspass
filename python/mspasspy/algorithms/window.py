@@ -96,6 +96,7 @@ def scale(
     handles_ensembles=True,
     checks_arg0_type=True,
     handles_dead_data=True,
+    propagate_exceptions=True,
     **kwargs,
 ):
     """
@@ -155,6 +156,9 @@ def scale(
       True.   The algorithm used in that case has an option to use the mean
       log amplitude for scaling the section instead of the default median
       amplitude.
+    :param propagate_exceptions: when True (default), unexpected Python
+      exceptions propagate without logging or killing input data.  Documented
+      MsPASSError data failures are still logged as Invalid and kill live data.
 
     :return: Data scaled to specified level.  Note the scaling always preserves
       absolute amplitude by adjusting the value of the calib attribute of the

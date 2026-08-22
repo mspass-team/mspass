@@ -333,9 +333,10 @@ def test_unexpected_exceptions_propagate_without_mutation(
     data, target_name, scale_kwargs, live_members, dead_members = _input_and_target(
         input_kind, waveform_type=waveform_type
     )
+    members = list(live_members) + list(dead_members)
     before = [
         (dict(member), np.asarray(member.data).copy(), member.live)
-        for member in live_members + dead_members
+        for member in members
     ]
 
     with patch.object(
@@ -345,7 +346,8 @@ def test_unexpected_exceptions_propagate_without_mutation(
             window_module.scale(data, **scale_kwargs)
 
     current_live, current_dead = _current_members(data, input_kind)
-    for member, (metadata, samples, live) in zip(current_live + current_dead, before):
+    current_members = list(current_live) + list(current_dead)
+    for member, (metadata, samples, live) in zip(current_members, before):
         assert dict(member) == metadata
         assert np.array_equal(np.asarray(member.data), samples)
         assert member.live is live
