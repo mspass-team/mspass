@@ -3750,47 +3750,71 @@ class Database(pymongo.database.Database):
                 "Invalid",
             )
 
-        # delete the document just retrieved from the database
-        self[wf_collection_name].delete_one({"_id": oid})
+        # Resolve every child reference before starting cleanup.  The waveform
+        # document remains the durable retry record until all referenced
+        # children have been removed or confirmed absent.
+        storage_mode = object_doc.get("storage_mode")
+        gridfs_id = object_doc.get("gridfs_id")
+        dir_name = object_doc.get("dir")
+        dfile_name = object_doc.get("dfile")
+        history_collection = self.database_schema.default_name("history_object")
+        history_obj_id_name = history_collection + "_id"
+        history_obj_id = object_doc.get(history_obj_id_name)
+        wf_id_name = wf_collection_name + "_id"
+        elog_collection = self.database_schema.default_name("elog")
+        elog_id_name = elog_collection + "_id"
+        elog_id = object_doc.get(elog_id_name)
 
-        # delete gridfs/file depends on storage mode, and unreferenced files
-        storage_mode = object_doc["storage_mode"]
-        if storage_mode == "gridfs":
+        # Delete gridfs/file samples first.  Missing children are the expected
+        # state when retrying after a later child cleanup failed.
+        if storage_mode == "gridfs" and gridfs_id is not None:
             gfsh = gridfs.GridFS(self)
-            if gfsh.exists(object_doc["gridfs_id"]):
-                gfsh.delete(object_doc["gridfs_id"])
+            if gfsh.exists(gridfs_id):
+                gfsh.delete(gridfs_id)
 
-        elif storage_mode in ["file"] and remove_unreferenced_files:
-            dir_name = object_doc["dir"]
-            dfile_name = object_doc["dfile"]
-            # find if there are any remaining matching documents with dir and dfile
-            match_doc_cnt = self[wf_collection_name].count_documents(
-                {"dir": dir_name, "dfile": dfile_name}
-            )
-            # delete this file
-            if match_doc_cnt == 0:
+        elif (
+            storage_mode == "file"
+            and remove_unreferenced_files
+            and dir_name is not None
+            and dfile_name is not None
+        ):
+            # The parent is deliberately still present, so exclude it while
+            # checking both supported waveform collections for another
+            # reference to the same file.
+            file_is_referenced = False
+            waveform_collections = {
+                schema.TimeSeries.collection("_id"),
+                schema.Seismogram.collection("_id"),
+            }
+            for collection_name in waveform_collections:
+                reference_query = {"dir": dir_name, "dfile": dfile_name}
+                if collection_name == wf_collection_name:
+                    reference_query["_id"] = {"$ne": oid}
+                if self[collection_name].count_documents(reference_query) > 0:
+                    file_is_referenced = True
+                    break
+            if not file_is_referenced:
                 fname = os.path.join(dir_name, dfile_name)
-                os.remove(fname)
+                try:
+                    os.remove(fname)
+                except FileNotFoundError:
+                    pass
 
         # clear history
-        if clear_history:
-            history_collection = self.database_schema.default_name("history_object")
-            history_obj_id_name = history_collection + "_id"
-            if history_obj_id_name in object_doc:
-                self[history_collection].delete_one(
-                    {"_id": object_doc[history_obj_id_name]}
-                )
+        if clear_history and history_obj_id is not None:
+            self[history_collection].delete_one({"_id": history_obj_id})
 
         # clear elog
         if clear_elog:
-            wf_id_name = wf_collection_name + "_id"
-            elog_collection = self.database_schema.default_name("elog")
-            elog_id_name = elog_collection + "_id"
             # delete the one by elog_id in mspass object
-            if elog_id_name in object_doc:
-                self[elog_collection].delete_one({"_id": object_doc[elog_id_name]})
+            if elog_id is not None:
+                self[elog_collection].delete_one({"_id": elog_id})
             # delete the documents with the wf_id equals to obejct['_id']
             self[elog_collection].delete_many({wf_id_name: oid})
+
+        # Remove the durable retry record only after all requested child
+        # cleanup operations have completed successfully.
+        self[wf_collection_name].delete_one({"_id": oid})
 
     def _load_collection_metadata(
         self, mspass_object, exclude_keys, include_undefined=False, collection=None
