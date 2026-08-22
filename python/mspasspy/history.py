@@ -163,7 +163,9 @@ class HistoryLogger:
     mean a sequence of processing algorithms that have a set of predefined
     parameters that control their behaviour.  The global parameters are
     preserved in a special collection in MongoDB we give the (fixed) name
-    of "history".
+    of "history".  Processing steps are written as an ordered ``steps``
+    array.  Legacy documents that keyed steps by algorithm name remain
+    readable, but that legacy representation is no longer written.
     """
 
     def __init__(self, db, job=0):
@@ -239,15 +241,60 @@ class HistoryLogger:
         """
         Save the contents to the history collection.
 
-        The doc created in a save is more or less an image of the
-        structure of this object translated to a python dict
+        The document stores processing steps in registration order in a
+        ``steps`` array.  Algorithm names are values, not document keys, so
+        repeated invocations are preserved.
         """
-        doc = {}
-        doc["jobid"] = self.jobid
-        for d in self.history_chain:
-            subdoc = {}
-            subdoc["algorithm"] = d.algorithm
-            subdoc["param_type"] = d.param_type
-            subdoc["params"] = d.params
-            doc[d.algorithm] = subdoc
-        self.history_collection.insert_one(doc)
+        doc = {
+            "jobid": self.jobid,
+            "steps": [
+                {
+                    "algorithm": d.algorithm,
+                    "param_type": d.param_type,
+                    "params": d.params,
+                }
+                for d in self.history_chain
+            ],
+        }
+        if hasattr(self, "_loaded_document_id"):
+            self.history_collection.replace_one({"_id": self._loaded_document_id}, doc)
+        else:
+            self.history_collection.insert_one(doc)
+
+    @classmethod
+    def load(cls, db, jobid):
+        """
+        Load a saved processing history.
+
+        Both the ordered ``steps`` representation and legacy documents with
+        one top-level key per algorithm are accepted.  The returned object can
+        be saved to migrate a legacy record to the ordered representation.
+
+        :param db: database handle
+        :param jobid: identifier of the history document to load
+        :return: a populated :class:`HistoryLogger`, or ``None`` when the job
+          does not exist
+        """
+        history_collection = db.history
+        doc = history_collection.find_one({"jobid": jobid})
+        if doc is None:
+            return None
+
+        if isinstance(doc.get("steps"), list):
+            steps = doc["steps"]
+        else:
+            steps = [step for key, step in doc.items() if key not in {"_id", "jobid"}]
+
+        result = cls.__new__(cls)
+        result.history_collection = history_collection
+        result.jobid = doc["jobid"]
+        result.history_chain = []
+        if "_id" in doc:
+            result._loaded_document_id = doc["_id"]
+        for step in steps:
+            history_data = basic_history_data(result.jobid)
+            history_data.algorithm = step["algorithm"]
+            history_data.param_type = step["param_type"]
+            history_data.params = step["params"]
+            result.history_chain.append(history_data)
+        return result
