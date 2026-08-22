@@ -296,6 +296,7 @@ class Database(pymongo.database.Database):
         write_concern=None,
         read_concern=None,
         session=None,
+        check_exists=True,
         **kwargs,
     ):
         """
@@ -327,6 +328,8 @@ class Database(pymongo.database.Database):
             :class:`~pymongo.collation.Collation`.
           :param session: (optional): a
             :class:`~pymongo.client_session.ClientSession`.
+          :param check_exists: (optional): if ``True`` (the default), check
+            whether the collection already exists before creating it.
           :param kwargs: (optional): additional keyword arguments will
             be passed as options for the ``createCollection`` command.
 
@@ -344,27 +347,25 @@ class Database(pymongo.database.Database):
         - ``expireAfterSeconds``: the number of seconds after which a
           document in a timeseries collection expires.
         """
-        with self.__client._tmp_session(session) as s:
-            # Skip this check in a transaction where listCollections is not
-            # supported.
-            if (not s or not s.in_transaction) and name in self.list_collection_names(
-                filter={"name": name}, session=s
-            ):
-                raise pymongo.errors.CollectionInvalid(
-                    "collection %s already exists" % name
-                )
-
-            return Collection(
-                self,
-                name,
-                True,
-                codec_options,
-                read_preference,
-                write_concern,
-                read_concern,
-                session=s,
-                **kwargs,
-            )
+        collection = super().create_collection(
+            name,
+            codec_options=codec_options,
+            read_preference=read_preference,
+            write_concern=write_concern,
+            read_concern=read_concern,
+            session=session,
+            check_exists=check_exists,
+            **kwargs,
+        )
+        return Collection(
+            self,
+            collection.name,
+            False,
+            collection.codec_options,
+            collection.read_preference,
+            collection.write_concern,
+            collection.read_concern,
+        )
 
     def set_metadata_schema(self, schema):
         """
