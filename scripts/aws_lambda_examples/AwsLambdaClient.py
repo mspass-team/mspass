@@ -104,7 +104,7 @@ class AwsLambdaClient:
         lambda_client = self.create_aws_client("lambda")
         lambda_client.create_function(
             FunctionName=function_name,
-            Runtime="python3.7",
+            Runtime="python3.13",
             Role=self.lambda_iam_role,
             Handler="process.handler",
             Code={"S3Bucket": self.lambda_upload_bucket, "S3Key": "base.zip"},

@@ -1,0 +1,32 @@
+name: AWS Lambda Python 3.13 bundle
+
+"on":
+  push:
+    branches: [master]
+    paths:
+      - "scripts/aws_lambda_examples/**"
+      - ".github/workflows/aws-lambda-bundle.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - "scripts/aws_lambda_examples/**"
+      - ".github/workflows/aws-lambda-bundle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and smoke-test the Lambda bundle
+        run: scripts/aws_lambda_examples/build_base_zip.sh /tmp/base.zip
+      - name: Require reproducible checked-in bundle contents
+        run: |
+          mkdir /tmp/checked-bundle /tmp/built-bundle
+          python -m zipfile -e scripts/aws_lambda_examples/base.zip /tmp/checked-bundle
+          python -m zipfile -e /tmp/base.zip /tmp/built-bundle
+          diff --recursive --brief /tmp/checked-bundle /tmp/built-bundle
