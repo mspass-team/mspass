@@ -41,6 +41,21 @@ def _validate_lqt_angle_pair(func):
     return guarded
 
 
+def _reject_unsupported_extract_component_input(func):
+    """Reject unsupported inputs before the generic wrapper can return them."""
+
+    @wraps(func)
+    def checked(data, *args, **kwargs):
+        if not isinstance(data, (Seismogram, SeismogramEnsemble)):
+            raise TypeError(
+                "ExtractComponent only accepts Seismogram or SeismogramEnsemble"
+            )
+        return func(data, *args, **kwargs)
+
+    return checked
+
+
+@_reject_unsupported_extract_component_input
 @mspass_func_wrapper
 def ExtractComponent(
     data,
