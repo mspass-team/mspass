@@ -1890,7 +1890,14 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_required:
-                self.delete_data(doc["_id"], object_type.__name__, True, True, True)
+                self.delete_data(
+                    doc["_id"],
+                    object_type.__name__,
+                    True,
+                    True,
+                    True,
+                    collection=collection,
+                )
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -1928,7 +1935,14 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_xref:
-                self.delete_data(doc["_id"], object_type.__name__, True, True, True)
+                self.delete_data(
+                    doc["_id"],
+                    object_type.__name__,
+                    True,
+                    True,
+                    True,
+                    collection=collection,
+                )
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -3692,6 +3706,7 @@ class Database(pymongo.database.Database):
         remove_unreferenced_files=False,
         clear_history=True,
         clear_elog=True,
+        collection=None,
     ):
         """
         Delete method for handling mspass data objects (TimeSeries and Seismograms).
@@ -3724,17 +3739,32 @@ class Database(pymongo.database.Database):
         :param remove_unreferenced_files: if ``True``, we will try to remove the file that no wf data is referencing. Default to be ``False``
         :param clear_history: if ``True``, we will clear the processing history of the associated wf object, default to be ``True``
         :param clear_elog: if ``True``, we will clear the elog entries of the associated wf object, default to be ``True``
+        :param collection: explicit waveform collection containing the object. If
+          omitted, use the default collection for ``object_type``.
         """
         if object_type not in ["TimeSeries", "Seismogram"]:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-        # get the wf collection name in the schema
-        schema = self.metadata_schema
-        if object_type == "TimeSeries":
-            detele_schema = schema.TimeSeries
+        if collection is None:
+            schema = self.metadata_schema
+            if object_type == "TimeSeries":
+                delete_schema = schema.TimeSeries
+            else:
+                delete_schema = schema.Seismogram
+            wf_collection_name = delete_schema.collection("_id")
         else:
-            detele_schema = schema.Seismogram
-        wf_collection_name = detele_schema.collection("_id")
+            wf_collection_name = self.database_schema.default_name(collection)
+            expected_type = TimeSeries if object_type == "TimeSeries" else Seismogram
+            if (
+                self.database_schema[wf_collection_name].data_type()
+                is not expected_type
+            ):
+                raise MsPASSError(
+                    "Collection {} is not a {} waveform collection".format(
+                        wf_collection_name, object_type
+                    ),
+                    ErrorSeverity.Invalid,
+                )
 
         # user might pass a mspass object by mistake
         try:
