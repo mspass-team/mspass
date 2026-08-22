@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev35+g1bc56600 documentation</title>
+    <title>mspasspy.seismic &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dcf0b7de"></script>
+    <script src="../_static/documentation_options.js?v=0f164397"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.reduce" href="mspasspy.reduce.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev35" />
+  <meta name="docsearch:version" content="2.4.4.dev40" />
   </head>
   
   
@@ -555,13 +555,19 @@ like variable offset record sections.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.edit_metadata">
 <span class="sig-name descname"><span class="pre">edit_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.edit_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.edit_metadata" title="Link to this definition">#</a></dt>
-<dd><p>Differs from set_metadata in that the contents of md are added to
-the current and do not fully repalce them.   Needed for updating
-metadata after costruction
-:param j: index of member
-:type j: int
-:param md: the metadata to edit, dict or metadata
-:type md: dict or metadata</p>
+<dd><p>Add the contents of <code class="docutils literal notranslate"><span class="pre">md</span></code> to the current metadata for member <code class="docutils literal notranslate"><span class="pre">j</span></code>.</p>
+<p>Unlike <a class="reference internal" href="#mspasspy.seismic.gather.BasicGather.set_metadata" title="mspasspy.seismic.gather.BasicGather.set_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_metadata()</span></code></a>, this method leaves every omitted key
+unchanged.  It only accepts keys already represented by the member
+metadata table and copies mutable values from the caller.  This is
+intended for updating metadata after construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>j</strong> (<em>int</em>) – index of member</p></li>
+<li><p><strong>md</strong> (<em>dict</em><em> or </em><em>metadata</em>) – the metadata to edit, dict or metadata</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -629,12 +635,21 @@ column index.
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.seismic.gather.BasicGather.set_metadata">
 <span class="sig-name descname"><span class="pre">set_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/seismic/gather.html#BasicGather.set_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.seismic.gather.BasicGather.set_metadata" title="Link to this definition">#</a></dt>
-<dd><p>Setter for metadata of member j.   md is the new continer that would
-replace current conent.  Most useful for constructors.
-:param j: index of member
-:type j: int
-:param md: the metadata to set, dict or metadata
-:type md: dict or metadata</p>
+<dd><p>Replace the metadata of member <code class="docutils literal notranslate"><span class="pre">j</span></code> with the content of <code class="docutils literal notranslate"><span class="pre">md</span></code>.</p>
+<p>Member metadata are stored in a rectangular DataFrame.  Consequently,
+columns used by other members remain in the table, but keys omitted
+from <code class="docutils literal notranslate"><span class="pre">md</span></code> become missing values in row <code class="docutils literal notranslate"><span class="pre">j</span></code>.  Values are copied so
+later edits to mutable objects held by the caller do not alter the
+gather.  This full-row replacement is most useful for constructors;
+use <a class="reference internal" href="#mspasspy.seismic.gather.BasicGather.edit_metadata" title="mspasspy.seismic.gather.BasicGather.edit_metadata"><code class="xref py py-meth docutils literal notranslate"><span class="pre">edit_metadata()</span></code></a> for a partial update.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>j</strong> (<em>int</em>) – index of member</p></li>
+<li><p><strong>md</strong> (<em>dict</em><em> or </em><em>metadata</em>) – the metadata to set, dict or metadata</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

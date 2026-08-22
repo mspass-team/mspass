@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Editing &#8212; MsPASS 2.4.4.dev35+g1bc56600 documentation</title>
+    <title>Data Editing &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dcf0b7de"></script>
+    <script src="../_static/documentation_options.js?v=0f164397"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Handling Errors" href="handling_errors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev35" />
+  <meta name="docsearch:version" content="2.4.4.dev40" />
   </head>
   
   
@@ -782,12 +782,11 @@ the constructor is different and has this signature:</p>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">executioner_list</span></code> is expected to be any iterable container made up
 only of Python objects that are instances of Executioner subclasses. (All the
-classes covered in this document are subclasses of Executioner.)  Use a
-reusable iterable such as a list or tuple rather than a one-shot generator,
-because the constructor iterates over it once for validation and again to
-copy it.  <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> itself has no verbose constructor option.  Any
-testers needing verbose output must have that option enabled during their
-construction.</p>
+classes covered in this document are subclasses of Executioner.)  The input is
+materialized once, so reusable containers and one-shot generators preserve the
+same execution order.  <code class="docutils literal notranslate"><span class="pre">FiringSquad</span></code> itself has no verbose constructor
+option.  Any testers needing verbose output must have that option enabled
+during their construction.</p>
 <p>When the <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code> method is called for this class the list of
 executioners are called in order defined by the list.  The victim cannot
 be hit by more than one bullet.  Once a datum is killed the <code class="docutils literal notranslate"><span class="pre">kill_if_true</span></code>

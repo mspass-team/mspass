@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev35+g1bc56600 documentation</title>
+    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dcf0b7de"></script>
+    <script src="../_static/documentation_options.js?v=0f164397"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.seismic" href="mspasspy.seismic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev35" />
+  <meta name="docsearch:version" content="2.4.4.dev40" />
   </head>
   
   
@@ -939,19 +939,19 @@ information in the ensemble metadata container rather than
 having duplicates in each member.</p>
 <p>Two different approaches can be used to do this copy.  The faster,
 but least reliable method is to simply copy the values from the first
-member of the ensemble.  That approach is enabled by default.
+live member of the ensemble.  That approach is enabled by default.
 It is completely reliable when used after a conversion from an obspy
 Stream but ONLY if the data began life as a mspass ensemble with
 exactly the same keys set as global.   The type example of that
 is after an obspy algorithm is applied to a mspass ensemble
 via the mspass decorators.</p>
 <p>A more cautious algorithm can be enabled by setting check_all_members
-True. In that mode the list of keys received is tested with a
-not equal test for against each member.  Note we do not do anything
-fancy with floating point data to allow for finite precision.
+True. In that mode each requested key is required in every live member,
+and values are compared with the Python <code class="docutils literal notranslate"><span class="pre">==</span></code> operator.  Note we do not
+do anything fancy with floating point data to allow for finite precision.
 The reason is Metadata float values are normally expected to be
-constant data.  In that case an != test will yield false when the
-comparison is between two copies.  The not equal test may fail, however,
+constant data.  In that case an equality test will yield true when the
+comparison is between two copies.  The equality test may fail, however,
 if used with computed floating point numbers.   An example where
 that is possible would be spatial gathers like PP data assembled by
 midpoint coordinates.  If you need to build gathers in such a context
@@ -959,7 +959,7 @@ we recommend you use an integer image point tied to a specialized
 document collection in MongoDB that defines the geometry of that
 point.  There may be other examples, but the point is don’t trust
 computed floating point values to work.  It will also not work if
-the values of a key-value pair don’t support an != comparison.
+the values of a key-value pair don’t support an <code class="docutils literal notranslate"><span class="pre">==</span></code> comparison.
 That could be common if the value request for copy was a python object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -977,6 +977,9 @@ will be removed from all members.  This option is only allowed
 if check_all_members is set True.  It will be silently ignored if
 check_all_members is False.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.  The input ensemble is modified in place.</p>
 </dd>
 </dl>
 </dd></dl>

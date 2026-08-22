@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev35+g1bc56600 documentation</title>
+    <title>mspasspy.seismic.gather &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=dcf0b7de"></script>
+    <script src="../../../_static/documentation_options.js?v=0f164397"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev35" />
+  <meta name="docsearch:version" content="2.4.4.dev40" />
   </head>
   
   
@@ -474,6 +474,9 @@
                   
   <h1>Source code for mspasspy.seismic.gather</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask</span>
@@ -705,14 +708,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elog</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__default_constructor__</span><span class="p">(</span>
@@ -772,13 +775,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="n">num_components</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">supported_array_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">"numpy"</span><span class="p">,</span>
@@ -853,12 +856,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">member_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_compact</span> <span class="o">=</span> <span class="n">is_compact</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npartitions</span> <span class="o">=</span> <span class="n">npartitions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">Array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">):</span>
@@ -1003,7 +1007,7 @@
             <span class="p">)</span>
 
         <span class="c1"># Add the ensemble's metadata</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">input_obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">input_obj</span><span class="p">))</span>
 
         <span class="c1"># Extract Member Metadata from old ensemble</span>
         <span class="c1"># Add the members' metadata</span>
@@ -1051,7 +1055,9 @@
 
 <span class="sd">        :param npts:  length in samples of all members.  This parameter</span>
 <span class="sd">          is required and there is no default due to the expected use only</span>
-<span class="sd">          by subclasses</span>
+<span class="sd">          by subclasses.  When ``input_obj`` is supplied, the value is derived</span>
+<span class="sd">          after any requested resampling or regularization.  A supplied</span>
+<span class="sd">          nonzero value must match that post-transformation length.</span>
 <span class="sd">        :type npts:  integer</span>
 
 <span class="sd">        :param dt:  sample interval of all data in ensemble.  Default is</span>
@@ -1081,6 +1087,58 @@
 <span class="sd">        :type regularizer: Callable[[TimeSeries|Seismogram], TimeSeries|Seismogram]</span>
 
 <span class="sd">        """</span>
+
+        <span class="c1"># Resampling and regularization can change the number of samples.</span>
+        <span class="c1"># Apply those transformations before deriving or validating dimensions so</span>
+        <span class="c1"># ``npts`` always describes the array that will actually be stored.</span>
+        <span class="k">if</span> <span class="n">input_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resample</span> <span class="ow">or</span> <span class="n">regularize</span><span class="p">:</span>
+                <span class="n">input_obj</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">input_obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resample</span><span class="p">:</span>
+                <span class="n">input_obj</span> <span class="o">=</span> <span class="n">resample_ensemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">regularize</span><span class="p">:</span>
+                <span class="n">input_obj</span> <span class="o">=</span> <span class="n">regularize_ensemble</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">regularizer</span><span class="p">)</span>
+            <span class="n">resample</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">regularize</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">derived_dimensions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">input_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_obj</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">derived_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_obj</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+            <span class="n">derived_dimensions</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"capacity"</span><span class="p">:</span> <span class="n">derived_size</span><span class="p">,</span>
+                <span class="s2">"size"</span><span class="p">:</span> <span class="n">derived_size</span><span class="p">,</span>
+                <span class="s2">"npts"</span><span class="p">:</span> <span class="n">input_obj</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span>
+                <span class="s2">"num_components"</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="mi">1</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_obj</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="k">else</span> <span class="mi">3</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">derived_dimensions</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"capacity"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">"size"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">"npts"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s2">"num_components"</span><span class="p">:</span> <span class="n">input_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">derived_dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">supplied_dimensions</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"capacity"</span><span class="p">:</span> <span class="n">capacity</span><span class="p">,</span>
+                <span class="s2">"size"</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">"npts"</span><span class="p">:</span> <span class="n">npts</span><span class="p">,</span>
+                <span class="s2">"num_components"</span><span class="p">:</span> <span class="n">num_components</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">derived_value</span> <span class="ow">in</span> <span class="n">derived_dimensions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">supplied_value</span> <span class="o">=</span> <span class="n">supplied_dimensions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">supplied_value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">supplied_value</span> <span class="o">!=</span> <span class="n">derived_value</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">"</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> conflicts with the value </span><span class="si">{}</span><span class="s2"> derived from input data"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">name</span><span class="p">,</span> <span class="n">supplied_value</span><span class="p">,</span> <span class="n">derived_value</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="n">capacity</span> <span class="o">=</span> <span class="n">derived_dimensions</span><span class="p">[</span><span class="s2">"capacity"</span><span class="p">]</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">derived_dimensions</span><span class="p">[</span><span class="s2">"size"</span><span class="p">]</span>
+            <span class="n">npts</span> <span class="o">=</span> <span class="n">derived_dimensions</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span>
+            <span class="n">num_components</span> <span class="o">=</span> <span class="n">derived_dimensions</span><span class="p">[</span><span class="s2">"num_components"</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="n">capacity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
@@ -1120,7 +1178,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array_type</span> <span class="o">=</span> <span class="n">array_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_components</span> <span class="o">=</span> <span class="n">num_components</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="n">ensemble_metadata</span>
+        <span class="k">if</span> <span class="n">ensemble_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ensemble_metadata</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"ensemble metadata should be a dict-like object"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">ensemble_metadata</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="n">member_metadata</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_parallel</span> <span class="o">=</span> <span class="n">is_parallel</span>
@@ -1130,12 +1191,11 @@
 
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># default setting for the metadata</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">"is_live"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s2">"is_utc"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s2">"dt"</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
-            <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_live"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"is_utc"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"dt"</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BasicGather.append">
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.append">[docs]</a>
@@ -1196,10 +1256,10 @@
 <span class="sd">        should be allowed to be anything, however, to handle things</span>
 <span class="sd">        like variable offset record sections.</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.set_column_values">
@@ -1212,7 +1272,7 @@
         <span class="c1"># Sanity check: the input be a list</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The column values should be a list"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span> <span class="o">=</span> <span class="n">x</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_column_values</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.dt">
@@ -1221,7 +1281,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the sample rate of the ensemble</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">"dt"</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"dt"</span><span class="p">]</span></div>
 
 
     <span class="c1"># The following names match BasicTimeSeries because the match in</span>
@@ -1254,9 +1314,13 @@
 <span class="sd">        :param x: a list of column names</span>
 <span class="sd">        :param time: the time (row) value</span>
 <span class="sd">        """</span>
-        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">column_values</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-        <span class="n">ans</span> <span class="o">=</span> <span class="p">[(</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">()[</span><span class="n">ind</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span></div>
+        <span class="n">column_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_values</span><span class="p">()</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">column_values</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="n">sample_numbers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">()[</span><span class="n">index</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()</span>
+            <span class="n">sample_numbers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">if</span> <span class="n">q</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sample_numbers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.time_is_UTC">
@@ -1265,7 +1329,7 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns True if the time standard for the data is set as UTC</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.time_is_relative">
@@ -1327,7 +1391,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">t0shift</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">[</span><span class="s2">"is_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.ator">
@@ -1394,8 +1458,15 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.set_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Setter for metadata of member j.   md is the new continer that would</span>
-<span class="sd">        replace current conent.  Most useful for constructors.</span>
+<span class="sd">        Replace the metadata of member ``j`` with the content of ``md``.</span>
+
+<span class="sd">        Member metadata are stored in a rectangular DataFrame.  Consequently,</span>
+<span class="sd">        columns used by other members remain in the table, but keys omitted</span>
+<span class="sd">        from ``md`` become missing values in row ``j``.  Values are copied so</span>
+<span class="sd">        later edits to mutable objects held by the caller do not alter the</span>
+<span class="sd">        gather.  This full-row replacement is most useful for constructors;</span>
+<span class="sd">        use :meth:`edit_metadata` for a partial update.</span>
+
 <span class="sd">        :param j: index of member</span>
 <span class="sd">        :type j: int</span>
 <span class="sd">        :param md: the metadata to set, dict or metadata</span>
@@ -1403,19 +1474,31 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The metadata should be a dict-like object"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
-            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">md_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">md_df</span></div>
+        <span class="n">replacement</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">replacement</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">replacement</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">missing_keys</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span>
+                <span class="n">missing_keys</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">replacement</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.edit_metadata">
 <a class="viewcode-back" href="../../../python_api/mspasspy.seismic.html#mspasspy.seismic.gather.BasicGather.edit_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">edit_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Differs from set_metadata in that the contents of md are added to</span>
-<span class="sd">        the current and do not fully repalce them.   Needed for updating</span>
-<span class="sd">        metadata after costruction</span>
+<span class="sd">        Add the contents of ``md`` to the current metadata for member ``j``.</span>
+
+<span class="sd">        Unlike :meth:`set_metadata`, this method leaves every omitted key</span>
+<span class="sd">        unchanged.  It only accepts keys already represented by the member</span>
+<span class="sd">        metadata table and copies mutable values from the caller.  This is</span>
+<span class="sd">        intended for updating metadata after construction.</span>
+
 <span class="sd">        :param j: index of member</span>
 <span class="sd">        :type j: int</span>
 <span class="sd">        :param md: the metadata to edit, dict or metadata</span>
@@ -1423,15 +1506,13 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The metadata should be a dict-like object"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
-            <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">md</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># We assume that user shouldn't add new metadata</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                     <span class="s2">"key </span><span class="si">{}</span><span class="s2"> is not presented in the member metadata"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                 <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.member">
@@ -1475,9 +1556,9 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">"dict"</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span>
         <span class="k">elif</span> <span class="n">return_type</span> <span class="o">==</span> <span class="s2">"metadata"</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasicGather.sync_metadata">
@@ -1488,8 +1569,10 @@
 <span class="sd">        ensemble key-value pairs to the members.  It is debatable that</span>
 <span class="sd">        this would be needed but would be trivial to implement.</span>
 <span class="sd">        """</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_metadata</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">val</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensemble_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">deepcopy</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">member_metadata</span><span class="p">))</span>
+            <span class="p">]</span></div>
 
 
     <span class="c1"># not sure if we can make this member abstract.  It needs to</span>

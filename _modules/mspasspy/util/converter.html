@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.converter &#8212; MsPASS 2.4.4.dev35+g1bc56600 documentation</title>
+    <title>mspasspy.util.converter &#8212; MsPASS 2.4.4.dev40+g52a420a5 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=dcf0b7de"></script>
+    <script src="../../../_static/documentation_options.js?v=0f164397"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev35" />
+  <meta name="docsearch:version" content="2.4.4.dev40" />
   </head>
   
   
@@ -1333,8 +1333,12 @@
 <span class="sd">    :return: converted seismogram ensemble</span>
 <span class="sd">    """</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Stream2SeismogramEnsemble: stream length must be divisible by 3"</span>
+        <span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span> <span class="o">//</span> <span class="mi">3</span><span class="p">):</span>
         <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">:</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="c1"># fixme cardinal</span>
     <span class="c1"># Handle the ensemble metadata.   The little helper we call here</span>
@@ -1359,42 +1363,6 @@
 <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span> <span class="o">=</span> <span class="n">Stream2SeismogramEnsemble</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    This is a helper function for below.  I scans ens to assure all members</span>
-<span class="sd">    of the ensemble have the same value for the requested key. It uses</span>
-<span class="sd">    the python operator == for testing.  That can fail for a variety of</span>
-<span class="sd">    reasons the "match" may be overly restrictive for some types of data</span>
-<span class="sd">    linked to key.</span>
-
-<span class="sd">    :param ens:  ensemble data to scan.  Function will throw a MsPASS error if</span>
-<span class="sd">      the data this symbol is associated with is not a mspass ensemble object.</span>
-<span class="sd">    :param key:  key whose values are to be tested for all members of ens.</span>
-<span class="sd">    :return:  True of all members match, false if there are any differences.</span>
-<span class="sd">      Note if a key is not defined in a live member the result will be false.</span>
-<span class="sd">      Dead data are ignored.</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
-        <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">nlive</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">val0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                    <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">val0</span> <span class="o">!=</span> <span class="n">val</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-            <span class="s2">"_all_members_match:  input is not a mspass ensemble object"</span><span class="p">,</span> <span class="s2">"Invalid"</span>
-        <span class="p">)</span>
-
-
 <div class="viewcode-block" id="post_ensemble_metadata">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.converter.post_ensemble_metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1411,7 +1379,7 @@
 
 <span class="sd">    Two different approaches can be used to do this copy.  The faster,</span>
 <span class="sd">    but least reliable method is to simply copy the values from the first</span>
-<span class="sd">    member of the ensemble.  That approach is enabled by default.</span>
+<span class="sd">    live member of the ensemble.  That approach is enabled by default.</span>
 <span class="sd">    It is completely reliable when used after a conversion from an obspy</span>
 <span class="sd">    Stream but ONLY if the data began life as a mspass ensemble with</span>
 <span class="sd">    exactly the same keys set as global.   The type example of that</span>
@@ -1419,12 +1387,12 @@
 <span class="sd">    via the mspass decorators.</span>
 
 <span class="sd">    A more cautious algorithm can be enabled by setting check_all_members</span>
-<span class="sd">    True. In that mode the list of keys received is tested with a</span>
-<span class="sd">    not equal test for against each member.  Note we do not do anything</span>
-<span class="sd">    fancy with floating point data to allow for finite precision.</span>
+<span class="sd">    True. In that mode each requested key is required in every live member,</span>
+<span class="sd">    and values are compared with the Python ``==`` operator.  Note we do not</span>
+<span class="sd">    do anything fancy with floating point data to allow for finite precision.</span>
 <span class="sd">    The reason is Metadata float values are normally expected to be</span>
-<span class="sd">    constant data.  In that case an != test will yield false when the</span>
-<span class="sd">    comparison is between two copies.  The not equal test may fail, however,</span>
+<span class="sd">    constant data.  In that case an equality test will yield true when the</span>
+<span class="sd">    comparison is between two copies.  The equality test may fail, however,</span>
 <span class="sd">    if used with computed floating point numbers.   An example where</span>
 <span class="sd">    that is possible would be spatial gathers like PP data assembled by</span>
 <span class="sd">    midpoint coordinates.  If you need to build gathers in such a context</span>
@@ -1432,7 +1400,7 @@
 <span class="sd">    document collection in MongoDB that defines the geometry of that</span>
 <span class="sd">    point.  There may be other examples, but the point is don't trust</span>
 <span class="sd">    computed floating point values to work.  It will also not work if</span>
-<span class="sd">    the values of a key-value pair don't support an != comparison.</span>
+<span class="sd">    the values of a key-value pair don't support an ``==`` comparison.</span>
 <span class="sd">    That could be common if the value request for copy was a python object.</span>
 
 <span class="sd">    :param ens:  ensemble data to be processed.  The function will throw</span>
@@ -1447,45 +1415,61 @@
 <span class="sd">      will be removed from all members.  This option is only allowed</span>
 <span class="sd">      if check_all_members is set True.  It will be silently ignored if</span>
 <span class="sd">      check_all_members is False.</span>
+<span class="sd">    :return: None.  The input ensemble is modified in place.</span>
 <span class="sd">    """</span>
+
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">"post_ensemble_metadata"</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">live_members</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">live_members</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">live_members</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">source</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                    <span class="n">alg</span>
+                    <span class="o">+</span> <span class="s2">":  no data matching requested key="</span>
+                    <span class="o">+</span> <span class="n">k</span>
+                    <span class="o">+</span> <span class="s2">" in the first live member.  Cannot post to ensemble"</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">check_all_members</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">live_members</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                             <span class="n">alg</span>
                             <span class="o">+</span> <span class="s2">":  no data matching requested key="</span>
                             <span class="o">+</span> <span class="n">k</span>
-                            <span class="o">+</span> <span class="s2">" Cannot post to ensemble"</span><span class="p">,</span>
-                            <span class="s2">"Invalid"</span><span class="p">,</span>
+                            <span class="o">+</span> <span class="s2">" in a live member.  Cannot post to ensemble"</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                         <span class="p">)</span>
-                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">check_all_members</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
                         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                             <span class="n">alg</span>
                             <span class="o">+</span> <span class="s2">":  Data mismatch data members with key="</span>
                             <span class="o">+</span> <span class="n">k</span>
                             <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">  In check_all_members mode all values associated with this key must match"</span><span class="p">,</span>
-                            <span class="s2">"Invalid"</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                         <span class="p">)</span>
+
+        <span class="n">ens</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">check_all_members</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">clean_members</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                        <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="n">ens</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                            <span class="n">d</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
             <span class="n">alg</span>
             <span class="o">+</span> <span class="s2">":  Illegal data received.  This function runs only on mspass ensemble objects"</span><span class="p">,</span>
-            <span class="s2">"Invalid"</span><span class="p">,</span>
+            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 </pre></div>
