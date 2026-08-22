@@ -430,9 +430,14 @@ class TestDatabase:
 
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(gridfs_id)
-        # test overwrite mode
+        # The low-level helper can only stage replacement data.  It cannot
+        # delete the old object before a caller durably switches the waveform
+        # reference.
         self.db._save_sample_data_to_gridfs(tmp_ts, True)
-        assert not gfsh.exists(gridfs_id)
+        new_gridfs_id = tmp_ts["gridfs_id"]
+        assert new_gridfs_id != gridfs_id
+        assert gfsh.exists(gridfs_id)
+        assert gfsh.exists(new_gridfs_id)
 
     def mock_urlopen(*args):
         response = Mock()

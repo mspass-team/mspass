@@ -1472,7 +1472,12 @@ class Database(pymongo.database.Database):
           A discussion of format caveats can be found above.
         :type format: :class:`str`
         :param overwrite:  If true gridfs data linked to the original
-          waveform will be replaced by the sample data from this save.
+          waveform will be replaced by the sample data from this save.  A
+          previously saved atomic datum must carry both its waveform ``_id``
+          and ``gridfs_id``; the existing waveform document is updated rather
+          than inserting a second document.  Ensemble members follow the same
+          rule independently.  Objects carrying neither reference are new
+          data and are saved normally.
           Default is false, and should be the normal use.  This option
           should never be used after a reduce operator as the parents
           are not tracked and the space advantage is likely minimal for
@@ -1554,7 +1559,80 @@ class Database(pymongo.database.Database):
             )
             raise MsPASSError(message, "Fatal")
 
-        if mspass_object.live:
+        overwrite_handled = False
+        if overwrite and storage_mode == "gridfs" and mspass_object.live:
+            if isinstance(mspass_object, (TimeSeries, Seismogram)):
+                has_wfid = "_id" in mspass_object
+                has_gridfs_id = "gridfs_id" in mspass_object
+                if has_wfid != has_gridfs_id:
+                    raise ValueError(
+                        "Database.save_data: overwrite=True requires both _id "
+                        "and gridfs_id when either reference is defined"
+                    )
+                if has_wfid:
+                    mspass_object = self.update_data(
+                        mspass_object,
+                        collection=collection,
+                        mode=mode,
+                        exclude_keys=exclude_keys,
+                        data_tag=data_tag,
+                        save_history=save_history,
+                        normalizing_collections=normalizing_collections,
+                        alg_name=alg_name,
+                        alg_id=alg_id,
+                    )
+                    overwrite_handled = True
+            else:
+                live_members = [d for d in mspass_object.member if d.live]
+                for d in live_members:
+                    has_wfid = "_id" in d
+                    has_gridfs_id = "gridfs_id" in d
+                    if has_wfid != has_gridfs_id:
+                        raise ValueError(
+                            "Database.save_data: overwrite=True requires both "
+                            "_id and gridfs_id for every previously saved member"
+                        )
+                if any("_id" in d for d in live_members):
+                    mspass_object, bodies = self.stedronsky.bring_out_your_dead(
+                        mspass_object
+                    )
+                    if not cremate and len(bodies.member) > 0:
+                        self.stedronsky.bury(bodies)
+                    mspass_object.sync_metadata()
+                    for d in mspass_object.member:
+                        if d.live:
+                            if "_id" in d:
+                                d["storage_mode"] = "gridfs"
+                                self.update_data(
+                                    d,
+                                    collection=collection,
+                                    mode=mode,
+                                    exclude_keys=exclude_keys,
+                                    data_tag=data_tag,
+                                    save_history=save_history,
+                                    normalizing_collections=normalizing_collections,
+                                    alg_name=alg_name,
+                                    alg_id=alg_id,
+                                )
+                            else:
+                                self.save_data(
+                                    d,
+                                    return_data=True,
+                                    mode=mode,
+                                    storage_mode="gridfs",
+                                    overwrite=False,
+                                    exclude_keys=exclude_keys,
+                                    collection=collection,
+                                    data_tag=data_tag,
+                                    cremate=cremate,
+                                    save_history=save_history,
+                                    normalizing_collections=normalizing_collections,
+                                    alg_name=alg_name,
+                                    alg_id=alg_id,
+                                )
+                    overwrite_handled = True
+
+        if mspass_object.live and not overwrite_handled:
             # We remove dead bodies from ensembles to simplify saving
             # data below.
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
@@ -1635,7 +1713,7 @@ class Database(pymongo.database.Database):
                         alg_name,
                         alg_id,
                     )
-        else:
+        elif not overwrite_handled:
             # may need to clean Metadata before calling this method
             # to assure there are not values that will cause MongoDB
             # to throw an exception when the tombstone subdocument
@@ -3086,6 +3164,7 @@ class Database(pymongo.database.Database):
         normalizing_collections=["channel", "site", "source"],
         alg_id="0",
         alg_name="Database.update_data",
+        save_history=True,
     ):
         """
         Updates both metadata and sample data corresponding to an input data
@@ -3108,11 +3187,13 @@ class Database(pymongo.database.Database):
                this could create a blaat problem with large data sets so
                we do not currently support that type of update.
 
-        A VERY IMPORTANT implicit feature of this method is that
-        if the magic key "gridfs_id" exists the sample data in the
-        input to this method (mspass_object.data) will overwrite any
-        the existing content of gridfs found at the matching id.   This
-        is a somewhat hidden feature so beware.
+        A VERY IMPORTANT feature of this method is that, when the magic
+        key ``gridfs_id`` exists, replacement samples are first written as
+        a new GridFS object.  The waveform document is then changed from the
+        expected old id to the new id with one conditional update.  Only
+        after that reference is durable is the old GridFS object deleted.
+        Consequently, a put or reference-update failure leaves the old
+        waveform readable instead of destroying its only sample copy.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -3149,6 +3230,11 @@ class Database(pymongo.database.Database):
           (e.g. if one added a "shot" collection to the schema the list would need
           to be changed to at least add "shot".)
         :type normalizing_collections: list of strings defining collection names.
+        :param save_history: When True (the default), save a nonempty object
+          history and update its waveform cross-reference.  False suppresses
+          that write.  This option is used by :meth:`save_data` when its
+          documented GridFS overwrite mode updates an existing waveform.
+        :type save_history: :class:`bool`
         :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
           (defaults to 'Database.update_data' and should not normally need to be changed)
         :type alg_name: :class:`str`
@@ -3169,6 +3255,11 @@ class Database(pymongo.database.Database):
         # only for usage errors.   We test the elog size to check if there
         # are other warning messages and add a summary if there were any
         logsize0 = mspass_object.elog.size()
+        old_gridfs_id = (
+            mspass_object["gridfs_id"] if "gridfs_id" in mspass_object else None
+        )
+        if old_gridfs_id is not None:
+            mspass_object.erase("gridfs_id")
         try:
             self.update_metadata(
                 mspass_object,
@@ -3179,8 +3270,9 @@ class Database(pymongo.database.Database):
                 normalizing_collections=normalizing_collections,
                 alg_name=alg_name,
             )
-        except:
-            raise
+        finally:
+            if old_gridfs_id is not None:
+                mspass_object["gridfs_id"] = old_gridfs_id
         logsize = mspass_object.elog.size()
         # A bit verbose, but we post this warning to make it clear the
         # problem originated from update_data - probably not really needed
@@ -3201,7 +3293,7 @@ class Database(pymongo.database.Database):
             self.database_schema.default_name("history_object") + "_id"
         )
         history_object_id = None
-        if not mspass_object.is_empty():
+        if save_history and not mspass_object.is_empty():
             history_object_id = self._save_history(mspass_object, alg_name, alg_id)
             update_record[history_obj_id_name] = history_object_id
 
@@ -3227,69 +3319,90 @@ class Database(pymongo.database.Database):
                 )
                 mspass_object["storage_mode"] = "gridfs"
                 update_record["storage_mode"] = "gridfs"
-            # This logic overwrites the content if the magic key
-            # "gridfs_id" exists in the input. In both cases gridfs_id is set
-            # in returned
-            if "gridfs_id" in mspass_object:
+            # Supplying the replacement id lets rollback remove a blob even
+            # when GridFS writes it and then raises an exception.
+            staged_gridfs_id = ObjectId() if old_gridfs_id is not None else None
+            try:
                 mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object,
-                    overwrite=True,
+                    overwrite=False,
+                    gridfs_id=staged_gridfs_id,
                 )
-            else:
-                mspass_object = self._save_sample_data_to_gridfs(
-                    mspass_object, overwrite=False
-                )
+                new_gridfs_id = mspass_object["gridfs_id"]
+                update_record["gridfs_id"] = new_gridfs_id
 
-            # There is a possible efficiency gain right here.  Not sure if
-            # gridfs_id is altered when the sample data are updated in place.
-            # if we can be sure the returned gridfs_id is the same as theresult
-            # input in that case, we would omit gridfs_id from the update
-            # record and most data would not require the final update
-            # transaction below
-            update_record["gridfs_id"] = mspass_object["gridfs_id"]
-            # should define wf_collection here because if the mspass_object is dead
-            if collection:
-                wf_collection_name = collection
-            else:
-                # This returns a string that is the collection name for this atomic data type
-                # A weird construct
-                wf_collection_name = save_schema.collection("_id")
-            wf_collection = self[wf_collection_name]
-
-            elog_id = None
-            if mspass_object.elog.size() > 0:
-                elog_id_name = self.database_schema.default_name("elog") + "_id"
-                # FIXME I think here we should check if elog_id field exists in the mspass_object
-                # and we should update the elog entry if mspass_object already had one
-                if elog_id_name in mspass_object:
-                    old_elog_id = mspass_object[elog_id_name]
+                # should define wf_collection here because if the mspass_object is dead
+                if collection:
+                    wf_collection_name = collection
                 else:
-                    old_elog_id = None
-                # elog ids will be updated in the wf col when saving metadata
-                elog_id = self._save_elog(
-                    mspass_object, elog_id=old_elog_id, data_tag=data_tag
-                )
-                update_record[elog_id_name] = elog_id
+                    # This returns a string that is the collection name for this atomic data type
+                    # A weird construct
+                    wf_collection_name = save_schema.collection("_id")
+                wf_collection = self[wf_collection_name]
 
-                # update elog collection
-                # we have to do the xref to wf collection like this too
-                elog_col = self[self.database_schema.default_name("elog")]
-                wf_id_name = wf_collection_name + "_id"
-                filter_ = {"_id": elog_id}
-                elog_col.update_one(
-                    filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
-                )
-            # finally we need to update the wf document if we set anything
-            # in update_record
-            if len(update_record):
+                elog_id = None
+                if mspass_object.elog.size() > 0:
+                    elog_id_name = self.database_schema.default_name("elog") + "_id"
+                    # FIXME I think here we should check if elog_id field exists in the mspass_object
+                    # and we should update the elog entry if mspass_object already had one
+                    if elog_id_name in mspass_object:
+                        old_elog_id = mspass_object[elog_id_name]
+                    else:
+                        old_elog_id = None
+                    # elog ids will be updated in the wf col when saving metadata
+                    elog_id = self._save_elog(
+                        mspass_object, elog_id=old_elog_id, data_tag=data_tag
+                    )
+                    update_record[elog_id_name] = elog_id
+
+                    # update elog collection
+                    # we have to do the xref to wf collection like this too
+                    elog_col = self[self.database_schema.default_name("elog")]
+                    wf_id_name = wf_collection_name + "_id"
+                    filter_ = {"_id": elog_id}
+                    elog_col.update_one(
+                        filter_, {"$set": {wf_id_name: mspass_object["_id"]}}
+                    )
+
                 filter_ = {"_id": mspass_object["_id"]}
-                wf_collection.update_one(filter_, {"$set": update_record})
-                # we may probably set the elog_id field in the mspass_object
-                if elog_id:
-                    mspass_object[elog_id_name] = elog_id
-                # we may probably set the history_object_id field in the mspass_object
-                if history_object_id:
-                    mspass_object[history_obj_id_name] = history_object_id
+                if old_gridfs_id is not None:
+                    filter_["gridfs_id"] = old_gridfs_id
+                result = wf_collection.update_one(filter_, {"$set": update_record})
+                if old_gridfs_id is not None and result.matched_count != 1:
+                    raise MsPASSError(
+                        "Database.update_data could not replace the expected "
+                        "GridFS reference",
+                        ErrorSeverity.Invalid,
+                    )
+            except Exception as original_error:
+                if old_gridfs_id is not None:
+                    try:
+                        gfsh = gridfs.GridFS(self)
+                        if gfsh.exists(staged_gridfs_id):
+                            gfsh.delete(staged_gridfs_id)
+                    except Exception as cleanup_error:
+                        raise original_error from cleanup_error
+                    finally:
+                        mspass_object["gridfs_id"] = old_gridfs_id
+                raise
+            # we may probably set the elog_id field in the mspass_object
+            if elog_id:
+                mspass_object[elog_id_name] = elog_id
+            # we may probably set the history_object_id field in the mspass_object
+            if history_object_id:
+                mspass_object[history_obj_id_name] = history_object_id
+            if old_gridfs_id is not None:
+                try:
+                    gfsh = gridfs.GridFS(self)
+                    if gfsh.exists(old_gridfs_id):
+                        gfsh.delete(old_gridfs_id)
+                except Exception as error:
+                    mspass_object.elog.log_error(
+                        alg_name,
+                        "GridFS replacement was committed, but the previous "
+                        f"sample object could not be deleted: {error}",
+                        ErrorSeverity.Complaint,
+                    )
         else:
             # Dead data land here
             elog_id_name = self.database_schema.default_name("elog") + "_id"
@@ -6750,6 +6863,7 @@ class Database(pymongo.database.Database):
         self,
         mspass_object,
         overwrite=False,
+        gridfs_id=None,
     ):
         """
         Saves the sample data array for a mspass seismic data object using
@@ -6770,11 +6884,17 @@ class Database(pymongo.database.Database):
         :type mspass_object:  one of TimeSeries, Seismogram,
           TimeSeriesEnsemble, or Seismogram Ensemble.
 
-        :param overwrite:  When set True if there is an existing datum
-          with a matching id for the attribute "gridfs_id", the existing datum
-          will be deleted before the new data is saved.  When False a new
-          set of documents will be created to hold the data in the gridfs
-          system.  Default is False.
+        :param overwrite:  Compatibility flag used by higher-level writers.
+          This low-level method always stages a new GridFS object and never
+          deletes the object named by an existing ``gridfs_id``: it cannot
+          know whether a waveform reference has been committed.  Public
+          atomic overwrite paths perform that conditional reference update
+          and delete the old object afterward.  Direct callers must provide
+          the same ordering if they intend to remove old data.
+
+        :param gridfs_id: optional id to assign to the newly written GridFS
+          object.  Used by update_data so a failed staged write can be rolled
+          back even if GridFS raises after creating the object.
 
         :return: edited version of input (mspass_object).  Return changed
           only by adding metadata attributes "storage_mode" and "gridfs_id"
@@ -6784,13 +6904,12 @@ class Database(pymongo.database.Database):
         gfsh = gridfs.GridFS(self)
 
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
-            if overwrite and mspass_object.is_defined("gridfs_id"):
-                gridfs_id = mspass_object["gridfs_id"]
-                if gfsh.exists(gridfs_id):
-                    gfsh.delete(gridfs_id)
             # verdion 2 had a transpose here that seemed unncessary
             ub = bytes(np.array(mspass_object.data))
-            gridfs_id = gfsh.put(ub)
+            if gridfs_id is None:
+                gridfs_id = gfsh.put(ub)
+            else:
+                gridfs_id = gfsh.put(ub, _id=gridfs_id)
             mspass_object["gridfs_id"] = gridfs_id
             mspass_object["storage_mode"] = "gridfs"
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
