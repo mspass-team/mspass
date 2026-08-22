@@ -36,6 +36,11 @@
     <member refid="classmspass_1_1utility_1_1_antelope_pf_error_1ad959d328f277898ab83ad5d2e2c8c93f" kind="function"><name>AntelopePfError</name></member>
     <member refid="classmspass_1_1utility_1_1_antelope_pf_error_1a2a1cb5be1c340b6cf557a0debdd5a716" kind="function"><name>log_error</name></member>
   </compound>
+  <compound refid="structmspass_1_1seismic_1_1detail_1_1_arithmetic_overlap" kind="struct"><name>mspass::seismic::detail::ArithmeticOverlap</name>
+    <member refid="structmspass_1_1seismic_1_1detail_1_1_arithmetic_overlap_1a5edf26ec54818719438629defc857b9b" kind="variable"><name>lhs_begin</name></member>
+    <member refid="structmspass_1_1seismic_1_1detail_1_1_arithmetic_overlap_1af6e93cd95339904cc0f967483b978ee1" kind="variable"><name>rhs_begin</name></member>
+    <member refid="structmspass_1_1seismic_1_1detail_1_1_arithmetic_overlap_1acbbf6a5804ab72b924762eb914e86139" kind="variable"><name>count</name></member>
+  </compound>
   <compound refid="classmspass_1_1utility_1_1_attribute_cross_reference" kind="class"><name>mspass::utility::AttributeCrossReference</name>
     <member refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a86d20528e7b4c604d0cbe94f5268357a" kind="variable"><name>itoe</name></member>
     <member refid="classmspass_1_1utility_1_1_attribute_cross_reference_1aa44758a695feea8a586586aab5bed76a" kind="variable"><name>etoi</name></member>
@@ -1850,7 +1855,7 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a771c46e3d8c9e43a4d0802151a591b3e" kind="function"><name>apply</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a8dd4cc5eaa1f7bf72e7726427f96fa1a" kind="function"><name>serialize</name></member>
   </compound>
-  <compound refid="namespace_0d123" kind="namespace"><name>@123</name>
+  <compound refid="namespace_0d124" kind="namespace"><name>@124</name>
   </compound>
   <compound refid="namespacemisc" kind="namespace"><name>misc</name>
     <member refid="base64_8h_1a6ae31a9cfaa53f69b47d96711b236607" kind="variable"><name>base64_chars</name></member>
@@ -2130,6 +2135,9 @@
     <member refid="namespacemspass_1_1seismic_1a0951fef82377e868ee7cfcd4841979cf" kind="function"><name>SEISMICMD_t0_shift</name></member>
     <member refid="namespacemspass_1_1seismic_1a6931911b331ba8c70a3bf5365f548074" kind="function"><name>SEISMICMD_utc_convertible</name></member>
   </compound>
+  <compound refid="namespacemspass_1_1seismic_1_1detail" kind="namespace"><name>mspass::seismic::detail</name>
+    <member refid="waveform__arithmetic_8h_1a0f7da8aa4f5254df1f7605ac4bee6191" kind="function"><name>arithmetic_overlap</name></member>
+  </compound>
   <compound refid="namespacemspass_1_1utility" kind="namespace"><name>mspass::utility</name>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" kind="enum"><name>MDtype</name></member>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a7f80fcc452c2f1ed2bb51b39d0864df1" kind="enumvalue"><name>Real</name></member>
@@ -2223,7 +2231,7 @@
     <member refid="_processing_history_8cc_1a62389fcaa5e15291550b690b46b29049" kind="function"><name>status_to_words</name></member>
     <member refid="_processing_history_8cc_1a17bf4f635a7951ee80f56ebd2fc1e859" kind="function"><name>algorithm_outputs</name></member>
   </compound>
-  <compound refid="namespacemspass_1_1utility_1_1_0d127" kind="namespace"><name>mspass::utility::@127</name>
+  <compound refid="namespacemspass_1_1utility_1_1_0d128" kind="namespace"><name>mspass::utility::@128</name>
   </compound>
   <compound refid="namespacemspass_1_1utility_1_1detail" kind="namespace"><name>mspass::utility::detail</name>
     <member refid="data__directory_8h_1a89247ec9aa19c54a70ab3513b03fd34a" kind="function"><name>set_python_package_data_directory</name></member>
@@ -2506,6 +2514,8 @@
   <compound refid="_time_series_8cc" kind="file"><name>TimeSeries.cc</name>
   </compound>
   <compound refid="_time_series_w_gaps_8cc" kind="file"><name>TimeSeriesWGaps.cc</name>
+  </compound>
+  <compound refid="waveform__arithmetic_8h" kind="file"><name>waveform_arithmetic.h</name>
   </compound>
   <compound refid="_antelope_pf_8cc" kind="file"><name>AntelopePf.cc</name>
   </compound>
