@@ -879,6 +879,8 @@ def _partitioned_save_wfdoc(
         docarray.append(doc)
         if not doc["live"]:
             has_bodies = True
+    if len(docarray) == 0:
+        return []
     if has_bodies:
         lifelist = []
         cleaned_doclist = []
@@ -1828,39 +1830,42 @@ def read_to_dataframe(
     :param retrieve_history_record: a boolean control whether we would like to load processing history
     :type retrieve_history_record: :class:`bool`
     """
-    collection = cursor.collection.name
-    dbschema = db.database_schema
-    mdschema = db.metadata_schema
-    this_elog = ErrorLogger()
-    md_list = list()
-    for doc in cursor:
-        # Use the databhase module function doc2md that standardizes
-        # handling of schema constraints and exlcude_keys
+    try:
+        collection = cursor.collection.name
+        dbschema = db.database_schema
+        mdschema = db.metadata_schema
+        this_elog = ErrorLogger()
+        md_list = list()
+        for doc in cursor:
+            # Use the databhase module function doc2md that standardizes
+            # handling of schema constraints and exlcude_keys
 
-        md, aok, elog = doc2md(
-            doc,
-            dbschema,
-            mdschema,
-            collection,
-            exclude_keys,
-            mode,
-        )
-        if aok:
-            md_list.append(md)
-        else:
-            this_elog += elog
+            md, aok, elog = doc2md(
+                doc,
+                dbschema,
+                mdschema,
+                collection,
+                exclude_keys,
+                mode,
+            )
+            if aok:
+                md_list.append(md)
+            else:
+                this_elog += elog
 
-    if elog.size() > 0:
-        print(
-            "WARNING(read_to_dataframe): ",
-            elog.size(),
-            " errors were handled during dataframe construction",
-        )
-        print(
-            "All data associated with these errors were dropped.   Error log entries from doc2md follow"
-        )
-        errorlist = elog.get_error_log()
-        for entry in errorlist:
-            print(entry.algorithm, entry.message, entry.badness)
-    # convert the metadata list to a dataframe
-    return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
+        if this_elog.size() > 0:
+            print(
+                "WARNING(read_to_dataframe): ",
+                this_elog.size(),
+                " errors were handled during dataframe construction",
+            )
+            print(
+                "All data associated with these errors were dropped.   Error log entries from doc2md follow"
+            )
+            errorlist = this_elog.get_error_log()
+            for entry in errorlist:
+                print(entry.algorithm, entry.message, entry.badness)
+        # convert the metadata list to a dataframe
+        return pd.json_normalize(map(lambda cur: cur.todict(), md_list))
+    finally:
+        cursor.close()
