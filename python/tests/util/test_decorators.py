@@ -384,18 +384,20 @@ def test_timeseries_ensemble_as_stream():
     tse = get_live_timeseries_ensemble(2)
     assert len(tse.member) == 2
     cp = TimeSeriesEnsemble(tse)
-    dummy_func_timeseries_ensemble_as_stream(tse)
-    assert len(tse.member) == 5
-    np.isclose(cp.member[0].data, tse.member[0].data).all()
-    np.isclose(cp.member[0].data, tse.member[1].data).all()
+    with pytest.raises(ValueError, match="member count"):
+        dummy_func_timeseries_ensemble_as_stream(tse)
+    assert len(tse.member) == 2
+    for original, unchanged in zip(cp.member, tse.member):
+        assert np.isclose(original.data, unchanged.data).all()
 
     tse = get_live_timeseries_ensemble(2)
     assert len(tse.member) == 2
     cp = TimeSeriesEnsemble(tse)
-    dummy_func_timeseries_ensemble_as_stream_2(data=tse)
-    assert len(tse.member) == 5
-    np.isclose(cp.member[0].data, tse.member[0].data).all()
-    np.isclose(cp.member[0].data, tse.member[1].data).all()
+    with pytest.raises(ValueError, match="member count"):
+        dummy_func_timeseries_ensemble_as_stream_2(data=tse)
+    assert len(tse.member) == 2
+    for original, unchanged in zip(cp.member, tse.member):
+        assert np.isclose(original.data, unchanged.data).all()
 
 
 @seismogram_ensemble_as_stream
@@ -418,26 +420,24 @@ def test_seismogram_ensemble_as_stream():
     seis_e = get_live_seismogram_ensemble(2)
     assert len(seis_e.member) == 2
     cp = SeismogramEnsemble(seis_e)
-    dummy_func_seismogram_ensemble_as_stream(seis_e)
-    assert len(seis_e.member) == 3
-    assert all(
-        np.isclose(a, b).all() for a, b in zip(cp.member[0].data, seis_e.member[0].data)
-    )
-    assert all(
-        np.isclose(a, b).all() for a, b in zip(cp.member[1].data, seis_e.member[1].data)
-    )
+    with pytest.raises(ValueError, match="member count"):
+        dummy_func_seismogram_ensemble_as_stream(seis_e)
+    assert len(seis_e.member) == 2
+    for original, unchanged in zip(cp.member, seis_e.member):
+        assert all(
+            np.isclose(a, b).all() for a, b in zip(original.data, unchanged.data)
+        )
 
     seis_e = get_live_seismogram_ensemble(2)
     assert len(seis_e.member) == 2
     cp = SeismogramEnsemble(seis_e)
-    dummy_func_seismogram_ensemble_as_stream_2(data=seis_e)
-    assert len(seis_e.member) == 3
-    assert all(
-        np.isclose(a, b).all() for a, b in zip(cp.member[0].data, seis_e.member[0].data)
-    )
-    assert all(
-        np.isclose(a, b).all() for a, b in zip(cp.member[1].data, seis_e.member[1].data)
-    )
+    with pytest.raises(ValueError, match="member count"):
+        dummy_func_seismogram_ensemble_as_stream_2(data=seis_e)
+    assert len(seis_e.member) == 2
+    for original, unchanged in zip(cp.member, seis_e.member):
+        assert all(
+            np.isclose(a, b).all() for a, b in zip(original.data, unchanged.data)
+        )
 
 
 class dummy_class_method_wrapper:
