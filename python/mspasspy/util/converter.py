@@ -817,8 +817,12 @@ def Stream2SeismogramEnsemble(stream):
     :return: converted seismogram ensemble
     """
     size = len(stream)
+    if size % 3 != 0:
+        raise ValueError(
+            "Stream2SeismogramEnsemble: stream length must be divisible by 3"
+        )
     res = SeismogramEnsemble()
-    for i in range(int(size / 3)):
+    for i in range(size // 3):
         res.member.append(Stream2Seismogram(stream[i * 3 : i * 3 + 3], cardinal=True))
         # fixme cardinal
     # Handle the ensemble metadata.   The little helper we call here
