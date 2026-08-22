@@ -66,7 +66,7 @@ class NMF(ABC):
         channel collection using id_matcher you can use
         d = id_matcher(d)  instead of d = id_matcher.normalize(d)
         """
-        self.normalize(d)
+        return self.normalize(d)
 
     @abstractmethod
     def get_document(self, d):
@@ -165,15 +165,18 @@ class ID_matcher(NMF):
             # Note this will return None if the query fails - callers should handle that condition
             return self.dbhandle.find_one(query)
         else:
-            # this is actually redundant with log_error usage but better to be clear
-            if self.kill_on_failure:
-                d.kill()
             message = (
                 "Normalizing ID with key="
                 + self.mdkey
                 + " is not defined in this object"
             )
-            self.log_error(d, "ID_matcher", message, True, ErrorSeverity.Invalid)
+            self.log_error(
+                d,
+                "ID_matcher",
+                message,
+                self.kill_on_failure,
+                ErrorSeverity.Invalid,
+            )
             return None
 
     def normalize(self, d):
@@ -189,19 +192,22 @@ class ID_matcher(NMF):
                 return d
             doc = self.get_document(d)
             if doc == None:
-                message = (
-                    "No matching _id found for "
-                    + self.mdkey
-                    + " in collection="
-                    + self.collection
-                )
-                self.log_error(
-                    d,
-                    "ID_matcher",
-                    message,
-                    self.kill_on_failure,
-                    ErrorSeverity.Invalid,
-                )
+                # get_document logs a missing ID field.  Log here only when
+                # an ID was present but did not match a document.
+                if d.is_defined(self.mdkey):
+                    message = (
+                        "No matching _id found for "
+                        + self.mdkey
+                        + " in collection="
+                        + self.collection
+                    )
+                    self.log_error(
+                        d,
+                        "ID_matcher",
+                        message,
+                        self.kill_on_failure,
+                        ErrorSeverity.Invalid,
+                    )
             else:
                 for key in self.attributes_to_load:
                     if key in doc:
