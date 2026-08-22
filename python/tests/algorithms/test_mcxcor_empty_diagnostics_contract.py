@@ -253,9 +253,7 @@ def test_align_and_stack_regularization_drop_is_logged_once(monkeypatch, capsys)
     ensemble.set_live()
     beam = _live_timeseries([1.0, 2.0, 3.0])
 
-    def forced_regularization_drop(
-        input_ensemble, dt, Nsamp, abort_on_error=False
-    ):
+    def forced_regularization_drop(input_ensemble, dt, Nsamp, abort_on_error=False):
         assert input_ensemble is ensemble
         assert dt == beam.dt
         assert Nsamp == beam.npts
