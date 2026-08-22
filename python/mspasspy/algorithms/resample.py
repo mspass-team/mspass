@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import math
+import numbers
 from mspasspy.util.decorators import mspass_func_wrapper, mspass_method_wrapper
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity, dmatrix
 from mspasspy.ccore.seismic import (
@@ -65,17 +67,26 @@ class BasicResampler(ABC):
     """
 
     def __init__(self, dt=None, sampling_rate=None):
-        if dt and sampling_rate:
-            raise MsPASSError(
-                "BasicResample:  usage error.  Specify either dt or sampling_rate.  You defined both",
-                ErrorSeverity.Fatal,
+        if (dt is None) == (sampling_rate is None):
+            raise ValueError(
+                "BasicResampler: specify exactly one of dt or sampling_rate"
             )
-        if dt:
-            self.dt = dt
-            self.samprate = sampling_rate
-        elif sampling_rate:
-            self.dt = 1.0 / sampling_rate
-            self.samprate = sampling_rate
+        value = dt if dt is not None else sampling_rate
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, numbers.Real)
+            or not math.isfinite(value)
+            or value <= 0.0
+        ):
+            raise ValueError(
+                "BasicResampler: dt and sampling_rate must be finite positive real numbers"
+            )
+        if dt is not None:
+            self.dt = float(dt)
+            self.samprate = 1.0 / self.dt
+        else:
+            self.samprate = float(sampling_rate)
+            self.dt = 1.0 / self.samprate
 
     def target_samprate(self):
         """
@@ -373,6 +384,8 @@ class ScipyDecimator(BasicResampler):
 
         if isinstance(mspass_object, TimeSeries):
             decfac = self.dec_factor(mspass_object)
+            if decfac == 1:
+                return mspass_object
             if decfac <= 0:
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
@@ -397,6 +410,8 @@ class ScipyDecimator(BasicResampler):
 
         elif isinstance(mspass_object, Seismogram):
             decfac = self.dec_factor(mspass_object)
+            if decfac == 1:
+                return mspass_object
             if decfac <= 0:
                 mspass_object.kill()
                 message = self._make_illegal_decimator_message(decfac, mspass_object.dt)
