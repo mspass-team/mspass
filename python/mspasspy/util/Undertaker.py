@@ -235,7 +235,8 @@ class Undertaker:
 
         :param mummify_atomic_data:  When True (default) atomic data
           marked dead will be passed through self.mummify to reduce
-          memory use of the remains.   This parameter is ignored for ensembles.
+          memory use of the remains.  For ensembles this option is forwarded
+          when each dead member is buried.
         """
         # set as symbol to mesh with Database api.  It would make no sense
         # to ever set this False.  Done this way to make that clear
@@ -286,15 +287,20 @@ class Undertaker:
                 newens = SeismogramEnsemble(ensmd, nlive)
             else:
                 raise MsPASSError(
-                    "Undertaker.bury",
-                    "Coding error - newens constructor section has invalid type\nThat cannot happen unless the original code was incorrectly changed",
+                    "Undertaker.bury: Coding error - newens constructor section "
+                    "has invalid type\nThat cannot happen unless the original code "
+                    "was incorrectly changed",
                     ErrorSeverity.Invalid,
                 )
             for x in mspass_object.member:
                 if x.live:
                     newens.member.append(x)
                 else:
-                    self.bury(x, save_history=save_history, mummify_atomic_data=False)
+                    self.bury(
+                        x,
+                        save_history=save_history,
+                        mummify_atomic_data=mummify_atomic_data,
+                    )
             if nlive > 0:
                 newens.set_live()
             return newens
@@ -367,8 +373,9 @@ class Undertaker:
                 newens = SeismogramEnsemble(ensmd, nlive)
             else:
                 raise MsPASSError(
-                    "Undertaker.cremate:  ",
-                    "Coding error - newens constructor section has invalid type\nThat cannot happen unless the original code was incorrectly changed",
+                    "Undertaker.cremate: Coding error - newens constructor section "
+                    "has invalid type\nThat cannot happen unless the original code "
+                    "was incorrectly changed",
                     ErrorSeverity.Invalid,
                 )
             if mspass_object.live:
@@ -407,13 +414,11 @@ class Undertaker:
 
         :param d:  must be either a TimeSeriesEnsemble or SeismogramEnsemble of
            data to be processed.
-        :param bury:  if true the bury method will be called on the
-           ensemble of dead data before returning.   Note a limitation of
-           using this method is there is no way to save the optional
-           history data via this method.  If you need to save history
-           run this with bury=False and then run bury with save_history
-           true on the dead ensemble.   There is also no way to specify
-           an alternative to the default collection name of "cemetery"
+        :param bury:  if true the bury method will be called on each dead
+           member before returning.
+        :param save_history:  option forwarded to bury for every dead member.
+        :param mummify_atomic_data:  option forwarded to bury for every dead
+           member.
         :return: python list with two elements. 0 is ensemble with live data
            and 1 is ensemble with dead data.
         :rtype:  python list with two components
@@ -443,8 +448,9 @@ class Undertaker:
             bodies = SeismogramEnsemble(ensmd, ndead)
         else:
             raise MsPASSError(
-                "Undertaker.bring_out_your_dead",
-                "Coding error - newens constructor section has invalid type\nThat cannot happen unless the original code was incorrectly changed",
+                "Undertaker.bring_out_your_dead: Coding error - newens "
+                "constructor section has invalid type\nThat cannot happen unless "
+                "the original code was incorrectly changed",
                 ErrorSeverity.Invalid,
             )
         for x in d.member:
@@ -452,10 +458,12 @@ class Undertaker:
                 newens.member.append(x)
             else:
                 bodies.member.append(x)
-                # Note we don't support save_history through this
-                # mechanism.
                 if bury:
-                    self.bury(d)
+                    self.bury(
+                        x,
+                        save_history=save_history,
+                        mummify_atomic_data=mummify_atomic_data,
+                    )
         if len(newens.member) > 0:
             newens.set_live()
         return [newens, bodies]
@@ -613,7 +621,8 @@ class Undertaker:
                 message = "Warning:  dead datum has is_abortion attribute undefined - assumed False\n"
                 message += "MsPASS readers should always set this attribute"
                 err = MsPASSError(
-                    "Undertaker._is_abortion", message, ErrorSeverity.Complaint
+                    "Undertaker._is_abortion: " + message,
+                    ErrorSeverity.Complaint,
                 )
                 d.elog.log_error(err)
                 return False
