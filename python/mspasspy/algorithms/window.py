@@ -1,3 +1,6 @@
+import math
+from functools import wraps
+
 from mspasspy.ccore.utility import (
     Metadata,
     MsPASSError,
@@ -273,7 +276,8 @@ def scale(
                     i += 1
         else:
             raise MsPASSError(
-                "scale: input data is not a supported mspass seismic data type", "Fatal"
+                "scale: input data is not a supported mspass seismic data type",
+                ErrorSeverity.Fatal,
             )
         return d
     except MsPASSError as err:
@@ -454,7 +458,7 @@ def WindowDataAtomic(
                 d.elog.log_error(alg, message, ErrorSeverity.Complaint)
                 t0shift = 0.0
         twcut = twcut.shift(t0shift)
-        twcut0 = twcut.shift(t0shift)
+        twcut0 = twcut0.shift(t0shift)
     if twcut.end < d.t0 or twcut.start > d.endtime():
         # always kill and return a zero length datum if there is no overlap
         message = "Data time range is outside the time range window time range\n"
@@ -546,7 +550,9 @@ def WindowDataAtomic(
                     message += (
                         "This should not happen and is a bug that should be reported"
                     )
-                    raise MsPASSError(alg, message, ErrorSeverity.Fatal)
+                    raise MsPASSError(
+                        "{}: {}".format(alg, message), ErrorSeverity.Fatal
+                    )
             else:
                 if isinstance(d, TimeSeries):
                     dpadded.data[istart:iend] = dcut.data
@@ -832,6 +838,33 @@ def WindowData(
         raise TypeError(message)
 
 
+def _validate_windowdata_autopad_grid(func):
+    @wraps(func)
+    def validated(d, stime, etime, *args, **kwargs):
+        if isinstance(
+            d, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+        ):
+            if stime > etime:
+                raise ValueError(
+                    "WindowData_autopad: stime must be less than or equal to etime"
+                )
+            members = (
+                (d,)
+                if isinstance(d, (TimeSeries, Seismogram))
+                else (member for member in d.member if member.live)
+            )
+            if any(
+                not math.isfinite(member.dt) or member.dt <= 0.0 for member in members
+            ):
+                raise ValueError(
+                    "WindowData_autopad: input dt must be finite and positive"
+                )
+        return func(d, stime, etime, *args, **kwargs)
+
+    return validated
+
+
+@_validate_windowdata_autopad_grid
 @mspass_func_wrapper
 def WindowData_autopad(
     d,
