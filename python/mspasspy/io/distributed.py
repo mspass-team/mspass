@@ -1503,10 +1503,9 @@ def write_distributed_data(
         will generate a insert_one transaction with MongoDB and save the
         history data in  the "history" collection.  It then sets the
         attribute with key "history_id" to the ObjectId of the saved
-        document.  The default for this argument is True to avoid
-        accidentally throttling workflows on large data sets.  The default
-        for save_history is False so overall default behavior is to drop
-        any history data.
+        document.  The default for this argument is False.  The default for
+        save_history is also False so overall default behavior is to drop any
+        history data.
 
     :param cremate:  boolean controlling handling of dead data.
         When True dead data will be passed to the `cremate`
