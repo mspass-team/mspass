@@ -77,17 +77,15 @@ class BasicMatcher(ABC):
           should be loaded only if they are defined. Default is None here,
           subclass should set their own default values.
 
-        :param aliases:   should be a python dictionary used to define
-          alternative keys to access a data object's Metadata from that
-          defining the same attribute in the collection/table being
-          matched.   Note carefully the key of the dictionary is the
-          collection/table attribute name and the value associated with
-          that key is the alias to use to fetch Metadata.  When matchers
-          scan the attributes_to_load and load_if_defined list they
-          should treat missing entries in alias as meaning the key in
-          the collection/table and Metadata are identical.  Default is
-          a None which is used as a signal to this constructor to
-          create an empty dictionary meaning there are no aliases.
+        :param aliases:   should be a python dictionary mapping source
+          collection/table attribute names to the keys returned in a data
+          object's Metadata.  Each dictionary key must appear in
+          attributes_to_load or load_if_defined.  Source values are always
+          read using the dictionary keys; the associated values only name
+          the returned Metadata keys.  A missing entry means the source and
+          returned keys are identical.  Default is None, which signals this
+          constructor to create an empty dictionary meaning there are no
+          aliases.
         :type aliases:  python dictionary
 
 
@@ -1022,7 +1020,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[key]
+                        md[mdkey] = row[k]
                     else:
                         if elog is None:
                             elog = PyErrorLogger()
@@ -1047,7 +1045,7 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[key]
+                        md[mdkey] = row[k]
                 mdlist.append(md)
             return [mdlist, None]
 
@@ -1171,12 +1169,11 @@ class ObjectIdDBMatcher(DatabaseMatcher):
       document retrieved in the query.
     :type load_if_defined:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
     :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
@@ -1276,13 +1273,12 @@ class ObjectIdMatcher(DictionaryCacheMatcher):
       document retrieved in the query.
     :param type:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when set true all attributes loaded
        from the normalizing collection will have the channel name prepended.
@@ -1463,13 +1459,12 @@ class MiniseedDBMatcher(DatabaseMatcher):
       addition here may be response data (see schema definition for keys)
     :type load_if_defined:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -1732,13 +1727,12 @@ class MiniseedMatcher(DictionaryCacheMatcher):
       addition here may be response data (see schema definition for keys)
     :type load_if_defined:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -2128,13 +2122,12 @@ class EqualityMatcher(DataFrameCacheMatcher):
       Note this parameter is ignored for DataFrame input.
     :type load_if_defined:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -2162,6 +2155,10 @@ class EqualityMatcher(DataFrameCacheMatcher):
         prepend_collection_name=False,
         custom_null_values=None,
     ):
+        if not isinstance(match_keys, dict):
+            raise TypeError(
+                "EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"
+            )
         super().__init__(
             db_or_df,
             collection,
@@ -2171,41 +2168,37 @@ class EqualityMatcher(DataFrameCacheMatcher):
             require_unique_match=require_unique_match,
             prepend_collection_name=prepend_collection_name,
             custom_null_values=custom_null_values,
+            cache_columns=list(match_keys.values()),
         )
-        if isinstance(match_keys, dict):
-            self.match_keys = match_keys
-            for key in match_keys:
-                testkey = match_keys[key]
-                # this means no aliasing for key
-                if testkey == key:
-                    continue
-                if testkey in self.aliases:
-                    backtestkey = self.aliases[testkey]
-                    if backtestkey != key:
-                        error_message = (
-                            "EqualityMatcher constructor:  "
-                            + "match_keys and aliases are inconsistent.\n"
-                            + "match_keys="
-                            + str(match_keys)
-                            + "  aliases="
-                            + str(self.aliases)
-                        )
-                        raise MsPASSError(error_message, ErrorSeverity.Fatal)
-                else:
+        self.match_keys = match_keys
+        for key in match_keys:
+            testkey = match_keys[key]
+            # this means no aliasing for key
+            if testkey == key:
+                continue
+            if testkey in self.aliases:
+                backtestkey = self.aliases[testkey]
+                if backtestkey != key:
                     error_message = (
                         "EqualityMatcher constructor:  "
                         + "match_keys and aliases are inconsistent.\n"
-                        + "match_key defines key="
-                        + key
-                        + " to have alias name="
-                        + testkey
-                        + " but alias name is not defined by aliases parameter"
+                        + "match_keys="
+                        + str(match_keys)
+                        + "  aliases="
+                        + str(self.aliases)
                     )
                     raise MsPASSError(error_message, ErrorSeverity.Fatal)
-        else:
-            raise TypeError(
-                "EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"
-            )
+            else:
+                error_message = (
+                    "EqualityMatcher constructor:  "
+                    + "match_keys and aliases are inconsistent.\n"
+                    + "match_key defines key="
+                    + key
+                    + " to have alias name="
+                    + testkey
+                    + " but alias name is not defined by aliases parameter"
+                )
+                raise MsPASSError(error_message, ErrorSeverity.Fatal)
 
     def subset(self, mspass_object) -> pd.DataFrame:
         """
@@ -2292,13 +2285,12 @@ class EqualityDBMatcher(DatabaseMatcher):
       optional data.
     :param type:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by find and find_one method will all have the
@@ -2432,13 +2424,12 @@ class OriginTimeDBMatcher(DatabaseMatcher):
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-       when fetching from a data object's Metadata container.   The key sense
-       of the mapping is important to keep straight.  The key of this
-       dictionary should match one  of the attributes in attributes_to_load
-       or load_if_defined.  The value the key defines should be the alias
-       used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -2633,13 +2624,12 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
       document retrieved in the query.  Default is ["magnitude"]
     :param type:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -2944,7 +2934,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                             mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
-                    doc_out[mdkey] = row[key]
+                    doc_out[mdkey] = row[k]
                 else:
                     # land here if a required attribute is missing
                     # from the dataframe cache.  find logs
@@ -2968,7 +2958,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
                             mdkey = self.collection + "_" + key
                     else:
                         mdkey = key
-                    doc_out[mdkey] = row[key]
+                    doc_out[mdkey] = row[k]
             return doc_out
         else:
             return None
@@ -3029,13 +3019,12 @@ class ArrivalDBMatcher(DatabaseMatcher):
       document retrieved in the query.  Default is None
     :param type:  list of strings defining collection keys
 
-    :param aliases:  python dictionary defining alias names to apply
-     when fetching from a data object's Metadata container.   The key sense
-     of the mapping is important to keep straight.  The key of this
-     dictionary should match one  of the attributes in attributes_to_load
-     or load_if_defined.  The value the key defines should be the alias
-     used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -3194,13 +3183,12 @@ class ArrivalMatcher(DataFrameCacheMatcher):
       document retrieved in the query.  Default is None
     :param type:  list of strings defining collection keyes
 
-    :param aliases:  python dictionary defining alias names to apply
-       when fetching from a data object's Metadata container.   The key sense
-       of the mapping is important to keep straight.  The key of this
-       dictionary should match one  of the attributes in attributes_to_load
-       or load_if_defined.  The value the key defines should be the alias
-       used to fetch the comparable attribute from the data.
-    :type aliaes:  python dictionary
+    :param aliases:  python dictionary mapping source collection/table keys
+     to keys returned in a Metadata container.  Each dictionary key should
+     match an attribute in attributes_to_load or load_if_defined.  Source
+     values are read using the dictionary keys; the associated values only
+     name the returned Metadata keys.
+    :type aliases:  python dictionary
 
     :param prepend_collection_name:  when True attributes returned in
       Metadata containers by the find and find_one method will all have the
@@ -3794,7 +3782,7 @@ def _extractData2Metadata(
                     mdkey = collection + "_" + key
             else:
                 mdkey = key
-            md[mdkey] = doc[key]
+            md[mdkey] = doc[k]
         else:
             message = "Required attribute {key} was not found".format(
                 key=k,
@@ -3816,5 +3804,5 @@ def _extractData2Metadata(
                     mdkey = collection + "_" + key
             else:
                 mdkey = key
-            md[mdkey] = doc[key]
+            md[mdkey] = doc[k]
     return md
