@@ -1,4 +1,5 @@
 import os
+import pickle
 import uuid
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -15,7 +16,14 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
 )
-from mspasspy.ccore.utility import AtomicType, ErrorSeverity, MsPASSError, dmatrix
+from mspasspy.ccore.utility import (
+    AtomicType,
+    ErrorSeverity,
+    MsPASSError,
+    ProcessingHistory,
+    dmatrix,
+)
+import mspasspy.db.database as database_module
 from mspasspy.db.client import DBClient
 from mspasspy.db.collection import Collection
 from mspasspy.db.database import Database
@@ -328,3 +336,196 @@ def test_write_distributed_data_rejects_overwrite_before_execution(storage_mode)
         write_distributed_data(
             None, database, storage_mode=storage_mode, overwrite=True
         )
+
+
+def _history_snapshot(datum):
+    history = ProcessingHistory(datum)
+    return pickle.dumps(
+        (
+            history.get_nodes(),
+            history.current_nodedata(),
+            history.id(),
+            history.stage(),
+            history.is_origin(),
+        )
+    )
+
+
+def test_save_schema_preflight_precedes_sample_write(database, monkeypatch):
+    datum = make_timeseries([1.0, 2.0, 3.0, 4.0])
+    failure = RuntimeError("injected schema preflight failure")
+    sample_writes = []
+
+    def fail_preflight(*args, **kwargs):
+        raise failure
+
+    def record_sample_write(*args, **kwargs):
+        sample_writes.append(True)
+
+    monkeypatch.setattr(database_module, "md2doc", fail_preflight)
+    monkeypatch.setattr(Database, "_save_sample_data", record_sample_write)
+
+    with pytest.raises(RuntimeError) as error:
+        database.save_data(datum, storage_mode="gridfs", return_data=True)
+
+    assert error.value is failure
+    assert sample_writes == []
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_update_failure_preserves_history_and_removes_new_children(
+    database, monkeypatch, factory, collection
+):
+    datum = save_original(database, factory)
+    old_gridfs_id = datum["gridfs_id"]
+    history_before = _history_snapshot(datum)
+    replacement = factory([5.0, 6.0, 7.0, 8.0])
+    datum.data = replacement.data
+    failure = RuntimeError("injected waveform reference failure")
+    original_update_one = Collection.update_one
+
+    def fail_waveform_reference(self, query, update, *args, **kwargs):
+        if self.name == collection and "gridfs_id" in update.get("$set", {}):
+            raise failure
+        return original_update_one(self, query, update, *args, **kwargs)
+
+    monkeypatch.setattr(Collection, "update_one", fail_waveform_reference)
+
+    with pytest.raises(RuntimeError) as error:
+        database.update_data(datum, mode="promiscuous", save_history=True)
+
+    assert error.value is failure
+    assert _history_snapshot(datum) == history_before
+    assert database["history_object"].count_documents({}) == 0
+    document = database[collection].find_one({"_id": datum["_id"]})
+    assert document["gridfs_id"] == old_gridfs_id
+    assert gridfs.GridFS(database).exists(old_gridfs_id)
+    assert database["fs.files"].count_documents({}) == 1
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+@pytest.mark.parametrize("entrypoint", ["save", "update"])
+def test_history_resets_only_after_durable_waveform_references(
+    database, monkeypatch, factory, collection, entrypoint
+):
+    if entrypoint == "save":
+        datum = factory([1.0, 2.0, 3.0, 4.0])
+    else:
+        datum = save_original(database, factory)
+        datum.data = factory([5.0, 6.0, 7.0, 8.0]).data
+    observations = []
+    original_reset = Database._reset_processing_history
+
+    def observe_reset(datum, alg_name, alg_id, save_uuid):
+        waveform = database[collection].find_one({"_id": datum["_id"]})
+        history_id = waveform["history_object_id"]
+        history = database["history_object"].find_one({"_id": history_id})
+        assert history[collection + "_id"] == datum["_id"]
+        assert gridfs.GridFS(database).exists(waveform["gridfs_id"])
+        observations.append(waveform)
+        original_reset(datum, alg_name, alg_id, save_uuid)
+
+    monkeypatch.setattr(
+        Database, "_reset_processing_history", staticmethod(observe_reset)
+    )
+
+    if entrypoint == "save":
+        result = database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=True,
+            return_data=True,
+        )
+    else:
+        result = database.update_data(datum, mode="promiscuous", save_history=True)
+
+    assert result is datum
+    assert len(observations) == 1
+    assert datum.is_origin()
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_save_history_link_miss_removes_created_resources(
+    database, monkeypatch, factory, collection
+):
+    datum = factory([1.0, 2.0, 3.0, 4.0])
+    history_before = _history_snapshot(datum)
+    original_update_one = Collection.update_one
+
+    def miss_history_link(self, query, update, *args, **kwargs):
+        if self.name == "history_object" and collection + "_id" in update.get(
+            "$set", {}
+        ):
+            return SimpleNamespace(matched_count=0)
+        return original_update_one(self, query, update, *args, **kwargs)
+
+    monkeypatch.setattr(Collection, "update_one", miss_history_link)
+
+    with pytest.raises(MsPASSError, match="could not link the saved history"):
+        database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=True,
+            return_data=True,
+        )
+
+    assert _history_snapshot(datum) == history_before
+    assert "gridfs_id" not in datum
+    assert database[collection].count_documents({}) == 0
+    assert database["history_object"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_save_elog_failure_removes_known_created_resources(
+    database, monkeypatch, factory, collection
+):
+    datum = factory([1.0, 2.0, 3.0, 4.0])
+    datum.elog.log_error("test", "injected elog", ErrorSeverity.Complaint)
+    history_before = _history_snapshot(datum)
+    failure = RuntimeError("injected elog save failure")
+
+    def fail_elog_save(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setattr(Database, "_save_elog", fail_elog_save)
+
+    with pytest.raises(RuntimeError) as error:
+        database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=True,
+            return_data=True,
+        )
+
+    assert error.value is failure
+    assert _history_snapshot(datum) == history_before
+    assert "gridfs_id" not in datum
+    assert database[collection].count_documents({}) == 0
+    assert database["history_object"].count_documents({}) == 0
+    assert database["elog"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+
+
+def test_save_history_can_defer_reset_without_database_io(monkeypatch):
+    database = object.__new__(Database)
+    database.database_schema = SimpleNamespace(default_name=lambda name: name)
+    inserted_documents = []
+
+    def insert_one(document):
+        inserted_documents.append(document)
+        return SimpleNamespace(inserted_id="history-id")
+
+    collection = SimpleNamespace(insert_one=insert_one)
+    monkeypatch.setattr(Database, "__getitem__", lambda self, name: collection)
+    datum = make_timeseries([1.0, 2.0, 3.0, 4.0])
+    history_before = _history_snapshot(datum)
+
+    history_id = database._save_history(datum, reset_history=False)
+
+    assert history_id == "history-id"
+    assert len(inserted_documents) == 1
+    assert _history_snapshot(datum) == history_before
