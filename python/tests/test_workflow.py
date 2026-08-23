@@ -1,3 +1,9 @@
+from contextlib import contextmanager
+from pathlib import Path
+import subprocess
+import sys
+
+import dask
 import pytest
 import dask.distributed as ddist
 import numpy as np
@@ -56,13 +62,50 @@ def accumulator_full(old, x, a, b=30):
         return old + x + a + b
 
 
-cluster = ddist.LocalCluster(
-    processes=False
-)  # processes=False is necessary to run this locally with pytest
-dask_client = cluster.get_client()
+@contextmanager
+def _local_dask_client():
+    cluster = ddist.LocalCluster(processes=False, dashboard_address=None)
+    try:
+        client = cluster.get_client()
+        try:
+            yield client
+        finally:
+            client.close()
+    finally:
+        cluster.close()
 
 
-def test_sliding_window_pipeline(capsys):
+@pytest.fixture
+def dask_client():
+    with _local_dask_client() as client:
+        yield client
+
+
+def test_import_does_not_install_a_default_dask_client():
+    repository_root = Path(__file__).resolve().parents[2]
+    script = """
+import runpy
+from dask.distributed import default_client
+
+runpy.run_path("python/tests/test_workflow.py")
+try:
+    default_client()
+except ValueError:
+    pass
+else:
+    raise AssertionError("importing test_workflow installed a default Dask client")
+"""
+    subprocess.run([sys.executable, "-c", script], cwd=repository_root, check=True)
+
+
+def test_local_dask_client_cleanup_preserves_unrelated_compute():
+    assert dask.delayed(simple_no_args)(0).compute() == 1
+    with _local_dask_client() as client:
+        assert client.submit(simple_no_args, 1).result() == 2
+    assert dask.delayed(simple_no_args)(2).compute() == 3
+
+
+def test_sliding_window_pipeline(dask_client, capsys):
     """
     Test function for `sliding_window_pipeline` function.
 
