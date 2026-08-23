@@ -23,6 +23,15 @@ import numpy as np
 type_pdd = pd.core.frame.DataFrame
 type_ddd = dask.dataframe.DataFrame
 
+_MINISEED_DEFAULT_ATTRIBUTES = (
+    "starttime",
+    "endtime",
+    "lat",
+    "lon",
+    "elev",
+    "_id",
+)
+
 
 class BasicMatcher(ABC):
     """
@@ -1479,12 +1488,16 @@ class MiniseedDBMatcher(DatabaseMatcher):
         self,
         db,
         collection="channel",
-        attributes_to_load=["starttime", "endtime", "lat", "lon", "elev", "_id"],
+        attributes_to_load=None,
         load_if_defined=None,
         aliases=None,
         prepend_collection_name=True,
     ):
-        aload_tmp = attributes_to_load
+        aload_tmp = list(
+            _MINISEED_DEFAULT_ATTRIBUTES
+            if attributes_to_load is None
+            else attributes_to_load
+        )
         if collection == "channel":
             if "hang" not in aload_tmp:
                 aload_tmp.append("hang")
@@ -1747,12 +1760,16 @@ class MiniseedMatcher(DictionaryCacheMatcher):
         db,
         collection="channel",
         query=None,
-        attributes_to_load=["starttime", "endtime", "lat", "lon", "elev", "_id"],
+        attributes_to_load=None,
         load_if_defined=None,
         aliases=None,
         prepend_collection_name=True,
     ):
-        aload_tmp = attributes_to_load
+        aload_tmp = list(
+            _MINISEED_DEFAULT_ATTRIBUTES
+            if attributes_to_load is None
+            else attributes_to_load
+        )
         if collection == "channel":
             # forcing this may be a bit too dogmatic but hang and vang
             # are pretty essential metadata for any channel
