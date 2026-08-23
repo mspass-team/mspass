@@ -1792,9 +1792,7 @@ def test_write_error_handlers(atomic_time_series_generator):
     with pytest.raises(ValueError, match="Illegal value of collection"):
         mybag = write_distributed_data(mybag, db, collection="illegal_collection")
 
-    with pytest.raises(
-        ValueError, match="overwrite mode is set True with storage_mode="
-    ):
+    with pytest.raises(ValueError, match="does not support overwrite=True"):
         mybag = write_distributed_data(
             mybag, db, collection="wf_TimeSeries", overwrite=True, storage_mode="file"
         )

@@ -1431,16 +1431,12 @@ def write_distributed_data(
         more details on data export.  Used only for "file" storage mode.
     :type file_format: :class:`str`
 
-    :param overwrite:  If true gridfs data linked to the original
-        waveform will be replaced by the sample data from this save.
-        Default is false, and should be the normal use.  This option
-        should never be used after a reduce operator as the parents
-        are not tracked and the space advantage is likely minimal for
-        the confusion it would cause.   This is most useful for light, stable
-        preprocessing with a set of map operators to regularize a data
-        set before more extensive processing.  It can only be used when
-        storage_mode is set to gridfs.
-    :type overwrite:  boolean
+    :param overwrite: Distributed overwrite is not supported because this
+        writer bulk-inserts waveform documents and cannot atomically replace an
+        existing GridFS reference.  Passing ``True`` raises ``ValueError`` before
+        any computation or persistent write.  Use :meth:`Database.save_data` or
+        :meth:`Database.update_data` for failure-safe serial GridFS replacement.
+    :type overwrite: boolean
 
     :param collectiion:   name of wf collection where the documents
         derived from the data are to be saved.  Standard values are
@@ -1550,6 +1546,12 @@ def write_distributed_data(
             "Must be one one of the following:  promiscuous, cautious, or pedantic"
         )
         raise ValueError(message)
+    if overwrite:
+        raise ValueError(
+            "write_distributed_data does not support overwrite=True; "
+            "use Database.save_data or Database.update_data for "
+            "failure-safe GridFS replacement"
+        )
     if scheduler:
         if scheduler not in ["dask", "spark"]:
             message = "write_distributed_data:  Illegal value of scheduler={}\n".format(
@@ -1578,14 +1580,6 @@ def write_distributed_data(
         )
         message += "Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"
         raise ValueError(message)
-
-    if overwrite:
-        if storage_mode != "gridfs":
-            message = "write_distributed_data:  overwrite mode is set True with storage_mode={}\n".format(
-                storage_mode
-            )
-            message += "overwrite is only allowed with gridfs storage_mode"
-            raise ValueError(message)
 
     stedronsky = Undertaker(db)
     if scheduler == "spark":
