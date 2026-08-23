@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev49+ga0c0ba24 documentation</title>
+    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev50+gbff4dbd2 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=557fd4b3"></script>
+    <script src="../../../_static/documentation_options.js?v=15d19c9d"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev49" />
+  <meta name="docsearch:version" content="2.4.4.dev50" />
   </head>
   
   
@@ -2972,10 +2972,10 @@
 <span class="sd">        source.time - tolerance &lt;= test_time &lt;= source.time + tolerance</span>
 
 <span class="sd">    The test_time value for matching from a datum can come through</span>
-<span class="sd">    one of two methods driven by the constructor argument "time_key".</span>
-<span class="sd">    When time_key is a None (default) the algorithm assumes all input</span>
+<span class="sd">    one of two methods driven by the constructor argument ``data_time_key``.</span>
+<span class="sd">    When ``data_time_key`` is None (default) the algorithm assumes all input</span>
 <span class="sd">    are mspass atomic data objects that have the start time defined by</span>
-<span class="sd">    the attribute "t0" (mspass_object.t0).  If time_key is a string</span>
+<span class="sd">    the attribute "t0" (mspass_object.t0).  If ``data_time_key`` is a string</span>
 <span class="sd">    it is assumed to be a Metadata key used to fetch an epoch time</span>
 <span class="sd">    to use for the test.   The most likely use of that feature would be</span>
 <span class="sd">    for ensemble processing where test_time is set as a field in the</span>
@@ -3039,6 +3039,15 @@
 <span class="sd">      is not unique.  When False find_one returns the first document</span>
 <span class="sd">      found and logs a complaint message.  (default is False)</span>
 <span class="sd">    :type require_unique_match:  boolean</span>
+
+<span class="sd">    :param data_time_key: data object Metadata key used instead of the</span>
+<span class="sd">      object's ``t0`` to compute the test origin time.  The default, None,</span>
+<span class="sd">      uses ``t0``.</span>
+<span class="sd">    :type data_time_key: string or None</span>
+
+<span class="sd">    :param source_time_key: source collection field used for the origin-time</span>
+<span class="sd">      interval query.  The default, None, selects ``"time"``.</span>
+<span class="sd">    :type source_time_key: string or None</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -3068,7 +3077,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span> <span class="o">=</span> <span class="n">t0offset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">tolerance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="o">=</span> <span class="n">data_time_key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="n">source_time_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span> <span class="o">=</span> <span class="s2">"time"</span> <span class="k">if</span> <span class="n">source_time_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">source_time_key</span>
         <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -3090,21 +3099,21 @@
 <span class="sd">        This algorithm implements the time test described in detail in</span>
 <span class="sd">        docstring for this class.  Note the fundamental change in how the</span>
 <span class="sd">        test time is computed that depends on the internal (self)</span>
-<span class="sd">        attribute time_key.  When None we use the data's t0 attribute.</span>
-<span class="sd">        Otherwise self.time_key is assumed to be a string key to</span>
+<span class="sd">        attribute ``data_time_key``.  When None we use the data's t0 attribute.</span>
+<span class="sd">        Otherwise ``self.data_time_key`` is assumed to be a string key to</span>
 <span class="sd">        fetch the test time from the object's Metadata container.</span>
 
 <span class="sd">        :param mspass_object:   MsPASS defined data object that contains</span>
 <span class="sd">          data to be used for this match (t0 attribute or content of</span>
-<span class="sd">          self.time_key).</span>
+<span class="sd">          ``self.data_time_key``).</span>
 <span class="sd">        :type mspass_object:  Any valid MsPASS data object.</span>
 
 <span class="sd">        :return:  query python dictionary on sucess.  Return None if</span>
 <span class="sd">          a query could not be constructed.  That happens two ways here.</span>
 
 <span class="sd">          1. If the input is not a valid mspass data object or marked dead.</span>
-<span class="sd">          2. If the time_key algorithm is used and time_key isn't defined</span>
-<span class="sd">             in the input datum.</span>
+<span class="sd">          2. If the data_time_key algorithm is used and data_time_key isn't</span>
+<span class="sd">             defined in the input datum.</span>
 <span class="sd">        """</span>
         <span class="c1"># This could generate mysterious results if a user messes up</span>
         <span class="c1"># badly, but  it makes the code more stable - otherwise</span>
@@ -3131,7 +3140,7 @@
         <span class="c1"># as python dictionary</span>
         <span class="n">query</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
 
-        <span class="n">query</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">query</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source_time_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"$gte"</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
             <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span><span class="p">,</span>
         <span class="p">}</span>
@@ -3166,10 +3175,10 @@
 <span class="sd">        source.time - tolerance &lt;= test_time &lt;= source.time + tolerance</span>
 
 <span class="sd">    The test_time value for matching from a datum can come through</span>
-<span class="sd">    one of two methods driven by the constructor argument "time_key".</span>
-<span class="sd">    When time_key is a None (default) the algorithm assumes all input</span>
+<span class="sd">    one of two methods driven by the constructor argument ``data_time_key``.</span>
+<span class="sd">    When ``data_time_key`` is None (default) the algorithm assumes all input</span>
 <span class="sd">    are mspass atomic data objects that have the start time defined by</span>
-<span class="sd">    the attribute "t0" (mspass_object.t0).  If time_key is a string</span>
+<span class="sd">    the attribute "t0" (mspass_object.t0).  If ``data_time_key`` is a string</span>
 <span class="sd">    it is assumed to be a Metadata key used to fetch an epoch time</span>
 <span class="sd">    to use for the test.   The most likely use of that feature would be</span>
 <span class="sd">    for ensemble processing where test_time is set as a field in the</span>
@@ -3303,6 +3312,16 @@
             <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Required for matching with waveform start times"</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_test_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Return the configured data time adjusted by ``t0offset``."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
+        <span class="k">elif</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">):</span>
+            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+
 <div class="viewcode-block" id="OriginTimeMatcher.subset">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.OriginTimeMatcher.subset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -3322,16 +3341,9 @@
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># this maybe should have a test to assure UTC time standard</span>
-            <span class="c1"># but will defer for now</span>
-            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">):</span>
-                <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+        <span class="n">test_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_time</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">test_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
         <span class="n">tmin</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
         <span class="n">tmax</span> <span class="o">=</span> <span class="n">test_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span>
@@ -3431,17 +3443,7 @@
         <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">mdlist</span><span class="p">:</span>
             <span class="n">dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span>
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># always use t0 if possile.</span>
-        <span class="c1"># this logic, however, allows mspass_object to be a</span>
-        <span class="c1"># plain Metadata container or a python dictionary</span>
-        <span class="c1"># intentinally let this throw an exception for Metadata if the</span>
-        <span class="c1"># required key is missing.  If t0 is not defined it tries to</span>
-        <span class="c1"># use self.data_time_key (normaly "startttme")</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">"t0"</span><span class="p">):</span>
-            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">t0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">test_time</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_time_key</span><span class="p">]</span>
-        <span class="n">test_time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t0offset</span>
+        <span class="n">test_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_time</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
         <span class="n">dt</span> <span class="o">-=</span> <span class="n">test_time</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">component_to_use</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
