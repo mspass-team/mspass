@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev55+g00df42d88 documentation</title>
+    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev56+gaec89ab46 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=dce081a3"></script>
+    <script src="../../../_static/documentation_options.js?v=ae327fb9"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev55" />
+  <meta name="docsearch:version" content="2.4.4.dev56" />
   </head>
   
   
@@ -1224,6 +1224,7 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">""" """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kill_on_failure</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startime_offset</span> <span class="o">=</span> <span class="n">startime_offset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span> <span class="o">=</span> <span class="n">phasename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span> <span class="o">=</span> <span class="n">phasename_key</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">attributes_to_load</span><span class="p">:</span>
@@ -1232,7 +1233,9 @@
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">load_if_defined</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">arrival_collection_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrival_collection_name</span> <span class="o">=</span> <span class="n">arrival_collection_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">arrival_collection_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">arrival_collection_name</span><span class="p">]</span>
 
 <div class="viewcode-block" id="css30_arrival_interval_matcher.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.css30_arrival_interval_matcher.get_document">[docs]</a>
@@ -1244,10 +1247,11 @@
 <span class="sd">        :return: matching MongoDB document, or ``None`` when no match is found.</span>
 <span class="sd">        :rtype: dict or None</span>
 <span class="sd">        """</span>
+
         <span class="n">stime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>
         <span class="n">etime</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phasename_key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span><span class="p">}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$ge"</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">"$le"</span><span class="p">:</span> <span class="n">etime</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="n">stime</span><span class="p">,</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">etime</span><span class="p">}</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -1255,39 +1259,42 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="n">matchlist</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="c1"># the key here perhaps should be set in constructor</span>
-            <span class="c1"># for now it is frozen as this constant</span>
-            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-                <span class="c1"># ignore any docs with the time attribute not set</span>
-                <span class="k">if</span> <span class="s2">"time"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="n">dt</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_offset</span>
-                    <span class="n">matchlist</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="n">doc</span><span class="p">])</span>
-            <span class="c1"># handle these special cases</span>
-            <span class="n">n_to_test</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span>
-                    <span class="o">+</span> <span class="s2">" with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting"</span><span class="p">,</span>
-                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># weird syntax but this returns to doc of the one and only</span>
-                <span class="c1"># tuple getting through the above loop.  Execution of this</span>
-                <span class="c1"># block should be very very rare</span>
-                <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">dtmin</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">imin</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-                    <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
-                    <span class="n">dt</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="c1"># not dt values are stored as abs differences</span>
-                    <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">dtmin</span><span class="p">:</span>
-                        <span class="n">imin</span> <span class="o">=</span> <span class="n">ii</span>
-                        <span class="n">dtmin</span> <span class="o">=</span> <span class="n">dt</span>
-                <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">imin</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">matchlist</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># the key here perhaps should be set in constructor</span>
+                <span class="c1"># for now it is frozen as this constant</span>
+                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                    <span class="c1"># ignore any docs with the time attribute not set</span>
+                    <span class="k">if</span> <span class="s2">"time"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+                        <span class="n">dt</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">startime_offset</span><span class="p">)</span>
+                        <span class="n">matchlist</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="n">doc</span><span class="p">])</span>
+                <span class="c1"># handle these special cases</span>
+                <span class="n">n_to_test</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">"css30_arrival_interval_matcher.get_document:  no arrival docs found with phasename set as"</span>
+                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phasename</span>
+                        <span class="o">+</span> <span class="s2">" with a time attribute defined.  This should not happen and indicates a serious database inconsistence.  Aborting"</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">n_to_test</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># weird syntax but this returns to doc of the one and only</span>
+                    <span class="c1"># tuple getting through the above loop.  Execution of this</span>
+                    <span class="c1"># block should be very very rare</span>
+                    <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dtmin</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">imin</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matchlist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">ii</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">dt</span> <span class="o">=</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="c1"># not dt values are stored as abs differences</span>
+                        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">dtmin</span><span class="p">:</span>
+                            <span class="n">imin</span> <span class="o">=</span> <span class="n">ii</span>
+                            <span class="n">dtmin</span> <span class="o">=</span> <span class="n">dt</span>
+                    <span class="k">return</span> <span class="n">matchlist</span><span class="p">[</span><span class="n">imin</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="css30_arrival_interval_matcher.normalize">
@@ -1330,7 +1337,7 @@
                         <span class="c1"># but it could create bloated elog collections</span>
                         <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="s2">"No data for key="</span>
-                            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                            <span class="o">+</span> <span class="n">key</span>
                             <span class="o">+</span> <span class="s2">" in document returned from collection="</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
                         <span class="p">)</span>
@@ -1352,8 +1359,10 @@
                         <span class="n">d</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="n">d</span><span class="p">,</span>
                             <span class="s2">"css30_arrival_interval_matcher"</span><span class="p">,</span>
                             <span class="s2">"No data found with optional load key="</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                            <span class="kc">False</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">,</span>
                         <span class="p">)</span>
 
