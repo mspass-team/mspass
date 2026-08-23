@@ -34,6 +34,42 @@ def get_jobid(db):
     return counter["value"]
 
 
+def bootstrap_history_jobid_counter(db):
+    """Raise the job-id counter to the largest legacy history job id.
+
+    This is an explicit, idempotent deployment step for databases created
+    before job ids were allocated from ``history_counters``.  Runtime job-id
+    allocation does not call this function or scan the history collection.
+
+    :param db: database handle
+    :type db: top level database handle returned by a call to
+      MongoClient.database
+    :return: the resulting counter high-water mark
+    """
+    legacy_max_document = db.history.find_one(
+        {"jobid": {"$type": ["int", "long"]}},
+        projection={"_id": False, "jobid": True},
+        sort=[("jobid", pymongo.DESCENDING)],
+    )
+    legacy_max = legacy_max_document["jobid"] if legacy_max_document else 0
+    counters = _jobid_counter(db)
+    current_value = {"$ifNull": ["$value", 0]}
+    counter = counters.find_one_and_update(
+        {"counter_name": _JOB_ID_COUNTER_NAME},
+        [
+            {
+                "$set": {
+                    "counter_name": _JOB_ID_COUNTER_NAME,
+                    "value": {"$max": [current_value, legacy_max]},
+                }
+            }
+        ],
+        upsert=True,
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
+    return counter["value"]
+
+
 def _reserve_requested_jobid(db, requested_jobid):
     """Atomically reserve an explicit job id or the next available value."""
     counters = _jobid_counter(db)
@@ -203,7 +239,10 @@ class HistoryLogger:
            (default is 0 which automatically allocates from the counter)
            Users can get the actual value set from the jobid variable after
            successful creation of this object.
+        :raises TypeError: if job is not a non-boolean integer.
         """
+        if isinstance(job, bool) or not isinstance(job, int):
+            raise TypeError("HistoryLogger job must be a non-boolean integer")
         self.history_collection = db.history
         # Check the input job id for validity and use get_jobid if needed
         if job == 0:

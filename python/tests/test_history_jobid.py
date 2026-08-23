@@ -11,7 +11,11 @@ import pytest
 from pymongo.errors import DuplicateKeyError, OperationFailure
 
 import mspasspy.history as history_module
-from mspasspy.history import HistoryLogger, get_jobid
+from mspasspy.history import (
+    HistoryLogger,
+    bootstrap_history_jobid_counter,
+    get_jobid,
+)
 
 COUNTER_COLLECTION = "history_counters"
 COUNTER_NAME = "jobid"
@@ -65,10 +69,17 @@ class AtomicCounterCollection:
                     if self.exists
                     else None
                 )
-                condition = update[0]["$set"]["value"]["$cond"][0]
-                requested_jobid = condition["$gt"][0]
-                self.value = max(requested_jobid, self.value + 1)
+                value_expression = update[0]["$set"]["value"]
+                if "$max" in value_expression:
+                    legacy_max = value_expression["$max"][1]
+                    self.value = max(legacy_max, self.value)
+                else:
+                    condition = value_expression["$cond"][0]
+                    requested_jobid = condition["$gt"][0]
+                    self.value = max(requested_jobid, self.value + 1)
                 self.exists = True
+                if kwargs["return_document"] == pymongo.ReturnDocument.AFTER:
+                    return {"counter_name": query["counter_name"], "value": self.value}
                 return previous
             self.value += update["$inc"]["value"]
             self.exists = True
@@ -106,6 +117,51 @@ class HistoryLoggerDatabase(CounterDatabase):
         return self.legacy_history
 
 
+class LegacyHistoryCollection:
+    def __init__(self, jobids):
+        self.jobids = list(jobids)
+        self.find_calls = []
+
+    def find_one(self, query, **kwargs):
+        self.find_calls.append((query, kwargs))
+        integer_jobids = [
+            jobid
+            for jobid in self.jobids
+            if isinstance(jobid, int) and not isinstance(jobid, bool)
+        ]
+        if not integer_jobids:
+            return None
+        return {"jobid": max(integer_jobids)}
+
+
+class BootstrapDatabase(CounterDatabase):
+    def __init__(self, jobids, counters=None):
+        super().__init__(counters)
+        self.legacy_history = LegacyHistoryCollection(jobids)
+
+    @property
+    def history(self):
+        return self.legacy_history
+
+
+class NoMongoOperationsDatabase:
+    def __init__(self):
+        self.counters = AtomicCounterCollection()
+        self.counters.value = 17
+        self.counters.exists = True
+        self.operations = []
+        self.legacy_history = object()
+
+    @property
+    def history(self):
+        self.operations.append("history")
+        return self.legacy_history
+
+    def __getitem__(self, collection):
+        self.operations.append(("counter", collection))
+        return self.counters
+
+
 def _assert_counter_operation(call):
     query, update, kwargs = call
     assert query == {"counter_name": COUNTER_NAME}
@@ -137,6 +193,25 @@ def _assert_requested_counter_operation(call, requested_jobid):
     assert kwargs == {
         "upsert": True,
         "return_document": pymongo.ReturnDocument.BEFORE,
+    }
+
+
+def _assert_bootstrap_counter_operation(call, legacy_max):
+    query, update, kwargs = call
+    assert query == {"counter_name": COUNTER_NAME}
+    assert update == [
+        {
+            "$set": {
+                "counter_name": COUNTER_NAME,
+                "value": {
+                    "$max": [{"$ifNull": ["$value", 0]}, legacy_max],
+                },
+            }
+        }
+    ]
+    assert kwargs == {
+        "upsert": True,
+        "return_document": pymongo.ReturnDocument.AFTER,
     }
 
 
@@ -190,6 +265,49 @@ def test_history_logger_explicit_jobid_advances_the_counter(capsys):
     assert capsys.readouterr().out == (
         "HistoryLogger(Warning):  input jobid= 5  was invalid.  Set jobid= 12\n"
     )
+
+
+@pytest.mark.parametrize("invalid_jobid", [True, False, None, 1.0, "1"])
+def test_history_logger_rejects_invalid_jobid_before_mongo_access(invalid_jobid):
+    database = NoMongoOperationsDatabase()
+
+    with pytest.raises(TypeError, match="non-boolean integer"):
+        HistoryLogger(database, job=invalid_jobid)
+
+    assert database.operations == []
+    assert database.counters.value == 17
+    assert database.counters.index_calls == []
+    assert database.counters.update_calls == []
+
+
+def test_bootstrap_uses_legacy_high_water_mark_once_and_is_idempotent():
+    database = BootstrapDatabase([3, True, 41, 7, 1.5])
+
+    assert bootstrap_history_jobid_counter(database) == 41
+    assert bootstrap_history_jobid_counter(database) == 41
+    assert get_jobid(database) == 42
+
+    expected_history_call = (
+        {"jobid": {"$type": ["int", "long"]}},
+        {
+            "projection": {"_id": False, "jobid": True},
+            "sort": [("jobid", pymongo.DESCENDING)],
+        },
+    )
+    assert database.legacy_history.find_calls == [expected_history_call] * 2
+    _assert_bootstrap_counter_operation(database.counters.update_calls[0], 41)
+    _assert_bootstrap_counter_operation(database.counters.update_calls[1], 41)
+    _assert_counter_operation(database.counters.update_calls[2])
+
+
+def test_bootstrap_never_lowers_an_existing_counter():
+    counters = AtomicCounterCollection()
+    counters.value = 73
+    counters.exists = True
+    database = BootstrapDatabase([41], counters)
+
+    assert bootstrap_history_jobid_counter(database) == 73
+    assert get_jobid(database) == 74
 
 
 def test_get_jobid_controlled_concurrency_is_unique_and_contiguous():
@@ -321,3 +439,13 @@ def test_history_logger_real_mongo_explicit_jobid_reserves_high_water_mark(
     assert capsys.readouterr().out == (
         "HistoryLogger(Warning):  input jobid= 5  was invalid.  Set jobid= 12\n"
     )
+
+
+def test_bootstrap_real_mongo_preserves_legacy_high_water_mark(mongo_database):
+    mongo_database.history.insert_many(
+        [{"jobid": 7}, {"jobid": True}, {"jobid": 41}, {"jobid": 1.5}]
+    )
+
+    assert bootstrap_history_jobid_counter(mongo_database) == 41
+    assert bootstrap_history_jobid_counter(mongo_database) == 41
+    assert get_jobid(mongo_database) == 42
