@@ -445,6 +445,71 @@ def test_history_resets_only_after_durable_waveform_references(
     assert datum.is_origin()
 
 
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_save_history_link_miss_removes_created_resources(
+    database, monkeypatch, factory, collection
+):
+    datum = factory([1.0, 2.0, 3.0, 4.0])
+    history_before = _history_snapshot(datum)
+    original_update_one = Collection.update_one
+
+    def miss_history_link(self, query, update, *args, **kwargs):
+        if self.name == "history_object" and collection + "_id" in update.get(
+            "$set", {}
+        ):
+            return SimpleNamespace(matched_count=0)
+        return original_update_one(self, query, update, *args, **kwargs)
+
+    monkeypatch.setattr(Collection, "update_one", miss_history_link)
+
+    with pytest.raises(MsPASSError, match="could not link the saved history"):
+        database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=True,
+            return_data=True,
+        )
+
+    assert _history_snapshot(datum) == history_before
+    assert "gridfs_id" not in datum
+    assert database[collection].count_documents({}) == 0
+    assert database["history_object"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_save_elog_failure_removes_known_created_resources(
+    database, monkeypatch, factory, collection
+):
+    datum = factory([1.0, 2.0, 3.0, 4.0])
+    datum.elog.log_error("test", "injected elog", ErrorSeverity.Complaint)
+    history_before = _history_snapshot(datum)
+    failure = RuntimeError("injected elog save failure")
+
+    def fail_elog_save(*args, **kwargs):
+        raise failure
+
+    monkeypatch.setattr(Database, "_save_elog", fail_elog_save)
+
+    with pytest.raises(RuntimeError) as error:
+        database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=True,
+            return_data=True,
+        )
+
+    assert error.value is failure
+    assert _history_snapshot(datum) == history_before
+    assert "gridfs_id" not in datum
+    assert database[collection].count_documents({}) == 0
+    assert database["history_object"].count_documents({}) == 0
+    assert database["elog"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+
+
 def test_save_history_can_defer_reset_without_database_io(monkeypatch):
     database = object.__new__(Database)
     database.database_schema = SimpleNamespace(default_name=lambda name: name)

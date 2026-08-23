@@ -7119,6 +7119,7 @@ class Database(pymongo.database.Database):
                     gridfs_id = mspass_object["gridfs_id"]
                     if gfsh.exists(gridfs_id):
                         gfsh.delete(gridfs_id)
+                    mspass_object.erase("gridfs_id")
                 raise
             insertion_dict[elog_id_name] = elog_id
 
@@ -7150,6 +7151,7 @@ class Database(pymongo.database.Database):
                     gridfs_id = mspass_object["gridfs_id"]
                     if gfsh.exists(gridfs_id):
                         gfsh.delete(gridfs_id)
+                    mspass_object.erase("gridfs_id")
                 raise
 
             mspass_object["_id"] = wfid
