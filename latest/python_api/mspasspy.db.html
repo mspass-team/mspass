@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev50+gbff4dbd2 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev51+g69f44ae5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=15d19c9d"></script>
+    <script src="../_static/documentation_options.js?v=1f5c4006"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev50" />
+  <meta name="docsearch:version" content="2.4.4.dev51" />
   </head>
   
   
@@ -3503,7 +3503,7 @@ in the constructor to False.</p>
 <span id="normalize"></span><h2>normalize<a class="headerlink" href="#module-mspasspy.db.normalize" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.normalize.ArrivalDBMatcher">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">ArrivalDBMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['phase',</span> <span class="pre">'time']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_unique_match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#ArrivalDBMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.ArrivalDBMatcher" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.normalize.</span></span><span class="sig-name descname"><span class="pre">ArrivalDBMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arrival'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes_to_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['phase',</span> <span class="pre">'time']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_if_defined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_unique_match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prepend_collection_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_starttime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'starttime'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_endtime_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'endtime'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/normalize.html#ArrivalDBMatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.normalize.ArrivalDBMatcher" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.db.normalize.DatabaseMatcher" title="mspasspy.db.normalize.DatabaseMatcher"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatabaseMatcher</span></code></a></p>
 <p>This is a class for matching a table of arrival times to input
 waveform data objects.  Use this version if the table of arrivals
@@ -3574,6 +3574,10 @@ specific pick for a specific station like {“sta”:”AAK”}.
 Another would be to limit arrivals to a specific phase name
 like {“phase” : “ScS”}.  Default is None which reverts to no
 query predicate.</p></li>
+<li><p><strong>ensemble_starttime_key</strong> (<em>string</em>) – Metadata key containing the inclusive
+interval start for ensemble input.  Default is <code class="docutils literal notranslate"><span class="pre">&quot;starttime&quot;</span></code>.</p></li>
+<li><p><strong>ensemble_endtime_key</strong> (<em>string</em>) – Metadata key containing the inclusive
+interval end for ensemble input.  Default is <code class="docutils literal notranslate"><span class="pre">&quot;endtime&quot;</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3586,8 +3590,8 @@ DatabaseMatcher.</p>
 class docstring.  That is, for atomic data the time span for
 the interval query is determined from the range of the waveform
 data received through mspass_object.   For ensembles the
-algorithm fetches fields defined by self.startime_key and
-self.endtime_key to define the time interval.</p>
+algorithm fetches fields defined by self.ensemble_starttime_key and
+self.ensemble_endtime_key to define the time interval.</p>
 <p>The interval test is overlaid on the self.query input.  i.e.
 the query dict components derived are added to the self.query.</p>
 </dd></dl>

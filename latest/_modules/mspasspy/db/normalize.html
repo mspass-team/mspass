@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev50+gbff4dbd2 documentation</title>
+    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev51+g69f44ae5 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=15d19c9d"></script>
+    <script src="../../../_static/documentation_options.js?v=1f5c4006"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev50" />
+  <meta name="docsearch:version" content="2.4.4.dev51" />
   </head>
   
   
@@ -3665,6 +3665,14 @@
 <span class="sd">    :type query:  python dictionary or None.  None is equivalewnt to</span>
 <span class="sd">      passing an empty dictionary.  A TypeError will be thrown if this</span>
 <span class="sd">      argument is not None or a dict.</span>
+
+<span class="sd">    :param ensemble_starttime_key: Metadata key containing the inclusive</span>
+<span class="sd">      interval start for ensemble input.  Default is ``"starttime"``.</span>
+<span class="sd">    :type ensemble_starttime_key: string</span>
+
+<span class="sd">    :param ensemble_endtime_key: Metadata key containing the inclusive</span>
+<span class="sd">      interval end for ensemble input.  Default is ``"endtime"``.</span>
+<span class="sd">    :type ensemble_endtime_key: string</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -3677,6 +3685,8 @@
         <span class="n">require_unique_match</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ensemble_starttime_key</span><span class="o">=</span><span class="s2">"starttime"</span><span class="p">,</span>
+        <span class="n">ensemble_endtime_key</span><span class="o">=</span><span class="s2">"endtime"</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">db</span><span class="p">,</span>
@@ -3696,6 +3706,8 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">"ArrivalDBMatcher constructor:  query arg must define a python dictionary"</span>
             <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_starttime_key</span> <span class="o">=</span> <span class="n">ensemble_starttime_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_endtime_key</span> <span class="o">=</span> <span class="n">ensemble_endtime_key</span>
 
 <div class="viewcode-block" id="ArrivalDBMatcher.query_generator">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.ArrivalDBMatcher.query_generator">[docs]</a>
@@ -3708,8 +3720,8 @@
 <span class="sd">        class docstring.  That is, for atomic data the time span for</span>
 <span class="sd">        the interval query is determined from the range of the waveform</span>
 <span class="sd">        data received through mspass_object.   For ensembles the</span>
-<span class="sd">        algorithm fetches fields defined by self.startime_key and</span>
-<span class="sd">        self.endtime_key to define the time interval.</span>
+<span class="sd">        algorithm fetches fields defined by self.ensemble_starttime_key and</span>
+<span class="sd">        self.ensemble_endtime_key to define the time interval.</span>
 
 <span class="sd">        The interval test is overlaid on the self.query input.  i.e.</span>
 <span class="sd">        the query dict components derived are added to the self.query.</span>
@@ -3731,8 +3743,27 @@
                 <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
                 <span class="c1"># intentionally ignore loc as option</span>
                 <span class="k">return</span> <span class="n">query</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_starttime_key</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_endtime_key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">sta</span> <span class="o">=</span> <span class="n">_get_with_readonly_recovery</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">"sta"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">"$gte"</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_starttime_key</span><span class="p">],</span>
+                <span class="s2">"$lte"</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ensemble_endtime_key</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">query</span><span class="p">[</span><span class="s2">"sta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">_get_with_readonly_recovery</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="s2">"net"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">net</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">query</span><span class="p">[</span><span class="s2">"net"</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+            <span class="k">return</span> <span class="n">query</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 </div>
 
 
