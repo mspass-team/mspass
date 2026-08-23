@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev56+gaec89ab46 documentation</title>
+    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev57+g348502193 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ae327fb9"></script>
+    <script src="../_static/documentation_options.js?v=c6e905f0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.util" href="mspasspy.util.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev56" />
+  <meta name="docsearch:version" content="2.4.4.dev57" />
   </head>
   
   
@@ -521,7 +521,7 @@ to only process data defined by the “sliding_window_size” argument.
 The function uses dask Futures (note Futures are supported only in dask
 so this function cannot be used with a pyspark workflow) and submits
 and runs only sliding_window_size instances of the task defined by
-the “completion_function” argument.  The default behavior runs
+the “processing_function” argument.  The default behavior runs
 approximately 2 instances of the function per worker.  The number is
 “approximate” because the scheduler algorithm often queues up more
 instances on startup and the load is unbalanced until all workers are
@@ -538,10 +538,12 @@ may not be running on the same node.  See the MsPASS User Manual for
 more guidance on this issue.</p>
 <p>The other element of this function is the optional “completion_function”
 argument.  That function is run on the output of every instance of
-the function returned by workers.  By default the output of the
-completion function replaces that of the processing function yielding
-a list of the same size as the input <cite>dlist</cite>.   For large numbers of
-inputs such a giant list can be problematic for a variety of reasons.
+the function returned by workers.  When defined, its output replaces
+that of the processing function in the returned list.  Without a
+completion function, processing results are returned directly.  Either
+list has the same size as <cite>dlist</cite> and follows Future completion order,
+which is not necessarily input order.  For large numbers of inputs such
+a giant list can be problematic for a variety of reasons.
 For that reason this function has an optional <cite>accumulator</cite>
 argument.  As the name implies it should be an accumulation function
 that creates a summary of the output or some useful combination of
@@ -561,12 +563,6 @@ same type as arg0.   That and the None initialization allows the
 accumulator to be stateless.   Optional <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>
 values can be passed by the optional a_args and
 a_kwargs parameters.</p>
-<p>The function supports two types of completion functions controlled
-by the boolean argument “completion_is_accumulator”.  When True
-the completion function is expected to be an accumulator. In that
-mode the completion function should still return it’s current
-result but the result will overwritten as each Future completes.
-The function then returns the final value.</p>
 <p>The function is made generic at the cost of having a rather complicated
 API.   That is summarized here, but the reader is advised to consult
 the MsPASS User Manual and online sources if you aren’t intimately familiar
@@ -596,16 +592,17 @@ required arguments to the function defined as processing_function.</p></li>
 the cluster to which the processing_function is to run upon.  In
 MsPASS normal use is to fetch this with the MsPASS client
 <cite>get_scheduler</cite> method.</p></li>
-<li><p><strong>sliding_window_size</strong> (must be either the unique string “auto” or
-an integer.  If set to “auto” (default) the sliding window size is set to
+<li><p><strong>sliding_window_size</strong> (must be either the literal string “auto” or
+a positive integer other than a boolean.  If set to “auto” (default)
+the sliding window size is set to
 the value of <cite>tasks_per_worker</cite> times the number of workers
 dask_client responds are running when this function is first called.
 Note that works perfectly on HPC systems but can fail in cloud
 environment if dask is runnign with dynamic scheduling.  This can
 also be a integer value that manually sets the sliding window size.) – size of the sliding window submit buffer.</p></li>
-<li><p><strong>task_per_worker</strong> – determines the size of the sliding window
-when <cite>sliding_window_size=”auto”</cite>.  Ignored if the sliding window
-size is set manually with an integer value.</p></li>
+<li><p><strong>task_per_worker</strong> – positive finite real number that determines the
+size of the sliding window when <cite>sliding_window_size=”auto”</cite>.  It is
+ignored after validation if the sliding window size is set manually.</p></li>
 <li><p><strong>completion_function</strong> (<em>a function object</em><em> or </em><em>None.  If None</em><em> (</em><em>default</em><em>)
 </em><em>the outputs from each future are simply appended to a list.
 When defined each return will be passed to this function.</em>) – if defined the result returned by each submit
@@ -646,9 +643,11 @@ The default is 10000.  The final item is always reported.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>When the completion_function is not defined (default)
-this function will return a list of return values from each
-component of dlist passed through the processing function.
+<dd class="field-even"><p>When the completion_function is not defined (default), return
+a list of processing results.  With a completion function and no
+accumulator, return a list of completion results.  With both, return
+the final accumulator value.  Results are handled in Future completion
+order and do not preserve input order.
 Be warned this list can get huge if the data set is large
 and anything but a tiny datum is returned by processing_function.
 The definitive use of this function in MsPASS is a function
@@ -657,11 +656,7 @@ method.   That is easily handled as the default is the a list of
 boolean values.  If, however, the same function is run with
 <cite>return_data=True</cite> a memory overflow in the caller is likely
 unless the entire output of the processing fits in the memory
-space of the caller.  When a completion function is used the
-return is the return of the completion function.
-A complexity is that if the <cite>accumulator</cite> function is defined
-the return is NOT a list but the accumulated output of
-that function.</p>
+space of the caller.</p>
 </dd>
 </dl>
 </dd></dl>

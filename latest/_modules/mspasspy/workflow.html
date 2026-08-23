@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev56+gaec89ab46 documentation</title>
+    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev57+g348502193 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ae327fb9"></script>
+    <script src="../../_static/documentation_options.js?v=c6e905f0"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev56" />
+  <meta name="docsearch:version" content="2.4.4.dev57" />
   </head>
   
   
@@ -473,9 +473,11 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.workflow</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ddist</span>
-
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Integral</span><span class="p">,</span> <span class="n">Real</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ddist</span>
 
 
 <div class="viewcode-block" id="sliding_window_pipeline">
@@ -540,7 +542,7 @@
 <span class="sd">    The function uses dask Futures (note Futures are supported only in dask</span>
 <span class="sd">    so this function cannot be used with a pyspark workflow) and submits</span>
 <span class="sd">    and runs only sliding_window_size instances of the task defined by</span>
-<span class="sd">    the "completion_function" argument.  The default behavior runs</span>
+<span class="sd">    the "processing_function" argument.  The default behavior runs</span>
 <span class="sd">    approximately 2 instances of the function per worker.  The number is</span>
 <span class="sd">    "approximate" because the scheduler algorithm often queues up more</span>
 <span class="sd">    instances on startup and the load is unbalanced until all workers are</span>
@@ -558,10 +560,12 @@
 
 <span class="sd">    The other element of this function is the optional "completion_function"</span>
 <span class="sd">    argument.  That function is run on the output of every instance of</span>
-<span class="sd">    the function returned by workers.  By default the output of the</span>
-<span class="sd">    completion function replaces that of the processing function yielding</span>
-<span class="sd">    a list of the same size as the input `dlist`.   For large numbers of</span>
-<span class="sd">    inputs such a giant list can be problematic for a variety of reasons.</span>
+<span class="sd">    the function returned by workers.  When defined, its output replaces</span>
+<span class="sd">    that of the processing function in the returned list.  Without a</span>
+<span class="sd">    completion function, processing results are returned directly.  Either</span>
+<span class="sd">    list has the same size as `dlist` and follows Future completion order,</span>
+<span class="sd">    which is not necessarily input order.  For large numbers of inputs such</span>
+<span class="sd">    a giant list can be problematic for a variety of reasons.</span>
 <span class="sd">    For that reason this function has an optional `accumulator`</span>
 <span class="sd">    argument.  As the name implies it should be an accumulation function</span>
 <span class="sd">    that creates a summary of the output or some useful combination of</span>
@@ -581,14 +585,6 @@
 <span class="sd">    accumulator to be stateless.   Optional ``*args`` and ``**kwargs``</span>
 <span class="sd">    values can be passed by the optional a_args and</span>
 <span class="sd">    a_kwargs parameters.</span>
-
-<span class="sd">    The function supports two types of completion functions controlled</span>
-<span class="sd">    by the boolean argument "completion_is_accumulator".  When True</span>
-<span class="sd">    the completion function is expected to be an accumulator. In that</span>
-<span class="sd">    mode the completion function should still return it's current</span>
-<span class="sd">    result but the result will overwritten as each Future completes.</span>
-<span class="sd">    The function then returns the final value.</span>
-
 
 <span class="sd">    The function is made generic at the cost of having a rather complicated</span>
 <span class="sd">    API.   That is summarized here, but the reader is advised to consult</span>
@@ -619,16 +615,17 @@
 <span class="sd">       MsPASS normal use is to fetch this with the MsPASS client</span>
 <span class="sd">       `get_scheduler` method.</span>
 <span class="sd">    :param sliding_window_size:   size of the sliding window submit buffer.</span>
-<span class="sd">    :type sliding_window_size:  must be either the unique string "auto" or</span>
-<span class="sd">      an integer.  If set to "auto" (default) the sliding window size is set to</span>
+<span class="sd">    :type sliding_window_size:  must be either the literal string "auto" or</span>
+<span class="sd">      a positive integer other than a boolean.  If set to "auto" (default)</span>
+<span class="sd">      the sliding window size is set to</span>
 <span class="sd">      the value of `tasks_per_worker` times the number of workers</span>
 <span class="sd">      dask_client responds are running when this function is first called.</span>
 <span class="sd">      Note that works perfectly on HPC systems but can fail in cloud</span>
 <span class="sd">      environment if dask is runnign with dynamic scheduling.  This can</span>
 <span class="sd">      also be a integer value that manually sets the sliding window size.</span>
-<span class="sd">    :param task_per_worker: determines the size of the sliding window</span>
-<span class="sd">      when `sliding_window_size="auto"`.  Ignored if the sliding window</span>
-<span class="sd">      size is set manually with an integer value.</span>
+<span class="sd">    :param task_per_worker: positive finite real number that determines the</span>
+<span class="sd">      size of the sliding window when `sliding_window_size="auto"`.  It is</span>
+<span class="sd">      ignored after validation if the sliding window size is set manually.</span>
 <span class="sd">    :param completion_function:   if defined the result returned by each submit</span>
 <span class="sd">       will be processed with this function.   When defined the function</span>
 <span class="sd">       output will be the single output of this function.</span>
@@ -668,9 +665,11 @@
 <span class="sd">       completed items elapse between reports when ``verbose`` is True.</span>
 <span class="sd">       The default is 10000.  The final item is always reported.</span>
 
-<span class="sd">    :return:   When the completion_function is not defined (default)</span>
-<span class="sd">       this function will return a list of return values from each</span>
-<span class="sd">       component of dlist passed through the processing function.</span>
+<span class="sd">    :return:   When the completion_function is not defined (default), return</span>
+<span class="sd">       a list of processing results.  With a completion function and no</span>
+<span class="sd">       accumulator, return a list of completion results.  With both, return</span>
+<span class="sd">       the final accumulator value.  Results are handled in Future completion</span>
+<span class="sd">       order and do not preserve input order.</span>
 <span class="sd">       Be warned this list can get huge if the data set is large</span>
 <span class="sd">       and anything but a tiny datum is returned by processing_function.</span>
 <span class="sd">       The definitive use of this function in MsPASS is a function</span>
@@ -679,20 +678,17 @@
 <span class="sd">       boolean values.  If, however, the same function is run with</span>
 <span class="sd">       `return_data=True` a memory overflow in the caller is likely</span>
 <span class="sd">       unless the entire output of the processing fits in the memory</span>
-<span class="sd">       space of the caller.  When a completion function is used the</span>
-<span class="sd">       return is the return of the completion function.</span>
-<span class="sd">       A complexity is that if the `accumulator` function is defined</span>
-<span class="sd">       the return is NOT a list but the accumulated output of</span>
-<span class="sd">       that function.</span>
+<span class="sd">       space of the caller.</span>
 <span class="sd">    """</span>
-    <span class="c1"># check args for validity and set integer run_mode for combinations of</span>
-    <span class="c1"># logic for processing_function and completion_function arguments</span>
+    <span class="c1"># Materialize once so generators and other one-shot iterables have the same</span>
+    <span class="c1"># behavior as lists throughout validation and submission.</span>
     <span class="n">alg</span> <span class="o">=</span> <span class="s2">"sliding_window_pipeline"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dlist</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">:  Illegal value for arg0 - must be an interable container (usually a list)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">alg</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">data_items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">processing_function</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">:  Illegal value for arg1 - must be the name of a processing function to be submitted"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">alg</span>
@@ -722,11 +718,10 @@
                 <span class="n">alg</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="c1"># handle cfunc slightly differently because it may be used at all</span>
-    <span class="c1"># this conditional couod be used directly below but to me this</span>
-    <span class="c1"># makes logic clearer</span>
     <span class="k">if</span> <span class="n">completion_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">run_completion_function</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"accumulator requires a completion_function"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">run_completion_function</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">completion_function</span><span class="p">):</span>
@@ -773,78 +768,119 @@
                     <span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
-    <span class="n">swsize</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># initialization - set in block below</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dask_client</span><span class="p">,</span> <span class="n">ddist</span><span class="o">.</span><span class="n">Client</span><span class="p">):</span>
-        <span class="n">active_workers</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">nthreads</span><span class="p">()</span>
-        <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_workers</span><span class="p">)</span>
-        <span class="k">del</span> <span class="n">active_workers</span>
-        <span class="k">if</span> <span class="n">sliding_window_size</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
-            <span class="n">swsize</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">num_workers</span> <span class="o">*</span> <span class="n">task_per_worker</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">swsize</span> <span class="o">&lt;</span> <span class="n">num_workers</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">:  WARNING set sliding window size to </span><span class="si">{</span><span class="n">swsize</span><span class="si">}</span><span class="s2"> which smaller than the number of workers=</span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2">"</span>
-                <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">"This will not use the dask cluster if you are running this job on HPC"</span>
-                <span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="s2">"This setting makes sense only if you are running on a cluster service being used by multiple applications"</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">swsize</span> <span class="o">=</span> <span class="n">sliding_window_size</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="n">automatic_window</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">sliding_window_size</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sliding_window_size</span> <span class="o">==</span> <span class="s2">"auto"</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">automatic_window</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">sliding_window_size</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sliding_window_size</span><span class="p">,</span> <span class="n">Integral</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">sliding_window_size</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'sliding_window_size must be "auto" or a positive integer'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">task_per_worker</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task_per_worker</span><span class="p">,</span> <span class="n">Real</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">task_per_worker</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">task_per_worker</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"task_per_worker must be a positive finite real number"</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dask_client</span><span class="p">,</span> <span class="n">ddist</span><span class="o">.</span><span class="n">Client</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">: Illegal value for arg2.  Must be an instance of dask.distributed.Client"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">alg</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-    <span class="n">futures_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dlist</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">automatic_window</span><span class="p">:</span>
+        <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dask_client</span><span class="o">.</span><span class="n">nthreads</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">num_workers</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"cannot calculate an automatic window with zero workers"</span><span class="p">)</span>
+        <span class="n">swsize</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">num_workers</span> <span class="o">*</span> <span class="n">task_per_worker</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">swsize</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"automatic sliding window size rounded below one"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">swsize</span> <span class="o">&lt;</span> <span class="n">num_workers</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">:  WARNING set sliding window size to </span><span class="si">{</span><span class="n">swsize</span><span class="si">}</span><span class="s2"> which smaller than the number of workers=</span><span class="si">{</span><span class="n">num_workers</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"This will not use the dask cluster if you are running this job on HPC"</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"This setting makes sense only if you are running on a cluster service being used by multiple applications"</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">swsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sliding_window_size</span><span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_items</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> items"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">N</span> <span class="o">&lt;</span> <span class="n">swsize</span><span class="p">:</span>
-        <span class="n">swsize</span> <span class="o">=</span> <span class="n">N</span>
-    <span class="n">i_d</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dlist</span><span class="p">:</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">processing_function</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">)</span>
-        <span class="n">futures_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">i_d</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">i_d</span> <span class="o">&gt;=</span> <span class="n">swsize</span><span class="p">:</span>
-            <span class="k">break</span>
-    <span class="c1"># initialize both of these although one or the other is returned</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">swsize</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">swsize</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">accumulated_output</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">number_handled</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">ddist</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futures_list</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
-        <span class="n">f_result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
-            <span class="n">f_result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">f_result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f_result</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># accumulator MUST handle None for arg0 - see docstring</span>
-                <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
-                    <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">f_result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
-                <span class="p">)</span>
-        <span class="c1"># found to be necessary to assure dask doesn't hog memory held by f</span>
-        <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="k">del</span> <span class="n">f</span>
-        <span class="n">number_handled</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="n">number_handled</span> <span class="o">%</span> <span class="n">progress_report_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">number_handled</span> <span class="o">==</span> <span class="n">N</span>
-        <span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Handled </span><span class="si">{</span><span class="n">number_handled</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> items"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i_d</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-                <span class="n">processing_function</span><span class="p">,</span> <span class="n">dlist</span><span class="p">[</span><span class="n">i_d</span><span class="p">],</span> <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">pfunc_kwargs</span>
+    <span class="n">next_item</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">outstanding</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">completed_futures</span> <span class="o">=</span> <span class="n">ddist</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">dask_client</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">next_item</span> <span class="o">&lt;</span> <span class="n">swsize</span><span class="p">:</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">processing_function</span><span class="p">,</span>
+                <span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">],</span>
+                <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span>
+                <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">seq</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-            <span class="n">i_d</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">outstanding</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">completed_futures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">next_item</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">completed_futures</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
+                        <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+            <span class="c1"># Release scheduler/client references as soon as each result has</span>
+            <span class="c1"># been handled.</span>
+            <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">outstanding</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+            <span class="n">number_handled</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">number_handled</span> <span class="o">%</span> <span class="n">progress_report_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">number_handled</span> <span class="o">==</span> <span class="n">N</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Handled </span><span class="si">{</span><span class="n">number_handled</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> items"</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">next_item</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                    <span class="n">processing_function</span><span class="p">,</span>
+                    <span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">],</span>
+                    <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span>
+                    <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">outstanding</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+                <span class="n">completed_futures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+                <span class="n">next_item</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">outstanding</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">outstanding</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                <span class="c1"># Preserve the processing/completion/accumulation exception.</span>
+                <span class="k">pass</span>
+        <span class="k">raise</span>
+
     <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">results</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">accumulated_output</span></div>
+    <span class="k">return</span> <span class="n">accumulated_output</span></div>
 
 </pre></div>
 
