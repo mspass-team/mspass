@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pymongo
 
 
@@ -25,6 +27,18 @@ def get_jobid(db):
         return maxdoc["jobid"] + 1
 
 
+def _antelope_pf_to_dict(pf):
+    """Return one complete AntelopePf node without changing the source."""
+    result = OrderedDict()
+    for simple_key in pf.keys():
+        result[simple_key] = pf.get(simple_key)
+    for table_key in pf.tbl_keys():
+        result[table_key] = pf.get_tbl(table_key)
+    for branch_key in pf.arr_keys():
+        result[branch_key] = _antelope_pf_to_dict(pf.get_branch(branch_key))
+    return result
+
+
 def pfbranch_to_dict(pf, key):
     """
     Recursive function to convert a single branch in an AntelopePf to a python dict.
@@ -49,23 +63,7 @@ def pfbranch_to_dict(pf, key):
     :return:  python dict translation of AntelopePf branch structure
     :raise:  RunTime errors are possible from the ccore methods that are called.
     """
-    brkeys = pf.arr_keys()
-    if len(brkeys) > 0:
-        # This loads simple parameters at this level
-        allbrdata = pf.todict()
-        # This loads any Tbl& data at this level of the hierarchy
-        tblkeys = pf.tbl_keys()
-        for k in tblkeys:
-            tvals = pf.get_tbl(k)
-            allbrdata[k] = tvals
-        for k in brkeys:
-            pfbranch = pf.get_branch(k)
-            bk = pfbranch_to_dict(pfbranch, k)
-            allbrdata[k] = bk
-        return allbrdata
-    else:
-        brdata = pf.todict()
-        return brdata
+    return _antelope_pf_to_dict(pf.get_branch(key))
 
 
 class basic_history_data:
@@ -135,23 +133,7 @@ class pf_history_data(basic_history_data):
         self.jobid = job
         self.algorithm = alg
         self.param_type = "AntelopePf"
-        # This works because Metadata2dict calls pf.keys() which only returns
-        # simple name:value pair parameters.  We use branch and tbl calls later
-        self.params = pf.todict()
-        # tbl's next - simpler than a Arr which requires recursion
-        tblkeys = pf.tbl_keys()
-        for k in tblkeys:
-            tvals = pf.get_tbl(k)
-            # testing suggests tvals is a regular python list so this
-            # should work cleanly
-            self.params[k] = tvals
-        # Arr's are harder if we want to allow them to be arbitrarily deep.
-        # Hence we use this recursive function defined above.
-        arrkeys = pf.arr_keys()
-        for k in arrkeys:
-            branchval = {}
-            branchval = pfbranch_to_dict(pf, k)
-            self.params[k] = branchval
+        self.params = _antelope_pf_to_dict(pf)
 
 
 class HistoryLogger:
