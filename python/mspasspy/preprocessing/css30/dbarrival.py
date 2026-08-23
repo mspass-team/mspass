@@ -702,22 +702,25 @@ def set_netcode_time_interval(
         curs = dbarr.find(query, no_cursor_timeout=True)
     else:
         curs = dbarr.find(query)
-    for doc in curs:
-        if "net" in doc:
-            print(
-                basemessage + "WARNING found document with net code set to ",
-                doc["net"],
-            )
-            # this check is required for robustness when time filter is off
-            if time_filter_key in doc:
-                print("Problem document time=", UTCDateTime(doc[time_filter_key]))
-            print("Setting net in this document to requested net code=", net)
-        oid = doc["_id"]
-        updaterec = {"net": net}
-        update_query = dict(query)
-        update_query["_id"] = oid
-        dbarr.update_one(update_query, {"$set": updaterec})
-        count += 1
+    try:
+        for doc in curs:
+            if "net" in doc:
+                print(
+                    basemessage + "WARNING found document with net code set to ",
+                    doc["net"],
+                )
+                # this check is required for robustness when time filter is off
+                if time_filter_key in doc:
+                    print("Problem document time=", UTCDateTime(doc[time_filter_key]))
+                print("Setting net in this document to requested net code=", net)
+            oid = doc["_id"]
+            updaterec = {"net": net}
+            update_query = dict(query)
+            update_query["_id"] = oid
+            dbarr.update_one(update_query, {"$set": updaterec})
+            count += 1
+    finally:
+        curs.close()
     return count
 
 
@@ -946,10 +949,13 @@ def set_arrival_by_time_interval(
     dbsite = db.site
     query = {"sta": sta}
     if use_immortal_cursor:
-        curs = dbsite.find(query, no_cursor_timeout=True).sort("starttime", 1)
+        curs = dbsite.find(query, no_cursor_timeout=True)
     else:
-        curs = dbsite.find(query).sort("starttime", 1)
-    site_docs = list(curs)
+        curs = dbsite.find(query)
+    try:
+        site_docs = list(curs.sort("starttime", 1))
+    finally:
+        curs.close()
     for doc in site_docs:
         net = doc.get("net")
         if not isinstance(net, str) or not net:
@@ -1000,12 +1006,15 @@ def set_arrival_by_time_interval(
             arcursor = dbarr.find(arrival_query, no_cursor_timeout=True)
         else:
             arcursor = dbarr.find(arrival_query)
-        for ardoc in arcursor:
-            # print(ardoc['sta'],UTCDateTime(ardoc['time']))
-            update_query = dict(arrival_query)
-            update_query["_id"] = ardoc["_id"]
-            dbarr.update_one(update_query, {"$set": {"net": net}})
-            nupdates += 1
+        try:
+            for ardoc in arcursor:
+                # print(ardoc['sta'],UTCDateTime(ardoc['time']))
+                update_query = dict(arrival_query)
+                update_query["_id"] = ardoc["_id"]
+                dbarr.update_one(update_query, {"$set": {"net": net}})
+                nupdates += 1
+        finally:
+            arcursor.close()
     return nupdates
 
 

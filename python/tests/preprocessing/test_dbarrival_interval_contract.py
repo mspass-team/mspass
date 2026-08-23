@@ -26,6 +26,10 @@ def _matches(document, query):
 
 
 class _Cursor(list):
+    def __init__(self, documents):
+        super().__init__(documents)
+        self.close_calls = 0
+
     def sort(self, key, direction):
         assert direction == 1
         list.sort(self, key=lambda document: document[key])
@@ -34,21 +38,27 @@ class _Cursor(list):
     def rewind(self):
         return self
 
+    def close(self):
+        self.close_calls += 1
+
 
 class _Collection:
     def __init__(self, documents):
         self.documents = deepcopy(documents)
         self.find_calls = []
+        self.cursors = []
         self.count_calls = []
         self.update_calls = []
 
     def find(self, query, **kwargs):
         self.find_calls.append((deepcopy(query), deepcopy(kwargs)))
-        return _Cursor(
+        cursor = _Cursor(
             deepcopy(document)
             for document in self.documents
             if _matches(document, query)
         )
+        self.cursors.append(cursor)
+        return cursor
 
     def count_documents(self, query):
         self.count_calls.append(deepcopy(query))
@@ -121,6 +131,8 @@ def test_site_intervals_update_only_matching_arrivals(use_immortal_cursor):
         (expected_intervals[0], cursor_options),
         (expected_intervals[1], cursor_options),
     ]
+    assert [cursor.close_calls for cursor in database.site.cursors] == [1]
+    assert [cursor.close_calls for cursor in database.arrival.cursors] == [1, 1]
     assert database.arrival.update_calls == [
         ({**expected_intervals[0], "_id": "a0"}, {"$set": {"net": "A"}}),
         ({**expected_intervals[0], "_id": "a10"}, {"$set": {"net": "A"}}),
@@ -164,6 +176,7 @@ def test_forced_interval_updates_share_the_read_predicate(use_immortal_cursor):
     cursor_options = {"no_cursor_timeout": True} if use_immortal_cursor else {}
     assert database.arrival.count_calls == [interval]
     assert database.arrival.find_calls == [(interval, cursor_options)]
+    assert [cursor.close_calls for cursor in database.arrival.cursors] == [1]
     assert database.arrival.update_calls == [
         ({**interval, "_id": "left"}, {"$set": {"net": "XX"}}),
         ({**interval, "_id": "right"}, {"$set": {"net": "XX"}}),
@@ -195,6 +208,7 @@ def test_forced_interval_empty_result_returns_zero(use_immortal_cursor):
     cursor_options = {"no_cursor_timeout": True} if use_immortal_cursor else {}
     assert database.arrival.count_calls == [query]
     assert database.arrival.find_calls == [(query, cursor_options)]
+    assert [cursor.close_calls for cursor in database.arrival.cursors] == [1]
     assert database.arrival.update_calls == []
 
 
@@ -218,6 +232,8 @@ def test_site_interval_empty_result_returns_zero(use_immortal_cursor):
     cursor_options = {"no_cursor_timeout": True} if use_immortal_cursor else {}
     assert database.site.find_calls == [({"sta": "AAA"}, cursor_options)]
     assert database.arrival.find_calls == [(interval, cursor_options)]
+    assert [cursor.close_calls for cursor in database.site.cursors] == [1]
+    assert [cursor.close_calls for cursor in database.arrival.cursors] == [1]
     assert database.arrival.update_calls == []
 
 
@@ -260,6 +276,7 @@ def test_site_interval_rejects_invalid_network_before_arrival_access(bad_net):
         set_arrival_by_time_interval(database, sta="AAA")
 
     assert database.site.find_calls == [({"sta": "AAA"}, {})]
+    assert [cursor.close_calls for cursor in database.site.cursors] == [1]
     assert database.arrival.find_calls == []
     assert database.arrival.update_calls == []
     assert database.arrival.documents == arrivals_before
@@ -285,10 +302,49 @@ def test_overlapping_site_intervals_fail_before_arrival_access(use_immortal_curs
 
     cursor_options = {"no_cursor_timeout": True} if use_immortal_cursor else {}
     assert database.site.find_calls == [({"sta": "AAA"}, cursor_options)]
+    assert [cursor.close_calls for cursor in database.site.cursors] == [1]
     assert database.arrival.find_calls == []
     assert database.arrival.count_calls == []
     assert database.arrival.update_calls == []
     assert database.arrival.documents == arrivals_before
+
+
+@pytest.mark.parametrize("use_immortal_cursor", [False, True])
+@pytest.mark.parametrize(
+    "function, sites",
+    [
+        (set_netcode_time_interval, ()),
+        (
+            set_arrival_by_time_interval,
+            (
+                {
+                    "_id": "site",
+                    "sta": "AAA",
+                    "net": "XX",
+                    "starttime": 0.0,
+                    "endtime": 10.0,
+                },
+            ),
+        ),
+    ],
+)
+def test_arrival_cursor_closes_when_update_fails(function, sites, use_immortal_cursor):
+    database = _Database([{"_id": "arrival", "sta": "AAA", "time": 5.0}], sites)
+
+    def fail_update(query, update):
+        raise RuntimeError("update failed")
+
+    database.arrival.update_one = fail_update
+    kwargs = {"sta": "AAA", "use_immortal_cursor": use_immortal_cursor}
+    if function is set_netcode_time_interval:
+        kwargs["net"] = "XX"
+
+    with pytest.raises(RuntimeError, match="update failed"):
+        function(database, **kwargs)
+
+    if function is set_arrival_by_time_interval:
+        assert [cursor.close_calls for cursor in database.site.cursors] == [1]
+    assert [cursor.close_calls for cursor in database.arrival.cursors] == [1]
 
 
 @pytest.mark.parametrize(
