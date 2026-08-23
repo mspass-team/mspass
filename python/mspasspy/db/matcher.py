@@ -582,8 +582,8 @@ class origin_time_source_matcher(NMF):
                 test_time = time - self.t0offset
             query = {
                 "time": {
-                    "$ge": test_time - self.tolerance,
-                    "$le": test_time + self.tolerance,
+                    "$gte": test_time - self.tolerance,
+                    "$lte": test_time + self.tolerance,
                 }
             }
 
@@ -595,6 +595,7 @@ class origin_time_source_matcher(NMF):
                     d,
                     "origin_time_source_matcher",
                     "multiple source documents match the origin time computed from time received - using first found",
+                    False,
                     ErrorSeverity.Complaint,
                 )
             return self.dbhandle.find_one(query)
