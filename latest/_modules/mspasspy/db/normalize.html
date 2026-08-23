@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev48+ga7a5c22d documentation</title>
+    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev49+ga0c0ba24 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3a854b1a"></script>
+    <script src="../../../_static/documentation_options.js?v=557fd4b3"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev48" />
+  <meta name="docsearch:version" content="2.4.4.dev49" />
   </head>
   
   
@@ -497,6 +497,15 @@
 
 <span class="n">type_pdd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">DataFrame</span>
 <span class="n">type_ddd</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">DataFrame</span>
+
+<span class="n">_MINISEED_DEFAULT_ATTRIBUTES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"starttime"</span><span class="p">,</span>
+    <span class="s2">"endtime"</span><span class="p">,</span>
+    <span class="s2">"lat"</span><span class="p">,</span>
+    <span class="s2">"lon"</span><span class="p">,</span>
+    <span class="s2">"elev"</span><span class="p">,</span>
+    <span class="s2">"_id"</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="BasicMatcher">
@@ -2022,12 +2031,16 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">db</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">,</span> <span class="s2">"_id"</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">load_if_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">aload_tmp</span> <span class="o">=</span> <span class="n">attributes_to_load</span>
+        <span class="n">aload_tmp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">_MINISEED_DEFAULT_ATTRIBUTES</span>
+            <span class="k">if</span> <span class="n">attributes_to_load</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">attributes_to_load</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">"channel"</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">"hang"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">aload_tmp</span><span class="p">:</span>
                 <span class="n">aload_tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"hang"</span><span class="p">)</span>
@@ -2299,12 +2312,16 @@
         <span class="n">db</span><span class="p">,</span>
         <span class="n">collection</span><span class="o">=</span><span class="s2">"channel"</span><span class="p">,</span>
         <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">attributes_to_load</span><span class="o">=</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">,</span> <span class="s2">"endtime"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"elev"</span><span class="p">,</span> <span class="s2">"_id"</span><span class="p">],</span>
+        <span class="n">attributes_to_load</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">load_if_defined</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">aload_tmp</span> <span class="o">=</span> <span class="n">attributes_to_load</span>
+        <span class="n">aload_tmp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">_MINISEED_DEFAULT_ATTRIBUTES</span>
+            <span class="k">if</span> <span class="n">attributes_to_load</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">attributes_to_load</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">collection</span> <span class="o">==</span> <span class="s2">"channel"</span><span class="p">:</span>
             <span class="c1"># forcing this may be a bit too dogmatic but hang and vang</span>
             <span class="c1"># are pretty essential metadata for any channel</span>
