@@ -2393,10 +2393,10 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         source.time - tolerance <= test_time <= source.time + tolerance
 
     The test_time value for matching from a datum can come through
-    one of two methods driven by the constructor argument "time_key".
-    When time_key is a None (default) the algorithm assumes all input
+    one of two methods driven by the constructor argument ``data_time_key``.
+    When ``data_time_key`` is None (default) the algorithm assumes all input
     are mspass atomic data objects that have the start time defined by
-    the attribute "t0" (mspass_object.t0).  If time_key is a string
+    the attribute "t0" (mspass_object.t0).  If ``data_time_key`` is a string
     it is assumed to be a Metadata key used to fetch an epoch time
     to use for the test.   The most likely use of that feature would be
     for ensemble processing where test_time is set as a field in the
@@ -2460,6 +2460,15 @@ class OriginTimeDBMatcher(DatabaseMatcher):
       is not unique.  When False find_one returns the first document
       found and logs a complaint message.  (default is False)
     :type require_unique_match:  boolean
+
+    :param data_time_key: data object Metadata key used instead of the
+      object's ``t0`` to compute the test origin time.  The default, None,
+      uses ``t0``.
+    :type data_time_key: string or None
+
+    :param source_time_key: source collection field used for the origin-time
+      interval query.  The default, None, selects ``"time"``.
+    :type source_time_key: string or None
     """
 
     def __init__(
@@ -2489,7 +2498,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         self.t0offset = t0offset
         self.tolerance = tolerance
         self.data_time_key = data_time_key
-        self.source_time_key = source_time_key
+        self.source_time_key = "time" if source_time_key is None else source_time_key
         if query is None:
             query = {}
         if isinstance(query, dict):
@@ -2509,21 +2518,21 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         This algorithm implements the time test described in detail in
         docstring for this class.  Note the fundamental change in how the
         test time is computed that depends on the internal (self)
-        attribute time_key.  When None we use the data's t0 attribute.
-        Otherwise self.time_key is assumed to be a string key to
+        attribute ``data_time_key``.  When None we use the data's t0 attribute.
+        Otherwise ``self.data_time_key`` is assumed to be a string key to
         fetch the test time from the object's Metadata container.
 
         :param mspass_object:   MsPASS defined data object that contains
           data to be used for this match (t0 attribute or content of
-          self.time_key).
+          ``self.data_time_key``).
         :type mspass_object:  Any valid MsPASS data object.
 
         :return:  query python dictionary on sucess.  Return None if
           a query could not be constructed.  That happens two ways here.
 
           1. If the input is not a valid mspass data object or marked dead.
-          2. If the time_key algorithm is used and time_key isn't defined
-             in the input datum.
+          2. If the data_time_key algorithm is used and data_time_key isn't
+             defined in the input datum.
         """
         # This could generate mysterious results if a user messes up
         # badly, but  it makes the code more stable - otherwise
@@ -2550,7 +2559,7 @@ class OriginTimeDBMatcher(DatabaseMatcher):
         # as python dictionary
         query = copy.deepcopy(self.query)
 
-        query["time"] = {
+        query[self.source_time_key] = {
             "$gte": test_time - self.tolerance,
             "$lte": test_time + self.tolerance,
         }
@@ -2581,10 +2590,10 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         source.time - tolerance <= test_time <= source.time + tolerance
 
     The test_time value for matching from a datum can come through
-    one of two methods driven by the constructor argument "time_key".
-    When time_key is a None (default) the algorithm assumes all input
+    one of two methods driven by the constructor argument ``data_time_key``.
+    When ``data_time_key`` is None (default) the algorithm assumes all input
     are mspass atomic data objects that have the start time defined by
-    the attribute "t0" (mspass_object.t0).  If time_key is a string
+    the attribute "t0" (mspass_object.t0).  If ``data_time_key`` is a string
     it is assumed to be a Metadata key used to fetch an epoch time
     to use for the test.   The most likely use of that feature would be
     for ensemble processing where test_time is set as a field in the
@@ -2718,6 +2727,16 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             message += "Required for matching with waveform start times"
             raise MsPASSError(message, ErrorSeverity.Fatal)
 
+    def _get_test_time(self, mspass_object):
+        """Return the configured data time adjusted by ``t0offset``."""
+        if self.data_time_key is None:
+            test_time = mspass_object.t0
+        elif mspass_object.is_defined(self.data_time_key):
+            test_time = mspass_object[self.data_time_key]
+        else:
+            return None
+        return test_time - self.t0offset
+
     def subset(self, mspass_object) -> pd.DataFrame:
         """
         Implementation of subset method requried by inheritance from
@@ -2735,16 +2754,9 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
             if mspass_object.dead():
                 return pd.DataFrame()
 
-        if self.data_time_key is None:
-            # this maybe should have a test to assure UTC time standard
-            # but will defer for now
-            test_time = mspass_object.t0
-        else:
-            if mspass_object.is_defined(self.data_time_key):
-                test_time = mspass_object[self.data_time_key]
-            else:
-                return pd.DataFrame()
-        test_time -= self.t0offset
+        test_time = self._get_test_time(mspass_object)
+        if test_time is None:
+            return pd.DataFrame()
 
         tmin = test_time - self.tolerance
         tmax = test_time + self.tolerance
@@ -2840,17 +2852,7 @@ class OriginTimeMatcher(DataFrameCacheMatcher):
         for md in mdlist:
             dt[i] = md[time_key]
             i += 1
-        # always use t0 if possile.
-        # this logic, however, allows mspass_object to be a
-        # plain Metadata container or a python dictionary
-        # intentinally let this throw an exception for Metadata if the
-        # required key is missing.  If t0 is not defined it tries to
-        # use self.data_time_key (normaly "startttme")
-        if hasattr(mspass_object, "t0"):
-            test_time = mspass_object.t0
-        else:
-            test_time = mspass_object[self.data_time_key]
-        test_time -= self.t0offset
+        test_time = self._get_test_time(mspass_object)
         dt -= test_time
         dt = np.abs(dt)
         component_to_use = np.argmin(dt)
