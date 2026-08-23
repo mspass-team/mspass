@@ -330,6 +330,22 @@ def run_check_links(
                 print(
                     "Run in verbose mode to find out more information you will need to fix the problem"
                 )
+            if len(undef) == 0:
+                print(
+                    "check_links found no undefined linking key to normalized key=",
+                    nrmcol,
+                )
+            else:
+                print(
+                    "normalization test on normalized key=",
+                    nrmcol,
+                    " found undefined link keys",
+                )
+                print("Found undefined link keys in ", len(undef), "documents checked")
+                print("Note error count limit=", elimit)
+                print(
+                    "Run in verbose mode to find out more information you will need to fix the problem"
+                )
 
 
 def run_check_attribute_types(db, col, elimit, verbose, no_cursor_timeout=False):

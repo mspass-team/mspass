@@ -135,7 +135,7 @@ class TestDBVerify:
         out, err = capfd.readouterr()
         assert (
             out
-            == "normalization test on normalized key= site_id  found problems\nFound broken links in  1 documents checked\nNote error count limit= 1000\nIf the count is the same it means all data probably contain missing cross referencing ids\nRun in verbose mode to find out more information you will need to fix the problem\ncheck_links found no broken links with normalized key= channel_id\ncheck_links found no broken links with normalized key= source_id\n"
+            == "normalization test on normalized key= site_id  found problems\nFound broken links in  1 documents checked\nNote error count limit= 1000\nIf the count is the same it means all data probably contain missing cross referencing ids\nRun in verbose mode to find out more information you will need to fix the problem\ncheck_links found no undefined linking key to normalized key= site_id\ncheck_links found no broken links with normalized key= channel_id\ncheck_links found no undefined linking key to normalized key= channel_id\ncheck_links found no broken links with normalized key= source_id\nnormalization test on normalized key= source_id  found undefined link keys\nFound undefined link keys in  1 documents checked\nNote error count limit= 1000\nRun in verbose mode to find out more information you will need to fix the problem\n"
         )
 
         # more than 1 collection to test
@@ -145,7 +145,7 @@ class TestDBVerify:
         out, err = capfd.readouterr()
         assert (
             out
-            == "WARNING:  normalization test can only be run on one collection at a time\nParsed a list with the following contents:   ['wf_TimeSeries', 'site']\nRunning test on the first item in that list\nnormalization test on normalized key= site_id  found problems\nFound broken links in  1 documents checked\nNote error count limit= 1000\nIf the count is the same it means all data probably contain missing cross referencing ids\nRun in verbose mode to find out more information you will need to fix the problem\ncheck_links found no broken links with normalized key= channel_id\ncheck_links found no broken links with normalized key= source_id\n"
+            == "WARNING:  normalization test can only be run on one collection at a time\nParsed a list with the following contents:   ['wf_TimeSeries', 'site']\nRunning test on the first item in that list\nnormalization test on normalized key= site_id  found problems\nFound broken links in  1 documents checked\nNote error count limit= 1000\nIf the count is the same it means all data probably contain missing cross referencing ids\nRun in verbose mode to find out more information you will need to fix the problem\ncheck_links found no undefined linking key to normalized key= site_id\ncheck_links found no broken links with normalized key= channel_id\ncheck_links found no undefined linking key to normalized key= channel_id\ncheck_links found no broken links with normalized key= source_id\nnormalization test on normalized key= source_id  found undefined link keys\nFound undefined link keys in  1 documents checked\nNote error count limit= 1000\nRun in verbose mode to find out more information you will need to fix the problem\n"
         )
 
         # verbose mode
