@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev47+g83034b90 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev48+ga7a5c22d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=c76344cc"></script>
+    <script src="../_static/documentation_options.js?v=3a854b1a"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev47" />
+  <meta name="docsearch:version" content="2.4.4.dev48" />
   </head>
   
   
@@ -3551,12 +3551,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is None</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keys</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -3655,12 +3654,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is None</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keyes</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -4185,12 +4183,11 @@ be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is to add load no
 optional data.</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keys</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -4282,12 +4279,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default resolves to an empty list.
 Note this parameter is ignored for DataFrame input.</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  Default is
@@ -4404,12 +4400,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is [“loc”].   A common
 addition here may be response data (see schema definition for keys)</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -4564,12 +4559,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is [“loc”].   A common
 addition here may be response data (see schema definition for keys)</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -4727,12 +4721,11 @@ Default [“_id”,”lat”,”lon”,”elev”,”hang”,”vang”].</p></l
 extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.</p></li>
-<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -4799,12 +4792,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keys</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when set true all attributes loaded
 from the normalizing collection will have the channel name prepended.
 That is essential if the collection contains generic names like “lat”
@@ -4930,12 +4922,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is [“magnitude”]</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keys</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if
@@ -5053,12 +5044,11 @@ extracted by find method.  Any data attached to these keys will only
 be posted in the find return if they are defined in the database
 document retrieved in the query.  Default is [“magnitude”]</p></li>
 <li><p><strong>type</strong> – list of strings defining collection keys</p></li>
-<li><p><strong>aliases</strong> – python dictionary defining alias names to apply
-when fetching from a data object’s Metadata container.   The key sense
-of the mapping is important to keep straight.  The key of this
-dictionary should match one  of the attributes in attributes_to_load
-or load_if_defined.  The value the key defines should be the alias
-used to fetch the comparable attribute from the data.</p></li>
+<li><p><strong>aliases</strong> (<em>python dictionary</em>) – python dictionary mapping source collection/table keys
+to keys returned in a Metadata container.  Each dictionary key should
+match an attribute in attributes_to_load or load_if_defined.  Source
+values are read using the dictionary keys; the associated values only
+name the returned Metadata keys.</p></li>
 <li><p><strong>prepend_collection_name</strong> (<em>boolean</em>) – when True attributes returned in
 Metadata containers by the find and find_one method will all have the
 collection name prepended with a (fixed) separator.  For example, if

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev47+g83034b90 documentation</title>
+    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev48+ga7a5c22d documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=c76344cc"></script>
+    <script src="../../../_static/documentation_options.js?v=3a854b1a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev47" />
+  <meta name="docsearch:version" content="2.4.4.dev48" />
   </head>
   
   
@@ -554,17 +554,15 @@
 <span class="sd">          should be loaded only if they are defined. Default is None here,</span>
 <span class="sd">          subclass should set their own default values.</span>
 
-<span class="sd">        :param aliases:   should be a python dictionary used to define</span>
-<span class="sd">          alternative keys to access a data object's Metadata from that</span>
-<span class="sd">          defining the same attribute in the collection/table being</span>
-<span class="sd">          matched.   Note carefully the key of the dictionary is the</span>
-<span class="sd">          collection/table attribute name and the value associated with</span>
-<span class="sd">          that key is the alias to use to fetch Metadata.  When matchers</span>
-<span class="sd">          scan the attributes_to_load and load_if_defined list they</span>
-<span class="sd">          should treat missing entries in alias as meaning the key in</span>
-<span class="sd">          the collection/table and Metadata are identical.  Default is</span>
-<span class="sd">          a None which is used as a signal to this constructor to</span>
-<span class="sd">          create an empty dictionary meaning there are no aliases.</span>
+<span class="sd">        :param aliases:   should be a python dictionary mapping source</span>
+<span class="sd">          collection/table attribute names to the keys returned in a data</span>
+<span class="sd">          object's Metadata.  Each dictionary key must appear in</span>
+<span class="sd">          attributes_to_load or load_if_defined.  Source values are always</span>
+<span class="sd">          read using the dictionary keys; the associated values only name</span>
+<span class="sd">          the returned Metadata keys.  A missing entry means the source and</span>
+<span class="sd">          returned keys are identical.  Default is None, which signals this</span>
+<span class="sd">          constructor to create an empty dictionary meaning there are no</span>
+<span class="sd">          aliases.</span>
 <span class="sd">        :type aliases:  python dictionary</span>
 
 
@@ -1540,7 +1538,7 @@
                                 <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">elog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
@@ -1565,7 +1563,7 @@
                                 <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="n">mdlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
 
@@ -1699,12 +1697,11 @@
 <span class="sd">      document retrieved in the query.</span>
 <span class="sd">    :type load_if_defined:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
 <span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
@@ -1810,13 +1807,12 @@
 <span class="sd">      document retrieved in the query.</span>
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when set true all attributes loaded</span>
 <span class="sd">       from the normalizing collection will have the channel name prepended.</span>
@@ -2006,13 +2002,12 @@
 <span class="sd">      addition here may be response data (see schema definition for keys)</span>
 <span class="sd">    :type load_if_defined:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -2284,13 +2279,12 @@
 <span class="sd">      addition here may be response data (see schema definition for keys)</span>
 <span class="sd">    :type load_if_defined:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -2695,13 +2689,12 @@
 <span class="sd">      Note this parameter is ignored for DataFrame input.</span>
 <span class="sd">    :type load_if_defined:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -2729,6 +2722,10 @@
         <span class="n">prepend_collection_name</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">custom_null_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">match_keys</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"</span>
+            <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">db_or_df</span><span class="p">,</span>
             <span class="n">collection</span><span class="p">,</span>
@@ -2738,41 +2735,37 @@
             <span class="n">require_unique_match</span><span class="o">=</span><span class="n">require_unique_match</span><span class="p">,</span>
             <span class="n">prepend_collection_name</span><span class="o">=</span><span class="n">prepend_collection_name</span><span class="p">,</span>
             <span class="n">custom_null_values</span><span class="o">=</span><span class="n">custom_null_values</span><span class="p">,</span>
+            <span class="n">cache_columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">match_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">match_keys</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">match_keys</span> <span class="o">=</span> <span class="n">match_keys</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">match_keys</span><span class="p">:</span>
-                <span class="n">testkey</span> <span class="o">=</span> <span class="n">match_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                <span class="c1"># this means no aliasing for key</span>
-                <span class="k">if</span> <span class="n">testkey</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">testkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
-                    <span class="n">backtestkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">testkey</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">backtestkey</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
-                        <span class="n">error_message</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="s2">"EqualityMatcher constructor:  "</span>
-                            <span class="o">+</span> <span class="s2">"match_keys and aliases are inconsistent.</span><span class="se">\n</span><span class="s2">"</span>
-                            <span class="o">+</span> <span class="s2">"match_keys="</span>
-                            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">match_keys</span><span class="p">)</span>
-                            <span class="o">+</span> <span class="s2">"  aliases="</span>
-                            <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">error_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">match_keys</span> <span class="o">=</span> <span class="n">match_keys</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">match_keys</span><span class="p">:</span>
+            <span class="n">testkey</span> <span class="o">=</span> <span class="n">match_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># this means no aliasing for key</span>
+            <span class="k">if</span> <span class="n">testkey</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">testkey</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+                <span class="n">backtestkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">testkey</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">backtestkey</span> <span class="o">!=</span> <span class="n">key</span><span class="p">:</span>
                     <span class="n">error_message</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="s2">"EqualityMatcher constructor:  "</span>
                         <span class="o">+</span> <span class="s2">"match_keys and aliases are inconsistent.</span><span class="se">\n</span><span class="s2">"</span>
-                        <span class="o">+</span> <span class="s2">"match_key defines key="</span>
-                        <span class="o">+</span> <span class="n">key</span>
-                        <span class="o">+</span> <span class="s2">" to have alias name="</span>
-                        <span class="o">+</span> <span class="n">testkey</span>
-                        <span class="o">+</span> <span class="s2">" but alias name is not defined by aliases parameter"</span>
+                        <span class="o">+</span> <span class="s2">"match_keys="</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">match_keys</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">"  aliases="</span>
+                        <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">)</span>
                     <span class="p">)</span>
                     <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">error_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"EqualityMatcher Constructor:  required argument 2 (matchkeys) must be a python dictionary"</span>
-            <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">error_message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">"EqualityMatcher constructor:  "</span>
+                    <span class="o">+</span> <span class="s2">"match_keys and aliases are inconsistent.</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="o">+</span> <span class="s2">"match_key defines key="</span>
+                    <span class="o">+</span> <span class="n">key</span>
+                    <span class="o">+</span> <span class="s2">" to have alias name="</span>
+                    <span class="o">+</span> <span class="n">testkey</span>
+                    <span class="o">+</span> <span class="s2">" but alias name is not defined by aliases parameter"</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">error_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EqualityMatcher.subset">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.EqualityMatcher.subset">[docs]</a>
@@ -2865,13 +2858,12 @@
 <span class="sd">      optional data.</span>
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by find and find_one method will all have the</span>
@@ -3011,13 +3003,12 @@
 <span class="sd">      document retrieved in the query.  Default is ["magnitude"]</span>
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">       when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">       of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">       dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">       or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">       used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -3218,13 +3209,12 @@
 <span class="sd">      document retrieved in the query.  Default is ["magnitude"]</span>
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -3537,7 +3527,7 @@
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># land here if a required attribute is missing</span>
                     <span class="c1"># from the dataframe cache.  find logs</span>
@@ -3561,7 +3551,7 @@
                             <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">doc_out</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">doc_out</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
@@ -3626,13 +3616,12 @@
 <span class="sd">      document retrieved in the query.  Default is None</span>
 <span class="sd">    :param type:  list of strings defining collection keys</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">     when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">     of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">     dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">     or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">     used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -3797,13 +3786,12 @@
 <span class="sd">      document retrieved in the query.  Default is None</span>
 <span class="sd">    :param type:  list of strings defining collection keyes</span>
 
-<span class="sd">    :param aliases:  python dictionary defining alias names to apply</span>
-<span class="sd">       when fetching from a data object's Metadata container.   The key sense</span>
-<span class="sd">       of the mapping is important to keep straight.  The key of this</span>
-<span class="sd">       dictionary should match one  of the attributes in attributes_to_load</span>
-<span class="sd">       or load_if_defined.  The value the key defines should be the alias</span>
-<span class="sd">       used to fetch the comparable attribute from the data.</span>
-<span class="sd">    :type aliaes:  python dictionary</span>
+<span class="sd">    :param aliases:  python dictionary mapping source collection/table keys</span>
+<span class="sd">     to keys returned in a Metadata container.  Each dictionary key should</span>
+<span class="sd">     match an attribute in attributes_to_load or load_if_defined.  Source</span>
+<span class="sd">     values are read using the dictionary keys; the associated values only</span>
+<span class="sd">     name the returned Metadata keys.</span>
+<span class="sd">    :type aliases:  python dictionary</span>
 
 <span class="sd">    :param prepend_collection_name:  when True attributes returned in</span>
 <span class="sd">      Metadata containers by the find and find_one method will all have the</span>
@@ -4410,7 +4398,7 @@
                     <span class="n">mdkey</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-            <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">"Required attribute </span><span class="si">{key}</span><span class="s2"> was not found"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">key</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
@@ -4432,7 +4420,7 @@
                     <span class="n">mdkey</span> <span class="o">=</span> <span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-            <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">md</span>
 </pre></div>
 
