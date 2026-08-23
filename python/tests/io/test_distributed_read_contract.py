@@ -13,27 +13,38 @@ import mspasspy.io.distributed as distributed
 
 
 class FakeCursor:
-    def __init__(self, collection, documents):
+    def __init__(self, collection, documents, iteration_error=None):
         self.collection = collection
         self.documents = documents
+        self.iteration_error = iteration_error
+        self.close_calls = 0
 
     def __iter__(self):
-        return iter(self.documents)
+        yield from self.documents
+        if self.iteration_error:
+            raise self.iteration_error
 
     def sort(self, sort_clause):
         self.collection.sort_clauses.append(sort_clause)
         return self
 
+    def close(self):
+        self.close_calls += 1
+
 
 class FakeCollection:
-    def __init__(self, documents):
+    def __init__(self, documents, iteration_error=None):
         self.documents = list(documents)
+        self.iteration_error = iteration_error
         self.find_queries = []
         self.sort_clauses = []
+        self.cursors = []
 
     def find(self, query):
         self.find_queries.append(query.copy())
-        return FakeCursor(self, self.documents)
+        cursor = FakeCursor(self, self.documents, self.iteration_error)
+        self.cursors.append(cursor)
+        return cursor
 
 
 class FakeDatum:
@@ -49,8 +60,8 @@ class FakeEnsemble:
 
 
 class FakeDatabase:
-    def __init__(self, documents, fail_on_read=False):
-        self.collection = FakeCollection(documents)
+    def __init__(self, documents, fail_on_read=False, iteration_error=None):
+        self.collection = FakeCollection(documents, iteration_error)
         self.fail_on_read = fail_on_read
         self.name = "fake_database"
 
@@ -178,6 +189,7 @@ def test_dask_scratch_is_extended_json_lines_lazy_and_caller_owned(
 
     assert isinstance(result, dask.bag.Bag)
     assert scratch.exists()
+    assert database.collection.cursors[-1].close_calls == 1
     lines = scratch.read_text().splitlines()
     assert len(lines) == 2
     assert [json_util.loads(line) for line in lines] == documents
@@ -186,6 +198,57 @@ def test_dask_scratch_is_extended_json_lines_lazy_and_caller_owned(
     assert scratch.exists()
     scratch.unlink()
     assert not scratch.exists()
+
+
+def test_database_cursor_closes_after_in_memory_materialization(monkeypatch):
+    documents = make_documents()
+    database = FakeDatabase(documents)
+    monkeypatch.setattr(distributed, "Database", FakeDatabase)
+
+    result = distributed.read_distributed_data(
+        database,
+        scheduler="dask",
+        npartitions=1,
+    )
+
+    assert database.collection.cursors[-1].close_calls == 1
+    assert result.compute(scheduler="synchronous") == documents
+
+
+@pytest.mark.parametrize("use_scratch", [False, True])
+def test_database_cursor_closes_when_iteration_fails(
+    monkeypatch, tmp_path, use_scratch
+):
+    database = FakeDatabase(
+        make_documents(), iteration_error=RuntimeError("controlled cursor failure")
+    )
+    monkeypatch.setattr(distributed, "Database", FakeDatabase)
+    scratch = str(tmp_path / "iteration-failure.jsonl") if use_scratch else None
+
+    with pytest.raises(RuntimeError, match="controlled cursor failure"):
+        distributed.read_distributed_data(
+            database,
+            scratchfile=scratch,
+            scheduler="dask",
+            npartitions=1,
+        )
+
+    assert database.collection.cursors[-1].close_calls == 1
+
+
+def test_database_cursor_closes_when_scratch_open_fails(monkeypatch, tmp_path):
+    database = FakeDatabase(make_documents())
+    monkeypatch.setattr(distributed, "Database", FakeDatabase)
+
+    with pytest.raises(IsADirectoryError):
+        distributed.read_distributed_data(
+            database,
+            scratchfile=str(tmp_path),
+            scheduler="dask",
+            npartitions=1,
+        )
+
+    assert database.collection.cursors[-1].close_calls == 1
 
 
 def test_dask_compute_failure_never_deletes_caller_scratch(monkeypatch, tmp_path):
@@ -202,6 +265,7 @@ def test_dask_compute_failure_never_deletes_caller_scratch(monkeypatch, tmp_path
     with pytest.raises(RuntimeError, match="controlled read failure"):
         result.compute(scheduler="synchronous")
 
+    assert database.collection.cursors[-1].close_calls == 1
     assert scratch.exists()
     scratch.unlink()
 
@@ -231,6 +295,7 @@ def test_spark_scratch_returns_repeatable_rdd_and_remains_caller_owned(
     from pyspark import RDD
 
     assert isinstance(result, RDD)
+    assert database.collection.cursors[-1].close_calls == 1
     assert result.collect() == documents
     assert result.collect() == documents
     assert scratch.exists()

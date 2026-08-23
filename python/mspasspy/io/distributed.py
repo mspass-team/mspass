@@ -724,15 +724,23 @@ def read_distributed_data(
             if data_tag:
                 fullquery["data_tag"] = data_tag
             cursor = data[collection].find(fullquery)
+            try:
+                if scratchfile:
+                    # Store one Extended JSON document per line.  The scratch
+                    # file belongs to the caller and must remain available for
+                    # lazy and repeated computation of the returned bag/RDD.
+                    with open(scratchfile, "w") as outfile:
+                        for doc in cursor:
+                            outfile.write(json_util.dumps(doc))
+                            outfile.write("\n")
+                else:
+                    doclist = []
+                    for doc in cursor:
+                        doclist.append(doc)
+            finally:
+                cursor.close()
 
             if scratchfile:
-                # Store one Extended JSON document per line.  The scratch file
-                # belongs to the caller and must remain available for lazy and
-                # repeated computation of the returned bag/RDD.
-                with open(scratchfile, "w") as outfile:
-                    for doc in cursor:
-                        outfile.write(json_util.dumps(doc))
-                        outfile.write("\n")
                 if scheduler == "spark":
                     if npartitions is None:
                         plist = spark_context.textFile(scratchfile)
@@ -745,9 +753,6 @@ def read_distributed_data(
                     plist = dask.bag.read_text(scratchfile).map(json_util.loads)
 
             else:
-                doclist = []
-                for doc in cursor:
-                    doclist.append(doc)
                 if scheduler == "spark":
                     plist = spark_context.parallelize(doclist, numSlices=npartitions)
                 else:
