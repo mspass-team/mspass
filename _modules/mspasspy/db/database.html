@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev42+gf1cc7e74 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev43+g26c8901e documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=33e72972"></script>
+    <script src="../../../_static/documentation_options.js?v=334c6399"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev42" />
+  <meta name="docsearch:version" content="2.4.4.dev43" />
   </head>
   
   
@@ -1969,7 +1969,12 @@
 <span class="sd">          A discussion of format caveats can be found above.</span>
 <span class="sd">        :type format: :class:`str`</span>
 <span class="sd">        :param overwrite:  If true gridfs data linked to the original</span>
-<span class="sd">          waveform will be replaced by the sample data from this save.</span>
+<span class="sd">          waveform will be replaced by the sample data from this save.  A</span>
+<span class="sd">          previously saved atomic datum must carry both its waveform ``_id``</span>
+<span class="sd">          and ``gridfs_id``; the existing waveform document is updated rather</span>
+<span class="sd">          than inserting a second document.  Ensemble members follow the same</span>
+<span class="sd">          rule independently.  Objects carrying neither reference are new</span>
+<span class="sd">          data and are saved normally.</span>
 <span class="sd">          Default is false, and should be the normal use.  This option</span>
 <span class="sd">          should never be used after a reduce operator as the parents</span>
 <span class="sd">          are not tracked and the space advantage is likely minimal for</span>
@@ -2051,7 +2056,80 @@
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+        <span class="n">overwrite_handled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span> <span class="ow">and</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+                <span class="n">has_wfid</span> <span class="o">=</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span>
+                <span class="n">has_gridfs_id</span> <span class="o">=</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span>
+                <span class="k">if</span> <span class="n">has_wfid</span> <span class="o">!=</span> <span class="n">has_gridfs_id</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">"Database.save_data: overwrite=True requires both _id "</span>
+                        <span class="s2">"and gridfs_id when either reference is defined"</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">has_wfid</span><span class="p">:</span>
+                    <span class="n">mspass_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_data</span><span class="p">(</span>
+                        <span class="n">mspass_object</span><span class="p">,</span>
+                        <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                        <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                        <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+                        <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                        <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
+                        <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                        <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">overwrite_handled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">live_members</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">live_members</span><span class="p">:</span>
+                    <span class="n">has_wfid</span> <span class="o">=</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">d</span>
+                    <span class="n">has_gridfs_id</span> <span class="o">=</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">d</span>
+                    <span class="k">if</span> <span class="n">has_wfid</span> <span class="o">!=</span> <span class="n">has_gridfs_id</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">"Database.save_data: overwrite=True requires both "</span>
+                            <span class="s2">"_id and gridfs_id for every previously saved member"</span>
+                        <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">live_members</span><span class="p">):</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">bodies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bring_out_your_dead</span><span class="p">(</span>
+                        <span class="n">mspass_object</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">cremate</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">bodies</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">bodies</span><span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                                <span class="n">d</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">update_data</span><span class="p">(</span>
+                                    <span class="n">d</span><span class="p">,</span>
+                                    <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                                    <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                                    <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                                    <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+                                    <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                                    <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
+                                    <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                                    <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span>
+                                    <span class="n">d</span><span class="p">,</span>
+                                    <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                                    <span class="n">storage_mode</span><span class="o">=</span><span class="s2">"gridfs"</span><span class="p">,</span>
+                                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                                    <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                                    <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+                                    <span class="n">cremate</span><span class="o">=</span><span class="n">cremate</span><span class="p">,</span>
+                                    <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                                    <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
+                                    <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+                                    <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+                                <span class="p">)</span>
+                    <span class="n">overwrite_handled</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite_handled</span><span class="p">:</span>
             <span class="c1"># We remove dead bodies from ensembles to simplify saving</span>
             <span class="c1"># data below.</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
@@ -2132,7 +2210,7 @@
                         <span class="n">alg_name</span><span class="p">,</span>
                         <span class="n">alg_id</span><span class="p">,</span>
                     <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">overwrite_handled</span><span class="p">:</span>
             <span class="c1"># may need to clean Metadata before calling this method</span>
             <span class="c1"># to assure there are not values that will cause MongoDB</span>
             <span class="c1"># to throw an exception when the tombstone subdocument</span>
@@ -3598,6 +3676,7 @@
         <span class="n">normalizing_collections</span><span class="o">=</span><span class="p">[</span><span class="s2">"channel"</span><span class="p">,</span> <span class="s2">"site"</span><span class="p">,</span> <span class="s2">"source"</span><span class="p">],</span>
         <span class="n">alg_id</span><span class="o">=</span><span class="s2">"0"</span><span class="p">,</span>
         <span class="n">alg_name</span><span class="o">=</span><span class="s2">"Database.update_data"</span><span class="p">,</span>
+        <span class="n">save_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates both metadata and sample data corresponding to an input data</span>
@@ -3620,11 +3699,13 @@
 <span class="sd">               this could create a blaat problem with large data sets so</span>
 <span class="sd">               we do not currently support that type of update.</span>
 
-<span class="sd">        A VERY IMPORTANT implicit feature of this method is that</span>
-<span class="sd">        if the magic key "gridfs_id" exists the sample data in the</span>
-<span class="sd">        input to this method (mspass_object.data) will overwrite any</span>
-<span class="sd">        the existing content of gridfs found at the matching id.   This</span>
-<span class="sd">        is a somewhat hidden feature so beware.</span>
+<span class="sd">        A VERY IMPORTANT feature of this method is that, when the magic</span>
+<span class="sd">        key ``gridfs_id`` exists, replacement samples are first written as</span>
+<span class="sd">        a new GridFS object.  The waveform document is then changed from the</span>
+<span class="sd">        expected old id to the new id with one conditional update.  Only</span>
+<span class="sd">        after that reference is durable is the old GridFS object deleted.</span>
+<span class="sd">        Consequently, a put or reference-update failure leaves the old</span>
+<span class="sd">        waveform readable instead of destroying its only sample copy.</span>
 
 <span class="sd">        :param mspass_object: the object you want to update.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -3661,6 +3742,11 @@
 <span class="sd">          (e.g. if one added a "shot" collection to the schema the list would need</span>
 <span class="sd">          to be changed to at least add "shot".)</span>
 <span class="sd">        :type normalizing_collections: list of strings defining collection names.</span>
+<span class="sd">        :param save_history: When True (the default), save a nonempty object</span>
+<span class="sd">          history and update its waveform cross-reference.  False suppresses</span>
+<span class="sd">          that write.  This option is used by :meth:`save_data` when its</span>
+<span class="sd">          documented GridFS overwrite mode updates an existing waveform.</span>
+<span class="sd">        :type save_history: :class:`bool`</span>
 <span class="sd">        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">          (defaults to 'Database.update_data' and should not normally need to be changed)</span>
 <span class="sd">        :type alg_name: :class:`str`</span>
@@ -3681,6 +3767,11 @@
         <span class="c1"># only for usage errors.   We test the elog size to check if there</span>
         <span class="c1"># are other warning messages and add a summary if there were any</span>
         <span class="n">logsize0</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">old_gridfs_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="k">if</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span>
                 <span class="n">mspass_object</span><span class="p">,</span>
@@ -3691,8 +3782,9 @@
                 <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
                 <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
         <span class="n">logsize</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="c1"># A bit verbose, but we post this warning to make it clear the</span>
         <span class="c1"># problem originated from update_data - probably not really needed</span>
@@ -3713,7 +3805,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
         <span class="p">)</span>
         <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">save_history</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
             <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
             <span class="n">update_record</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
 
@@ -3739,69 +3831,90 @@
                 <span class="p">)</span>
                 <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
                 <span class="n">update_record</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
-            <span class="c1"># This logic overwrites the content if the magic key</span>
-            <span class="c1"># "gridfs_id" exists in the input. In both cases gridfs_id is set</span>
-            <span class="c1"># in returned</span>
-            <span class="k">if</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="c1"># Supplying the replacement id lets rollback remove a blob even</span>
+            <span class="c1"># when GridFS writes it and then raises an exception.</span>
+            <span class="n">staged_gridfs_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span> <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="n">mspass_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_sample_data_to_gridfs</span><span class="p">(</span>
                     <span class="n">mspass_object</span><span class="p">,</span>
-                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">gridfs_id</span><span class="o">=</span><span class="n">staged_gridfs_id</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mspass_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_sample_data_to_gridfs</span><span class="p">(</span>
-                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
+                <span class="n">new_gridfs_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span>
+                <span class="n">update_record</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_gridfs_id</span>
 
-            <span class="c1"># There is a possible efficiency gain right here.  Not sure if</span>
-            <span class="c1"># gridfs_id is altered when the sample data are updated in place.</span>
-            <span class="c1"># if we can be sure the returned gridfs_id is the same as theresult</span>
-            <span class="c1"># input in that case, we would omit gridfs_id from the update</span>
-            <span class="c1"># record and most data would not require the final update</span>
-            <span class="c1"># transaction below</span>
-            <span class="n">update_record</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span>
-            <span class="c1"># should define wf_collection here because if the mspass_object is dead</span>
-            <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
-                <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">collection</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
-                <span class="c1"># A weird construct</span>
-                <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
-            <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
-
-            <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
-                <span class="c1"># FIXME I think here we should check if elog_id field exists in the mspass_object</span>
-                <span class="c1"># and we should update the elog entry if mspass_object already had one</span>
-                <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
-                    <span class="n">old_elog_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+                <span class="c1"># should define wf_collection here because if the mspass_object is dead</span>
+                <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
+                    <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">collection</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
-                <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span>
-                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span>
-                <span class="p">)</span>
-                <span class="n">update_record</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+                    <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
+                    <span class="c1"># A weird construct</span>
+                    <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
+                <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
 
-                <span class="c1"># update elog collection</span>
-                <span class="c1"># we have to do the xref to wf collection like this too</span>
-                <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)]</span>
-                <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
-                <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">}</span>
-                <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
-                    <span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}}</span>
-                <span class="p">)</span>
-            <span class="c1"># finally we need to update the wf document if we set anything</span>
-            <span class="c1"># in update_record</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_record</span><span class="p">):</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
+                    <span class="c1"># FIXME I think here we should check if elog_id field exists in the mspass_object</span>
+                    <span class="c1"># and we should update the elog entry if mspass_object already had one</span>
+                    <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                        <span class="n">old_elog_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
+                    <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span>
+                        <span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span>
+                    <span class="p">)</span>
+                    <span class="n">update_record</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+
+                    <span class="c1"># update elog collection</span>
+                    <span class="c1"># we have to do the xref to wf collection like this too</span>
+                    <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)]</span>
+                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
+                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">}</span>
+                    <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                        <span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}}</span>
+                    <span class="p">)</span>
+
                 <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}</span>
-                <span class="n">wf_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_record</span><span class="p">})</span>
-                <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
-                <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
-                <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
-                <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">filter_</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_record</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">matched_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                        <span class="s2">"Database.update_data could not replace the expected "</span>
+                        <span class="s2">"GridFS reference"</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">original_error</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">staged_gridfs_id</span><span class="p">):</span>
+                            <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">staged_gridfs_id</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">cleanup_error</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">original_error</span> <span class="kn">from</span><span class="w"> </span><span class="nn">cleanup_error</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
+                <span class="k">raise</span>
+            <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
+            <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+            <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
+            <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+            <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">old_gridfs_id</span><span class="p">):</span>
+                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">old_gridfs_id</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s2">"GridFS replacement was committed, but the previous "</span>
+                        <span class="sa">f</span><span class="s2">"sample object could not be deleted: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Dead data land here</span>
             <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
@@ -7320,6 +7433,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mspass_object</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">gridfs_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Saves the sample data array for a mspass seismic data object using</span>
@@ -7340,11 +7454,17 @@
 <span class="sd">        :type mspass_object:  one of TimeSeries, Seismogram,</span>
 <span class="sd">          TimeSeriesEnsemble, or Seismogram Ensemble.</span>
 
-<span class="sd">        :param overwrite:  When set True if there is an existing datum</span>
-<span class="sd">          with a matching id for the attribute "gridfs_id", the existing datum</span>
-<span class="sd">          will be deleted before the new data is saved.  When False a new</span>
-<span class="sd">          set of documents will be created to hold the data in the gridfs</span>
-<span class="sd">          system.  Default is False.</span>
+<span class="sd">        :param overwrite:  Compatibility flag used by higher-level writers.</span>
+<span class="sd">          This low-level method always stages a new GridFS object and never</span>
+<span class="sd">          deletes the object named by an existing ``gridfs_id``: it cannot</span>
+<span class="sd">          know whether a waveform reference has been committed.  Public</span>
+<span class="sd">          atomic overwrite paths perform that conditional reference update</span>
+<span class="sd">          and delete the old object afterward.  Direct callers must provide</span>
+<span class="sd">          the same ordering if they intend to remove old data.</span>
+
+<span class="sd">        :param gridfs_id: optional id to assign to the newly written GridFS</span>
+<span class="sd">          object.  Used by update_data so a failed staged write can be rolled</span>
+<span class="sd">          back even if GridFS raises after creating the object.</span>
 
 <span class="sd">        :return: edited version of input (mspass_object).  Return changed</span>
 <span class="sd">          only by adding metadata attributes "storage_mode" and "gridfs_id"</span>
@@ -7354,13 +7474,12 @@
         <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">):</span>
-                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
-                    <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
             <span class="c1"># verdion 2 had a transpose here that seemed unncessary</span>
             <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
-            <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gridfs_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
