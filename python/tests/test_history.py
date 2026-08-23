@@ -193,6 +193,8 @@ class TestHistoryLogger:
             legacy_document["filter"],
             legacy_document["stack"],
         ]
+        assert memory_database.history.documents == [legacy_document]
+
         loaded.save()
         assert len(memory_database.history.documents) == 1
         migrated = memory_database.history.documents[0]
