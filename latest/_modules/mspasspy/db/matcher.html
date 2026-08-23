@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev54+g940573038 documentation</title>
+    <title>mspasspy.db.matcher &#8212; MsPASS 2.4.4.dev55+g00df42d88 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=b3ccc063"></script>
+    <script src="../../../_static/documentation_options.js?v=dce081a3"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev54" />
+  <meta name="docsearch:version" content="2.4.4.dev55" />
   </head>
   
   
@@ -543,7 +543,7 @@
 <span class="sd">        channel collection using id_matcher you can use</span>
 <span class="sd">        d = id_matcher(d)  instead of d = id_matcher.normalize(d)</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NMF.get_document">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.matcher.NMF.get_document">[docs]</a>
@@ -656,15 +656,18 @@
             <span class="c1"># Note this will return None if the query fails - callers should handle that condition</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbhandle</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># this is actually redundant with log_error usage but better to be clear</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">"Normalizing ID with key="</span>
                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
                 <span class="o">+</span> <span class="s2">" is not defined in this object"</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"ID_matcher"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="n">d</span><span class="p">,</span>
+                <span class="s2">"ID_matcher"</span><span class="p">,</span>
+                <span class="n">message</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 
@@ -683,19 +686,22 @@
                 <span class="k">return</span> <span class="n">d</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">"No matching _id found for "</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
-                    <span class="o">+</span> <span class="s2">" in collection="</span>
-                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="n">d</span><span class="p">,</span>
-                    <span class="s2">"ID_matcher"</span><span class="p">,</span>
-                    <span class="n">message</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
-                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="c1"># get_document logs a missing ID field.  Log here only when</span>
+                <span class="c1"># an ID was present but did not match a document.</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s2">"No matching _id found for "</span>
+                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdkey</span>
+                        <span class="o">+</span> <span class="s2">" in collection="</span>
+                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">d</span><span class="p">,</span>
+                        <span class="s2">"ID_matcher"</span><span class="p">,</span>
+                        <span class="n">message</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">kill_on_failure</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
