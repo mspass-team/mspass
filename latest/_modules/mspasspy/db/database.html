@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev43+g26c8901e documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev44+gd5a6159e documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=334c6399"></script>
+    <script src="../../../_static/documentation_options.js?v=351a73f8"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev43" />
+  <meta name="docsearch:version" content="2.4.4.dev44" />
   </head>
   
   
@@ -2166,6 +2166,26 @@
                 <span class="c1"># only atomic data can land here</span>
                 <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">storage_mode</span>
 
+            <span class="n">atomic_data</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">[</span><span class="n">mspass_object</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">))</span>
+                <span class="k">else</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">atomic_data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_sync_metadata_before_update</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">metadata_is_valid</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">md2doc</span><span class="p">(</span>
+                        <span class="n">datum</span><span class="p">,</span>
+                        <span class="n">save_schema</span><span class="p">,</span>
+                        <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                        <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata_is_valid</span><span class="p">:</span>
+                        <span class="n">datum</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
+            <span class="c1"># Complete schema validation before creating sample data.</span>
+
             <span class="c1"># Extend this method to add new storge modes</span>
             <span class="c1"># Note this implementation alters metadata in mspass_object</span>
             <span class="c1"># and all members of ensembles</span>
@@ -3805,8 +3825,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
         <span class="p">)</span>
         <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">history_save_uuid</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">save_history</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-            <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
+            <span class="n">history_save_uuid</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+            <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">,</span>
+                <span class="n">alg_name</span><span class="p">,</span>
+                <span class="n">alg_id</span><span class="p">,</span>
+                <span class="n">reset_history</span><span class="o">=</span><span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">update_record</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
 
         <span class="c1"># Now handle update of sample data.  The gridfs method used here</span>
@@ -3834,6 +3861,10 @@
             <span class="c1"># Supplying the replacement id lets rollback remove a blob even</span>
             <span class="c1"># when GridFS writes it and then raises an exception.</span>
             <span class="n">staged_gridfs_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span> <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">new_gridfs_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">created_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">mspass_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_sample_data_to_gridfs</span><span class="p">(</span>
                     <span class="n">mspass_object</span><span class="p">,</span>
@@ -3851,20 +3882,33 @@
                     <span class="c1"># A weird construct</span>
                     <span class="n">wf_collection_name</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
                 <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
+                    <span class="n">history_result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span>
+                    <span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}},</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">history_result</span><span class="o">.</span><span class="n">matched_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                            <span class="s2">"Database.update_data could not link the saved history "</span>
+                            <span class="s2">"to the waveform"</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
 
-                <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
                     <span class="c1"># FIXME I think here we should check if elog_id field exists in the mspass_object</span>
                     <span class="c1"># and we should update the elog entry if mspass_object already had one</span>
                     <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
                         <span class="n">old_elog_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
                     <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span>
                         <span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span>
                     <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">old_elog_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">created_elog_id</span> <span class="o">=</span> <span class="n">elog_id</span>
                     <span class="n">update_record</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
 
                     <span class="c1"># update elog collection</span>
@@ -3887,15 +3931,27 @@
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">original_error</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">gridfs_id_to_remove</span> <span class="o">=</span> <span class="n">staged_gridfs_id</span> <span class="ow">or</span> <span class="n">new_gridfs_id</span>
+                    <span class="k">if</span> <span class="n">gridfs_id_to_remove</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">staged_gridfs_id</span><span class="p">):</span>
-                            <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">staged_gridfs_id</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">cleanup_error</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">original_error</span> <span class="kn">from</span><span class="w"> </span><span class="nn">cleanup_error</span>
-                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id_to_remove</span><span class="p">):</span>
+                            <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id_to_remove</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">history_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span>
+                            <span class="s2">"history_object"</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">history_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">})</span>
+                    <span class="k">if</span> <span class="n">created_elog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">elog_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">created_elog_id</span><span class="p">})</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">cleanup_error</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">original_error</span> <span class="kn">from</span><span class="w"> </span><span class="nn">cleanup_error</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
+                    <span class="k">elif</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
                 <span class="k">raise</span>
             <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
             <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
@@ -3903,6 +3959,10 @@
             <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
             <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
                 <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+            <span class="k">if</span> <span class="n">history_save_uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reset_processing_history</span><span class="p">(</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">history_save_uuid</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -4697,7 +4757,24 @@
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"cardinal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">cardinal</span><span class="p">()</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"orthogonal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_processing_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">save_uuid</span><span class="p">):</span>
+        <span class="n">atomic_type</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
+        <span class="p">)</span>
+        <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_history</span><span class="p">()</span>
+        <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_as_origin</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_uuid</span><span class="p">),</span> <span class="n">atomic_type</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_history</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mspass_object</span><span class="p">,</span>
+        <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">reset_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Save the processing history of a mspasspy object.</span>
 
@@ -4707,6 +4784,10 @@
 <span class="sd">        :type prev_history_object_id: :class:`bson.ObjectId.ObjectId`</span>
 <span class="sd">        :param collection: the collection that you want to store the history object. If not specified, use the defined</span>
 <span class="sd">          collection in the schema.</span>
+<span class="sd">        :param reset_history: reset the caller history after persistence.  Set</span>
+<span class="sd">          False only when the caller will reset it after committing its waveform</span>
+<span class="sd">          reference.</span>
+<span class="sd">        :type reset_history: bool</span>
 <span class="sd">        :return: current history_object_id.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -4735,11 +4816,10 @@
         <span class="n">current_uuid</span> <span class="o">=</span> <span class="n">insert_dict</span><span class="p">[</span><span class="s2">"save_uuid"</span><span class="p">]</span>
         <span class="n">history_id</span> <span class="o">=</span> <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insert_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
 
-        <span class="c1"># clear the history chain of the mspass object</span>
-        <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_history</span><span class="p">()</span>
-        <span class="c1"># set_as_origin with uuid set to the newly generated id</span>
-        <span class="c1"># Note we have to convert to a string to match C++ function type</span>
-        <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_as_origin</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_uuid</span><span class="p">),</span> <span class="n">atomic_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reset_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_processing_history</span><span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">current_uuid</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">history_id</span>
 
@@ -7564,69 +7644,94 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># gridfs default</span>
             <span class="n">insertion_dict</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
-        <span class="c1"># We depend on Undertaker to save history for dead data</span>
+        <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">history_save_uuid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">history_collection_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">save_history</span> <span class="ow">and</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
-            <span class="p">)</span>
-            <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="c1"># is_empty is a method of ProcessingHistory - mame is generic so possibly confusing</span>
+            <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="n">history_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                <span class="c1"># Use this trick in update_metadata too. None is needed to</span>
-                <span class="c1"># avoid a TypeError exception if the name is not defined.</span>
-                <span class="c1"># could do this with a conditional as an alternative</span>
                 <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">history_obj_id_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># optional history save - only done if history container is not empty</span>
-                <span class="c1"># first we need to push the definition of this algorithm</span>
-                <span class="c1"># to the chain.  Note it is always defined by the special</span>
-                <span class="c1"># save defined with the C++ enum class mapped to python</span>
-                <span class="c1"># vi ProcessingStatus</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                     <span class="n">atomic_type</span> <span class="o">=</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
                     <span class="n">atomic_type</span> <span class="o">=</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"only TimeSeries and Seismogram are supported"</span><span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
+                <span class="n">history_source</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+                <span class="n">history_source</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span>
                     <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">atomic_type</span><span class="p">,</span> <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">SAVED</span>
                 <span class="p">)</span>
-                <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
+                <span class="n">history_save_uuid</span> <span class="o">=</span> <span class="n">history_source</span><span class="o">.</span><span class="n">id</span><span class="p">()</span>
+                <span class="n">history_document</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span>
+                    <span class="n">history_source</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span>
+                <span class="p">)</span>
+                <span class="n">history_object_id</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">history_collection_name</span><span class="p">]</span>
+                    <span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">history_document</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">inserted_id</span>
+                <span class="p">)</span>
                 <span class="n">insertion_dict</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
-                <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
-        <span class="c1"># save elogs if the size of elog is greater than 0</span>
+
         <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">elog_collection_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
-            <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
-            <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">)</span>
+            <span class="n">elog_id_name</span> <span class="o">=</span> <span class="n">elog_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">history_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span> <span class="ow">and</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                    <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
+                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
+                <span class="k">raise</span>
             <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
 
-        <span class="c1"># finally ready to insert the wf doc - keep the id as we'll need</span>
-        <span class="c1"># it for tagging any elog entries.</span>
-        <span class="c1"># Note we don't save if something above killed mspass_object.</span>
-        <span class="c1"># currently that only happens with errors in md2doc, but if there</span>
-        <span class="c1"># are changes use the kill mechanism</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="n">wfid</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insertion_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
-
-            <span class="c1"># Put wfid into the object's meta as the new definition of</span>
-            <span class="c1"># the parent of this waveform</span>
-            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
-            <span class="k">if</span> <span class="n">save_history</span> <span class="ow">and</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="c1"># When history is enable we need to do an update to put the</span>
-                <span class="c1"># wf collection id as a cross-reference.    Any value stored</span>
-                <span class="c1"># above with saave_history may be incorrect.  We use a</span>
-                <span class="c1"># stock test with the is_empty method for know if history data is present</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">history_object_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span>
-                    <span class="p">]</span>
+            <span class="n">wfid</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">wfid</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insertion_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+                <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">"_id"</span>
-                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
-                    <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">wfid</span><span class="p">}</span>
-                    <span class="n">history_object_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">})</span>
+                    <span class="n">history_result</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">history_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+                        <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">wfid</span><span class="p">}},</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">history_result</span><span class="o">.</span><span class="n">matched_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                            <span class="s2">"Database.save_data could not link the saved history "</span>
+                            <span class="s2">"to the waveform"</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">wfid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">wf_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">wfid</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">history_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">elog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span> <span class="ow">and</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                    <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
+                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
+            <span class="k">if</span> <span class="n">history_object_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reset_processing_history</span><span class="p">(</span>
+                    <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">history_save_uuid</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">elog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mspass_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span>
                 <span class="n">mspass_object</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span>
