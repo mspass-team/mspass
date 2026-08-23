@@ -613,9 +613,15 @@ class GlobalHistoryManager:
         """
         # Preserve an exact legacy invocation's ID without rewriting that record.
         legacy_doc = self.history_db[self.collection].find_one(
-            {"alg_name": alg_name, "parameters": parameters}, {"alg_id": 1}
+            {
+                "alg_name": alg_name,
+                "parameters": parameters,
+                "alg_id": {"$exists": True, "$ne": None},
+            },
+            {"alg_id": 1},
+            sort=[("time", pymongo.ASCENDING), ("_id", pymongo.ASCENDING)],
         )
-        if legacy_doc and legacy_doc.get("alg_id"):
+        if legacy_doc is not None:
             alg_id = legacy_doc["alg_id"]
         else:
             alg_id = ObjectId()

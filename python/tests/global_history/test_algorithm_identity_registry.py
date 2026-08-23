@@ -101,6 +101,7 @@ class RecordingCollection:
     def __init__(self):
         self.index_calls = []
         self.update_calls = []
+        self.find_calls = []
 
     def create_index(self, keys, **kwargs):
         self.index_calls.append((keys, kwargs))
@@ -109,7 +110,8 @@ class RecordingCollection:
         self.update_calls.append((copy.deepcopy(query), copy.deepcopy(update), kwargs))
         return copy.deepcopy(update["$setOnInsert"])
 
-    def find_one(self, query, projection=None):
+    def find_one(self, query, projection=None, sort=None):
+        self.find_calls.append((query, projection, sort))
         return None
 
 
@@ -129,6 +131,18 @@ def test_get_alg_id_uses_one_atomic_upsert_with_the_exact_string():
     result = manager.get_alg_id("spy-algorithm", parameters)
 
     registry = database.collections[manager.algorithm_collection]
+    history = database.collections[manager.collection]
+    assert history.find_calls == [
+        (
+            {
+                "alg_name": "spy-algorithm",
+                "parameters": parameters,
+                "alg_id": {"$exists": True, "$ne": None},
+            },
+            {"alg_id": 1},
+            [("time", pymongo.ASCENDING), ("_id", pymongo.ASCENDING)],
+        )
+    ]
     assert len(registry.update_calls) == 1
     query, update, options = registry.update_calls[0]
     assert query == {"alg_name": "spy-algorithm", "parameters": parameters}
@@ -265,6 +279,53 @@ def test_explicit_invocation_id_is_reused_by_exact_automatic_lookup(mongo_databa
         )["alg_id"]
         == explicit_id
     )
+
+
+def test_legacy_falsy_id_and_duplicate_identity_use_earliest_record(mongo_database):
+    collection = HISTORY_COLLECTION + "_legacy_canonical"
+    history = mongo_database[collection]
+    history.delete_many({})
+    mongo_database[collection + "_algorithms"].delete_many({})
+    alg_name = "legacy-algorithm"
+    parameters = '{"legacy":true}'
+    earliest_id = ObjectId("000000000000000000000001")
+    later_same_time_id = ObjectId("000000000000000000000002")
+    history.insert_many(
+        [
+            {
+                "_id": later_same_time_id,
+                "time": 1.0,
+                "alg_name": alg_name,
+                "parameters": parameters,
+                "alg_id": "later-at-same-time",
+            },
+            {
+                "_id": earliest_id,
+                "time": 1.0,
+                "alg_name": alg_name,
+                "parameters": parameters,
+                "alg_id": "",
+            },
+            {
+                "time": 2.0,
+                "alg_name": alg_name,
+                "parameters": parameters,
+                "alg_id": "later-in-time",
+            },
+        ]
+    )
+    legacy_snapshot = list(history.find().sort([("time", 1), ("_id", 1)]))
+
+    manager = GlobalHistoryManager(mongo_database, "legacy-job", collection=collection)
+
+    assert manager.get_alg_id(alg_name, parameters) == ""
+    assert (
+        mongo_database[manager.algorithm_collection].find_one(
+            {"alg_name": alg_name, "parameters": parameters}
+        )["alg_id"]
+        == ""
+    )
+    assert list(history.find().sort([("time", 1), ("_id", 1)])) == legacy_snapshot
 
 
 @pytest.mark.parametrize("legacy_alg_id", [ObjectId(), "explicit-algorithm-id"])
