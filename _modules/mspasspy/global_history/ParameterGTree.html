@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.global_history.ParameterGTree &#8212; MsPASS 2.4.4.dev57+g348502193 documentation</title>
+    <title>mspasspy.global_history.ParameterGTree &#8212; MsPASS 2.4.4.dev58+geed4fcf3d documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=c6e905f0"></script>
+    <script src="../../../_static/documentation_options.js?v=a50b7427"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev57" />
+  <meta name="docsearch:version" content="2.4.4.dev58" />
   </head>
   
   
@@ -783,17 +783,13 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.ParameterGTree.ParameterGTree.prune">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Remove a branch or leaf defined by key from self. Return a copy of the</span>
-<span class="sd">        branch/leaf pruned in the process (like get_branch/get_leaf but self is altered)</span>
+<span class="sd">        Remove a branch or leaf defined by key from self and return its value.</span>
+
+<span class="sd">        :raises MsPASSError: if ``key`` is not present at this tree level.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"[Error] Wrong Key, Please check your input key again."</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf_keys</span><span class="p">():</span>
-            <span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_leaf</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch_keys</span><span class="p">():</span>
-            <span class="n">ret_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ret_val</span></div>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ParameterGTree.get">
