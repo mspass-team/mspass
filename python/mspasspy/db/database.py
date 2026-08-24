@@ -69,7 +69,6 @@ from mspasspy.db.serialization import (
     encode_response,
     inventory_subset,
     merge_inventories,
-    trusted_legacy_pickle,
 )
 from mspasspy.util.converter import Textfile2Dataframe
 

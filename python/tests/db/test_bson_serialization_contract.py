@@ -1,4 +1,3 @@
-import copy
 import os
 import pickle
 import uuid
@@ -8,7 +7,6 @@ import numpy as np
 import obspy
 import pytest
 from bson import BSON, ObjectId
-from pymongo.errors import PyMongoError
 
 from mspasspy.algorithms.calib import ApplyCalibEngine
 from mspasspy.ccore.seismic import (
@@ -25,7 +23,7 @@ from mspasspy.ccore.utility import (
     ProcessingHistory,
 )
 from mspasspy.db.client import DBClient
-from mspasspy.db.database import Database, history2doc, trusted_legacy_pickle
+from mspasspy.db.database import Database, history2doc
 from mspasspy.db.serialization import (
     TYPE_KEY,
     VERSION,
@@ -39,20 +37,6 @@ from mspasspy.db.serialization import (
     encode_processing_history,
 )
 from mspasspy.db.spectrumdb import SpectrumDatabase
-
-
-def _write_marker_and_return(path, value):
-    Path(path).write_text("executed", encoding="utf-8")
-    return value
-
-
-class ExecutingPickle:
-    def __init__(self, marker, value):
-        self.marker = str(marker)
-        self.value = value
-
-    def __reduce__(self):
-        return _write_marker_and_return, (self.marker, self.value)
 
 
 def _assert_no_binary_payload(value):
@@ -318,281 +302,104 @@ def test_power_spectrum_preserves_supported_structured_metadata():
     assert restored["nested"] == spectrum["nested"]
 
 
-@pytest.mark.parametrize(
-    "collection,field,reader",
-    [
-        (
-            "history_object",
-            "processing_history",
-            lambda database, identifier: _load_legacy_history(database, identifier),
-        ),
-        (
-            "site",
-            "serialized_inventory",
-            lambda database, identifier: database.read_inventory(net="MAL"),
-        ),
-        (
-            "channel",
-            "serialized_channel_data",
-            lambda database, identifier: database.get_response(
-                "MAL", "BAD", "BHZ", "", 10.0
-            ),
-        ),
-        (
-            "PowerSpectrum",
-            "serialized_data",
-            lambda database, identifier: _read_legacy_spectrum(database, identifier),
-        ),
-    ],
-)
-def test_normal_reads_reject_legacy_pickle_without_execution(
-    mongo_database, tmp_path, collection, field, reader
-):
-    marker = tmp_path / f"{collection}.marker"
-    payload = pickle.dumps(ExecutingPickle(marker, "unexpected"))
-    document = {"_id": ObjectId(), field: payload}
-    if collection == "site":
-        document.update({"net": "MAL", "sta": "BAD"})
-    elif collection == "channel":
-        document.update(
-            {
-                "net": "MAL",
-                "sta": "BAD",
-                "chan": "BHZ",
-                "loc": "",
-                "starttime": 0.0,
-                "endtime": 20.0,
-            }
-        )
-    mongo_database[collection].insert_one(copy.deepcopy(document))
+def test_legacy_pickle_codecs_round_trip():
+    history = _make_history()
+    assert _history_signature(
+        decode_processing_history(pickle.dumps(history))
+    ) == _history_signature(history)
 
-    with pytest.raises(MsPASSError) as error:
-        reader(mongo_database, document["_id"])
-    assert error.value.severity == ErrorSeverity.Invalid
-    assert not marker.exists()
-
-
-def _read_legacy_spectrum(database, identifier):
-    handle = SpectrumDatabase.__new__(SpectrumDatabase)
-    handle.collection = database["PowerSpectrum"]
-    return handle.read_data(identifier)
-
-
-def _load_legacy_history(database, identifier):
-    target = TimeSeries(1)
-    target["_id"] = ObjectId()
-    target.set_live()
-    return database._load_history(target, identifier)
-
-
-def test_apply_calib_rejects_legacy_response_without_execution(
-    mongo_database, tmp_path
-):
-    marker = tmp_path / "calib.marker"
-    mongo_database.channel.insert_one(
-        {"serialized_channel_data": pickle.dumps(ExecutingPickle(marker, "unexpected"))}
-    )
-    with pytest.raises(MsPASSError) as error:
-        ApplyCalibEngine(mongo_database)
-    assert error.value.severity == ErrorSeverity.Invalid
-    assert not marker.exists()
-
-
-@pytest.mark.parametrize(
-    "collection,field,value",
-    [
-        pytest.param(
-            "history_object",
-            "processing_history",
-            _make_history(),
-            id="history",
-        ),
-        pytest.param(
-            "PowerSpectrum",
-            "serialized_data",
-            _make_spectrum(),
-            id="spectrum",
-        ),
-    ],
-)
-def test_explicit_trusted_migration_executes_and_is_idempotent(
-    mongo_database, tmp_path, collection, field, value
-):
-    marker = tmp_path / f"{collection}.marker"
-    identifier = (
-        mongo_database[collection]
-        .insert_one({field: pickle.dumps(ExecutingPickle(marker, value))})
-        .inserted_id
-    )
-    assert trusted_legacy_pickle(mongo_database, collection) == 1
-    assert marker.read_text(encoding="utf-8") == "executed"
-    stored = mongo_database[collection].find_one({"_id": identifier})
-    assert stored[field][VERSION_KEY] == VERSION
-    if field == "processing_history":
-        assert _history_signature(
-            decode_processing_history(stored[field])
-        ) == _history_signature(value)
-    else:
-        assert _spectrum_signature(
-            decode_power_spectrum(stored[field])
-        ) == _spectrum_signature(value)
-    assert trusted_legacy_pickle(mongo_database, collection) == 0
-
-
-def test_migration_skips_new_record_with_payload_named_metadata(
-    mongo_database, tmp_path
-):
-    marker = tmp_path / "already-new.marker"
-    mongo_database.PowerSpectrum.insert_one(
-        {
-            "processing_history": pickle.dumps(
-                ExecutingPickle(marker, "metadata, not the persisted spectrum")
-            ),
-            "serialized_data": encode_power_spectrum(_make_spectrum()),
-        }
-    )
-
-    assert trusted_legacy_pickle(mongo_database, "PowerSpectrum") == 0
-    assert not marker.exists()
-
-
-def test_inventory_and_response_trusted_migration(mongo_database):
     inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
     network = inventory.networks[0]
     channel = network.stations[0].channels[0]
-    site_id = mongo_database.site.insert_one(
-        {"serialized_inventory": pickle.dumps(network)}
-    ).inserted_id
-    channel_id = mongo_database.channel.insert_one(
+    assert decode_inventory(pickle.dumps(network)).networks == [network]
+    assert decode_inventory(pickle.dumps(inventory)) == inventory
+    assert decode_response(pickle.dumps(channel)) == channel.response
+
+    spectrum = _make_spectrum()
+    assert _spectrum_signature(
+        decode_power_spectrum(pickle.dumps(spectrum))
+    ) == _spectrum_signature(spectrum)
+
+
+def test_public_readers_accept_legacy_pickle(mongo_database):
+    history = _make_history()
+    history_document = history2doc(history)
+    history_document["processing_history"] = pickle.dumps(history)
+    history_id = mongo_database.history_object.insert_one(history_document).inserted_id
+    target = TimeSeries(1)
+    target["_id"] = ObjectId()
+    target.set_live()
+    mongo_database._load_history(target, history_id, alg_name="read", alg_id="read-id")
+    assert target.current_nodedata().algorithm == "read"
+
+    inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
+    network = inventory.networks[0]
+    station = network.stations[0]
+    channel = station.channels[0]
+    mongo_database.site.insert_one(
         {
             "net": network.code,
-            "sta": network.stations[0].code,
+            "sta": station.code,
+            "loc": channel.location_code,
+            "serialized_inventory": pickle.dumps(network),
+        }
+    )
+    restored = mongo_database.read_inventory(net=network.code, sta=station.code)
+    assert restored.networks == [network]
+
+    starttime = channel.start_date.timestamp
+    endtime = channel.end_date.timestamp
+    mongo_database.channel.insert_one(
+        {
+            "net": network.code,
+            "sta": station.code,
+            "chan": channel.code,
+            "loc": channel.location_code,
+            "starttime": starttime,
+            "endtime": endtime,
             "serialized_channel_data": pickle.dumps(channel),
         }
-    ).inserted_id
-    assert trusted_legacy_pickle(mongo_database, "site") == 1
-    assert trusted_legacy_pickle(mongo_database, "channel") == 1
-    inventory_payload = mongo_database.site.find_one({"_id": site_id})[
-        "serialized_inventory"
-    ]
-    response_payload = mongo_database.channel.find_one({"_id": channel_id})[
-        "serialized_channel_data"
-    ]
-    assert inventory_payload[TYPE_KEY] == "Inventory"
-    assert response_payload[TYPE_KEY] == "Response"
-    assert decode_inventory(inventory_payload).networks == [network]
-    assert decode_response(response_payload) == channel.response
-
-
-def test_migration_query_order_failure_prefix_and_retry(mongo_database):
-    collection = mongo_database["migration_order"]
-    identifiers = [
-        ObjectId.from_datetime(obspy.UTCDateTime(x).datetime) for x in (1, 2, 3)
-    ]
-    values = [_make_spectrum(), "wrong type", _make_spectrum()]
-    originals = []
-    for identifier, value in zip(identifiers, values):
-        document = {
-            "_id": identifier,
-            "selected": True,
-            "serialized_data": pickle.dumps(value),
-        }
-        originals.append(copy.deepcopy(document))
-        collection.insert_one(document)
-    collection.insert_one(
-        {"selected": False, "serialized_data": pickle.dumps(_make_spectrum())}
     )
-
-    with pytest.raises(MsPASSError) as error:
-        trusted_legacy_pickle(mongo_database, "migration_order", {"selected": True})
-    assert error.value.severity == ErrorSeverity.Invalid
-    assert isinstance(
-        collection.find_one({"_id": identifiers[0]})["serialized_data"], dict
-    )
-    assert collection.find_one({"_id": identifiers[1]}) == originals[1]
-    assert collection.find_one({"_id": identifiers[2]}) == originals[2]
-
-    collection.update_one(
-        {"_id": identifiers[1]},
-        {"$set": {"serialized_data": pickle.dumps(_make_spectrum())}},
-    )
+    query_time = (starttime + endtime) / 2.0
     assert (
-        trusted_legacy_pickle(mongo_database, "migration_order", {"selected": True})
-        == 2
+        mongo_database.get_response(
+            network.code,
+            station.code,
+            channel.code,
+            channel.location_code,
+            query_time,
+        )
+        == channel.response
+    )
+    assert len(ApplyCalibEngine(mongo_database).calib) == 1
+
+    spectrum = _make_spectrum()
+    handle = SpectrumDatabase.__new__(SpectrumDatabase)
+    handle.type_list = [PowerSpectrum]
+    handle.collection = mongo_database["PowerSpectrum"]
+    spectrum_id = handle.collection.insert_one(
+        {"serialized_data": pickle.dumps(spectrum)}
+    ).inserted_id
+    assert _spectrum_signature(handle.read_data(spectrum_id)) == _spectrum_signature(
+        spectrum
+    )
+
+
+def test_mixed_power_spectrum_formats_are_read_per_document(mongo_database):
+    handle = SpectrumDatabase.__new__(SpectrumDatabase)
+    handle.type_list = [PowerSpectrum]
+    handle.collection = mongo_database["PowerSpectrum"]
+    spectrum = _make_spectrum()
+    bson_id = handle.save_data(spectrum)
+    pickle_id = handle.save_data(spectrum, format="pickle")
+
+    assert isinstance(
+        handle.collection.find_one({"_id": bson_id})["serialized_data"], dict
     )
     assert isinstance(
-        collection.find_one({"selected": False})["serialized_data"], bytes
+        handle.collection.find_one({"_id": pickle_id})["serialized_data"], bytes
     )
-
-
-@pytest.mark.parametrize(
-    "payload",
-    [b"not a pickle", "not bytes"],
-    ids=["unpickle-error", "non-bytes"],
-)
-def test_migration_deserialization_failure_leaves_record_unchanged(
-    mongo_database, payload
-):
-    collection_name = "migration_deserialization_failure"
-    collection = mongo_database[collection_name]
-    original = {"_id": ObjectId(), "serialized_data": payload}
-    collection.insert_one(copy.deepcopy(original))
-
-    with pytest.raises(MsPASSError) as error:
-        trusted_legacy_pickle(mongo_database, collection_name)
-    assert error.value.severity == ErrorSeverity.Invalid
-    assert collection.find_one({"_id": original["_id"]}) == original
-
-
-class FailingCollection:
-    def __init__(self, collection, fail_id):
-        self.collection = collection
-        self.fail_id = fail_id
-
-    def find(self, query):
-        return self.collection.find(query)
-
-    def replace_one(self, query, replacement):
-        if query["_id"] == self.fail_id:
-            raise PyMongoError("injected write failure")
-        return self.collection.replace_one(query, replacement)
-
-
-class FailingDatabase:
-    def __init__(self, database, collection_name, fail_id):
-        self.database = database
-        self.collection_name = collection_name
-        self.fail_id = fail_id
-
-    def __getitem__(self, collection_name):
-        assert collection_name == self.collection_name
-        return FailingCollection(self.database[collection_name], self.fail_id)
-
-
-def test_migration_write_failure_keeps_failing_record_and_successful_prefix(
-    mongo_database,
-):
-    collection_name = "migration_write_failure"
-    collection = mongo_database[collection_name]
-    identifiers = [
-        ObjectId.from_datetime(obspy.UTCDateTime(x).datetime) for x in (4, 5, 6)
-    ]
-    originals = {}
-    for identifier in identifiers:
-        original = {
-            "_id": identifier,
-            "serialized_data": pickle.dumps(_make_spectrum()),
-        }
-        originals[identifier] = copy.deepcopy(original)
-        collection.insert_one(original)
-
-    failing_database = FailingDatabase(mongo_database, collection_name, identifiers[1])
-    with pytest.raises(MsPASSError) as error:
-        trusted_legacy_pickle(failing_database, collection_name)
-    assert error.value.severity == ErrorSeverity.Invalid
-    assert isinstance(
-        collection.find_one({"_id": identifiers[0]})["serialized_data"], dict
-    )
-    assert collection.find_one({"_id": identifiers[1]}) == originals[identifiers[1]]
-    assert collection.find_one({"_id": identifiers[2]}) == originals[identifiers[2]]
-    assert trusted_legacy_pickle(mongo_database, collection_name) == 2
+    for identifier in (bson_id, pickle_id):
+        assert _spectrum_signature(handle.read_data(identifier)) == _spectrum_signature(
+            spectrum
+        )

@@ -30,8 +30,10 @@ class ApplyCalibEngine:
     into a set of MongoDB documents with one entry for each
     SEED time period for each channel of data.   Inside that document is an
     attribute with the tag "serialized_channel_data" that contains
-    the detailed response data in a versioned StationXML document.  We only
-    extract the "sensitivity" value from the restored ObsPy Response object.
+    the detailed response data in a versioned StationXML document.  Records
+    written by older MsPASS releases may instead contain a pickled ObsPy
+    Channel; both representations are read automatically.  We only extract
+    the "sensitivity" value from the restored ObsPy Response object.
     A major complication is unit restrictions and invalid
     Response objects.  These are handled by the constructor as described
     below.   The current implementation can only handle Response objects

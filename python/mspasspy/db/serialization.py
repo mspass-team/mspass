@@ -1,4 +1,4 @@
-"""Versioned, non-executable database representations for complex objects."""
+"""Versioned database representations with legacy pickle compatibility."""
 
 import copy
 import io
@@ -39,12 +39,22 @@ def _header(type_name):
 
 def _require_document(value, type_name):
     if not isinstance(value, dict):
-        raise _invalid(
-            f"Expected versioned {type_name} document; legacy pickle payloads "
-            "must be migrated explicitly"
-        )
+        raise _invalid(f"Expected a versioned {type_name} document")
     if value.get(TYPE_KEY) != type_name or value.get(VERSION_KEY) != VERSION:
         raise _invalid(f"Unsupported {type_name} representation")
+
+
+def _decode_legacy_pickle(payload, expected_type, type_name):
+    """Decode a payload written by MsPASS releases that used pickle."""
+    try:
+        value = pickle.loads(bytes(payload))
+    except Exception as exc:
+        raise _invalid(f"Malformed legacy {type_name} pickle payload") from exc
+    if not isinstance(value, expected_type):
+        raise _invalid(
+            f"Legacy {type_name} pickle contains unexpected type={type(value)}"
+        )
+    return value
 
 
 def _severity_name(value):
@@ -156,6 +166,8 @@ def encode_processing_history(history):
 
 
 def decode_processing_history(document):
+    if isinstance(document, (bytes, bytearray)):
+        return _decode_legacy_pickle(document, ProcessingHistory, "ProcessingHistory")
     _require_document(document, "ProcessingHistory")
     try:
         edges = [
@@ -203,6 +215,11 @@ def encode_inventory(inventory):
 
 
 def decode_inventory(document):
+    if isinstance(document, (bytes, bytearray)):
+        inventory = _decode_legacy_pickle(document, (Inventory, Network), "Inventory")
+        if isinstance(inventory, Network):
+            return Inventory(networks=[inventory], source="MsPASS")
+        return inventory
     return _decode_stationxml(document, "Inventory")
 
 
@@ -311,6 +328,8 @@ def channel_inventory(channel, document):
 
 
 def decode_channel(document):
+    if isinstance(document, (bytes, bytearray)):
+        return _decode_legacy_pickle(document, Channel, "Response")
     inventory = _decode_stationxml(document, "Response")
     try:
         return inventory.networks[0].stations[0].channels[0]
@@ -420,6 +439,8 @@ def encode_power_spectrum(spectrum):
 
 
 def decode_power_spectrum(document):
+    if isinstance(document, (bytes, bytearray)):
+        return _decode_legacy_pickle(document, PowerSpectrum, "PowerSpectrum")
     _require_document(document, "PowerSpectrum")
     try:
         result = PowerSpectrum(
@@ -439,84 +460,3 @@ def decode_power_spectrum(document):
         raise
     except (KeyError, TypeError, ValueError) as exc:
         raise _invalid("Malformed PowerSpectrum representation") from exc
-
-
-def _legacy_payload(document):
-    fields = (
-        "processing_history",
-        "serialized_inventory",
-        "serialized_channel_data",
-        "serialized_data",
-    )
-    present = [field for field in fields if field in document]
-    if len(present) != 1:
-        raise _invalid("Legacy document must contain exactly one supported payload")
-    return present[0], document[present[0]]
-
-
-def _has_new_representation(document):
-    expected_types = {
-        "processing_history": "ProcessingHistory",
-        "serialized_inventory": "Inventory",
-        "serialized_channel_data": "Response",
-        "serialized_data": "PowerSpectrum",
-    }
-    return any(
-        isinstance(document.get(field), dict)
-        and document[field].get(TYPE_KEY) == type_name
-        and document[field].get(VERSION_KEY) == VERSION
-        for field, type_name in expected_types.items()
-    )
-
-
-def _encode_legacy_object(field, value, document):
-    if field == "processing_history" and isinstance(value, ProcessingHistory):
-        return encode_processing_history(value)
-    if field == "serialized_inventory" and isinstance(value, (Inventory, Network)):
-        return encode_inventory(value)
-    if field == "serialized_channel_data" and isinstance(value, Channel):
-        return encode_response(value, document)
-    if field == "serialized_data" and isinstance(value, PowerSpectrum):
-        return encode_power_spectrum(value)
-    raise _invalid(f"Legacy payload field={field} contains an unexpected object type")
-
-
-def trusted_legacy_pickle(database, collection, query=None):
-    """Migrate caller-declared trusted pickle records in ascending ``_id`` order.
-
-    Calling this function explicitly is the trust declaration.  It executes
-    pickle deserialization and must never be used on untrusted records.
-    """
-    target = database[collection]
-    migrated = 0
-    for original in target.find(query or {}).sort("_id", 1):
-        try:
-            if _has_new_representation(original):
-                continue
-            field, payload = _legacy_payload(original)
-            expected_type = {
-                "processing_history": "ProcessingHistory",
-                "serialized_inventory": "Inventory",
-                "serialized_channel_data": "Response",
-                "serialized_data": "PowerSpectrum",
-            }[field]
-            if isinstance(payload, dict):
-                _require_document(payload, expected_type)
-            if not isinstance(payload, (bytes, bytearray)):
-                raise _invalid(
-                    f"Legacy payload field={field} must contain pickle bytes"
-                )
-            value = pickle.loads(payload)
-            replacement = copy.deepcopy(original)
-            replacement[field] = _encode_legacy_object(field, value, original)
-            result = target.replace_one({"_id": original["_id"]}, replacement)
-            if result.matched_count != 1:
-                raise RuntimeError("legacy record disappeared before replacement")
-            migrated += 1
-        except MsPASSError:
-            raise
-        except Exception as exc:
-            raise _invalid(
-                f"trusted_legacy_pickle failed at record _id={original.get('_id')}"
-            ) from exc
-    return migrated

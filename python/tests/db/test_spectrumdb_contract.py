@@ -206,11 +206,20 @@ def test_dead_save_returns_identity_and_performs_no_write(monkeypatch):
     assert handle.collection.documents == []
 
 
-def test_save_rejects_executable_pickle_format(monkeypatch):
+def test_save_supports_explicit_legacy_pickle_format(monkeypatch):
+    handle, _, _ = _build_database(monkeypatch)
+
+    identifier = handle.save_data(_live_spectrum(), format="pickle")
+
+    assert isinstance(identifier, ObjectId)
+    assert isinstance(handle.collection.documents[0]["serialized_data"], bytes)
+
+
+def test_save_rejects_unknown_format(monkeypatch):
     handle, _, _ = _build_database(monkeypatch)
 
     with pytest.raises(MsPASSError) as excinfo:
-        handle.save_data(_live_spectrum(), format="pickle")
+        handle.save_data(_live_spectrum(), format="json")
 
     assert excinfo.value.severity == ErrorSeverity.Invalid
     assert handle.collection.insert_calls == 0

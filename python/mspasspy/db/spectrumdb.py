@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
+import pickle
+
 from mspasspy.ccore.seismic import PowerSpectrum
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
@@ -244,8 +246,9 @@ class SpectrumDatabase(BasicObjectDatabase):
           (default) only the data fetched with these keys will be saved to
           the document created for this object.   If the key is not actually
           found in the Metadata area of datum it will be silently ignored.
-        :param format: output format of the object.  The only accepted value
-          is the non-executable default, "bson".
+        :param format: output format of the object.  The default is "bson".
+          Set this to "pickle" only when interoperability with an older
+          MsPASS release is required.
         """
         if not self.data_valid(datum):
             message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(
@@ -254,9 +257,9 @@ class SpectrumDatabase(BasicObjectDatabase):
             raise MsPASSError(message, ErrorSeverity.Fatal)
         if datum.dead():
             return datum
-        if format != "bson":
+        if format not in ("bson", "pickle"):
             raise MsPASSError(
-                "SpectrumDatabase.save_data: format must be bson",
+                "SpectrumDatabase.save_data: format must be bson or pickle",
                 ErrorSeverity.Invalid,
             )
         if metadata2save:
@@ -273,7 +276,10 @@ class SpectrumDatabase(BasicObjectDatabase):
             if exclude:
                 for key in exclude:
                     doc.pop(key)
-        doc["serialized_data"] = encode_power_spectrum(datum)
+        if format == "bson":
+            doc["serialized_data"] = encode_power_spectrum(datum)
+        else:
+            doc["serialized_data"] = pickle.dumps(datum)
         return self.collection.insert_one(doc).inserted_id
 
     def read_data(
@@ -285,8 +291,9 @@ class SpectrumDatabase(BasicObjectDatabase):
         """
         Reads one PowerSpectrum using an object id either directly or
         indirectly via an input MongoDB document.  The implementation restores
-        a versioned BSON-native representation.  It may be useful to verify the
-        content of the restored datum has attributes that are the same as the database.
+        either the current versioned BSON representation or a legacy pickle
+        representation.  It may be useful to verify the content of the restored
+        datum has attributes that are the same as the database.
         The can be necessary if the database was edited after a datum of
         interest was saved.  The "required" and "override" optional arguments
         are used for that purpose.
