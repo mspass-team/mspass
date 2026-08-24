@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev68+g92ca6cfea documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev70+g8985495d6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3ff89705"></script>
+    <script src="../_static/documentation_options.js?v=f5a4bc47"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev68" />
+  <meta name="docsearch:version" content="2.4.4.dev70" />
   </head>
   
   
@@ -2318,8 +2318,8 @@ orientation or sensor swap)</p></li>
 </ul>
 <p>The channel collection can contain full response data
 that can be obtained by extracting the data with the key
-“serialized_channel_data” and running pickle loads on the returned
-string.</p>
+<code class="docutils literal notranslate"><span class="pre">serialized_channel_data</span></code> and decoding either its current versioned
+StationXML document or a legacy pickle payload.</p>
 <p>Channels are grouped by location code.  Each site document spans the
 union of its channels’ validity intervals.  When all channels in a
 location have the same coordinates, those coordinates define the
@@ -2897,8 +2897,7 @@ with a</p>
 <p>This function can be thought of as a formatter for the ProcessingHistory
 container in a MsPASS data object.  It returns a python dictionary
 that, if retrieved, can be used to reconstruct the ProcessingHistory
-container.  We do that a fairly easy way here by using pickle.dumps
-of the container that is saved with the key “processing_history”.</p>
+container.  The history is stored as a versioned BSON-native document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -6211,10 +6210,10 @@ which it is derived.</p>
 <dt class="sig sig-object py" id="mspasspy.db.spectrumdb.SpectrumDatabase.read_data">
 <span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_or_doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/spectrumdb.html#SpectrumDatabase.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.spectrumdb.SpectrumDatabase.read_data" title="Link to this definition">#</a></dt>
 <dd><p>Reads one PowerSpectrum using an object id either directly or
-indirectly via an input MongoDB document.   Because this implementation
-uses pickle to restore the PowerSpectrum object from a serialized
-form it may be useful to verify the content of the restored datum
-created by pickle has attributes that are the same as the database.
+indirectly via an input MongoDB document.  The implementation restores
+either the current versioned BSON representation or a legacy pickle
+representation.  It may be useful to verify the content of the restored
+datum has attributes that are the same as the database.
 The can be necessary if the database was edited after a datum of
 interest was saved.  The “required” and “override” optional arguments
 are used for that purpose.</p>
@@ -6245,10 +6244,10 @@ for a particular key it is simply not posted.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.spectrumdb.SpectrumDatabase.save_data">
-<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata2save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pickle'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/spectrumdb.html#SpectrumDatabase.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.spectrumdb.SpectrumDatabase.save_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata2save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bson'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/spectrumdb.html#SpectrumDatabase.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.spectrumdb.SpectrumDatabase.save_data" title="Link to this definition">#</a></dt>
 <dd><p>Saves a single PowerSpectrum object defined through arg0.   Default
-dumps all metadata elements to PowerSpectrum collection document
-and saves pickled version of datum with the key “serialized_data”.</p>
+dumps all metadata elements to the PowerSpectrum collection document
+and saves a versioned BSON-native object under “serialized_data”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -6261,10 +6260,9 @@ document.  Default is None which means all attributes will be saved.</p></li>
 (default) only the data fetched with these keys will be saved to
 the document created for this object.   If the key is not actually
 found in the Metadata area of datum it will be silently ignored.</p></li>
-<li><p><strong>format</strong> – output format of the object.  Currently the only
-accepted value is the default of “pickle”.  The default format
-pickles the input datum and saves the result with the key
-“serialized_data”.</p></li>
+<li><p><strong>format</strong> – output format of the object.  The default is “bson”.
+Set this to “pickle” only when interoperability with an older
+MsPASS release is required.</p></li>
 </ul>
 </dd>
 </dl>
@@ -6277,8 +6275,7 @@ pickles the input datum and saves the result with the key
 MongoDB query can be passed to scan a limited subset.  You can also
 pass a list of required keys that must be present in each document
 processed.  The method always tests for the existence of the special
-key “serialized_data” that is used to store a pickled copy of the
-datum.</p>
+key “serialized_data” that stores the versioned representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

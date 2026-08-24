@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="130" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="130" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="137" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="137" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_error_logger_1a6795f0fbec41addf06077f7aa8d36ba8" prot="private" static="no" mutable="no">
         <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt;</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="131" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="131" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="138" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="138" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -76,6 +76,30 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="69" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="69" bodyend="69"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a42277b863dde71998dc98cce41ef1153" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ErrorLogger::ErrorLogger</definition>
+        <argsstring>(int job, const std::list&lt; LogData &gt; &amp;messages)</argsstring>
+        <name>ErrorLogger</name>
+        <qualifiedname>mspass::utility::ErrorLogger::ErrorLogger</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>job</declname>
+        </param>
+        <param>
+          <type>const std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt; &amp;</type>
+          <declname>messages</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Restore a logger from field-level records.</para>
+<para>This constructor is used by language bindings that rebuild an <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> from a field-level persistence representation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="75" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="75" bodyend="76"/>
+      </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a79f494e5eaa29dd10e6089ff8f1a8e49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::utility::ErrorLogger::ErrorLogger</definition>
@@ -102,7 +126,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="73" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="48" bodyend="55"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="80" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="48" bodyend="55"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1ab61d1b8f391a571fa5660b93bad98c7d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -130,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="77" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="77" bodyend="77"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="84" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="84" bodyend="84"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a38e65725d45dd26a2e39b1ddd726463a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -145,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="79" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="79" bodyend="79"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="86" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="86" bodyend="86"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -176,7 +200,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="87" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="72" bodyend="76"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="94" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="72" bodyend="76"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a51545bad29895f7c1393ccbfed6e2aa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -232,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="101" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="77" bodyend="83"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="108" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="77" bodyend="83"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -256,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="111" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="84" bodyend="88"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="118" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="84" bodyend="88"/>
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a420c3a3de5bc10d0f62ab3e1b84bda9f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
@@ -272,7 +296,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="113" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="113" bodyend="113"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="120" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="120" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a13450cb0a04da9b190832a73834fb6cf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -287,7 +311,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="115" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="115" bodyend="115"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="122" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="122" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1ac98f8e0c684513beb3fc8e2973f08785" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -302,7 +326,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="117" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="117" bodyend="117"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="124" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="124" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a1168408b473c80d078bfc2e8bd98bb75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
@@ -332,7 +356,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="122" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="56" bodyend="62"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="129" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="56" bodyend="62"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
@@ -351,7 +375,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="125" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="63" bodyend="71"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="132" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="63" bodyend="71"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt;</type>
@@ -366,7 +390,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="127" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="96" bodyend="135"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="134" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="96" bodyend="135"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -395,7 +419,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="134" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="134" bodyend="137"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="141" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="141" bodyend="144"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -405,12 +429,13 @@
 <para>This class is intended mainly to be added to data objects in mspass to provide a scalable, thread safe method for logging errors. Atomic mspass data objects (e.g. seismograms and time series objects) all use this class to log errors and mark data with ambiguous states. The log can explain why data is an invalid state, but can also contain debug information normally enabled by something like a verbose option to a program. <linebreak/>
  </para>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="63" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="63" bodyend="138"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="63" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="63" bodyend="145"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a6795f0fbec41addf06077f7aa8d36ba8" prot="private" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>allmessages</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1ac98f8e0c684513beb3fc8e2973f08785" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>clear</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a83df0e1e0bd7429646416a99e5eae60b" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a5989e703c95cade0f3929de8f63edd10" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a42277b863dde71998dc98cce41ef1153" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a79f494e5eaa29dd10e6089ff8f1a8e49" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a420c3a3de5bc10d0f62ab3e1b84bda9f" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>get_error_log</name></member>
       <member refid="classmspass_1_1utility_1_1_error_logger_1a38e65725d45dd26a2e39b1ddd726463a" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>get_job_id</name></member>

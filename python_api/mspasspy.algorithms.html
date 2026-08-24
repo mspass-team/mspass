@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev68+g92ca6cfea documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev70+g8985495d6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3ff89705"></script>
+    <script src="../_static/documentation_options.js?v=f5a4bc47"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev68" />
+  <meta name="docsearch:version" content="2.4.4.dev70" />
   </head>
   
   
@@ -3298,12 +3298,13 @@ fdsn sources via web services and obspy’s downloading methods.
 Obspy converts that archain data to what they call an Inventory
 object.  In MsPASS we disaggregate the complicated Inventory object
 into a set of MongoDB documents with one entry for each
-seed time period fr each channel of data.   Inside that document is a
-an attibute with the tag “serialized_channel_data” that contains
-the detailed response data serialized with pickle.   The
-constructor for this object runs pickle.loads on that data to yield
-an obspy Response object.  We only extract the “sensitivity” value from
-Response.   A major complication is unit restrictions and invalid
+SEED time period for each channel of data.   Inside that document is an
+attribute with the tag “serialized_channel_data” that contains
+the detailed response data in a versioned StationXML document.  Records
+written by older MsPASS releases may instead contain a pickled ObsPy
+Channel; both representations are read automatically.  We only extract
+the “sensitivity” value from the restored ObsPy Response object.
+A major complication is unit restrictions and invalid
 Response objects.  These are handled by the constructor as described
 below.   The current implementation can only handle Response objects
 with “input units” of meters per second and “output units” of counts.

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.spectrumdb &#8212; MsPASS 2.4.4.dev68+g92ca6cfea documentation</title>
+    <title>mspasspy.db.spectrumdb &#8212; MsPASS 2.4.4.dev70+g8985495d6 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3ff89705"></script>
+    <script src="../../../_static/documentation_options.js?v=f5a4bc47"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev68" />
+  <meta name="docsearch:version" content="2.4.4.dev70" />
   </head>
   
   
@@ -476,12 +476,14 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerSpectrum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode_power_spectrum</span><span class="p">,</span> <span class="n">encode_power_spectrum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectId</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 
 
 <div class="viewcode-block" id="BasicObjectDatabase">
@@ -723,11 +725,11 @@
 
 <div class="viewcode-block" id="SpectrumDatabase.save_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.spectrumdb.SpectrumDatabase.save_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata2save</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"pickle"</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata2save</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"bson"</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Saves a single PowerSpectrum object defined through arg0.   Default</span>
-<span class="sd">        dumps all metadata elements to PowerSpectrum collection document</span>
-<span class="sd">        and saves pickled version of datum with the key "serialized_data".</span>
+<span class="sd">        dumps all metadata elements to the PowerSpectrum collection document</span>
+<span class="sd">        and saves a versioned BSON-native object under "serialized_data".</span>
 
 <span class="sd">        :param datum:  PowerSpectrum to save.  The method will throw a</span>
 <span class="sd">          MsPASSError if this is not a PowerSpectrum object.   If the datum</span>
@@ -738,10 +740,9 @@
 <span class="sd">          (default) only the data fetched with these keys will be saved to</span>
 <span class="sd">          the document created for this object.   If the key is not actually</span>
 <span class="sd">          found in the Metadata area of datum it will be silently ignored.</span>
-<span class="sd">        :param format:  output format of the object.  Currently the only</span>
-<span class="sd">          accepted value is the default of "pickle".  The default format</span>
-<span class="sd">          pickles the input datum and saves the result with the key</span>
-<span class="sd">          "serialized_data".</span>
+<span class="sd">        :param format: output format of the object.  The default is "bson".</span>
+<span class="sd">          Set this to "pickle" only when interoperability with an older</span>
+<span class="sd">          MsPASS release is required.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_valid</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="s2">"SpectrumDatabase.save_data:  illegal data type for arg0. Found type=</span><span class="si">{typ}</span><span class="s2"> - only support PowerSpectrum"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -750,10 +751,10 @@
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">datum</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s2">"pickle"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"bson"</span><span class="p">,</span> <span class="s2">"pickle"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">"SpectrumDatabase.save_data:  format can currently only be pickle"</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">,</span>
+                <span class="s2">"SpectrumDatabase.save_data: format must be bson or pickle"</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">metadata2save</span><span class="p">:</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -769,7 +770,10 @@
             <span class="k">if</span> <span class="n">exclude</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
                     <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">doc</span><span class="p">[</span><span class="s2">"serialized_data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">"bson"</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">"serialized_data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_power_spectrum</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">"serialized_data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span></div>
 
 
@@ -783,10 +787,10 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads one PowerSpectrum using an object id either directly or</span>
-<span class="sd">        indirectly via an input MongoDB document.   Because this implementation</span>
-<span class="sd">        uses pickle to restore the PowerSpectrum object from a serialized</span>
-<span class="sd">        form it may be useful to verify the content of the restored datum</span>
-<span class="sd">        created by pickle has attributes that are the same as the database.</span>
+<span class="sd">        indirectly via an input MongoDB document.  The implementation restores</span>
+<span class="sd">        either the current versioned BSON representation or a legacy pickle</span>
+<span class="sd">        representation.  It may be useful to verify the content of the restored</span>
+<span class="sd">        datum has attributes that are the same as the database.</span>
 <span class="sd">        The can be necessary if the database was edited after a datum of</span>
 <span class="sd">        interest was saved.  The "required" and "override" optional arguments</span>
 <span class="sd">        are used for that purpose.</span>
@@ -819,7 +823,7 @@
         <span class="k">if</span> <span class="n">doc</span><span class="p">:</span>
             <span class="n">datakey</span> <span class="o">=</span> <span class="s2">"serialized_data"</span>
             <span class="k">if</span> <span class="n">datakey</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                <span class="n">datum</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">datakey</span><span class="p">])</span>
+                <span class="n">datum</span> <span class="o">=</span> <span class="n">decode_power_spectrum</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">datakey</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">required</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
                         <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -828,7 +832,9 @@
                         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
                             <span class="n">datum</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="s2">"SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle"</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">"SpectrumDatabase.read_data: missing required key=serialized_data"</span>
+                <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">datum</span>
         <span class="k">else</span><span class="p">:</span>
@@ -857,8 +863,7 @@
 <span class="sd">        MongoDB query can be passed to scan a limited subset.  You can also</span>
 <span class="sd">        pass a list of required keys that must be present in each document</span>
 <span class="sd">        processed.  The method always tests for the existence of the special</span>
-<span class="sd">        key "serialized_data" that is used to store a pickled copy of the</span>
-<span class="sd">        datum.</span>
+<span class="sd">        key "serialized_data" that stores the versioned representation.</span>
 
 <span class="sd">        :param query:  optional pymongo query (python dict) to apply the</span>
 <span class="sd">          Power Spectrum collection.  Default scans the entire collection.</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.calib &#8212; MsPASS 2.4.4.dev68+g92ca6cfea documentation</title>
+    <title>mspasspy.algorithms.calib &#8212; MsPASS 2.4.4.dev70+g8985495d6 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3ff89705"></script>
+    <script src="../../../_static/documentation_options.js?v=f5a4bc47"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev68" />
+  <meta name="docsearch:version" content="2.4.4.dev70" />
   </head>
   
   
@@ -473,12 +473,12 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.algorithms.calib</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">mspass_method_wrapper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.serialization</span><span class="w"> </span><span class="kn">import</span> <span class="n">decode_response</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">obspy</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTCDateTime</span>
 
 
@@ -505,12 +505,13 @@
 <span class="sd">    Obspy converts that archain data to what they call an Inventory</span>
 <span class="sd">    object.  In MsPASS we disaggregate the complicated Inventory object</span>
 <span class="sd">    into a set of MongoDB documents with one entry for each</span>
-<span class="sd">    seed time period fr each channel of data.   Inside that document is a</span>
-<span class="sd">    an attibute with the tag "serialized_channel_data" that contains</span>
-<span class="sd">    the detailed response data serialized with pickle.   The</span>
-<span class="sd">    constructor for this object runs pickle.loads on that data to yield</span>
-<span class="sd">    an obspy Response object.  We only extract the "sensitivity" value from</span>
-<span class="sd">    Response.   A major complication is unit restrictions and invalid</span>
+<span class="sd">    SEED time period for each channel of data.   Inside that document is an</span>
+<span class="sd">    attribute with the tag "serialized_channel_data" that contains</span>
+<span class="sd">    the detailed response data in a versioned StationXML document.  Records</span>
+<span class="sd">    written by older MsPASS releases may instead contain a pickled ObsPy</span>
+<span class="sd">    Channel; both representations are read automatically.  We only extract</span>
+<span class="sd">    the "sensitivity" value from the restored ObsPy Response object.</span>
+<span class="sd">    A major complication is unit restrictions and invalid</span>
 <span class="sd">    Response objects.  These are handled by the constructor as described</span>
 <span class="sd">    below.   The current implementation can only handle Response objects</span>
 <span class="sd">    with "input units" of meters per second and "output units" of counts.</span>
@@ -586,13 +587,12 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">response_data_key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                    <span class="n">chandata</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">response_data_key</span><span class="p">])</span>
-                    <span class="n">resp</span> <span class="o">=</span> <span class="n">chandata</span><span class="o">.</span><span class="n">response</span>
+                    <span class="n">resp</span> <span class="o">=</span> <span class="n">decode_response</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">response_data_key</span><span class="p">])</span>
                     <span class="n">sens</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">instrument_sensitivity</span>
                     <span class="k">if</span> <span class="n">sens</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
                         <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
                         <span class="nb">print</span><span class="p">(</span><span class="n">stastr</span><span class="p">,</span> <span class="s2">" invalid instrument response"</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">"pickle.loads returned this:  "</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">"response decoder returned this:  "</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
                     <span class="k">elif</span> <span class="n">sens</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                             <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="o">+</span> <span class="s2">":  "</span>
@@ -629,7 +629,7 @@
                     <span class="n">stastr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_stadata</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span>
                         <span class="n">stastr</span><span class="p">,</span>
-                        <span class="s2">" does not contain pickled response data - key="</span><span class="p">,</span>
+                        <span class="s2">" does not contain response data - key="</span><span class="p">,</span>
                         <span class="n">response_data_key</span><span class="p">,</span>
                     <span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
