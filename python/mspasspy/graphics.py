@@ -314,6 +314,15 @@ def ts2nparray(d):
     return [tmin, dt, work]
 
 
+def _orient_section_data(d, data):
+    """Return atomic data with samples on rows and traces on columns."""
+    if isinstance(d, TimeSeries):
+        return data.reshape((-1, 1))
+    if isinstance(d, Seismogram):
+        return data.transpose()
+    return data
+
+
 def wtvaplot(
     d, ranges=None, scale=1.0, fill_color="k", normalize=False, cmap=None, title=None
 ):
@@ -378,7 +387,7 @@ def wtvaplot(
                 )
             t0 = plotdata[0]
             dt = plotdata[1]
-            section = plotdata[2]
+            section = _orient_section_data(d, plotdata[2])
             wtva_raw(section, t0, dt, ranges, scale, fill_color, normalize)
             if cmap != None:
                 image_raw(section, t0, dt, ranges, cmap)
@@ -451,7 +460,7 @@ def imageplot(
                 )
             t0 = plotdata[0]
             dt = plotdata[1]
-            section = plotdata[2]
+            section = _orient_section_data(d, plotdata[2])
             image_raw(section, t0, dt, ranges, cmap, aspect, vmin, vmax)
             if title != None:
                 plt.title(title)
@@ -471,13 +480,12 @@ class SectionPlotter:
     and a wiggletrace variable area plot overlaying an image plot.
 
     The object itself only defines the style of plot to be produced along
-    with other assorted plot parameters.   The plot method can be called on
-    any mspass data object to produce a graphic display.   TimeSeries
-    data produce a frame with one seismogram plotted.  Seismogram data
-    will produce a one frame display with the 3 components arranged in
-    component order from left to right.  TimeSeriesEnsembles produce
-    conventional reflection style sections with the data displayed from
-    left to right in whatever order the ensemble is sorted to.
+    with other assorted plot parameters.  An atomic ``TimeSeries`` is drawn
+    as one vertical trace.  An atomic ``Seismogram`` is drawn as three
+    vertical traces, with components ordered from left to right.
+    ``TimeSeriesEnsemble`` inputs produce conventional reflection style
+    sections with the data displayed from left to right in whatever order
+    the ensemble is sorted to.
     SeismogramEnsembles are the only type that create multiple windows.
     That is, each component is displayed in a different window.   The
     display can be understood as a conversion of a SeismogramEnsemble to
@@ -617,12 +625,11 @@ class SectionPlotter:
 
     def plot(self, d):
         """
-        Call this method to plot any data using the current style setup and any
-        details defined by public attributes.
+        Plot atomic or ensemble data using the current style and public
+        attributes.
 
-        :param d:  is the data to be plotted.   It can be any of the following:
-            TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-            If d is any other type the method will throw a RuntimeError exception.
+        :param d: a ``TimeSeries``, ``Seismogram``, ``TimeSeriesEnsemble``, or
+            ``SeismogramEnsemble``.
 
         :Returns: an array of one or 3 (only for SeismogramEnsemble dat)
           matplotlib.pylot.gcf() plot handle(s).
