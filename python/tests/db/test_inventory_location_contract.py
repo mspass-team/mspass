@@ -1,7 +1,6 @@
 import copy
 import os
 import uuid
-from unittest.mock import patch
 
 import pytest
 from obspy import UTCDateTime
@@ -12,6 +11,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
+from mspasspy.db.serialization import decode_channel, decode_inventory
 
 
 @pytest.fixture
@@ -111,16 +111,7 @@ def test_save_inventory_groups_channels_only_under_their_own_location(database):
         for channel in source_channels
     ]
 
-    def codec_boundary(channel):
-        return f"{channel.location_code}:{channel.code}:{id(channel.response)}".encode()
-
-    expected_payloads = {
-        (channel.location_code, channel.code): codec_boundary(channel)
-        for channel in source_channels
-    }
-
-    with patch("mspasspy.db.database.pickle.dumps", side_effect=codec_boundary):
-        counts = database.save_inventory(inventory, networks_to_exclude=None)
+    counts = database.save_inventory(inventory, networks_to_exclude=None)
 
     assert counts == (2, 3, 2, 3)
     assert [
@@ -153,6 +144,14 @@ def test_save_inventory_groups_channels_only_under_their_own_location(database):
         assert document["edepth"] == depth
         assert document["starttime"] == UTCDateTime(start).timestamp
         assert document["endtime"] == UTCDateTime(end).timestamp
+        restored = decode_inventory(document["serialized_inventory"])
+        restored_channels = restored.networks[0].stations[0].channels
+        assert {channel.location_code for channel in restored_channels} == {location}
+        assert {channel.code for channel in restored_channels} == {
+            channel.code
+            for channel in source_channels
+            if channel.location_code == location
+        }
 
     channels = list(database.channel.find({"net": "XX", "sta": "TEST"}))
     assert len(channels) == 3
@@ -161,13 +160,16 @@ def test_save_inventory_groups_channels_only_under_their_own_location(database):
         ("00", "BHN"),
         ("10", "HHZ"),
     }
-    assert len({document["serialized_channel_data"] for document in channels}) == 3
+    source_by_key = {
+        (channel.location_code, channel.code): channel for channel in source_channels
+    }
     for document in channels:
         expected = expected_locations[document["loc"]]
-        assert (
-            document["serialized_channel_data"]
-            == expected_payloads[(document["loc"], document["chan"])]
-        )
+        restored = decode_channel(document["serialized_channel_data"])
+        source = source_by_key[(document["loc"], document["chan"])]
+        assert restored.code == source.code
+        assert restored.location_code == source.location_code
+        assert restored.response == source.response
         assert document["lat"] == expected[0]
         assert document["lon"] == expected[1]
         assert document["starttime"] == UTCDateTime(expected[4]).timestamp
@@ -192,11 +194,7 @@ def test_conflicting_channel_geometry_uses_station_site_and_exact_channels(
         networks=[Network(code="XX", stations=[station])], source="test"
     )
 
-    with patch(
-        "mspasspy.db.database.pickle.dumps",
-        side_effect=lambda channel: channel.code.encode(),
-    ):
-        counts = database.save_inventory(inventory, networks_to_exclude=None)
+    counts = database.save_inventory(inventory, networks_to_exclude=None)
 
     assert counts == (1, 2, 1, 2)
     output = capsys.readouterr().out
@@ -230,7 +228,14 @@ def test_conflicting_channel_geometry_uses_station_site_and_exact_channels(
         ]
         assert document["starttime"] == channel.start_date.timestamp
         assert document["endtime"] == channel.end_date.timestamp
-        assert document["serialized_channel_data"] == channel.code.encode()
+        restored = decode_channel(document["serialized_channel_data"])
+        assert restored.code == channel.code
+        assert restored.location_code == channel.location_code
+        assert restored.latitude == channel.latitude
+        assert restored.longitude == channel.longitude
+        assert restored.elevation == channel.elevation
+        assert restored.depth == channel.depth
+        assert restored.response == channel.response
 
 
 @pytest.mark.parametrize("location", ["00", ""])

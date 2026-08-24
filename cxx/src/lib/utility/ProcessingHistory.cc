@@ -99,6 +99,17 @@ ProcessingHistory::ProcessingHistory(const std::string jobnm,
   algorithm = "UNDEFINED";
   algid = "UNDEFINED";
 }
+ProcessingHistory::ProcessingHistory(
+    const std::string jobnm, const std::string jid,
+    const std::multimap<std::string, NodeData> &nodesin,
+    const NodeData &current, const ErrorLogger &elogin)
+    : BasicProcessingHistory(jobnm, jid), elog(elogin), nodes(nodesin),
+      algorithm(current.algorithm), algid(current.algid) {
+  current_status = current.status;
+  current_id = current.uuid;
+  current_stage = current.stage;
+  mytype = current.type;
+}
 ProcessingHistory::ProcessingHistory(const ProcessingHistory &parent)
     : BasicProcessingHistory(parent), elog(parent.elog), nodes(parent.nodes),
       algorithm(parent.algorithm), algid(parent.algid) {

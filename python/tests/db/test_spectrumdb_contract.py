@@ -13,6 +13,7 @@ import mspasspy.ccore.seismic as seismic_binding
 from mspasspy.ccore.seismic import DoubleVector, PowerSpectrum
 from mspasspy.ccore.utility import ErrorSeverity, Metadata, MsPASSError
 from mspasspy.db.spectrumdb import SpectrumDatabase
+from mspasspy.db.serialization import TYPE_KEY, VERSION, VERSION_KEY
 
 
 class MemoryCollection:
@@ -153,7 +154,8 @@ def test_live_save_read_and_delete_roundtrip(monkeypatch):
     assert isinstance(oid, ObjectId)
     stored = handle.collection.find_one({"_id": oid})
     assert stored["station"] == "AAA"
-    assert isinstance(stored["serialized_data"], bytes)
+    assert stored["serialized_data"][TYPE_KEY] == "PowerSpectrum"
+    assert stored["serialized_data"][VERSION_KEY] == VERSION
     BSON.encode(stored)
     restored = handle.read_data(oid)
     assert isinstance(restored, PowerSpectrum)
@@ -202,6 +204,25 @@ def test_dead_save_returns_identity_and_performs_no_write(monkeypatch):
     assert result is dead
     assert handle.collection.insert_calls == 0
     assert handle.collection.documents == []
+
+
+def test_save_supports_explicit_legacy_pickle_format(monkeypatch):
+    handle, _, _ = _build_database(monkeypatch)
+
+    identifier = handle.save_data(_live_spectrum(), format="pickle")
+
+    assert isinstance(identifier, ObjectId)
+    assert isinstance(handle.collection.documents[0]["serialized_data"], bytes)
+
+
+def test_save_rejects_unknown_format(monkeypatch):
+    handle, _, _ = _build_database(monkeypatch)
+
+    with pytest.raises(MsPASSError) as excinfo:
+        handle.save_data(_live_spectrum(), format="json")
+
+    assert excinfo.value.severity == ErrorSeverity.Invalid
+    assert handle.collection.insert_calls == 0
 
 
 @pytest.mark.parametrize("value", (None, 1, "spectrum", {}, object()))

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
+import pickle
+
 from mspasspy.ccore.seismic import PowerSpectrum
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.db.client import DBClient
+from mspasspy.db.serialization import decode_power_spectrum, encode_power_spectrum
 from bson import ObjectId
-import pickle
 
 
 class BasicObjectDatabase(ABC):
@@ -229,11 +231,11 @@ class SpectrumDatabase(BasicObjectDatabase):
         )
         self.collection = self.db[collection]
 
-    def save_data(self, datum, exclude=None, metadata2save=None, format="pickle"):
+    def save_data(self, datum, exclude=None, metadata2save=None, format="bson"):
         """
         Saves a single PowerSpectrum object defined through arg0.   Default
-        dumps all metadata elements to PowerSpectrum collection document
-        and saves pickled version of datum with the key "serialized_data".
+        dumps all metadata elements to the PowerSpectrum collection document
+        and saves a versioned BSON-native object under "serialized_data".
 
         :param datum:  PowerSpectrum to save.  The method will throw a
           MsPASSError if this is not a PowerSpectrum object.   If the datum
@@ -244,10 +246,9 @@ class SpectrumDatabase(BasicObjectDatabase):
           (default) only the data fetched with these keys will be saved to
           the document created for this object.   If the key is not actually
           found in the Metadata area of datum it will be silently ignored.
-        :param format:  output format of the object.  Currently the only
-          accepted value is the default of "pickle".  The default format
-          pickles the input datum and saves the result with the key
-          "serialized_data".
+        :param format: output format of the object.  The default is "bson".
+          Set this to "pickle" only when interoperability with an older
+          MsPASS release is required.
         """
         if not self.data_valid(datum):
             message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(
@@ -256,10 +257,10 @@ class SpectrumDatabase(BasicObjectDatabase):
             raise MsPASSError(message, ErrorSeverity.Fatal)
         if datum.dead():
             return datum
-        if format != "pickle":
+        if format not in ("bson", "pickle"):
             raise MsPASSError(
-                "SpectrumDatabase.save_data:  format can currently only be pickle",
-                ErrorSeverity.Fatal,
+                "SpectrumDatabase.save_data: format must be bson or pickle",
+                ErrorSeverity.Invalid,
             )
         if metadata2save:
             doc = dict()
@@ -275,7 +276,10 @@ class SpectrumDatabase(BasicObjectDatabase):
             if exclude:
                 for key in exclude:
                     doc.pop(key)
-        doc["serialized_data"] = pickle.dumps(datum)
+        if format == "bson":
+            doc["serialized_data"] = encode_power_spectrum(datum)
+        else:
+            doc["serialized_data"] = pickle.dumps(datum)
         return self.collection.insert_one(doc).inserted_id
 
     def read_data(
@@ -286,10 +290,10 @@ class SpectrumDatabase(BasicObjectDatabase):
     ):
         """
         Reads one PowerSpectrum using an object id either directly or
-        indirectly via an input MongoDB document.   Because this implementation
-        uses pickle to restore the PowerSpectrum object from a serialized
-        form it may be useful to verify the content of the restored datum
-        created by pickle has attributes that are the same as the database.
+        indirectly via an input MongoDB document.  The implementation restores
+        either the current versioned BSON representation or a legacy pickle
+        representation.  It may be useful to verify the content of the restored
+        datum has attributes that are the same as the database.
         The can be necessary if the database was edited after a datum of
         interest was saved.  The "required" and "override" optional arguments
         are used for that purpose.
@@ -322,7 +326,7 @@ class SpectrumDatabase(BasicObjectDatabase):
         if doc:
             datakey = "serialized_data"
             if datakey in doc:
-                datum = pickle.loads(doc[datakey])
+                datum = decode_power_spectrum(doc[datakey])
                 if required:
                     for key in required:
                         datum[key] = doc[key]
@@ -331,7 +335,9 @@ class SpectrumDatabase(BasicObjectDatabase):
                         if key in doc:
                             datum[key] = doc[key]
             else:
-                message = "SpectrumDatabase.read_data:  missing required key=serialized_data - expected to contain datum serialized with pickle"
+                message = (
+                    "SpectrumDatabase.read_data: missing required key=serialized_data"
+                )
                 raise MsPASSError(message, ErrorSeverity.Fatal)
             return datum
         else:
@@ -354,8 +360,7 @@ class SpectrumDatabase(BasicObjectDatabase):
         MongoDB query can be passed to scan a limited subset.  You can also
         pass a list of required keys that must be present in each document
         processed.  The method always tests for the existence of the special
-        key "serialized_data" that is used to store a pickled copy of the
-        datum.
+        key "serialized_data" that stores the versioned representation.
 
         :param query:  optional pymongo query (python dict) to apply the
           Power Spectrum collection.  Default scans the entire collection.

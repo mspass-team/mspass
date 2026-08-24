@@ -67,6 +67,13 @@ public:
   \param job processing job identifier to store in future log records.
   */
   ErrorLogger(int job) { job_id = job; };
+  /*! Restore a logger from field-level records.
+
+  This constructor is used by language bindings that rebuild an ErrorLogger
+  from a field-level persistence representation.
+  */
+  ErrorLogger(int job, const std::list<LogData> &messages)
+      : job_id(job), allmessages(messages) {};
   /*! Standard copy constructor.
   \param parent logger whose job id and messages are copied.
   */
