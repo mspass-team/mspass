@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev62+g5ebd29dc7 documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev63+g387023fa7 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=fc9ddd28"></script>
+    <script src="../../../_static/documentation_options.js?v=66faa32b"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev62" />
+  <meta name="docsearch:version" content="2.4.4.dev63" />
   </head>
   
   
@@ -1378,6 +1378,8 @@
         <span class="n">docarray</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"live"</span><span class="p">]:</span>
             <span class="n">has_bodies</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">docarray</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">has_bodies</span><span class="p">:</span>
         <span class="n">lifelist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cleaned_doclist</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2335,42 +2337,45 @@
 <span class="sd">    :param retrieve_history_record: a boolean control whether we would like to load processing history</span>
 <span class="sd">    :type retrieve_history_record: :class:`bool`</span>
 <span class="sd">    """</span>
-    <span class="n">collection</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">name</span>
-    <span class="n">dbschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">database_schema</span>
-    <span class="n">mdschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">metadata_schema</span>
-    <span class="n">this_elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
-    <span class="n">md_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="c1"># Use the databhase module function doc2md that standardizes</span>
-        <span class="c1"># handling of schema constraints and exlcude_keys</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">dbschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">database_schema</span>
+        <span class="n">mdschema</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">metadata_schema</span>
+        <span class="n">this_elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
+        <span class="n">md_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="c1"># Use the databhase module function doc2md that standardizes</span>
+            <span class="c1"># handling of schema constraints and exlcude_keys</span>
 
-        <span class="n">md</span><span class="p">,</span> <span class="n">aok</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">doc2md</span><span class="p">(</span>
-            <span class="n">doc</span><span class="p">,</span>
-            <span class="n">dbschema</span><span class="p">,</span>
-            <span class="n">mdschema</span><span class="p">,</span>
-            <span class="n">collection</span><span class="p">,</span>
-            <span class="n">exclude_keys</span><span class="p">,</span>
-            <span class="n">mode</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">aok</span><span class="p">:</span>
-            <span class="n">md_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">this_elog</span> <span class="o">+=</span> <span class="n">elog</span>
+            <span class="n">md</span><span class="p">,</span> <span class="n">aok</span><span class="p">,</span> <span class="n">elog</span> <span class="o">=</span> <span class="n">doc2md</span><span class="p">(</span>
+                <span class="n">doc</span><span class="p">,</span>
+                <span class="n">dbschema</span><span class="p">,</span>
+                <span class="n">mdschema</span><span class="p">,</span>
+                <span class="n">collection</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="p">,</span>
+                <span class="n">mode</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">aok</span><span class="p">:</span>
+                <span class="n">md_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">this_elog</span> <span class="o">+=</span> <span class="n">elog</span>
 
-    <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">"WARNING(read_to_dataframe): "</span><span class="p">,</span>
-            <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
-            <span class="s2">" errors were handled during dataframe construction"</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">"All data associated with these errors were dropped.   Error log entries from doc2md follow"</span>
-        <span class="p">)</span>
-        <span class="n">errorlist</span> <span class="o">=</span> <span class="n">elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">errorlist</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">badness</span><span class="p">)</span>
-    <span class="c1"># convert the metadata list to a dataframe</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">cur</span><span class="o">.</span><span class="n">todict</span><span class="p">(),</span> <span class="n">md_list</span><span class="p">))</span></div>
+        <span class="k">if</span> <span class="n">this_elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"WARNING(read_to_dataframe): "</span><span class="p">,</span>
+                <span class="n">this_elog</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+                <span class="s2">" errors were handled during dataframe construction"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">"All data associated with these errors were dropped.   Error log entries from doc2md follow"</span>
+            <span class="p">)</span>
+            <span class="n">errorlist</span> <span class="o">=</span> <span class="n">this_elog</span><span class="o">.</span><span class="n">get_error_log</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">errorlist</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">badness</span><span class="p">)</span>
+        <span class="c1"># convert the metadata list to a dataframe</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">cur</span><span class="o">.</span><span class="n">todict</span><span class="p">(),</span> <span class="n">md_list</span><span class="p">))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 </pre></div>
 
