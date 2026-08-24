@@ -71,6 +71,7 @@ def _validate_plot_style(caller, style, invalid_string_error=TypeError):
     if style not in _VALID_PLOT_STYLES:
         raise invalid_string_error(message)
 
+
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
     """
     Plot a numpy 2D array (matrix) in a wiggle trace, variable area
