@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev59+g9704f48bb documentation</title>
+    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev60+g167fa5671 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b3f8b9e5"></script>
+    <script src="../_static/documentation_options.js?v=37489056"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.graphics" href="mspasspy.graphics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev59" />
+  <meta name="docsearch:version" content="2.4.4.dev60" />
   </head>
   
   
@@ -563,14 +563,31 @@ key:value pair in BSON written to MongoDB.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.history.bootstrap_history_jobid_counter">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">bootstrap_history_jobid_counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#bootstrap_history_jobid_counter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.bootstrap_history_jobid_counter" title="Link to this definition">#</a></dt>
+<dd><p>Raise the job-id counter to the largest legacy history job id.</p>
+<p>This is an explicit, idempotent deployment step for databases created
+before job ids were allocated from <code class="docutils literal notranslate"><span class="pre">history_counters</span></code>.  Runtime job-id
+allocation does not call this function or scan the history collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>top level database handle returned by a call to
+MongoClient.database</em>) – database handle</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the resulting counter high-water mark</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.history.get_jobid">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.history.</span></span><span class="sig-name descname"><span class="pre">get_jobid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#get_jobid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.get_jobid" title="Link to this definition">#</a></dt>
-<dd><p>Ask MongoDB for the a valid jobid.</p>
+<dd><p>Ask MongoDB for a valid jobid.</p>
 <p>All processing jobs should have a call to this function at the beginning
-of the job script.  It simply queries MongoDB for the largest current
-value of the key “jobid” in the history collection.   If the history
-collection is empty it returns 1 under a bias that a jobid of 0 is
-illogical.</p>
+of the job script.  Job ids are allocated by atomically incrementing a
+named counter in the <code class="docutils literal notranslate"><span class="pre">history_counters</span></code> collection.  The first id
+allocated for a new database is 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>db</strong> (<em>top level database handle returned by a call to MongoClient.database</em>) – database handle</p>
@@ -685,6 +702,7 @@ that return one of these.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.basic_history_data.load_algorithm_args"><code class="docutils literal notranslate"><span class="pre">basic_history_data.load_algorithm_args()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.bootstrap_history_jobid_counter"><code class="docutils literal notranslate"><span class="pre">bootstrap_history_jobid_counter()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.get_jobid"><code class="docutils literal notranslate"><span class="pre">get_jobid()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.pf_history_data"><code class="docutils literal notranslate"><span class="pre">pf_history_data</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.pfbranch_to_dict"><code class="docutils literal notranslate"><span class="pre">pfbranch_to_dict()</span></code></a></li>

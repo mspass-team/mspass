@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev59+g9704f48bb documentation</title>
+    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev60+g167fa5671 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=b3f8b9e5"></script>
+    <script src="../../_static/documentation_options.js?v=37489056"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev59" />
+  <meta name="docsearch:version" content="2.4.4.dev60" />
   </head>
   
   
@@ -477,32 +477,108 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pymongo</span>
 
+<span class="n">_HISTORY_COUNTER_COLLECTION</span> <span class="o">=</span> <span class="s2">"history_counters"</span>
+<span class="n">_JOB_ID_COUNTER_NAME</span> <span class="o">=</span> <span class="s2">"jobid"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_jobid_counter</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="n">counters</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">_HISTORY_COUNTER_COLLECTION</span><span class="p">]</span>
+    <span class="n">counters</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">"counter_name"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">counters</span>
+
 
 <div class="viewcode-block" id="get_jobid">
 <a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.get_jobid">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Ask MongoDB for the a valid jobid.</span>
+<span class="sd">    Ask MongoDB for a valid jobid.</span>
 
 <span class="sd">    All processing jobs should have a call to this function at the beginning</span>
-<span class="sd">    of the job script.  It simply queries MongoDB for the largest current</span>
-<span class="sd">    value of the key "jobid" in the history collection.   If the history</span>
-<span class="sd">    collection is empty it returns 1 under a bias that a jobid of 0 is</span>
-<span class="sd">    illogical.</span>
+<span class="sd">    of the job script.  Job ids are allocated by atomically incrementing a</span>
+<span class="sd">    named counter in the ``history_counters`` collection.  The first id</span>
+<span class="sd">    allocated for a new database is 1.</span>
 
 <span class="sd">    :param db: database handle</span>
 <span class="sd">    :type db:  top level database handle returned by a call to MongoClient.database</span>
 <span class="sd">    """</span>
-    <span class="n">hiscol</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">history</span>
-    <span class="n">hist_size</span> <span class="o">=</span> <span class="n">hiscol</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
-    <span class="k">if</span> <span class="n">hist_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">maxcur</span> <span class="o">=</span> <span class="n">hiscol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">([(</span><span class="s2">"jobid"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)])</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">maxcur</span><span class="o">.</span><span class="n">rewind</span><span class="p">()</span>  <span class="c1"># may not be necessary but near zero cost</span>
-        <span class="n">maxdoc</span> <span class="o">=</span> <span class="n">maxcur</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">maxdoc</span><span class="p">[</span><span class="s2">"jobid"</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span></div>
+    <span class="n">counters</span> <span class="o">=</span> <span class="n">_jobid_counter</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">counters</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"counter_name"</span><span class="p">:</span> <span class="n">_JOB_ID_COUNTER_NAME</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"$inc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+        <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_document</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ReturnDocument</span><span class="o">.</span><span class="n">AFTER</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span></div>
 
+
+
+<div class="viewcode-block" id="bootstrap_history_jobid_counter">
+<a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.bootstrap_history_jobid_counter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_history_jobid_counter</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raise the job-id counter to the largest legacy history job id.</span>
+
+<span class="sd">    This is an explicit, idempotent deployment step for databases created</span>
+<span class="sd">    before job ids were allocated from ``history_counters``.  Runtime job-id</span>
+<span class="sd">    allocation does not call this function or scan the history collection.</span>
+
+<span class="sd">    :param db: database handle</span>
+<span class="sd">    :type db: top level database handle returned by a call to</span>
+<span class="sd">      MongoClient.database</span>
+<span class="sd">    :return: the resulting counter high-water mark</span>
+<span class="sd">    """</span>
+    <span class="n">legacy_max_document</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"jobid"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$type"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"int"</span><span class="p">,</span> <span class="s2">"long"</span><span class="p">]}},</span>
+        <span class="n">projection</span><span class="o">=</span><span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"jobid"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s2">"jobid"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)],</span>
+    <span class="p">)</span>
+    <span class="n">legacy_max</span> <span class="o">=</span> <span class="n">legacy_max_document</span><span class="p">[</span><span class="s2">"jobid"</span><span class="p">]</span> <span class="k">if</span> <span class="n">legacy_max_document</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">counters</span> <span class="o">=</span> <span class="n">_jobid_counter</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">current_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$ifNull"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"$value"</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">counters</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"counter_name"</span><span class="p">:</span> <span class="n">_JOB_ID_COUNTER_NAME</span><span class="p">},</span>
+        <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"counter_name"</span><span class="p">:</span> <span class="n">_JOB_ID_COUNTER_NAME</span><span class="p">,</span>
+                    <span class="s2">"value"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$max"</span><span class="p">:</span> <span class="p">[</span><span class="n">current_value</span><span class="p">,</span> <span class="n">legacy_max</span><span class="p">]},</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_document</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ReturnDocument</span><span class="o">.</span><span class="n">AFTER</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reserve_requested_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">requested_jobid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Atomically reserve an explicit job id or the next available value."""</span>
+    <span class="n">counters</span> <span class="o">=</span> <span class="n">_jobid_counter</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">next_jobid</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$add"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"$ifNull"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"$value"</span><span class="p">,</span> <span class="mi">0</span><span class="p">]},</span> <span class="mi">1</span><span class="p">]}</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="n">counters</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"counter_name"</span><span class="p">:</span> <span class="n">_JOB_ID_COUNTER_NAME</span><span class="p">},</span>
+        <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"counter_name"</span><span class="p">:</span> <span class="n">_JOB_ID_COUNTER_NAME</span><span class="p">,</span>
+                    <span class="s2">"value"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">"$cond"</span><span class="p">:</span> <span class="p">[</span>
+                            <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="p">[</span><span class="n">requested_jobid</span><span class="p">,</span> <span class="n">next_jobid</span><span class="p">]},</span>
+                            <span class="n">requested_jobid</span><span class="p">,</span>
+                            <span class="n">next_jobid</span><span class="p">,</span>
+                        <span class="p">]</span>
+                    <span class="p">},</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_document</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ReturnDocument</span><span class="o">.</span><span class="n">BEFORE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">previous_value</span> <span class="o">=</span> <span class="n">previous</span><span class="p">[</span><span class="s2">"value"</span><span class="p">]</span> <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">allocated_jobid</span> <span class="o">=</span> <span class="n">previous_value</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">requested_jobid</span> <span class="o">&gt;</span> <span class="n">allocated_jobid</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">requested_jobid</span><span class="p">,</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">allocated_jobid</span><span class="p">,</span> <span class="kc">False</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_antelope_pf_to_dict</span><span class="p">(</span><span class="n">pf</span><span class="p">):</span>
@@ -651,30 +727,29 @@
 <span class="sd">        :param db:   is a top level handle to a MongoDB server created by</span>
 <span class="sd">           calling the database method of a MongoClient instance.</span>
 <span class="sd">        :param job: job can be used to manually set the jobid.  We use</span>
-<span class="sd">           a simple high water mark comparable to lastid in the</span>
-<span class="sd">           Antelope/Datascope database where the next valid id is lastid+1.</span>
-<span class="sd">           Hence if the input value of job is less than the current high</span>
-<span class="sd">           water mark in the history collection for jobid, the jobid is</span>
-<span class="sd">           silently set to the +1 of the largest jobid found in history.</span>
-<span class="sd">           (default is 0 which automatically uses the high water mark method)</span>
+<span class="sd">           an atomic counter comparable to lastid in the Antelope/Datascope</span>
+<span class="sd">           database.  Hence if the input value of job is less than the next</span>
+<span class="sd">           value allocated by the counter, the jobid is silently set to that</span>
+<span class="sd">           allocated value.</span>
+<span class="sd">           (default is 0 which automatically allocates from the counter)</span>
 <span class="sd">           Users can get the actual value set from the jobid variable after</span>
 <span class="sd">           successful creation of this object.</span>
+<span class="sd">        :raises TypeError: if job is not a non-boolean integer.</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"HistoryLogger job must be a non-boolean integer"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">history</span>
         <span class="c1"># Check the input job id for validity and use get_jobid if needed</span>
         <span class="k">if</span> <span class="n">job</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span> <span class="o">=</span> <span class="n">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">jobtmp</span> <span class="o">=</span> <span class="n">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">job</span> <span class="o">&gt;</span> <span class="n">jobtmp</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span> <span class="o">=</span> <span class="n">job</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span> <span class="o">=</span> <span class="n">jobtmp</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="p">,</span> <span class="n">requested_jobid_was_used</span> <span class="o">=</span> <span class="n">_reserve_requested_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">requested_jobid_was_used</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="s2">"HistoryLogger(Warning):  input jobid="</span><span class="p">,</span>
                     <span class="n">job</span><span class="p">,</span>
                     <span class="s2">" was invalid.  Set jobid="</span><span class="p">,</span>
-                    <span class="n">jobtmp</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># create empty container for history record</span>
 
