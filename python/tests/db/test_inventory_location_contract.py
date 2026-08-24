@@ -85,6 +85,15 @@ def make_multi_location_inventory():
     return Inventory(networks=[Network(code="XX", stations=[station])], source="test")
 
 
+def test_extract_locdata_preserves_every_channel_in_its_location_group():
+    channels = make_multi_location_inventory().networks[0].stations[0].channels
+    grouped = Database._extract_locdata(channels)
+
+    assert set(grouped) == {"00", "10"}
+    assert grouped["00"] == channels[:2]
+    assert grouped["10"] == channels[2:]
+
+
 def test_save_inventory_groups_channels_only_under_their_own_location(database):
     inventory = make_multi_location_inventory()
     source_channels = inventory.networks[0].stations[0].channels
@@ -163,6 +172,65 @@ def test_save_inventory_groups_channels_only_under_their_own_location(database):
         assert document["lon"] == expected[1]
         assert document["starttime"] == UTCDateTime(expected[4]).timestamp
         assert document["endtime"] == UTCDateTime(expected[5]).timestamp
+
+
+def test_conflicting_channel_geometry_uses_station_site_and_exact_channels(
+    database, capsys
+):
+    channels = [
+        make_channel("BHZ", "00", 30.0, -100.0, 100.0, 1.0, "2020-01-01", "2021-01-01"),
+        make_channel("BHN", "00", 31.0, -101.0, 200.0, 2.0, "2019-01-01", "2022-01-01"),
+    ]
+    station = Station(
+        code="TEST",
+        latitude=35.0,
+        longitude=-105.0,
+        elevation=500.0,
+        channels=channels,
+    )
+    inventory = Inventory(
+        networks=[Network(code="XX", stations=[station])], source="test"
+    )
+
+    with patch(
+        "mspasspy.db.database.pickle.dumps",
+        side_effect=lambda channel: channel.code.encode(),
+    ):
+        counts = database.save_inventory(inventory, networks_to_exclude=None)
+
+    assert counts == (1, 2, 1, 2)
+    output = capsys.readouterr().out
+    assert output.count("channels sharing this location code have conflicting") == 1
+
+    site = database.site.find_one({"net": "XX", "sta": "TEST", "loc": "00"})
+    assert site["lat"] == 35.0
+    assert site["lon"] == -105.0
+    assert site["elev"] == 0.5
+    assert site["coords"] == [-105.0, 35.0]
+    assert site["location"]["coordinates"] == [-105.0, 35.0]
+    assert site["starttime"] == UTCDateTime("2019-01-01").timestamp
+    assert site["endtime"] == UTCDateTime("2022-01-01").timestamp
+    assert "edepth" not in site
+
+    documents = {
+        document["chan"]: document
+        for document in database.channel.find({"net": "XX", "sta": "TEST"})
+    }
+    assert set(documents) == {"BHZ", "BHN"}
+    for channel in channels:
+        document = documents[channel.code]
+        assert document["lat"] == channel.latitude
+        assert document["lon"] == channel.longitude
+        assert document["elev"] == channel.elevation / 1000.0
+        assert document["edepth"] == channel.depth
+        assert document["coords"] == [channel.longitude, channel.latitude]
+        assert document["location"]["coordinates"] == [
+            channel.longitude,
+            channel.latitude,
+        ]
+        assert document["starttime"] == channel.start_date.timestamp
+        assert document["endtime"] == channel.end_date.timestamp
+        assert document["serialized_channel_data"] == channel.code.encode()
 
 
 @pytest.mark.parametrize("location", ["00", ""])
