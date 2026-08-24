@@ -69,8 +69,8 @@ public:
   ErrorLogger(int job) { job_id = job; };
   /*! Restore a logger from field-level records.
 
-  This constructor is intended for trusted language bindings that rebuild an
-  ErrorLogger from a versioned, non-executable persistence representation.
+  This constructor is used by language bindings that rebuild an ErrorLogger
+  from a field-level persistence representation.
   */
   ErrorLogger(int job, const std::list<LogData> &messages)
       : job_id(job), allmessages(messages) {};
