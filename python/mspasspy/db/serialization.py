@@ -208,7 +208,7 @@ def encode_inventory(inventory):
     if not isinstance(inventory, Inventory):
         raise TypeError("inventory must be an ObsPy Inventory or Network")
     stream = io.BytesIO()
-    inventory.write(stream, format="STATIONXML", validate=True)
+    inventory.write(stream, format="STATIONXML")
     document = _header("Inventory")
     document["stationxml"] = stream.getvalue().decode("utf-8")
     return document
@@ -228,9 +228,7 @@ def encode_response(channel, document):
     if not isinstance(channel, Channel):
         raise TypeError("channel must be an ObsPy Channel")
     stream = io.BytesIO()
-    channel_inventory(channel, document).write(
-        stream, format="STATIONXML", validate=True
-    )
+    channel_inventory(channel, document).write(stream, format="STATIONXML")
     result = _header("Response")
     result["stationxml"] = stream.getvalue().decode("utf-8")
     return result
