@@ -1,6 +1,6 @@
-import os
 import pandas as pd
-import json
+from bson import json_util
+from pymongo import ASCENDING, DESCENDING
 
 
 from mspasspy.db.database import (
@@ -94,6 +94,28 @@ def read_ensemble_parallel(
     if kill_me:
         ensemble.kill()
     return ensemble
+
+
+def _validate_sort_clause(sort_clause):
+    """Validate the list-of-pairs form accepted by PyMongo ``sort``."""
+    if not isinstance(sort_clause, list):
+        raise TypeError("sort_clause must be a list of (field_name, direction) pairs")
+    for item in sort_clause:
+        if not isinstance(item, tuple) or len(item) != 2:
+            raise TypeError(
+                "sort_clause must be a list of (field_name, direction) pairs"
+            )
+        field_name, direction = item
+        if not isinstance(field_name, str) or not field_name:
+            raise TypeError("sort_clause field names must be nonempty strings")
+        if (
+            isinstance(direction, bool)
+            or not isinstance(direction, int)
+            or direction not in (ASCENDING, DESCENDING)
+        ):
+            raise TypeError(
+                "sort_clause directions must be pymongo.ASCENDING or pymongo.DESCENDING"
+            )
 
 
 def post2metadata(mspass_object, doc):
@@ -338,8 +360,11 @@ def read_distributed_data(
       scalable to the largest conceivable seismic data sets.  When defined
       the documents retreived from the database are reformatted and pushed to
       a scratch file with the name defined by this argument.  The contents
-      of the file are then reloaded into a dask or spark DataFrame that
-      allow the same data to be handled within a more limited memory footprint.
+      of the file are then reloaded lazily into a Dask Bag or Spark RDD that
+      allows the same data to be handled within a more limited memory footprint.
+      The scratch file is owned by the caller:  this function never deletes it,
+      and the caller must retain it until all computations are complete before
+      removing it.
       Note use of this feature is rare and should never be necessary in an
       HPC or cloud cluster.   The default us None which means this that
       database input is loaded directly into memory to initiate construction
@@ -448,7 +473,7 @@ def read_distributed_data(
     :type sort_clause:  if None (default) no sorting is invoked when reading
       ensembles.   Other wise should be a python list of tuples
       defining a sort order.
-      e.g. [("sta",pymongo.ASCENDING),()"time",pymongo.ASCENDING)]
+      e.g. [("sta", pymongo.ASCENDING), ("time", pymongo.ASCENDING)]
 
     :param container_to_merge:  bag/RDD containing data packaged with
       one item per datum this reader is asked to read.   See above for
@@ -504,19 +529,7 @@ def read_distributed_data(
                 message += "list must contain only python dict defining queries that define each ensemble to be loaded"
                 raise TypeError(message)
         if sort_clause:
-            # TODO - conflicting examples of the type of this clause
-            # may have a hidden bug in TimeIntervalReader as it has usage
-            # differnt from this restricteion
-            if not isinstance(sort_clause, [list, str]):
-                message += "sort_clause argument is invalid\n"
-                message += "Must be either a list or a single string"
-                raise TypeError(message)
-            if isinstance(sort_clause, list):
-                for x in sort_clause:
-                    if not isinstance(x, dict):
-                        message += "sort_clause value = " + str(sort_clause)
-                        message += " is invalid input for MongoDB"
-                        raise TypeError(message)
+            _validate_sort_clause(sort_clause)
     elif isinstance(data, Database):
         ensemble_mode = False
         dataframe_input = False
@@ -711,33 +724,35 @@ def read_distributed_data(
             if data_tag:
                 fullquery["data_tag"] = data_tag
             cursor = data[collection].find(fullquery)
+            try:
+                if scratchfile:
+                    # Store one Extended JSON document per line.  The scratch
+                    # file belongs to the caller and must remain available for
+                    # lazy and repeated computation of the returned bag/RDD.
+                    with open(scratchfile, "w") as outfile:
+                        for doc in cursor:
+                            outfile.write(json_util.dumps(doc))
+                            outfile.write("\n")
+                else:
+                    doclist = []
+                    for doc in cursor:
+                        doclist.append(doc)
+            finally:
+                cursor.close()
 
             if scratchfile:
-                # here we write the documents all to a scratch file in
-                # json and immediately read them back to create a bag or RDD
-                with open(scratchfile, "w") as outfile:
-                    for doc in cursor:
-                        json.dump(doc, outfile)
                 if scheduler == "spark":
-                    # the only way I could find to load json data in pyspark
-                    # is to use an intermediate dataframe.   This should
-                    # still parallelize, but will probably be slower
-                    # if there is a more direct solution should be done here.
-                    plist = spark_context.read.json(scratchfile)
-                    # this is wrong above also don't see how to do partitions
-                    # this section is broken until I (glp) can get help
-                    # plist = plist.map(to_dict,"records")
+                    if npartitions is None:
+                        plist = spark_context.textFile(scratchfile)
+                    else:
+                        plist = spark_context.textFile(
+                            scratchfile, minPartitions=npartitions
+                        )
+                    plist = plist.map(json_util.loads)
                 else:
-                    plist = dask.bag.read_text(scratchfile).map(json.loads)
-                # Intentionally omit error handler here.  Assume
-                # system will throw an error if file open files or write files
-                # that will be sufficient for user to understand the problem.
-                os.remove(scratchfile)
+                    plist = dask.bag.read_text(scratchfile).map(json_util.loads)
 
             else:
-                doclist = []
-                for doc in cursor:
-                    doclist.append(doc)
                 if scheduler == "spark":
                     plist = spark_context.parallelize(doclist, numSlices=npartitions)
                 else:
