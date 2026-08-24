@@ -215,23 +215,20 @@ types differs in a few important ways:
 2.  A :py:class:`Seismogram <mspasspy.ccore.seismic.Seismogram>` is displayed
     by ``SeismicPlotter`` in one figure, with components 0, 1, and 2 at equal
     vertical intervals from bottom to top.
-3.  :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`
+3.  :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` uses a
+    downward-running vertical time axis.  It displays an atomic ``TimeSeries``
+    as one trace and an atomic ``Seismogram`` as three traces, with components
+    0, 1, and 2 ordered from left to right.
+4.  :py:class:`TimeSeriesEnsemble <mspasspy.ccore.seismic.TimeSeriesEnsemble>`
     members are equally spaced.  ``SeismicPlotter`` defaults to member 0 at
     the bottom and can reverse the order with its ``topdown`` method.
     :py:class:`SectionPlotter <mspasspy.graphics.SectionPlotter>` places the
     members from left to right and currently has no public order-reversal or
     variable-spacing option.  Use a custom Matplotlib plot when physical
     offsets rather than equal trace spacing are required.
-4.  :py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
+5.  :py:class:`SeismogramEnsemble <mspasspy.ccore.seismic.SeismogramEnsemble>`
     data are displayed as three figures, one per component.  Each component
     figure is produced using the corresponding ``TimeSeriesEnsemble`` path.
-
-.. warning::
-
-   Atomic ``TimeSeries`` and ``Seismogram`` inputs to ``SectionPlotter`` are
-   deprecated and unsupported.  ``SectionPlotter.plot`` raises ``TypeError``
-   for both types and directs callers to ``SeismicPlotter``.  The ensemble
-   paths continue to support all four plot styles described above.
 
 A final point is that plotting earthquake data nearly always requires some
 form of scaling to prevent strong signals from clipping while weaker but valid
