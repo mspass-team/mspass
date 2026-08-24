@@ -302,12 +302,14 @@ def test_power_spectrum_preserves_supported_structured_metadata():
     assert restored["nested"] == spectrum["nested"]
 
 
-def test_legacy_pickle_codecs_round_trip():
+def test_legacy_history_pickle_codec_round_trip():
     history = _make_history()
     assert _history_signature(
         decode_processing_history(pickle.dumps(history))
     ) == _history_signature(history)
 
+
+def test_legacy_inventory_and_response_pickle_codecs_round_trip():
     inventory = obspy.read_inventory("python/tests/data/TA.035A.xml")
     network = inventory.networks[0]
     channel = network.stations[0].channels[0]
@@ -315,6 +317,8 @@ def test_legacy_pickle_codecs_round_trip():
     assert decode_inventory(pickle.dumps(inventory)) == inventory
     assert decode_response(pickle.dumps(channel)) == channel.response
 
+
+def test_legacy_power_spectrum_pickle_codec_round_trip():
     spectrum = _make_spectrum()
     assert _spectrum_signature(
         decode_power_spectrum(pickle.dumps(spectrum))
