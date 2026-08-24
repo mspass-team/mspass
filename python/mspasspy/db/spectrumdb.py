@@ -114,7 +114,7 @@ class BasicObjectDatabase(ABC):
         do_not_load_keyword = "DO_NOT_LOAD"
         self.name = name
         dbclient = DBClient()
-        self.db = dbclient.get_database(self.name)
+        self.db = dbclient.get_database(self.name, *args, **kwargs)
         self.type_list = type_list
         if isinstance(db_schema, DatabaseSchema):
             self.database_schema = db_schema
@@ -208,12 +208,9 @@ class SpectrumDatabase(BasicObjectDatabase):
         **kwargs,
     ):
         """
-        Constructor for this database handle.   Note because this class
-        inherits pymongo.database.Database.   You can pass arguments
-        to this constructor recognized by the base class constructor
-        for pymongo's handle like  "read_concern" or "write_concern" and
-        they will be passed to the pymongo constructor by the standard
-        python mechanism of *args and **kwargs.
+        Constructor for this database handle.  Additional positional and
+        keyword arguments are forwarded through :class:`BasicObjectDatabase`
+        when it creates the underlying database handle.
 
         :param name:  MongoDB database name to use.
         :type name:  string
@@ -222,10 +219,15 @@ class SpectrumDatabase(BasicObjectDatabase):
         :type collection:  string
         """
         type_list = [PowerSpectrum]
-        BasicObjectDatabase.__init__(
-            name, type_list, db_schema="DO_NOT_LOAD", md_schema="DO_NOT_LOAD"
+        super().__init__(
+            name,
+            type_list,
+            *args,
+            db_schema="DO_NOT_LOAD",
+            md_schema="DO_NOT_LOAD",
+            **kwargs,
         )
-        self.collection = self[collection]
+        self.collection = self.db[collection]
 
     def save_data(self, datum, exclude=None, metadata2save=None, format="pickle"):
         """
@@ -247,37 +249,34 @@ class SpectrumDatabase(BasicObjectDatabase):
           pickles the input datum and saves the result with the key
           "serialized_data".
         """
+        if not self.data_valid(datum):
+            message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(
+                typ=type(datum)
+            )
+            raise MsPASSError(message, ErrorSeverity.Fatal)
+        if datum.dead():
+            return datum
         if format != "pickle":
             raise MsPASSError(
                 "SpectrumDatabase.save_data:  format can currently only be pickle",
                 ErrorSeverity.Fatal,
             )
-        if self.data_valid():
-            if datum.dead():
-                return datum
-            if metadata2save:
-                doc = dict()
-                for key in metadata2save:
-                    # if running this mode silently ignore any
-                    # metadata defined in the keep list but not defined
-                    # in the datum.   Questionable behavior
-                    if datum.is_defined(key):
-                        val = datum[key]
-                        doc[key] = val
-            else:
-                doc = dict(datum)
-                if exclude:
-                    for key in exclude:
-                        doc.pop(key)
-            doc["serialized_data"] = pickle.dumps(datum)
-            recid = self.collection.insert_one(doc).inserted_id
-            return recid
-
+        if metadata2save:
+            doc = dict()
+            for key in metadata2save:
+                # if running this mode silently ignore any
+                # metadata defined in the keep list but not defined
+                # in the datum.   Questionable behavior
+                if datum.is_defined(key):
+                    val = datum[key]
+                    doc[key] = val
         else:
-            message = "SpectrumDatabase.save_data:  illegal data type for arg0. Found type={typ} - only support PowerSpectrum".format(
-                typ=type(datum)
-            )
-            raise MsPASSError(message, ErrorSeverity.Fatal)
+            doc = dict(datum)
+            if exclude:
+                for key in exclude:
+                    doc.pop(key)
+        doc["serialized_data"] = pickle.dumps(datum)
+        return self.collection.insert_one(doc).inserted_id
 
     def read_data(
         self,
@@ -341,6 +340,14 @@ class SpectrumDatabase(BasicObjectDatabase):
             )
             raise MsPASSError(message, ErrorSeverity.Invalid)
 
+    def delete_data(self, id_or_doc):
+        """Delete one stored PowerSpectrum by ObjectId or document."""
+        if isinstance(id_or_doc, ObjectId):
+            oid = id_or_doc
+        else:
+            oid = id_or_doc["_id"]
+        self.collection.delete_one({"_id": oid})
+
     def verify(self, query=None, required=None):
         """
         Scans PowerSpectrum collection to verify the contents.  An optional
@@ -356,30 +363,20 @@ class SpectrumDatabase(BasicObjectDatabase):
         :param required:  optional list of keys every document scan is
           expected to contain.
 
-        :return:  tuple with two integers.  Component 0 will contain the
+        :return:  list with two integers.  Component 0 will contain the
           number of documents scanned and component 1 will contain the number
           the method considers valid.
         """
-        if query:
-            cursor = self.collection.find(query)
-        else:
-            cursor = self.collection.find[{}]
+        cursor = self.collection.find(query if query is not None else {})
         nprocessed = 0
         nvalid = 0
         testkey = "serialized_data"
         for doc in cursor:
-            if testkey in doc:
-                aok = True
-                if required:
-                    for k in required:
-                        if k not in doc:
-                            aok = False
-                            break
-
-            else:
-                aok = False
-        if aok:
-            nvalid += 1
-        nprocessed += 1
+            nprocessed += 1
+            aok = testkey in doc
+            if aok and required:
+                aok = all(k in doc for k in required)
+            if aok:
+                nvalid += 1
 
         return [nprocessed, nvalid]
