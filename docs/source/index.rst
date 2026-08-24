@@ -61,6 +61,7 @@ Choose your path
    Multi-container Docker Compose deployment <getting_started/deploy_mspass_with_docker_compose>
    Conda installation <getting_started/deploy_mspass_with_conda>
    Advanced setup considerations <getting_started/advanced_setup_considerations>
+   MongoDB 6.0 to 8.0 migration <getting_started/mongodb_6_to_8_migration>
 
 .. toctree::
    :maxdepth: 1
