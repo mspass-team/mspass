@@ -81,10 +81,9 @@ def test_static_python_link_keeps_findpython_system_dependencies():
     assert "set (Python_LIBRARIES Python::Python)" in cmake
 
 
-def test_only_release_tags_trusted_publish_all_five_artifacts():
+def test_release_tags_build_and_trusted_publish_all_five_artifacts():
     workflow = _load_workflow()
-    assert workflow["on"]["pull_request"] == {"branches": ["master"]}
-    assert workflow["on"]["push"] == {"tags": ["v*.*.*"]}
+    assert workflow["on"] == {"push": {"tags": ["v*.*.*"]}}
 
     sdist = workflow["jobs"]["build-sdist"]
     sdist_build = _step(sdist, "Build source distribution")["run"]

@@ -1,13 +1,9 @@
 name: Publish to PyPI
 
 "on":
-  pull_request:
-    branches:
-      - master
   push:
     tags:
       - "v*.*.*"
-  workflow_dispatch:
 
 permissions:
   contents: read
