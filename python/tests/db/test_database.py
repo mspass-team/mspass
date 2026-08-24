@@ -18,6 +18,7 @@ import botocore.session
 from unittest.mock import patch, Mock
 import json
 import base64
+import time
 from unittest import mock
 
 sys.path.append("python/tests")
@@ -97,7 +98,9 @@ def test_managed_collection_cursor_refreshes_explicit_session():
     collection.database.client = client
     collection.find.return_value = cursor
 
-    with patch("mspasspy.db.database.time.monotonic", side_effect=[0.0, 301.0, 302.0]):
+    real_monotonic = time.monotonic
+    with patch("mspasspy.db.database.monotonic", side_effect=[0.0, 301.0, 302.0]):
+        assert time.monotonic is real_monotonic
         with _managed_collection_cursor(
             collection, {}, no_cursor_timeout=True
         ) as documents:
