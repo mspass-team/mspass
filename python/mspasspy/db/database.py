@@ -4,7 +4,7 @@ import copy
 import pathlib
 import pickle
 import tempfile
-import time
+from time import monotonic
 import urllib.error
 import urllib.request
 from array import array
@@ -92,13 +92,13 @@ def _managed_collection_cursor(collection, query, no_cursor_timeout=False):
     client = collection.database.client
     with client.start_session() as session:
         with collection.find(query, no_cursor_timeout=True, session=session) as cursor:
-            last_refresh = time.monotonic()
+            last_refresh = monotonic()
 
             def refreshing_documents():
                 nonlocal last_refresh
                 for document in cursor:
                     yield document
-                    now = time.monotonic()
+                    now = monotonic()
                     if now - last_refresh >= _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS:
                         client.admin.command({"refreshSessions": [session.session_id]})
                         last_refresh = now
