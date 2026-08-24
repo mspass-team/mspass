@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev70+g8985495d6 documentation</title>
+    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev71+g669784437 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=f5a4bc47"></script>
+    <script src="../_static/documentation_options.js?v=b44eb167"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.global_history" href="mspasspy.global_history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev70" />
+  <meta name="docsearch:version" content="2.4.4.dev71" />
   </head>
   
   
@@ -912,8 +912,15 @@ start time, sample interval, and 2-D NumPy array.</p>
 <dd class="field-odd"><p>list</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – if ensemble members have inconsistent sample rates
-or imply an unreasonably large time span.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>IndexError</strong> – if the ensemble or one of its members is empty.</p></li>
+<li><p><strong>ValueError</strong> – if a sample interval is invalid.</p></li>
+<li><p><strong>RuntimeError</strong> – if ensemble members have inconsistent sample rates.
+A <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> is also raised when the sampled time span would
+exceed the established ten-million-row sanity limit, which normally
+indicates that unrelated absolute-time segments were mixed.</p></li>
+<li><p><strong>MemoryError</strong> – if matrix dimensions overflow the platform index size.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
