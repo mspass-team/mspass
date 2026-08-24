@@ -100,7 +100,7 @@ def test_ensemble_color_limits_are_defined_and_forwarded(
     assert result is figure
     imshow.assert_called_once()
     call = imshow.call_args
-    assert call.kwargs["aspect"] == "auto"
+    assert call.kwargs["aspect"] == 1.0
     assert call.kwargs["vmin"] == expected_limits[0]
     assert call.kwargs["vmax"] == expected_limits[1]
     assert np.asarray(call.args[0]).shape == (1, 2)

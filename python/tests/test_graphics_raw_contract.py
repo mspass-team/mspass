@@ -234,7 +234,7 @@ def test_ensemble_image_rejects_platform_size_overflow_before_allocation(monkeyp
     zeros = Mock()
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
     columns = np.iinfo(np.intp).max // (2 * np.dtype(np.float64).itemsize) + 1
-    member = SimpleNamespace(dt=1.0 / (columns - 1))
+    member = SimpleNamespace(dt=1.0 / (columns - 1), live=True)
     ensemble = SimpleNamespace(member=[member, member])
     plotter = graphics.SeismicPlotter()
     monkeypatch.setattr(plotter, "_get_ensemble_size", lambda _: (2, 0.0, 1.0))
