@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev60+g167fa5671 documentation</title>
+    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev61+g2fea1ee1b documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=37489056"></script>
+    <script src="../../_static/documentation_options.js?v=96d7e47f"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev60" />
+  <meta name="docsearch:version" content="2.4.4.dev61" />
   </head>
   
   
@@ -713,7 +713,9 @@
 <span class="sd">    mean a sequence of processing algorithms that have a set of predefined</span>
 <span class="sd">    parameters that control their behaviour.  The global parameters are</span>
 <span class="sd">    preserved in a special collection in MongoDB we give the (fixed) name</span>
-<span class="sd">    of "history".</span>
+<span class="sd">    of "history".  Processing steps are written as an ordered ``steps``</span>
+<span class="sd">    array.  Legacy documents that keyed steps by algorithm name remain</span>
+<span class="sd">    readable, but that legacy representation is no longer written.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -793,18 +795,66 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Save the contents to the history collection.</span>
 
-<span class="sd">        The doc created in a save is more or less an image of the</span>
-<span class="sd">        structure of this object translated to a python dict</span>
+<span class="sd">        The document stores processing steps in registration order in a</span>
+<span class="sd">        ``steps`` array.  Algorithm names are values, not document keys, so</span>
+<span class="sd">        repeated invocations are preserved.</span>
 <span class="sd">        """</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">doc</span><span class="p">[</span><span class="s2">"jobid"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span>
-        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span><span class="p">:</span>
-            <span class="n">subdoc</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">subdoc</span><span class="p">[</span><span class="s2">"algorithm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">algorithm</span>
-            <span class="n">subdoc</span><span class="p">[</span><span class="s2">"param_type"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">param_type</span>
-            <span class="n">subdoc</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">params</span>
-            <span class="n">doc</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">algorithm</span><span class="p">]</span> <span class="o">=</span> <span class="n">subdoc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"jobid"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="p">,</span>
+            <span class="s2">"steps"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">"algorithm"</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span>
+                    <span class="s2">"param_type"</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">param_type</span><span class="p">,</span>
+                    <span class="s2">"params"</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_loaded_document_id"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span><span class="o">.</span><span class="n">replace_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded_document_id</span><span class="p">},</span> <span class="n">doc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HistoryLogger.load">
+<a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.load">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">jobid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Load a saved processing history.</span>
+
+<span class="sd">        Both the ordered ``steps`` representation and legacy documents with</span>
+<span class="sd">        one top-level key per algorithm are accepted.  The returned object can</span>
+<span class="sd">        be saved to migrate a legacy record to the ordered representation.</span>
+
+<span class="sd">        :param db: database handle</span>
+<span class="sd">        :param jobid: identifier of the history document to load</span>
+<span class="sd">        :return: a populated :class:`HistoryLogger`, or ``None`` when the job</span>
+<span class="sd">          does not exist</span>
+<span class="sd">        """</span>
+        <span class="n">history_collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">history</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">history_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"jobid"</span><span class="p">:</span> <span class="n">jobid</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"steps"</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"steps"</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">step</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">,</span> <span class="s2">"jobid"</span><span class="p">}]</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">history_collection</span> <span class="o">=</span> <span class="n">history_collection</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">jobid</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"jobid"</span><span class="p">]</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">history_chain</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">_loaded_document_id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="n">history_data</span> <span class="o">=</span> <span class="n">basic_history_data</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">jobid</span><span class="p">)</span>
+            <span class="n">history_data</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">step</span><span class="p">[</span><span class="s2">"algorithm"</span><span class="p">]</span>
+            <span class="n">history_data</span><span class="o">.</span><span class="n">param_type</span> <span class="o">=</span> <span class="n">step</span><span class="p">[</span><span class="s2">"param_type"</span><span class="p">]</span>
+            <span class="n">history_data</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">step</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">history_chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">history_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 </div>
 
 </pre></div>

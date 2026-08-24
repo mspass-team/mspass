@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev60+g167fa5671 documentation</title>
+    <title>mspasspy.history &#8212; MsPASS 2.4.4.dev61+g2fea1ee1b documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=37489056"></script>
+    <script src="../_static/documentation_options.js?v=96d7e47f"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.graphics" href="mspasspy.graphics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev60" />
+  <meta name="docsearch:version" content="2.4.4.dev61" />
   </head>
   
   
@@ -490,7 +490,30 @@ global run parameters for the a processing sequence.   We limit that to
 mean a sequence of processing algorithms that have a set of predefined
 parameters that control their behaviour.  The global parameters are
 preserved in a special collection in MongoDB we give the (fixed) name
-of “history”.</p>
+of “history”.  Processing steps are written as an ordered <code class="docutils literal notranslate"><span class="pre">steps</span></code>
+array.  Legacy documents that keyed steps by algorithm name remain
+readable, but that legacy representation is no longer written.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.history.HistoryLogger.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.load" title="Link to this definition">#</a></dt>
+<dd><p>Load a saved processing history.</p>
+<p>Both the ordered <code class="docutils literal notranslate"><span class="pre">steps</span></code> representation and legacy documents with
+one top-level key per algorithm are accepted.  The returned object can
+be saved to migrate a legacy record to the ordered representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – database handle</p></li>
+<li><p><strong>jobid</strong> – identifier of the history document to load</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a populated <a class="reference internal" href="#mspasspy.history.HistoryLogger" title="mspasspy.history.HistoryLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistoryLogger</span></code></a>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when the job
+does not exist</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.register" title="Link to this definition">#</a></dt>
@@ -523,8 +546,9 @@ list of supported parameter types</p>
 <dt class="sig sig-object py" id="mspasspy.history.HistoryLogger.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/history.html#HistoryLogger.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.history.HistoryLogger.save" title="Link to this definition">#</a></dt>
 <dd><p>Save the contents to the history collection.</p>
-<p>The doc created in a save is more or less an image of the
-structure of this object translated to a python dict</p>
+<p>The document stores processing steps in registration order in a
+<code class="docutils literal notranslate"><span class="pre">steps</span></code> array.  Algorithm names are values, not document keys, so
+repeated invocations are preserved.</p>
 </dd></dl>
 
 </dd></dl>
@@ -694,6 +718,7 @@ that return one of these.</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.HistoryLogger"><code class="docutils literal notranslate"><span class="pre">HistoryLogger</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.HistoryLogger.load"><code class="docutils literal notranslate"><span class="pre">HistoryLogger.load()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.HistoryLogger.register"><code class="docutils literal notranslate"><span class="pre">HistoryLogger.register()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.history.HistoryLogger.save"><code class="docutils literal notranslate"><span class="pre">HistoryLogger.save()</span></code></a></li>
 </ul>
