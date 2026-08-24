@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev66+g214f0da45 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev67+g1410381f1 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=cebe6b34"></script>
+    <script src="../_static/documentation_options.js?v=139c08fd"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev66" />
+  <meta name="docsearch:version" content="2.4.4.dev67" />
   </head>
   
   
@@ -6183,6 +6183,12 @@ standard MsPASS database.  The class has only a basic reader and writer
 and a simple verify method required by the abstract base class from
 which it is derived.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.spectrumdb.SpectrumDatabase.delete_data">
+<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_or_doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/spectrumdb.html#SpectrumDatabase.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.spectrumdb.SpectrumDatabase.delete_data" title="Link to this definition">#</a></dt>
+<dd><p>Delete one stored PowerSpectrum by ObjectId or document.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.spectrumdb.SpectrumDatabase.read_data">
 <span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_or_doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/spectrumdb.html#SpectrumDatabase.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.spectrumdb.SpectrumDatabase.read_data" title="Link to this definition">#</a></dt>
 <dd><p>Reads one PowerSpectrum using an object id either directly or
@@ -6264,7 +6270,7 @@ expected to contain.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple with two integers.  Component 0 will contain the
+<dd class="field-even"><p>list with two integers.  Component 0 will contain the
 number of documents scanned and component 1 will contain the number
 the method considers valid.</p>
 </dd>
@@ -6567,6 +6573,7 @@ the method considers valid.</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.spectrumdb.SpectrumDatabase"><code class="docutils literal notranslate"><span class="pre">SpectrumDatabase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.spectrumdb.SpectrumDatabase.delete_data"><code class="docutils literal notranslate"><span class="pre">SpectrumDatabase.delete_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.spectrumdb.SpectrumDatabase.read_data"><code class="docutils literal notranslate"><span class="pre">SpectrumDatabase.read_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.spectrumdb.SpectrumDatabase.save_data"><code class="docutils literal notranslate"><span class="pre">SpectrumDatabase.save_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.spectrumdb.SpectrumDatabase.verify"><code class="docutils literal notranslate"><span class="pre">SpectrumDatabase.verify()</span></code></a></li>
