@@ -48,11 +48,11 @@ class TestApplyCalibEngine:
         """
         # this should be clean for the test data
         engine = ApplyCalibEngine(self.db)
-        # the actual test data have more entries than this
-        # many channels are dropped because they are ot velocity channels
-        # the test file creates 324 entries of which 192 are acceptible
-        # to this application
-        assert len(engine.calib) == 192  # number of entries in test file
+        # The inventory has 94 unique channels.  Many are dropped because
+        # they are not velocity channels, leaving 57 acceptable responses.
+        # Older save_inventory behavior created a channel-by-location
+        # Cartesian product and inflated this count.
+        assert len(engine.calib) == 57
 
         # These will all raise an exception from no data surviving
         # the first somewhat duplicates above but is worh doing

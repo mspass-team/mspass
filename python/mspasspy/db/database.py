@@ -5222,23 +5222,14 @@ class Database(pymongo.database.Database):
     @staticmethod
     def _extract_locdata(chanlist):
         """
-        Parses the list returned by obspy channels attribute
-        for a Station object and returns a dict of unique
-        geographic location fields values keyed by loc code.  This algorithm
-        would be horribly inefficient for large lists with
-        many duplicates, but the assumption here is the list
-        will always be small
+        Group the channels of an ObsPy Station by location code.
+
+        Channel metadata remain attached to each Channel object so callers
+        can preserve channel-specific coordinates and validity intervals.
         """
         alllocs = {}
         for chan in chanlist:
-            alllocs[chan.location_code] = [
-                chan.start_date,
-                chan.end_date,
-                chan.latitude,
-                chan.longitude,
-                chan.elevation,
-                chan.depth,
-            ]
+            alllocs.setdefault(chan.location_code, []).append(chan)
         return alllocs
 
     def _site_is_not_in_db(self, record_to_test):
@@ -5384,8 +5375,15 @@ class Database(pymongo.database.Database):
 
         The channel collection can contain full response data
         that can be obtained by extracting the data with the key
-        "serialized_inventory" and running pickle loads on the returned
+        "serialized_channel_data" and running pickle loads on the returned
         string.
+
+        Channels are grouped by location code.  Each site document spans the
+        union of its channels' validity intervals.  When all channels in a
+        location have the same coordinates, those coordinates define the
+        site; otherwise the Station coordinates define the site and one
+        warning is printed.  Channel documents always retain their own
+        coordinates, depth, validity interval, orientation, and response.
 
         A final point of note is that not all Inventory objects are created
         equally.   Inventory objects appear to us to be designed as an image
@@ -5439,10 +5437,6 @@ class Database(pymongo.database.Database):
             stalist = x.stations
             for station in stalist:
                 sta = station.code
-                starttime = station.start_date
-                endtime = station.end_date
-                starttime = self._handle_null_starttime(starttime)
-                endtime = self._handle_null_endtime(endtime)
                 latitude = station.latitude
                 longitude = station.longitude
                 # stationxml files seen to put elevation in m. We
@@ -5460,8 +5454,7 @@ class Database(pymongo.database.Database):
                 # loc=_extract_loc_code(chanlist[0])
                 # TODO Delete when sure we don't need to keep the full thing
                 # picklestr = pickle.dumps(x)
-                all_locs = locdata.keys()
-                for loc in all_locs:
+                for loc, loc_channels in locdata.items():
                     # If multiple loc codes are present on the second pass
                     # rec will contain the ObjectId of the document inserted
                     # in the previous pass - an obnoxious property of insert_one
@@ -5470,21 +5463,30 @@ class Database(pymongo.database.Database):
                     rec["loc"] = loc
                     rec["net"] = net
                     rec["sta"] = sta
-                    lkey = loc
-                    loc_tuple = locdata[lkey]
-                    # We use these attributes linked to loc code rather than
-                    # the station data - experience shows they are not
-                    # consistent and we should use this set.
-                    loc_lat = loc_tuple[2]
-                    loc_lon = loc_tuple[3]
-                    loc_elev = loc_tuple[4]
-                    # for consistency convert this to km too
-                    loc_elev = loc_elev / 1000.0
-                    loc_edepth = loc_tuple[5]
-                    loc_stime = loc_tuple[0]
-                    loc_stime = self._handle_null_starttime(loc_stime)
-                    loc_etime = loc_tuple[1]
-                    loc_etime = self._handle_null_endtime(loc_etime)
+                    loc_stime = min(
+                        self._handle_null_starttime(chan.start_date)
+                        for chan in loc_channels
+                    )
+                    loc_etime = max(
+                        self._handle_null_endtime(chan.end_date)
+                        for chan in loc_channels
+                    )
+                    channel_geometry = {
+                        (chan.latitude, chan.longitude, chan.elevation)
+                        for chan in loc_channels
+                    }
+                    if len(channel_geometry) == 1:
+                        loc_lat, loc_lon, loc_elev_m = next(iter(channel_geometry))
+                        loc_elev = loc_elev_m / 1000.0
+                    else:
+                        loc_lat = latitude
+                        loc_lon = longitude
+                        loc_elev = elevation
+                        print(
+                            f"{net}:{sta}:{loc} (Warning): channels sharing this "
+                            "location code have conflicting coordinates; using "
+                            "Station coordinates for the site record"
+                        )
                     rec["lat"] = loc_lat
                     rec["lon"] = loc_lon
                     # save coordinates in both geoJSON and "legacy"
@@ -5495,35 +5497,11 @@ class Database(pymongo.database.Database):
                     # it indicates a problem datum
                     rec = geoJSON_doc(loc_lat, loc_lon, doc=rec, key="location")
                     rec["elev"] = loc_elev
-                    rec["edepth"] = loc_edepth
-                    rec["starttime"] = starttime.timestamp
-                    rec["endtime"] = endtime.timestamp
-                    if (
-                        latitude != loc_lat
-                        or longitude != loc_lon
-                        or elevation != loc_elev
-                    ):
-                        print(
-                            net,
-                            ":",
-                            sta,
-                            ":",
-                            loc,
-                            " (Warning):  station section position is not consistent with loc code position",
-                        )
-                        print("Data in loc code section overrides station section")
-                        print(
-                            "Station section coordinates:  ",
-                            latitude,
-                            longitude,
-                            elevation,
-                        )
-                        print(
-                            "loc code section coordinates:  ",
-                            loc_lat,
-                            loc_lon,
-                            loc_elev,
-                        )
+                    location_depths = {chan.depth for chan in loc_channels}
+                    if len(location_depths) == 1:
+                        rec["edepth"] = next(iter(location_depths))
+                    rec["starttime"] = loc_stime.timestamp
+                    rec["endtime"] = loc_etime.timestamp
                     if self._site_is_not_in_db(rec):
                         result = dbcol.insert_one(rec)
                         # Note this sets site_id to an ObjectId for the insertion
@@ -5542,9 +5520,9 @@ class Database(pymongo.database.Database):
                                 ":",
                                 loc,
                                 "for time span ",
-                                starttime,
+                                loc_stime,
                                 " to ",
-                                endtime,
+                                loc_etime,
                                 " added to site collection",
                             )
                     else:
@@ -5557,20 +5535,18 @@ class Database(pymongo.database.Database):
                                 ":",
                                 loc,
                                 "for time span ",
-                                starttime,
+                                loc_stime,
                                 " to ",
-                                endtime,
+                                loc_etime,
                                 " is already in site collection - ignored",
                             )
                     n_site_processed += 1
                     # done with site now handle channel
                     # Because many features are shared we can copy rec
                     # note this has to be a deep copy
-                    chanrec = copy.deepcopy(rec)
-                    # We don't want this baggage in the channel documents
-                    # keep them only in the site collection
-                    # del chanrec['serialized_inventory']
-                    for chan in chans:
+                    for chan in loc_channels:
+                        chanrec = copy.deepcopy(rec)
+                        chanrec.pop("_id", None)
                         chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
@@ -5579,6 +5555,16 @@ class Database(pymongo.database.Database):
                         # theta angle
                         chanrec["vang"] = chan.dip + 90.0
                         chanrec["hang"] = chan.azimuth
+                        chanrec["lat"] = chan.latitude
+                        chanrec["lon"] = chan.longitude
+                        chanrec["coords"] = [chan.longitude, chan.latitude]
+                        chanrec = geoJSON_doc(
+                            chan.latitude,
+                            chan.longitude,
+                            doc=chanrec,
+                            key="location",
+                        )
+                        chanrec["elev"] = chan.elevation / 1000.0
                         chanrec["edepth"] = chan.depth
                         st = chan.start_date
                         et = chan.end_date
@@ -5592,19 +5578,10 @@ class Database(pymongo.database.Database):
                             picklestr = pickle.dumps(chan)
                             chanrec["serialized_channel_data"] = picklestr
                             result = dbchannel.insert_one(chanrec)
-                            # insert_one has an obnoxious behavior in that it
-                            # inserts the ObjectId in chanrec.  In this loop
-                            # we reuse chanrec so we have to delete the id field
-                            # howeveer, we first want to update the record to
-                            # have chan_id provide an  alternate key to that id
-                            # object_id - that makes this consistent with site
-                            # we actually use the return instead of pulling from
-                            # chanrec
                             idobj = result.inserted_id
                             dbchannel.update_one(
                                 {"_id": idobj}, {"$set": {"chan_id": idobj}}
                             )
-                            del chanrec["_id"]
                             n_chan_saved += 1
                             if verbose:
                                 print(
@@ -5789,13 +5766,21 @@ class Database(pymongo.database.Database):
         search though the list of docs returned for a match to
         loc being conscious of the null string oddity.
 
-        The (optional) time arg is used for a range match to find
-        period between the site startime and endtime.  If not used
-        the first occurence will be returned (usually ill adivsed)
+        The (optional) time arg is used for a range match to find the
+        period between the channel start time and end time.  If it is
+        omitted, the first occurrence may be returned (usually ill advised).
         Returns None if there is no match.  Although the time argument
-        is technically option it usually a bad idea to not include
-        a time stamp because most stations saved as seed data have
-        time variable channel metadata.
+        is technically optional, it is usually a bad idea to omit it because
+        most stations saved as SEED data have time-variable channel metadata.
+
+        An explicit ``loc`` makes the four SEED codes an exact selector.  If
+        more than one document still matches that selector, the channel
+        collection contains ambiguous duplicate metadata and this method
+        raises :class:`MsPASSError` with ``Invalid`` severity.  When ``loc``
+        is omitted, the legacy null/empty-location recovery described above
+        remains in effect; depending on whether ``time`` was supplied, that
+        path either returns the first documented recovery match or reports
+        the existing ambiguity error.
 
         Note this method may be DEPRICATED in the future as it has been
         largely superceded by BasicMatcher implementations in the
@@ -5811,8 +5796,12 @@ class Database(pymongo.database.Database):
            print warning message when the match is ambiguous - multiple
            docs match the specified keys.  The default is False.
 
-        :return: handle to query return
-        :rtype:  MondoDB Cursor object of query result.
+        :return: matching MongoDB channel document, or ``None`` when there is
+          no match.
+        :rtype: dict or None
+        :raises MsPASSError: if an explicit location query has multiple
+          matches, or if the legacy null-location recovery cannot select a
+          unique document without a time constraint.
         """
         dbchannel = self.channel
         query = {}
@@ -5832,6 +5821,20 @@ class Database(pymongo.database.Database):
             return dbchannel.find_one(query)
         else:
             # Note we only land here when the above yields multiple matches
+            if loc is not None:
+                raise MsPASSError(
+                    "get_seed_channel: explicit location query returned "
+                    + str(matchsize)
+                    + " matches for "
+                    + net
+                    + ":"
+                    + sta
+                    + ":"
+                    + loc
+                    + ":"
+                    + chan,
+                    ErrorSeverity.Invalid,
+                )
             if loc == None:
                 # We could get here one of two ways.  There could
                 # be multiple loc codes and the user didn't specify
