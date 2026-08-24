@@ -70,6 +70,7 @@ def _validate_plot_style(caller, style, invalid_string_error=TypeError):
     if style not in _VALID_PLOT_STYLES:
         raise invalid_string_error(message)
 
+
 def _validated_live_members(ensemble):
     """Return live members after validating their sample intervals."""
     live_members = [member for member in ensemble.member if member.live]
