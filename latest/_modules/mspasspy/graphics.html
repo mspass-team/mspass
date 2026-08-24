@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev71+g669784437 documentation</title>
+    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev72+gf7e9db627 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=b44eb167"></script>
+    <script src="../../_static/documentation_options.js?v=9a282e56"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev71" />
+  <meta name="docsearch:version" content="2.4.4.dev72" />
   </head>
   
   
@@ -804,6 +804,15 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_orient_section_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return atomic data with samples on rows and traces on columns."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
 <div class="viewcode-block" id="wtvaplot">
 <a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.wtvaplot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">wtvaplot</span><span class="p">(</span>
@@ -870,7 +879,7 @@
                 <span class="p">)</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">section</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">_orient_section_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="n">wtva_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">fill_color</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cmap</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="p">,</span> <span class="n">cmap</span><span class="p">)</span>
@@ -946,7 +955,7 @@
                 <span class="p">)</span>
             <span class="n">t0</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">section</span> <span class="o">=</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">_orient_section_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">title</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
@@ -969,13 +978,12 @@
 <span class="sd">    and a wiggletrace variable area plot overlaying an image plot.</span>
 
 <span class="sd">    The object itself only defines the style of plot to be produced along</span>
-<span class="sd">    with other assorted plot parameters.   The plot method can be called on</span>
-<span class="sd">    any mspass data object to produce a graphic display.   TimeSeries</span>
-<span class="sd">    data produce a frame with one seismogram plotted.  Seismogram data</span>
-<span class="sd">    will produce a one frame display with the 3 components arranged in</span>
-<span class="sd">    component order from left to right.  TimeSeriesEnsembles produce</span>
-<span class="sd">    conventional reflection style sections with the data displayed from</span>
-<span class="sd">    left to right in whatever order the ensemble is sorted to.</span>
+<span class="sd">    with other assorted plot parameters.  An atomic ``TimeSeries`` is drawn</span>
+<span class="sd">    as one vertical trace.  An atomic ``Seismogram`` is drawn as three</span>
+<span class="sd">    vertical traces, with components ordered from left to right.</span>
+<span class="sd">    ``TimeSeriesEnsemble`` inputs produce conventional reflection style</span>
+<span class="sd">    sections with the data displayed from left to right in whatever order</span>
+<span class="sd">    the ensemble is sorted to.</span>
 <span class="sd">    SeismogramEnsembles are the only type that create multiple windows.</span>
 <span class="sd">    That is, each component is displayed in a different window.   The</span>
 <span class="sd">    display can be understood as a conversion of a SeismogramEnsemble to</span>
@@ -1120,12 +1128,11 @@
 <a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Call this method to plot any data using the current style setup and any</span>
-<span class="sd">        details defined by public attributes.</span>
+<span class="sd">        Plot atomic or ensemble data using the current style and public</span>
+<span class="sd">        attributes.</span>
 
-<span class="sd">        :param d:  is the data to be plotted.   It can be any of the following:</span>
-<span class="sd">            TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.</span>
-<span class="sd">            If d is any other type the method will throw a RuntimeError exception.</span>
+<span class="sd">        :param d: a ``TimeSeries``, ``Seismogram``, ``TimeSeriesEnsemble``, or</span>
+<span class="sd">            ``SeismogramEnsemble``.</span>
 
 <span class="sd">        :Returns: an array of one or 3 (only for SeismogramEnsemble dat)</span>
 <span class="sd">          matplotlib.pylot.gcf() plot handle(s).</span>

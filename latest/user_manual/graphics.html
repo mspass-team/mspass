@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Graphics in MsPASS &#8212; MsPASS 2.4.4.dev71+g669784437 documentation</title>
+    <title>Graphics in MsPASS &#8212; MsPASS 2.4.4.dev72+gf7e9db627 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b44eb167"></script>
+    <script src="../_static/documentation_options.js?v=9a282e56"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Deconvolution Operators" href="deconvolution.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev71" />
+  <meta name="docsearch:version" content="2.4.4.dev72" />
   </head>
   
   
@@ -668,6 +668,10 @@ with time on the x axis and amplitude on the y axis.</p></li>
 <li><p>A <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a> is displayed
 by <code class="docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> in one figure, with components 0, 1, and 2 at equal
 vertical intervals from bottom to top.</p></li>
+<li><p><a class="reference internal" href="../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter" title="mspasspy.graphics.SectionPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SectionPlotter</span></code></a> uses a
+downward-running vertical time axis.  It displays an atomic <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+as one trace and an atomic <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> as three traces, with components
+0, 1, and 2 ordered from left to right.</p></li>
 <li><p><a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>
 members are equally spaced.  <code class="docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> defaults to member 0 at
 the bottom and can reverse the order with its <code class="docutils literal notranslate"><span class="pre">topdown</span></code> method.
@@ -679,14 +683,6 @@ offsets rather than equal trace spacing are required.</p></li>
 data are displayed as three figures, one per component.  Each component
 figure is produced using the corresponding <code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> path.</p></li>
 </ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> for atomic <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> data.
-The current <code class="docutils literal notranslate"><span class="pre">SectionPlotter</span></code> atomic <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> path raises an error,
-and its atomic <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> conversion does not orient the sample matrix
-as three traces.  Its ensemble paths support all four plot styles described
-above.</p>
-</div>
 <p>A final point is that plotting earthquake data nearly always requires some
 form of scaling to prevent strong signals from clipping while weaker but valid
 signals look flat.  Both plotters expose <code class="docutils literal notranslate"><span class="pre">scale</span></code> and <code class="docutils literal notranslate"><span class="pre">normalize</span></code> settings;

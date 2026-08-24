@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev71+g669784437 documentation</title>
+    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev72+gf7e9db627 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=b44eb167"></script>
+    <script src="../_static/documentation_options.js?v=9a282e56"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.global_history" href="mspasspy.global_history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev71" />
+  <meta name="docsearch:version" content="2.4.4.dev72" />
   </head>
   
   
@@ -594,13 +594,12 @@ and traces are equally spaced along the x axis. The data can be plotted
 as simple wiggle traces, wiggle trace variable area, an image format,
 and a wiggletrace variable area plot overlaying an image plot.</p>
 <p>The object itself only defines the style of plot to be produced along
-with other assorted plot parameters.   The plot method can be called on
-any mspass data object to produce a graphic display.   TimeSeries
-data produce a frame with one seismogram plotted.  Seismogram data
-will produce a one frame display with the 3 components arranged in
-component order from left to right.  TimeSeriesEnsembles produce
-conventional reflection style sections with the data displayed from
-left to right in whatever order the ensemble is sorted to.
+with other assorted plot parameters.  An atomic <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> is drawn
+as one vertical trace.  An atomic <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code> is drawn as three
+vertical traces, with components ordered from left to right.
+<code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> inputs produce conventional reflection style
+sections with the data displayed from left to right in whatever order
+the ensemble is sorted to.
 SeismogramEnsembles are the only type that create multiple windows.
 That is, each component is displayed in a different window.   The
 display can be understood as a conversion of a SeismogramEnsemble to
@@ -651,13 +650,12 @@ occur when the method is called with this value of newstyle.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.plot" title="Link to this definition">#</a></dt>
-<dd><p>Call this method to plot any data using the current style setup and any
-details defined by public attributes.</p>
+<dd><p>Plot atomic or ensemble data using the current style and public
+attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>d</strong> – is the data to be plotted.   It can be any of the following:
-TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-If d is any other type the method will throw a RuntimeError exception.</p>
+<dd class="field-odd"><p><strong>d</strong> – a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>an array of one or 3 (only for SeismogramEnsemble dat)
