@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev63+g387023fa7 documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev64+g42cfd8fab documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=66faa32b"></script>
+    <script src="../../../_static/documentation_options.js?v=34174307"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev63" />
+  <meta name="docsearch:version" content="2.4.4.dev64" />
   </head>
   
   
@@ -1500,12 +1500,9 @@
 <span class="sd">    Note dead data are never handled by this mechanism.  They always</span>
 <span class="sd">    end up in either the abortions or cemetery collections.</span>
 <span class="sd">    """</span>
-    <span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">elog</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span>
-    <span class="k">elif</span> <span class="n">other_elog</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">other_elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">elog</span> <span class="o">+=</span> <span class="n">other_elog</span>
+    <span class="n">elog</span> <span class="o">=</span> <span class="n">ErrorLogger</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">other_elog</span> <span class="ow">and</span> <span class="n">other_elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">elog</span> <span class="o">+=</span> <span class="n">other_elog</span>
     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">elogdoc</span> <span class="o">=</span> <span class="n">elog2doc</span><span class="p">(</span><span class="n">elog</span><span class="p">)</span>
         <span class="n">doc</span><span class="p">[</span><span class="n">elog_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">elogdoc</span>
@@ -1623,9 +1620,9 @@
                     <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
                 <span class="c1"># Handle the error log if it is not empty</span>
                 <span class="c1"># Either post it to the doc or push the entry to the database</span>
-                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">post_elog</span><span class="p">:</span>
                     <span class="n">doc</span> <span class="o">=</span> <span class="n">post_error_log</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">other_elog</span><span class="o">=</span><span class="n">elog</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span> <span class="o">+=</span> <span class="n">elog</span>
                     <span class="n">elog_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -1634,8 +1631,8 @@
                     <span class="k">if</span> <span class="n">post_history</span><span class="p">:</span>
                         <span class="c1"># is_empty is part of ProcessingHistory</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                            <span class="n">doc</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                            <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
+                            <span class="n">history_doc</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                            <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_doc</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">history_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                         <span class="n">doc</span><span class="p">[</span><span class="s2">"history_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
@@ -1752,8 +1749,8 @@
             <span class="k">if</span> <span class="n">post_history</span><span class="p">:</span>
                 <span class="c1"># is_empty is part of ProcessingHistory</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">doc</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-                    <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span>
+                    <span class="n">history_doc</span> <span class="o">=</span> <span class="n">history2doc</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                    <span class="n">doc</span><span class="p">[</span><span class="n">history_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_doc</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">history_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
                 <span class="n">doc</span><span class="p">[</span><span class="s2">"history_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_id</span>
@@ -2001,10 +1998,9 @@
 <span class="sd">        will generate a insert_one transaction with MongoDB and save the</span>
 <span class="sd">        history data in  the "history" collection.  It then sets the</span>
 <span class="sd">        attribute with key "history_id" to the ObjectId of the saved</span>
-<span class="sd">        document.  The default for this argument is True to avoid</span>
-<span class="sd">        accidentally throttling workflows on large data sets.  The default</span>
-<span class="sd">        for save_history is False so overall default behavior is to drop</span>
-<span class="sd">        any history data.</span>
+<span class="sd">        document.  The default for this argument is False.  The default for</span>
+<span class="sd">        save_history is also False so overall default behavior is to drop any</span>
+<span class="sd">        history data.</span>
 
 <span class="sd">    :param cremate:  boolean controlling handling of dead data.</span>
 <span class="sd">        When True dead data will be passed to the `cremate`</span>
