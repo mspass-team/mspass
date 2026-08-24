@@ -208,12 +208,9 @@ class SpectrumDatabase(BasicObjectDatabase):
         **kwargs,
     ):
         """
-        Constructor for this database handle.   Note because this class
-        inherits pymongo.database.Database.   You can pass arguments
-        to this constructor recognized by the base class constructor
-        for pymongo's handle like  "read_concern" or "write_concern" and
-        they will be passed to the pymongo constructor by the standard
-        python mechanism of *args and **kwargs.
+        Constructor for this database handle.  Additional positional and
+        keyword arguments are forwarded through :class:`BasicObjectDatabase`
+        when it creates the underlying database handle.
 
         :param name:  MongoDB database name to use.
         :type name:  string
