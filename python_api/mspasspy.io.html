@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev61+g2fea1ee1b documentation</title>
+    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev62+g5ebd29dc7 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=96d7e47f"></script>
+    <script src="../_static/documentation_options.js?v=fc9ddd28"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev61" />
+  <meta name="docsearch:version" content="2.4.4.dev62" />
   </head>
   
   
@@ -741,8 +741,11 @@ dataset into memory can be an issue on a system with smaller
 scalable to the largest conceivable seismic data sets.  When defined
 the documents retreived from the database are reformatted and pushed to
 a scratch file with the name defined by this argument.  The contents
-of the file are then reloaded into a dask or spark DataFrame that
-allow the same data to be handled within a more limited memory footprint.
+of the file are then reloaded lazily into a Dask Bag or Spark RDD that
+allows the same data to be handled within a more limited memory footprint.
+The scratch file is owned by the caller:  this function never deletes it,
+and the caller must retain it until all computations are complete before
+removing it.
 Note use of this feature is rare and should never be necessary in an
 HPC or cloud cluster.   The default us None which means this that
 database input is loaded directly into memory to initiate construction
@@ -822,7 +825,7 @@ read operations.   Default turns this off by setting the tag null (None).</p></l
 <li><p><strong>sort_clause</strong> (<em>if None</em><em> (</em><em>default</em><em>) </em><em>no sorting is invoked when reading
 ensembles.   Other wise should be a python list</em><em> of </em><em>tuples
 defining a sort order.
-e.g.</em><em> [</em><em>(</em><em>&quot;sta&quot;</em><em>,</em><em>pymongo.ASCENDING</em><em>)</em><em>,</em><em>(</em><em>)</em><em>&quot;time&quot;</em><em>,</em><em>pymongo.ASCENDING</em><em>)</em><em>]</em>) – When reading ensembles it is sometimes helpful to
+e.g.</em><em> [</em><em>(</em><em>&quot;sta&quot;</em><em>, </em><em>pymongo.ASCENDING</em><em>)</em><em>, </em><em>(</em><em>&quot;time&quot;</em><em>, </em><em>pymongo.ASCENDING</em><em>)</em><em>]</em>) – When reading ensembles it is sometimes helpful to
 apply a sort clause to each database query.  The type example is
 reading continuous data where there it is necessary to sort the
 data into channels in time order.  If defined this should be a clause

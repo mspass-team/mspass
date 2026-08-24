@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev61+g2fea1ee1b documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev62+g5ebd29dc7 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=96d7e47f"></script>
+    <script src="../../../_static/documentation_options.js?v=fc9ddd28"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev61" />
+  <meta name="docsearch:version" content="2.4.4.dev62" />
   </head>
   
   
@@ -473,9 +473,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for mspasspy.io.distributed</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bson</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_util</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymongo</span><span class="w"> </span><span class="kn">import</span> <span class="n">ASCENDING</span><span class="p">,</span> <span class="n">DESCENDING</span>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.database</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -572,6 +572,28 @@
         <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ensemble</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_sort_clause</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Validate the list-of-pairs form accepted by PyMongo ``sort``."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"sort_clause must be a list of (field_name, direction) pairs"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sort_clause</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"sort_clause must be a list of (field_name, direction) pairs"</span>
+            <span class="p">)</span>
+        <span class="n">field_name</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">field_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"sort_clause field names must be nonempty strings"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">direction</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ASCENDING</span><span class="p">,</span> <span class="n">DESCENDING</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"sort_clause directions must be pymongo.ASCENDING or pymongo.DESCENDING"</span>
+            <span class="p">)</span>
 
 
 <div class="viewcode-block" id="post2metadata">
@@ -821,8 +843,11 @@
 <span class="sd">      scalable to the largest conceivable seismic data sets.  When defined</span>
 <span class="sd">      the documents retreived from the database are reformatted and pushed to</span>
 <span class="sd">      a scratch file with the name defined by this argument.  The contents</span>
-<span class="sd">      of the file are then reloaded into a dask or spark DataFrame that</span>
-<span class="sd">      allow the same data to be handled within a more limited memory footprint.</span>
+<span class="sd">      of the file are then reloaded lazily into a Dask Bag or Spark RDD that</span>
+<span class="sd">      allows the same data to be handled within a more limited memory footprint.</span>
+<span class="sd">      The scratch file is owned by the caller:  this function never deletes it,</span>
+<span class="sd">      and the caller must retain it until all computations are complete before</span>
+<span class="sd">      removing it.</span>
 <span class="sd">      Note use of this feature is rare and should never be necessary in an</span>
 <span class="sd">      HPC or cloud cluster.   The default us None which means this that</span>
 <span class="sd">      database input is loaded directly into memory to initiate construction</span>
@@ -931,7 +956,7 @@
 <span class="sd">    :type sort_clause:  if None (default) no sorting is invoked when reading</span>
 <span class="sd">      ensembles.   Other wise should be a python list of tuples</span>
 <span class="sd">      defining a sort order.</span>
-<span class="sd">      e.g. [("sta",pymongo.ASCENDING),()"time",pymongo.ASCENDING)]</span>
+<span class="sd">      e.g. [("sta", pymongo.ASCENDING), ("time", pymongo.ASCENDING)]</span>
 
 <span class="sd">    :param container_to_merge:  bag/RDD containing data packaged with</span>
 <span class="sd">      one item per datum this reader is asked to read.   See above for</span>
@@ -987,19 +1012,7 @@
                 <span class="n">message</span> <span class="o">+=</span> <span class="s2">"list must contain only python dict defining queries that define each ensemble to be loaded"</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sort_clause</span><span class="p">:</span>
-            <span class="c1"># TODO - conflicting examples of the type of this clause</span>
-            <span class="c1"># may have a hidden bug in TimeIntervalReader as it has usage</span>
-            <span class="c1"># differnt from this restricteion</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">,</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"sort_clause argument is invalid</span><span class="se">\n</span><span class="s2">"</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Must be either a list or a single string"</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sort_clause</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"sort_clause value = "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
-                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">" is invalid input for MongoDB"</span>
-                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">_validate_sort_clause</span><span class="p">(</span><span class="n">sort_clause</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Database</span><span class="p">):</span>
         <span class="n">ensemble_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">dataframe_input</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1194,33 +1207,35 @@
             <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
                 <span class="n">fullquery</span><span class="p">[</span><span class="s2">"data_tag"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">fullquery</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">scratchfile</span><span class="p">:</span>
+                    <span class="c1"># Store one Extended JSON document per line.  The scratch</span>
+                    <span class="c1"># file belongs to the caller and must remain available for</span>
+                    <span class="c1"># lazy and repeated computation of the returned bag/RDD.</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+                            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">doclist</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+                        <span class="n">doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">scratchfile</span><span class="p">:</span>
-                <span class="c1"># here we write the documents all to a scratch file in</span>
-                <span class="c1"># json and immediately read them back to create a bag or RDD</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-                        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
-                    <span class="c1"># the only way I could find to load json data in pyspark</span>
-                    <span class="c1"># is to use an intermediate dataframe.   This should</span>
-                    <span class="c1"># still parallelize, but will probably be slower</span>
-                    <span class="c1"># if there is a more direct solution should be done here.</span>
-                    <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span>
-                    <span class="c1"># this is wrong above also don't see how to do partitions</span>
-                    <span class="c1"># this section is broken until I (glp) can get help</span>
-                    <span class="c1"># plist = plist.map(to_dict,"records")</span>
+                    <span class="k">if</span> <span class="n">npartitions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">textFile</span><span class="p">(</span>
+                            <span class="n">scratchfile</span><span class="p">,</span> <span class="n">minPartitions</span><span class="o">=</span><span class="n">npartitions</span>
+                        <span class="p">)</span>
+                    <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
-                <span class="c1"># Intentionally omit error handler here.  Assume</span>
-                <span class="c1"># system will throw an error if file open files or write files</span>
-                <span class="c1"># that will be sufficient for user to understand the problem.</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span>
+                    <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">scratchfile</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">json_util</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">doclist</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-                    <span class="n">doclist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
                     <span class="n">plist</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">doclist</span><span class="p">,</span> <span class="n">numSlices</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
