@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev67+g1410381f1 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev68+g92ca6cfea documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=139c08fd"></script>
+    <script src="../_static/documentation_options.js?v=3ff89705"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev67" />
+  <meta name="docsearch:version" content="2.4.4.dev68" />
   </head>
   
   
@@ -955,13 +955,20 @@ without loc defined.  If only one match is found that is
 returned immediately.  If there are multiple matches we
 search though the list of docs returned for a match to
 loc being conscious of the null string oddity.</p>
-<p>The (optional) time arg is used for a range match to find
-period between the site startime and endtime.  If not used
-the first occurence will be returned (usually ill adivsed)
+<p>The (optional) time arg is used for a range match to find the
+period between the channel start time and end time.  If it is
+omitted, the first occurrence may be returned (usually ill advised).
 Returns None if there is no match.  Although the time argument
-is technically option it usually a bad idea to not include
-a time stamp because most stations saved as seed data have
-time variable channel metadata.</p>
+is technically optional, it is usually a bad idea to omit it because
+most stations saved as SEED data have time-variable channel metadata.</p>
+<p>An explicit <code class="docutils literal notranslate"><span class="pre">loc</span></code> makes the four SEED codes an exact selector.  If
+more than one document still matches that selector, the channel
+collection contains ambiguous duplicate metadata and this method
+raises <code class="xref py py-class docutils literal notranslate"><span class="pre">MsPASSError</span></code> with <code class="docutils literal notranslate"><span class="pre">Invalid</span></code> severity.  When <code class="docutils literal notranslate"><span class="pre">loc</span></code>
+is omitted, the legacy null/empty-location recovery described above
+remains in effect; depending on whether <code class="docutils literal notranslate"><span class="pre">time</span></code> was supplied, that
+path either returns the first documented recovery match or reports
+the existing ambiguity error.</p>
 <p>Note this method may be DEPRICATED in the future as it has been
 largely superceded by BasicMatcher implementations in the
 normalize module.</p>
@@ -980,10 +987,16 @@ docs match the specified keys.  The default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>handle to query return</p>
+<dd class="field-even"><p>matching MongoDB channel document, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when there is
+no match.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>MondoDB Cursor object of query result.</p>
+<dd class="field-odd"><p>dict or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.MsPASSError" title="mspasspy.ccore.utility.MsPASSError"><strong>MsPASSError</strong></a> – if an explicit location query has multiple
+matches, or if the legacy null-location recovery cannot select a
+unique document without a time constraint.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2305,8 +2318,14 @@ orientation or sensor swap)</p></li>
 </ul>
 <p>The channel collection can contain full response data
 that can be obtained by extracting the data with the key
-“serialized_inventory” and running pickle loads on the returned
+“serialized_channel_data” and running pickle loads on the returned
 string.</p>
+<p>Channels are grouped by location code.  Each site document spans the
+union of its channels’ validity intervals.  When all channels in a
+location have the same coordinates, those coordinates define the
+site; otherwise the Station coordinates define the site and one
+warning is printed.  Channel documents always retain their own
+coordinates, depth, validity interval, orientation, and response.</p>
 <p>A final point of note is that not all Inventory objects are created
 equally.   Inventory objects appear to us to be designed as an image
 of stationxml data.  The problem is that stationxml, like SEED, has to
