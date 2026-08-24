@@ -15,6 +15,7 @@ from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import AtomicType, ErrorLogger, ErrorSeverity
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
+from mspasspy.db.serialization import decode_processing_history
 import mspasspy.io.distributed as distributed_module
 from mspasspy.util.Undertaker import Undertaker
 
@@ -213,7 +214,10 @@ def test_public_distributed_history_preserves_waveform_and_is_bson_writable(
     assert history["save_stage"] == 0
     assert history["alg_name"] == "contract_origin"
     assert history["alg_id"] == "0"
-    assert isinstance(history["processing_history"], bytes)
+    restored_history = decode_processing_history(history["processing_history"])
+    assert restored_history.current_nodedata().uuid == marker
+    assert restored_history.current_nodedata().algorithm == "contract_origin"
+    assert restored_history.current_nodedata().algid == "0"
     assert "history_data" not in history
 
 
