@@ -2,29 +2,102 @@ from collections import OrderedDict
 
 import pymongo
 
+_HISTORY_COUNTER_COLLECTION = "history_counters"
+_JOB_ID_COUNTER_NAME = "jobid"
+
+
+def _jobid_counter(db):
+    counters = db[_HISTORY_COUNTER_COLLECTION]
+    counters.create_index([("counter_name", pymongo.ASCENDING)], unique=True)
+    return counters
+
 
 def get_jobid(db):
     """
-    Ask MongoDB for the a valid jobid.
+    Ask MongoDB for a valid jobid.
 
     All processing jobs should have a call to this function at the beginning
-    of the job script.  It simply queries MongoDB for the largest current
-    value of the key "jobid" in the history collection.   If the history
-    collection is empty it returns 1 under a bias that a jobid of 0 is
-    illogical.
+    of the job script.  Job ids are allocated by atomically incrementing a
+    named counter in the ``history_counters`` collection.  The first id
+    allocated for a new database is 1.
 
     :param db: database handle
     :type db:  top level database handle returned by a call to MongoClient.database
     """
-    hiscol = db.history
-    hist_size = hiscol.count_documents({})
-    if hist_size <= 0:
-        return 1
-    else:
-        maxcur = hiscol.find().sort([("jobid", pymongo.DESCENDING)]).limit(1)
-        maxcur.rewind()  # may not be necessary but near zero cost
-        maxdoc = maxcur[0]
-        return maxdoc["jobid"] + 1
+    counters = _jobid_counter(db)
+    counter = counters.find_one_and_update(
+        {"counter_name": _JOB_ID_COUNTER_NAME},
+        {"$inc": {"value": 1}},
+        upsert=True,
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
+    return counter["value"]
+
+
+def bootstrap_history_jobid_counter(db):
+    """Raise the job-id counter to the largest legacy history job id.
+
+    This is an explicit, idempotent deployment step for databases created
+    before job ids were allocated from ``history_counters``.  Runtime job-id
+    allocation does not call this function or scan the history collection.
+
+    :param db: database handle
+    :type db: top level database handle returned by a call to
+      MongoClient.database
+    :return: the resulting counter high-water mark
+    """
+    legacy_max_document = db.history.find_one(
+        {"jobid": {"$type": ["int", "long"]}},
+        projection={"_id": False, "jobid": True},
+        sort=[("jobid", pymongo.DESCENDING)],
+    )
+    legacy_max = legacy_max_document["jobid"] if legacy_max_document else 0
+    counters = _jobid_counter(db)
+    current_value = {"$ifNull": ["$value", 0]}
+    counter = counters.find_one_and_update(
+        {"counter_name": _JOB_ID_COUNTER_NAME},
+        [
+            {
+                "$set": {
+                    "counter_name": _JOB_ID_COUNTER_NAME,
+                    "value": {"$max": [current_value, legacy_max]},
+                }
+            }
+        ],
+        upsert=True,
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
+    return counter["value"]
+
+
+def _reserve_requested_jobid(db, requested_jobid):
+    """Atomically reserve an explicit job id or the next available value."""
+    counters = _jobid_counter(db)
+    next_jobid = {"$add": [{"$ifNull": ["$value", 0]}, 1]}
+    previous = counters.find_one_and_update(
+        {"counter_name": _JOB_ID_COUNTER_NAME},
+        [
+            {
+                "$set": {
+                    "counter_name": _JOB_ID_COUNTER_NAME,
+                    "value": {
+                        "$cond": [
+                            {"$gt": [requested_jobid, next_jobid]},
+                            requested_jobid,
+                            next_jobid,
+                        ]
+                    },
+                }
+            }
+        ],
+        upsert=True,
+        return_document=pymongo.ReturnDocument.BEFORE,
+    )
+    previous_value = previous["value"] if previous is not None else 0
+    allocated_jobid = previous_value + 1
+    if requested_jobid > allocated_jobid:
+        return requested_jobid, True
+    return allocated_jobid, False
 
 
 def _antelope_pf_to_dict(pf):
@@ -159,30 +232,29 @@ class HistoryLogger:
         :param db:   is a top level handle to a MongoDB server created by
            calling the database method of a MongoClient instance.
         :param job: job can be used to manually set the jobid.  We use
-           a simple high water mark comparable to lastid in the
-           Antelope/Datascope database where the next valid id is lastid+1.
-           Hence if the input value of job is less than the current high
-           water mark in the history collection for jobid, the jobid is
-           silently set to the +1 of the largest jobid found in history.
-           (default is 0 which automatically uses the high water mark method)
+           an atomic counter comparable to lastid in the Antelope/Datascope
+           database.  Hence if the input value of job is less than the next
+           value allocated by the counter, the jobid is silently set to that
+           allocated value.
+           (default is 0 which automatically allocates from the counter)
            Users can get the actual value set from the jobid variable after
            successful creation of this object.
+        :raises TypeError: if job is not a non-boolean integer.
         """
+        if isinstance(job, bool) or not isinstance(job, int):
+            raise TypeError("HistoryLogger job must be a non-boolean integer")
         self.history_collection = db.history
         # Check the input job id for validity and use get_jobid if needed
         if job == 0:
             self.jobid = get_jobid(db)
         else:
-            jobtmp = get_jobid(db)
-            if job > jobtmp:
-                self.jobid = job
-            else:
-                self.jobid = jobtmp
+            self.jobid, requested_jobid_was_used = _reserve_requested_jobid(db, job)
+            if not requested_jobid_was_used:
                 print(
                     "HistoryLogger(Warning):  input jobid=",
                     job,
                     " was invalid.  Set jobid=",
-                    jobtmp,
+                    self.jobid,
                 )
         self.history_chain = []  # create empty container for history record
 
