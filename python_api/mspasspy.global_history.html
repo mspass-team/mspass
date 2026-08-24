@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.global_history &#8212; MsPASS 2.4.4.dev64+g42cfd8fab documentation</title>
+    <title>mspasspy.global_history &#8212; MsPASS 2.4.4.dev65+g4aa2cf01a documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=34174307"></script>
+    <script src="../_static/documentation_options.js?v=f8dcd404"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.db" href="mspasspy.db.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev64" />
+  <meta name="docsearch:version" content="2.4.4.dev65" />
   </head>
   
   
@@ -492,12 +492,11 @@ through mspass client’s methods.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id">
 <span class="sig-name descname"><span class="pre">get_alg_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alg_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/global_history/manager.html#GlobalHistoryManager.get_alg_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id" title="Link to this definition">#</a></dt>
-<dd><p>Save the usage of the algorithm in the map/reduce operation</p>
+<dd><p>Return the unique ID for an exact algorithm identity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the algorithm</p></li>
-<li><p><strong>alg_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the UUID of the combination of algorithm_name and parameters</p></li>
 <li><p><strong>parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the parameters of the algorithm</p></li>
 </ul>
 </dd>

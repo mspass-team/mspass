@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.global_history.manager &#8212; MsPASS 2.4.4.dev64+g42cfd8fab documentation</title>
+    <title>mspasspy.global_history.manager &#8212; MsPASS 2.4.4.dev65+g4aa2cf01a documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=34174307"></script>
+    <script src="../../../_static/documentation_options.js?v=f8dcd404"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev64" />
+  <meta name="docsearch:version" content="2.4.4.dev65" />
   </head>
   
   
@@ -1046,9 +1046,12 @@
                 <span class="s2">"history_global"</span>
             <span class="p">)</span>
 
-        <span class="c1"># create unique index -&gt; (alg_name, parameters)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
-            <span class="p">[(</span><span class="s2">"alg_name"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">TEXT</span><span class="p">),</span> <span class="p">(</span><span class="s2">"parameters"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)],</span>
+        <span class="c1"># Invocation records can repeat the same algorithm identity, so the</span>
+        <span class="c1"># unique identity registry must be a separate collection.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_algorithms"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_collection</span><span class="p">]</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+            <span class="p">[(</span><span class="s2">"alg_name"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span> <span class="p">(</span><span class="s2">"parameters"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span>
+            <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># modify pyspark/dask map to our defined map</span>
@@ -1101,23 +1104,38 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.global_history.html#mspasspy.global_history.manager.GlobalHistoryManager.get_alg_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_alg_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Save the usage of the algorithm in the map/reduce operation</span>
+<span class="sd">        Return the unique ID for an exact algorithm identity.</span>
 
 <span class="sd">        :param alg_name: the name of the algorithm</span>
 <span class="sd">        :type alg_name: :class:`str`</span>
-<span class="sd">        :param alg_id: the UUID of the combination of algorithm_name and parameters</span>
-<span class="sd">        :type alg_id: :class:`bson.objectid.ObjectId`</span>
 <span class="sd">        :param parameters: the parameters of the algorithm</span>
 <span class="sd">        :type parameters: :class:`str`</span>
 <span class="sd">        """</span>
-        <span class="c1"># no alg_name and parameters combination in the database</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">}</span>
-        <span class="p">):</span>
-            <span class="k">return</span> <span class="kc">None</span>
-
-        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">}</span>
+        <span class="c1"># Preserve an exact legacy invocation's ID without rewriting that record.</span>
+        <span class="n">legacy_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span>
+                <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                <span class="s2">"alg_id"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$exists"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"$ne"</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+            <span class="p">},</span>
+            <span class="p">{</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="n">sort</span><span class="o">=</span><span class="p">[(</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span> <span class="p">(</span><span class="s2">"_id"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">legacy_doc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">legacy_doc</span><span class="p">[</span><span class="s2">"alg_id"</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alg_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"$setOnInsert"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span>
+                    <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+                    <span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">return_document</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ReturnDocument</span><span class="o">.</span><span class="n">AFTER</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"alg_id"</span><span class="p">]</span></div>
 
@@ -1156,13 +1174,23 @@
 <span class="sd">        :param parameters: the parameters of the algorithm user would like to set</span>
 <span class="sd">        :type parameters: :class:`str`</span>
 <span class="sd">        """</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">})</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">doc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"No such history record with alg_id = "</span> <span class="o">+</span> <span class="n">alg_id</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span>
+        <span class="n">identity_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">invocation_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">identity_doc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">invocation_doc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+                <span class="s2">"No such history record with alg_id = "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">alg_id</span><span class="p">),</span> <span class="s2">"Fatal"</span>
+            <span class="p">)</span>
 
         <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">update_dict</span><span class="p">[</span><span class="s2">"alg_name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg_name</span>
         <span class="n">update_dict</span><span class="p">[</span><span class="s2">"parameters"</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm_collection</span><span class="p">]</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">,</span> <span class="s2">"$setOnInsert"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">}},</span>
+            <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history_db</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">},</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">}</span>
         <span class="p">)</span></div>
