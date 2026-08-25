@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deploy MsPASS with Docker Compose &#8212; MsPASS 2.4.4.dev83+g286fa6a2c documentation</title>
+    <title>Deploy MsPASS with Docker Compose &#8212; MsPASS 2.4.4.dev84+g482218e6b documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=40e72072"></script>
+    <script src="../_static/documentation_options.js?v=2569d3a2"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Command Line Docker Desktop Operation" href="command_line_desktop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev83" />
+  <meta name="docsearch:version" content="2.4.4.dev84" />
   </head>
   
   
@@ -534,10 +534,13 @@ service.  It is <code class="docutils literal notranslate"><span class="pre">msp
 to the cluster.  Each entry has the form <code class="docutils literal notranslate"><span class="pre">name/host:port</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_SHARD_ID</span></code> gives each shard a unique identity and keeps its data
 separate when shards share a mounted filesystem.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_JUPYTER_PWD</span></code> optionally sets the Jupyter password.  If it is
-unset, Jupyter generates a login token and prints it in the frontend log.
-An empty value permits access without a password and should be used only in
-an appropriately protected environment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_MONGO_AUTH</span></code> enables MongoDB authentication when set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.
+It is <code class="docutils literal notranslate"><span class="pre">false</span></code> by default so existing local research workflows continue to
+run without MongoDB credentials.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MONGO_INITDB_ROOT_USERNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">MONGO_INITDB_ROOT_PASSWORD</span></code> are
+required only when <code class="docutils literal notranslate"><span class="pre">MSPASS_MONGO_AUTH=true</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MSPASS_JUPYTER_PWD</span></code> optionally sets the Jupyter password.  The supplied
+Compose files retain the historical <code class="docutils literal notranslate"><span class="pre">mspass</span></code> default.</p></li>
 </ul>
 <p>Several port variables are also available: <code class="docutils literal notranslate"><span class="pre">JUPYTER_PORT</span></code> defaults to
 <code class="docutils literal notranslate"><span class="pre">8888</span></code>, <code class="docutils literal notranslate"><span class="pre">DASK_SCHEDULER_PORT</span></code> to <code class="docutils literal notranslate"><span class="pre">8786</span></code>, <code class="docutils literal notranslate"><span class="pre">SPARK_MASTER_PORT</span></code> to
@@ -559,70 +562,76 @@ addresses and health checks must agree with any container-side port changes.</p>
 <span class="linenos"> 5</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:27017:27017"</span>
 <span class="linenos"> 9</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="linenos">10</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
-<span class="linenos">11</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
-<span class="linenos">12</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
-<span class="linenos">14</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">15</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
-<span class="linenos">16</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="linenos">17</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
-<span class="linenos">18</span><span class="w">  </span>
-<span class="linenos">19</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">20</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">21</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
-<span class="linenos">23</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786:8786</span>
-<span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8787:8787</span>
-<span class="linenos">26</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
-<span class="linenos">28</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
-<span class="linenos">29</span><span class="w">      </span><span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786</span>
-<span class="linenos">30</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="linenos">31</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span>
-<span class="linenos">32</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CMD</span>
-<span class="linenos">33</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
-<span class="linenos">34</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-c</span>
-<span class="linenos">35</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"import</span><span class="nv"> </span><span class="s">distributed;</span><span class="nv"> </span><span class="s">client</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">distributed.Client('tcp://127.0.0.1:8786',</span><span class="nv"> </span><span class="s">timeout='2s');</span><span class="nv"> </span><span class="s">client.scheduler_info();</span><span class="nv"> </span><span class="s">client.close()"</span>
-<span class="linenos">36</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">37</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
-<span class="linenos">38</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="linenos">39</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
-<span class="linenos">40</span><span class="w">  </span>
-<span class="linenos">41</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
-<span class="linenos">42</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">43</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">44</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
-<span class="linenos">45</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
-<span class="linenos">46</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">47</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
-<span class="linenos">48</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">49</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
-<span class="linenos">50</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
-<span class="linenos">51</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
-<span class="linenos">52</span><span class="w">      </span><span class="nt">MSPASS_WORKER_ARG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--nworkers=4 --nthreads=1</span>
-<span class="linenos">53</span><span class="w">  </span>
-<span class="linenos">54</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
-<span class="linenos">55</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">56</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">57</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
-<span class="linenos">58</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos">59</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
-<span class="linenos">60</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
-<span class="linenos">61</span><span class="w">      </span><span class="nt">mspass-db</span><span class="p">:</span>
-<span class="linenos">62</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_started</span>
-<span class="linenos">63</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">64</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
-<span class="linenos">65</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">66</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
-<span class="linenos">67</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
-<span class="linenos">68</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
-<span class="linenos">69</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
-<span class="linenos">70</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
-<span class="linenos">71</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+<span class="linenos">11</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
+<span class="linenos">12</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"mongosh</span><span class="nv"> </span><span class="s">--host</span><span class="nv"> </span><span class="s">127.0.0.1</span><span class="nv"> </span><span class="s">--port</span><span class="nv"> </span><span class="s">27017</span><span class="nv"> </span><span class="s">admin</span><span class="nv"> </span><span class="s">--quiet</span><span class="nv"> </span><span class="s">--eval</span><span class="nv"> </span><span class="s">'const</span><span class="nv"> </span><span class="s">enabled</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">[\"true\",</span><span class="nv"> </span><span class="s">\"1\",</span><span class="nv"> </span><span class="s">\"yes\"].includes((process.env.MSPASS_MONGO_AUTH</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">\"\").toLowerCase());</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">(enabled</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">!db.auth(process.env.MONGO_INITDB_ROOT_USERNAME,</span><span class="nv"> </span><span class="s">process.env.MONGO_INITDB_ROOT_PASSWORD))</span><span class="nv"> </span><span class="s">{</span><span class="nv"> </span><span class="s">quit(1);</span><span class="nv"> </span><span class="s">}</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">(!db.runCommand({ping:</span><span class="nv"> </span><span class="s">1}).ok)</span><span class="nv"> </span><span class="s">{</span><span class="nv"> </span><span class="s">quit(1);</span><span class="nv"> </span><span class="s">}'"</span><span class="p p-Indicator">]</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">18</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">20</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">21</span><span class="w">  </span>
+<span class="linenos">22</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:8786:8786"</span>
+<span class="linenos">28</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:8787:8787"</span>
+<span class="linenos">29</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos">31</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">32</span><span class="w">      </span><span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8786</span>
+<span class="linenos">33</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">34</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span>
+<span class="linenos">35</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CMD</span>
+<span class="linenos">36</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="linenos">37</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-c</span>
+<span class="linenos">38</span><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"import</span><span class="nv"> </span><span class="s">distributed;</span><span class="nv"> </span><span class="s">client</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">distributed.Client('tcp://127.0.0.1:8786',</span><span class="nv"> </span><span class="s">timeout='2s');</span><span class="nv"> </span><span class="s">client.scheduler_info();</span><span class="nv"> </span><span class="s">client.close()"</span>
+<span class="linenos">39</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">40</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">41</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">42</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">43</span><span class="w">  </span>
+<span class="linenos">44</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos">45</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">46</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">47</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
+<span class="linenos">48</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">49</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">50</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">51</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">52</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos">53</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">54</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">55</span><span class="w">      </span><span class="nt">MSPASS_WORKER_ARG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--nworkers=4 --nthreads=1</span>
+<span class="linenos">56</span><span class="w">  </span>
+<span class="linenos">57</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos">58</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">60</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
+<span class="linenos">61</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">62</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:8888:8888"</span>
+<span class="linenos">63</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">64</span><span class="w">      </span><span class="nt">mspass-db</span><span class="p">:</span>
+<span class="linenos">65</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_started</span>
+<span class="linenos">66</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">67</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">68</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">69</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">70</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">71</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">72</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">73</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
+<span class="linenos">74</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
+<span class="linenos">75</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
+<span class="linenos">76</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">77</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 </pre></div>
 </div>
 </div>
@@ -649,7 +658,8 @@ log with:</p>
 </div>
 <p>Open <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8888/</span></code> in a browser and enter the password
 <code class="docutils literal notranslate"><span class="pre">mspass</span></code>.  The Dask dashboard is available at
-<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8787/status</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8787/status</span></code>.  All published service ports in the supplied
+files are bound to the host loopback interface.</p>
 <p>When finished, stop and remove the containers with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>down
 </pre></div>
@@ -660,15 +670,27 @@ scripts create <code class="docutils literal notranslate"><span class="pre">db/<
 </section>
 <section id="common-adjustments">
 <h2>Common adjustments<a class="headerlink" href="#common-adjustments" title="Link to this heading">#</a></h2>
-<p>The supplied file is intended for local use.  It publishes service ports on
-all host interfaces, uses the known Jupyter password <code class="docutils literal notranslate"><span class="pre">mspass</span></code>, and does not
-enable MongoDB authentication.  On an untrusted network, choose a private
-Jupyter password and bind published ports to loopback; for example, change
-<code class="docutils literal notranslate"><span class="pre">8888:8888</span></code> to <code class="docutils literal notranslate"><span class="pre">127.0.0.1:8888:8888</span></code>.</p>
+<p>The supplied files bind every published service port to <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> and do
+not enable MongoDB authentication by default.  This preserves the existing
+low-friction behavior for a local research workstation.  To opt in, define all
+three authentication variables before starting Compose:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">MSPASS_MONGO_AUTH</span><span class="o">=</span><span class="nb">true</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">MONGO_INITDB_ROOT_USERNAME</span><span class="o">=</span>mspass
+<span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>-s<span class="w"> </span>-p<span class="w"> </span><span class="s2">"MongoDB password: "</span><span class="w"> </span>MONGO_INITDB_ROOT_PASSWORD
+<span class="nb">echo</span>
+<span class="nb">export</span><span class="w"> </span>MONGO_INITDB_ROOT_PASSWORD
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</pre></div>
+</div>
+<p>When authentication is enabled, the database, health checks, and frontend use
+the same credentials.  Keep them private.  Review firewall and authentication
+requirements separately before changing a binding to a non-loopback host
+address.</p>
 <p>Other common changes are:</p>
 <ul class="simple">
 <li><p>Change the host side of a port mapping if a port is already in use.  For
-example, <code class="docutils literal notranslate"><span class="pre">9999:8888</span></code> makes JupyterLab available on host port <code class="docutils literal notranslate"><span class="pre">9999</span></code>.</p></li>
+example, <code class="docutils literal notranslate"><span class="pre">127.0.0.1:9999:8888</span></code> makes JupyterLab available on host port
+<code class="docutils literal notranslate"><span class="pre">9999</span></code> without publishing it on other host interfaces.</p></li>
 <li><p>Adjust <code class="docutils literal notranslate"><span class="pre">MSPASS_WORKER_ARG</span></code> to change the number of Dask worker processes.
 Do not request more CPU or memory than Docker has available.</p></li>
 <li><p>Add the same bind mount to every service that needs access to waveform data
@@ -696,64 +718,70 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="linenos"> 5</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="linenos"> 6</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}/:/home"</span>
 <span class="linenos"> 7</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017:27017</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:27017:27017"</span>
 <span class="linenos"> 9</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="linenos">10</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db</span>
-<span class="linenos">11</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
-<span class="linenos">12</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="linenos">13</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet</span><span class="w"> </span>
-<span class="linenos">14</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">15</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
-<span class="linenos">16</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="linenos">17</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">20</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">21</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">22</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
-<span class="linenos">23</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos">24</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077:7077</span>
-<span class="linenos">25</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">26</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
-<span class="linenos">27</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
-<span class="linenos">28</span><span class="w">      </span><span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077</span>
-<span class="linenos">29</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="linenos">30</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8080</span>
-<span class="linenos">31</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">32</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">33</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
-<span class="linenos">34</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
-<span class="linenos">35</span><span class="w">  </span>
-<span class="linenos">36</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
-<span class="linenos">37</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">38</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">39</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
-<span class="linenos">40</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
-<span class="linenos">41</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">42</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
-<span class="linenos">43</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">44</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
-<span class="linenos">45</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
-<span class="linenos">46</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
-<span class="linenos">47</span><span class="w">  </span>
-<span class="linenos">48</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
-<span class="linenos">49</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
-<span class="linenos">50</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="linenos">51</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
-<span class="linenos">52</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="linenos">53</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888:8888</span>
-<span class="linenos">54</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
-<span class="linenos">55</span><span class="w">      </span><span class="nt">mspass-db</span><span class="p">:</span>
-<span class="linenos">56</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
-<span class="linenos">57</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
-<span class="linenos">58</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
-<span class="linenos">59</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="linenos">60</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
-<span class="linenos">61</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
-<span class="linenos">62</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
-<span class="linenos">63</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
-<span class="linenos">64</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
-<span class="linenos">65</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+<span class="linenos">11</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
+<span class="linenos">12</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nt">MONGODB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">27017</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">16</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"mongosh</span><span class="nv"> </span><span class="s">--host</span><span class="nv"> </span><span class="s">127.0.0.1</span><span class="nv"> </span><span class="s">--port</span><span class="nv"> </span><span class="s">27017</span><span class="nv"> </span><span class="s">admin</span><span class="nv"> </span><span class="s">--quiet</span><span class="nv"> </span><span class="s">--eval</span><span class="nv"> </span><span class="s">'const</span><span class="nv"> </span><span class="s">enabled</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">[\"true\",</span><span class="nv"> </span><span class="s">\"1\",</span><span class="nv"> </span><span class="s">\"yes\"].includes((process.env.MSPASS_MONGO_AUTH</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">\"\").toLowerCase());</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">(enabled</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">!db.auth(process.env.MONGO_INITDB_ROOT_USERNAME,</span><span class="nv"> </span><span class="s">process.env.MONGO_INITDB_ROOT_PASSWORD))</span><span class="nv"> </span><span class="s">{</span><span class="nv"> </span><span class="s">quit(1);</span><span class="nv"> </span><span class="s">}</span><span class="nv"> </span><span class="s">if</span><span class="nv"> </span><span class="s">(!db.runCommand({ping:</span><span class="nv"> </span><span class="s">1}).ok)</span><span class="nv"> </span><span class="s">{</span><span class="nv"> </span><span class="s">quit(1);</span><span class="nv"> </span><span class="s">}'"</span><span class="p p-Indicator">]</span>
+<span class="linenos">17</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">18</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60s</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="linenos">20</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="w">  </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">24</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">25</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">27</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:7077:7077"</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">29</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scheduler</span>
+<span class="linenos">30</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">31</span><span class="w">      </span><span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7077</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="linenos">33</span><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wget --no-verbose --tries=1 --spider http://localhost:8080</span>
+<span class="linenos">34</span><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">35</span><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">36</span><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="linenos">37</span><span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="linenos">38</span><span class="w">  </span>
+<span class="linenos">39</span><span class="w">  </span><span class="nt">mspass-worker</span><span class="p">:</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">41</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">42</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
+<span class="linenos">43</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">44</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">45</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">46</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">47</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">worker</span>
+<span class="linenos">48</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">49</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">50</span><span class="w">  </span>
+<span class="linenos">51</span><span class="w">  </span><span class="nt">mspass-frontend</span><span class="p">:</span>
+<span class="linenos">52</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
+<span class="linenos">53</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="linenos">54</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"${PWD}:/home"</span>
+<span class="linenos">55</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="linenos">56</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:8888:8888"</span>
+<span class="linenos">57</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="linenos">58</span><span class="w">      </span><span class="nt">mspass-db</span><span class="p">:</span>
+<span class="linenos">59</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">60</span><span class="w">      </span><span class="nt">mspass-scheduler</span><span class="p">:</span>
+<span class="linenos">61</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="linenos">62</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="linenos">63</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
+<span class="linenos">64</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spark</span>
+<span class="linenos">65</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">66</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">67</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
+<span class="linenos">68</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
+<span class="linenos">69</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
+<span class="linenos">70</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">71</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 </pre></div>
 </div>
 </div>

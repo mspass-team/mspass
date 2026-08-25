@@ -335,14 +335,13 @@ sensitive files outside that directory, and use normal host backups.
 Network and credential safety
 -----------------------------
 
-The simple commands on this page and the shipped ``data/yaml/compose.yaml``
-publish their ports on the host interfaces.  The Compose example also uses
-the known Jupyter password ``mspass`` and does not configure MongoDB
-authentication.  Treat these as local or trusted-network examples.  On an
-untrusted network, bind published ports to loopback (for example,
-``127.0.0.1:8888:8888``) and choose a private Jupyter password.  The
-:ref:`Compose deployment guide <deploy_mspass_with_docker_compose>` explains
-those changes.
+The simple ``docker run`` commands on this page publish their ports on all host
+interfaces and should be treated as local or trusted-network examples.  The
+shipped ``data/yaml/compose.yaml`` instead binds every published port to
+``127.0.0.1``.  It retains the local research defaults: the Jupyter password is
+``mspass`` and MongoDB authentication is disabled.  The :ref:`Compose
+deployment guide <deploy_mspass_with_docker_compose>` documents how to opt in
+to MongoDB authentication when it is useful.
 
 Treat a Jupyter token or password as a credential.  Do not post a token-bearing
 URL in a shared log or expose the service ports through a firewall without an
