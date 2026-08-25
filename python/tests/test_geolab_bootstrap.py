@@ -303,6 +303,12 @@ def test_live_geolab_workflow_is_path_filtered_and_enables_container_test():
     (
         ("jupyter", ("lab", "--no-browser"), "bootstrap"),
         ("jupyterhub-singleuser", ("--port=8888",), "bootstrap"),
+        (
+            "python3.12",
+            ("/srv/conda/envs/notebook/bin/jupyterhub-singleuser",),
+            "bootstrap",
+        ),
+        ("python3.12", ("-m", "distributed.cli.dask_scheduler"), "direct"),
         ("dask-scheduler", ("--port", "8786"), "direct"),
         ("dask-worker", ("tcp://scheduler:8786",), "direct"),
         ("dask", ("scheduler", "--port", "8786"), "direct"),
@@ -684,9 +690,9 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
             """
         ).lstrip()
     )
-    fake_jupyter = tmp_path / "jupyter"
+    fake_python = tmp_path / "python3.12"
     _write_executable(
-        fake_jupyter,
+        fake_python,
         """
         #!/bin/sh
         set -eu
@@ -697,6 +703,10 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
             "$NB_HOME|$HOME|$MSPASS_WORK_DIR|$MSPASS_WORKDIR" \
             > /test-state/frontend-ready
         """,
+    )
+    fake_singleuser = tmp_path / "jupyterhub-singleuser"
+    fake_singleuser.write_text(
+        "# GeoLab passes this script to the Python interpreter.\n"
     )
 
     image = os.environ.get("MSPASS_GEOLAB_TEST_IMAGE", "mspass/mspass:geolab")
@@ -716,7 +726,9 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         "--volume",
         f"{mounted_entrypoint_script}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
         "--volume",
-        f"{fake_jupyter}:/test-bin/jupyter:ro",
+        f"{fake_python}:/test-bin/python3.12:ro",
+        "--volume",
+        f"{fake_singleuser}:/test-bin/jupyterhub-singleuser:ro",
         "--volume",
         f"{frontend_check}:/test-bin/verify-geolab-frontend.py:ro",
         "--volume",
@@ -748,9 +760,8 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         "--env",
         "MSPASS_STARTUP_POLL_SECONDS=1",
         image,
-        "jupyter",
-        "lab",
-        "--no-browser",
+        "/test-bin/python3.12",
+        "/test-bin/jupyterhub-singleuser",
     ]
     try:
         result = subprocess.run(command, text=True, capture_output=True, timeout=180)
