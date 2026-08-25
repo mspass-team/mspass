@@ -8,6 +8,8 @@ Created on Tue Jan 28 09:15:40 2025
 from abc import ABC, abstractmethod
 import math
 import os
+import platform
+import re
 import shlex
 import subprocess
 import time
@@ -762,159 +764,348 @@ class HPCClusterLauncher(BasicMsPASSLauncher):
 
 class DesktopLauncher(BasicMsPASSLauncher):
     """
-    Launcher for running MsPASS on a desktop in the all-in-one mode.
-    it differs from the cluster versions in multiple ways.  First assumes 
-    docker rather than apptainer.  Second, it sets the scheduler 
-    as a kwarg option in the constructor rather than defining a different 
-    class for different scheulers.  That is appropriate because a single 
-    container makes a lot of cluster baggage unnecessary.
+    Launch a complete Docker Compose MsPASS stack on a desktop.
+
+    This launcher manages the database, scheduler, worker, and frontend
+    services defined by the selected Compose file.  It differs from the HPC
+    launchers by using Docker Compose instead of Apptainer and by opening the
+    Jupyter frontend in a local browser.  Construction launches or attaches to
+    the stack, waits until every configured service is running and the
+    frontend publishes a real HTTP(S) URL, and then opens that URL.
+
+    The launcher records whether it started the Compose project.  ``shutdown``
+    brings down only a project started by this object; a project that was
+    already fully or partially running is treated as caller-owned.  Missing
+    services in a partial project are started without transferring ownership.
+    Browser processes started by this object are always reaped.  Compose
+    execution failures are reported as ``RuntimeError``; invalid constructor
+    arguments are reported as ``ValueError``.
     """
-    def __init__(self,
-                 configuration="configuration_docker.yaml",
-                 host_os="MacOS",
-                 browser="FireFox",
-                 verbose=True,
-                 ):
+
+    _FRONTEND_SERVICE = "mspass-frontend"
+
+    def __init__(
+        self,
+        configuration="data/yaml/compose.yaml",
+        host_os=None,
+        browser="FireFox",
+        verbose=True,
+    ):
         """
         Constructor for DesktopLauncher.
-        
-        This implementation uses docker compose.  The constructor does little
-        more than run the docker ocmpose comand using the input configuration 
-        file.
-        
-        :param configuration:  yaml file defining the docker compose 
-          configuration to launch containers.  See User Manual section 
+
+        This implementation uses ``docker compose`` and immediately calls
+        :meth:`launch`.  Startup timeout and polling interval are controlled by
+        the positive finite environment values
+        ``MSPASS_STARTUP_TIMEOUT_SECONDS`` (default 120) and
+        ``MSPASS_STARTUP_POLL_SECONDS`` (default 2).
+
+        :param configuration:  yaml file defining the docker compose
+          configuration to launch containers.  See User Manual section
           title "Deply MsPASS with docker compose".
         :type configuration: string  (must be a file name ending in ".yaml" or ".yml")
-        :param verbose:  boolean controling if the constructor print launch output. 
-          When False runs silently unless there is an exception.  When True the 
-          output of docker compose is captured and echoed to stdout of the 
+        :param host_os: canonical operating-system name used to construct the
+          browser command.  ``None`` selects ``platform.system()``.  Supported
+          values are ``Linux``, ``Darwin``, and ``Windows``.
+        :type host_os: string or None
+        :param browser: browser executable or macOS application name.
+        :type browser: string
+        :param verbose:  boolean controling if the constructor print launch output.
+          When False runs silently unless there is an exception.  When True the
+          output of docker compose is captured and echoed to stdout of the
           calling python script.
         """
         self.configuration_file = configuration
-        runline=[]
-        runline.append("docker-compose")
-        runline.append("-f")
-        # could test the type of configuration to be str but docker-compose 
-        # will fail if this is not a valid file name
-        runline.append(self.configuration_file)
-        runline.append("up")
-        runline.append("-d")
-        runout=subprocess.run(runline,capture_output=True,text=True)
-        if verbose:
-            print("stdout from DecktopLauncher constructor")
-            print(runout.stdout)
-            print("stderr from DesktopLauncher constructor")
-            print(runout.stderr)
-        url = self.url()
-        time.sleep(2)
-        match host_os:
-            case "MacOS":
-                launch_string = "open -a "+browser + " " + url
-            case "linux":
-                launch_string = browser + " " + url 
-            case "Window":
-                raise ValueError("DesktopLauncher constructor:  windows launcing not yet implemented")
+        self.host_os = platform.system() if host_os is None else host_os
+        self.browser = browser
+        self.verbose = verbose
+        self.browser_process = None
+        self._owns_stack = False
+        self._url = None
+        self._startup_timeout = self._positive_environment_value(
+            "MSPASS_STARTUP_TIMEOUT_SECONDS", 120.0
+        )
+        self._startup_poll = self._positive_environment_value(
+            "MSPASS_STARTUP_POLL_SECONDS", 2.0
+        )
+        if self.host_os not in ("Linux", "Darwin", "Windows"):
+            raise ValueError(
+                "DesktopLauncher does not support host operating system "
+                + repr(self.host_os)
+            )
+        self.launch()
 
-        self.browser_process = subprocess.Popen(launch_string,
-                                                shell=True,
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    close_fds=True,
-                                )
-    def url(self)->str:
+    @classmethod
+    def _positive_environment_value(cls, name, default):
+        value_string = os.environ.get(name, str(default))
+        try:
+            value = float(value_string)
+        except (TypeError, ValueError):
+            raise ValueError(f"{name} must be a finite positive number")
+        if not math.isfinite(value) or value <= 0.0:
+            raise ValueError(f"{name} must be a finite positive number")
+        return value
+
+    def _compose_argv(self, *arguments):
+        return [
+            "docker",
+            "compose",
+            "-f",
+            self.configuration_file,
+            *arguments,
+        ]
+
+    def _run_compose(self, *arguments):
+        argv = self._compose_argv(*arguments)
+        try:
+            result = subprocess.run(argv, capture_output=True, text=True)
+        except Exception as error:
+            raise RuntimeError(
+                "DesktopLauncher failed to execute " + " ".join(argv) + f": {error}"
+            ) from error
+        if self.verbose:
+            if result.stdout:
+                print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+            if result.stderr:
+                print(result.stderr, end="" if result.stderr.endswith("\n") else "\n")
+        if result.returncode != 0:
+            message = result.stderr.strip() or result.stdout.strip()
+            raise RuntimeError(
+                "DesktopLauncher command failed: "
+                + " ".join(argv)
+                + (f": {message}" if message else "")
+            )
+        return result
+
+    def _browser_argv(self, url):
+        if self.host_os == "Linux":
+            return [self.browser, url]
+        if self.host_os == "Darwin":
+            return ["open", "-a", self.browser, url]
+        return ["cmd", "/c", "start", "", self.browser, url]
+
+    def _stop_browser(self):
+        process = self.browser_process
+        if process is None:
+            return
+        try:
+            browser_running = process.poll() is None
+        except Exception:
+            browser_running = True
+        if browser_running:
+            process.terminate()
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=10)
+        self.browser_process = None
+
+    def _cleanup_after_failed_launch(self):
+        errors = []
+        try:
+            self._stop_browser()
+        except BaseException as error:
+            errors.append(str(error))
+        if self._owns_stack:
+            try:
+                self._run_compose("down")
+            except BaseException as error:
+                errors.append(str(error))
+            else:
+                self._owns_stack = False
+        self._url = None
+        return errors
+
+    def _wait_for_url(self):
+        deadline = time.monotonic() + self._startup_timeout
+        while True:
+            logs = self._run_compose("logs", self._FRONTEND_SERVICE)
+            url = extract_jupyter_url(logs.stdout)
+            if self.status() != 1:
+                raise RuntimeError(
+                    "DesktopLauncher detected that one or more Compose services "
+                    "exited before the frontend published a Jupyter URL"
+                )
+            if url is not None:
+                return url
+            if time.monotonic() >= deadline:
+                raise RuntimeError(
+                    "DesktopLauncher timed out waiting for a Jupyter HTTP(S) URL"
+                )
+            time.sleep(self._startup_poll)
+
+    def url(self):
         """
-        Runs docker-compos to extract url of jupyter server that is return.
+        Return the Jupyter URL discovered by :meth:`launch`.
+
+        The value is ``None`` before a successful launch and after shutdown.
+        No tokenless fallback URL is fabricated.
         """
-        runline=[]
-        runline.append("docker-compose")
-        runline.append("-f")
-        # could test the type of configuration to be str but docker-compose 
-        # will fail if this is not a valid file name
-        runline.append(self.configuration_file)
-        runline.append("logs")
-        runline.append("mspass-frontend")
-        frontend_query = subprocess.run(runline,capture_output=True,text=True)
-        query_out = frontend_query.stdout
-        url = extract_jupyter_url(query_out)
-        return url
-        
-           
+        return self._url
+
     def launch(self):
-        print("DesktopLauncher.lauch method is not needed")
-        print("constructor uses full construction is initialization concept")
+        """
+        Start or attach to the desktop stack and open its Jupyter URL.
+
+        The method is idempotent after a successful launch.  A newly started
+        project is marked as owned and is brought down if readiness or browser
+        startup fails.  A fully or partially running project discovered on
+        entry is caller-owned: missing services are started, but the project
+        is never brought down by this object.
+
+        :return: the HTTP(S) Jupyter URL extracted from frontend logs.
+        :rtype: string
+        :raises RuntimeError: if Compose execution, service readiness, URL
+          discovery, or browser startup fails.
+        """
+        if self._url is not None:
+            return self._url
+        try:
+            expected_services, running_services = self._service_state()
+            if not expected_services.issubset(running_services):
+                # Start the complete configuration.  The worker is not a
+                # dependency of the frontend in the standard Compose file, so
+                # targeting only the frontend would create a scheduler with no
+                # worker capable of running user tasks.
+                self._owns_stack = not bool(expected_services & running_services)
+                self._run_compose("up", "-d")
+            url = self._wait_for_url()
+            try:
+                self.browser_process = subprocess.Popen(self._browser_argv(url))
+                browser_status = self.browser_process.poll()
+            except Exception as error:
+                raise RuntimeError(
+                    f"DesktopLauncher failed to launch browser: {error}"
+                ) from error
+            if browser_status not in (None, 0):
+                raise RuntimeError(
+                    "DesktopLauncher browser process exited with an error"
+                )
+            self._url = url
+            return url
+        except BaseException as error:
+            cleanup_errors = self._cleanup_after_failed_launch()
+            if cleanup_errors and hasattr(error, "add_note"):
+                error.add_note(
+                    "DesktopLauncher cleanup failed: " + "; ".join(cleanup_errors)
+                )
+            raise
+
+    def _service_state(self):
+        """Return the configured and running service-name sets."""
+        configured = self._run_compose("config", "--services")
+        expected_services = {
+            line.strip() for line in configured.stdout.splitlines() if line.strip()
+        }
+        if self._FRONTEND_SERVICE not in expected_services:
+            raise RuntimeError(
+                f"DesktopLauncher configuration has no {self._FRONTEND_SERVICE} service"
+            )
+        running = self._run_compose("ps", "--status", "running", "--services")
+        running_services = {
+            line.strip() for line in running.stdout.splitlines() if line.strip()
+        }
+        return expected_services, running_services
+
     def status(self):
-        # this is a p rototype command line shows mspas_fronend and 
-        # mspass_db return something tut scheduler and worker 
-        # return nothing - needs a different approach
-        runline=[]
-        runline.append("docker-compose")
-        runline.append("-f")
-        runline.append(self.configuration_file)
-        runline.append("logs")
-        runline.append("mspass_frontend")
-        runout=subprocess.run(runline,capture_output=True,text=True)
-        print(runout.stdout)
-    def run(self):
-        print("Desktop run method is not implemented for this class")
-        print("Mismatch in concept as DesktopLauncher is for interactive use with jupyter")
-    def shutdown(self,verbose=False):
-        self.browser_process.terminate()
-        runline=[]
-        runline.append("docker-compose")
-        runline.append("-f")
-        runline.append(self.configuration_file)
-        runline.append("down")
-        runout=subprocess.run(runline,capture_output=True,text=True)
-        if verbose:
-            print("stdout from DecktopLauncher.shutdown")
-            print(runout.stdout)
-            print("stderr from DesktopLauncher.shutdown")
-            print(runout.stderr)
+        """
+        Test readiness of the complete configured Compose project.
+
+        Service names are read from ``docker compose config --services`` and
+        compared with ``docker compose ps --status running --services``.  This
+        prevents a running frontend from hiding a missing scheduler, worker,
+        or database.
+
+        :return: 1 when every configured service is running; otherwise 0.
+        :rtype: int
+        :raises RuntimeError: if Compose fails or the configuration has no
+          ``mspass-frontend`` service.
+        """
+        expected_services, running_services = self._service_state()
+        return int(expected_services.issubset(running_services))
+
+    def run(self, python_file):
+        """
+        Run a Python script in the active frontend service.
+
+        The command is executed as ``docker compose exec -T
+        mspass-frontend python python_file`` and blocks until it exits.
+
+        :param python_file: path to a Python script visible in the frontend.
+        :type python_file: string
+        :return: the successful ``subprocess.CompletedProcess``.
+        :raises RuntimeError: if Compose cannot execute the command or the
+          command exits nonzero.
+        """
+        return self._run_compose(
+            "exec", "-T", self._FRONTEND_SERVICE, "python", python_file
+        )
+
+    def shutdown(self, verbose=False):
+        """
+        Reap the owned browser and stop an owned Compose project.
+
+        Calling this method repeatedly is safe.  A caller-owned Compose project
+        is never brought down.  Cleanup attempts continue after an individual
+        failure so that all owned resources have a chance to terminate.
+
+        :param verbose: print cleanup errors before raising them.
+        :type verbose: bool
+        :raises RuntimeError: after cleanup if one or more owned resources
+          could not be stopped.
+        """
+        errors = []
+        try:
+            self._stop_browser()
+        except BaseException as error:
+            errors.append(str(error))
+        if self._owns_stack:
+            try:
+                self._run_compose("down")
+            except BaseException as error:
+                errors.append(str(error))
+            else:
+                self._owns_stack = False
+        self._url = None
+        if verbose and errors:
+            print("DesktopLauncher shutdown errors: " + "; ".join(errors))
+        if errors:
+            raise RuntimeError("DesktopLauncher shutdown failed: " + "; ".join(errors))
+
     def __del__(self):
         """
-        Class destructor. 
-        
-        The destrutor is called when an object goes out of scope. 
+        Class destructor.
+
+        The destrutor is called when an object goes out of scope.
         This instance is little more than a call to self.shutdown()
-        which shuts down all the containers as gracefully as possible.  
+        which shuts down all the containers as gracefully as possible.
         """
-        self.shutdown()
-        
+        try:
+            self.shutdown()
+        except BaseException:
+            pass
 
-def extract_jupyter_url(outstr)->str:
+
+def extract_jupyter_url(outstr):
     """
-    Parses output strng from launching jupyer lab to extract the url 
+    Parses output strng from launching jupyer lab to extract the url
     needed to connet to the jupyer server.
-    
-    Launchers can capture stdout from launching jupter with docker 
-    or aptainer and use this function to return the connection url 
-    to the jupyter server.  
-    
-    The algorithm used here is a simple search for the string "http://" 
-    that the current jupyter server posts.   Output has two options and 
-    the algorithm always selects the one with a ipv 4 address by veriying the 
-    line has three "." characters after http://.  
-    """
-    test_str="http://"
-    lines=outstr.splitlines()
-    url_lines=[]
-    for l in lines:
-        if test_str in l:
-            i = l.find(test_str)
-            url_lines.append(l[i:])
 
-    # select the first url with 3 or more "." symbols and assume 
-    # tha is a valid ipv4 address
-    for url in url_lines:
-        if url.count(".")>=3:
+    Launchers can capture stdout from launching jupter with docker
+    or aptainer and use this function to return the connection url
+    to the jupyter server.
+
+    Returns ``None`` when the output does not contain a URL.  In particular,
+    this function never fabricates a tokenless fallback URL.
+    """
+    if not isinstance(outstr, str):
+        return None
+    matches = re.findall(r"https?://[^\s\"']+", outstr)
+    if not matches:
+        return None
+    urls = [match.rstrip(".,;)") for match in matches]
+    for url in urls:
+        if urlsplit(url).hostname in ("127.0.0.1", "localhost", "::1"):
             return url
-    
-    print("Error parsing jupyter server output:  returning default url with no token value")
-    return "http://localhost:8888"
-    
-            
-    
-            
-    
+    return urls[0]
