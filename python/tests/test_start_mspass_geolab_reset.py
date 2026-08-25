@@ -8,12 +8,18 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 START_MSPASS_GEOLAB = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab.sh"
 
 
-def _write_fake_rm(tmp_path):
+def _write_fake_commands(tmp_path, fake_rm):
     fake_bin = tmp_path / "fake-bin"
     fake_bin.mkdir()
-    fake_rm = fake_bin / "rm"
-    fake_rm.write_text('#!/bin/sh\nprintf \'%s\\n\' "$@" >> "$RM_LOG"\nexit 99\n')
-    fake_rm.chmod(0o755)
+    fake_mongosh = fake_bin / "mongosh"
+    fake_mongosh.write_text("#!/bin/sh\nexit 0\n")
+    fake_mongosh.chmod(0o755)
+    if fake_rm:
+        rm_command = fake_bin / "rm"
+        rm_command.write_text(
+            '#!/bin/sh\nprintf \'%s\\n\' "$@" >> "$RM_LOG"\nexit 99\n'
+        )
+        rm_command.chmod(0o755)
     return fake_bin
 
 
@@ -48,9 +54,9 @@ def _base_environment(tmp_path, db_root, data_target, fake_rm=False):
             "MSPASS_WORKER_DIR": str(worker_dir),
         }
     )
+    fake_bin = _write_fake_commands(tmp_path, fake_rm)
+    environment["PATH"] = f"{fake_bin}:/usr/bin:/bin"
     if fake_rm:
-        fake_bin = _write_fake_rm(tmp_path)
-        environment["PATH"] = f"{fake_bin}:/usr/bin:/bin"
         environment["RM_LOG"] = str(tmp_path / "rm.log")
     return environment
 

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import signal
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -17,6 +18,7 @@ REPOSITORY_ROOT = Path(
 START_SCRIPT = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab.sh"
 ENTRYPOINT_SCRIPT = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab-entrypoint.sh"
 DOCKERFILE = REPOSITORY_ROOT / "Dockerfile"
+GEOLAB_WORKFLOW = REPOSITORY_ROOT / ".github" / "workflows" / "geolab-bootstrap.yml"
 
 
 def _write_executable(path, source):
@@ -276,6 +278,24 @@ def test_geolab_image_default_uses_the_dispatching_entrypoint():
     geolab_stage = geolab_stage.split("\nFROM dev-package AS dev", 1)[0]
     assert 'ENTRYPOINT ["/usr/sbin/start-mspass-geolab-entrypoint.sh"]' in geolab_stage
     assert 'CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser"]' in geolab_stage
+
+
+def test_live_geolab_workflow_is_path_filtered_and_enables_container_test():
+    workflow = GEOLAB_WORKFLOW.read_text()
+    for path in (
+        ".github/workflows/geolab-bootstrap.yml",
+        "Dockerfile",
+        "scripts/start-mspass-geolab-entrypoint.sh",
+        "scripts/start-mspass-geolab.sh",
+        "python/tests/test_geolab_bootstrap.py",
+        "python/tests/test_start_mspass_geolab_reset.py",
+    ):
+        assert f"      - {path}" in workflow
+    assert 'MSPASS_RUN_GEOLAB_CONTAINER_TESTS: "1"' in workflow
+    assert (
+        "pytest -q python/tests/test_geolab_bootstrap.py "
+        "python/tests/test_start_mspass_geolab_reset.py"
+    ) in workflow
 
 
 @pytest.mark.parametrize(
@@ -624,3 +644,117 @@ def test_signal_terminates_and_reaps_every_owned_child(tmp_path):
     assert any(event.startswith("dask-scheduler-term|") for event in events)
     assert any(event.startswith("mongo-term|") for event in events)
     _assert_children_reaped(events)
+
+
+def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
+    if os.environ.get("MSPASS_RUN_GEOLAB_CONTAINER_TESTS") != "1":
+        pytest.skip("live GeoLab container test is disabled")
+
+    docker = shutil.which("docker")
+    assert docker is not None, "docker is required for the live GeoLab test"
+    docker_info = subprocess.run(
+        [docker, "info"], text=True, capture_output=True, timeout=30
+    )
+    assert docker_info.returncode == 0, docker_info.stderr
+
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    state_dir.chmod(0o777)
+    fake_jupyter = tmp_path / "jupyter"
+    _write_executable(
+        fake_jupyter,
+        """
+        #!/bin/sh
+        set -eu
+        mongosh --host "$MSPASS_DB_ADDRESS" --port "$MONGODB_PORT" --quiet \
+            --eval 'db.adminCommand({ping: 1}).ok' >/dev/null
+        python - <<'PY'
+        import os
+        from distributed import Client
+
+        client = Client(os.environ["DASK_SCHEDULER_ENDPOINT"], timeout="5s")
+        try:
+            client.scheduler_info()
+        finally:
+            client.close()
+        PY
+        printf '%s\n' \
+            "$NB_HOME|$HOME|$MSPASS_WORK_DIR|$MSPASS_WORKDIR" \
+            > /test-state/frontend-ready
+        """,
+    )
+
+    image = os.environ.get("MSPASS_GEOLAB_TEST_IMAGE", "mspass/mspass:geolab")
+    pull = subprocess.run(
+        [docker, "pull", image], text=True, capture_output=True, timeout=600
+    )
+    assert pull.returncode == 0, pull.stderr
+
+    container_name = f"mspass-geolab-{os.getpid()}-{time.time_ns()}"
+    command = [
+        docker,
+        "run",
+        "--name",
+        container_name,
+        "--volume",
+        f"{START_SCRIPT}:/usr/sbin/start-mspass-geolab.sh:ro",
+        "--volume",
+        f"{ENTRYPOINT_SCRIPT}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
+        "--volume",
+        f"{fake_jupyter}:/test-bin/jupyter:ro",
+        "--volume",
+        f"{state_dir}:/test-state",
+        "--env",
+        "PATH=/test-bin:/srv/conda/envs/notebook/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "--env",
+        "NB_HOME=/test-state",
+        "--env",
+        "HOME=/test-state",
+        "--env",
+        "MSPASS_WORK_DIR=/test-state",
+        "--env",
+        "MSPASS_WORKDIR=/test-state",
+        "--env",
+        "MSPASS_DB_DIR=/test-state/db",
+        "--env",
+        "MSPASS_LOG_DIR=/test-state/logs",
+        "--env",
+        "MSPASS_WORKER_DIR=/test-state/workers",
+        "--env",
+        "MSPASS_DASK_WORKER_COUNT=1",
+        "--env",
+        "MSPASS_STARTUP_TIMEOUT_SECONDS=60",
+        "--env",
+        "MSPASS_STARTUP_POLL_SECONDS=1",
+        image,
+        "jupyter",
+        "lab",
+        "--no-browser",
+    ]
+    try:
+        result = subprocess.run(command, text=True, capture_output=True, timeout=180)
+        inspect = subprocess.run(
+            [
+                docker,
+                "inspect",
+                "--format",
+                "{{.State.Status}} {{.State.ExitCode}}",
+                container_name,
+            ],
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert inspect.returncode == 0, inspect.stderr
+        assert inspect.stdout.strip() == "exited 0"
+        assert (state_dir / "frontend-ready").read_text().strip() == (
+            "/test-state|/test-state|/test-state|/test-state"
+        )
+    finally:
+        subprocess.run(
+            [docker, "rm", "--force", container_name],
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
