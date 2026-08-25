@@ -467,7 +467,17 @@ RUN set -eux; \
 
 ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh
 ADD scripts/start-mspass-geolab.sh /usr/sbin/start-mspass-geolab.sh
-RUN chmod +x /usr/sbin/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab.sh && \
+ADD scripts/start-mspass-geolab-singleuser.py /usr/sbin/start-mspass-geolab-singleuser.py
+RUN set -eux; \
+    singleuser=/srv/conda/envs/notebook/bin/jupyterhub-singleuser; \
+    test -f "$singleuser"; \
+    mv "$singleuser" "$singleuser.mspass-original"; \
+    cp /usr/sbin/start-mspass-geolab-singleuser.py "$singleuser"; \
+    chmod +x \
+        /usr/sbin/start-mspass-geolab-entrypoint.sh \
+        /usr/sbin/start-mspass-geolab.sh \
+        /usr/sbin/start-mspass-geolab-singleuser.py \
+        "$singleuser"; \
     mkdir -p "${NB_HOME}" && \
     chown -R "${NB_UID}:${NB_GID}" "${NB_HOME}" /mspass
 
