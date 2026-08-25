@@ -1,0 +1,44 @@
+name: GeoLab bootstrap
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/geolab-bootstrap.yml
+      - Dockerfile
+      - scripts/start-mspass-geolab-entrypoint.sh
+      - scripts/start-mspass-geolab.sh
+      - python/tests/test_geolab_bootstrap.py
+      - python/tests/test_start_mspass_geolab_reset.py
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/geolab-bootstrap.yml
+      - Dockerfile
+      - scripts/start-mspass-geolab-entrypoint.sh
+      - scripts/start-mspass-geolab.sh
+      - python/tests/test_geolab_bootstrap.py
+      - python/tests/test_start_mspass_geolab_reset.py
+
+permissions:
+  contents: read
+
+jobs:
+  geolab-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MSPASS_RUN_GEOLAB_CONTAINER_TESTS: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install test dependency
+        run: python -m pip install pytest
+
+      - name: Validate GeoLab bootstrap in the published container
+        run: pytest -q python/tests/test_geolab_bootstrap.py python/tests/test_start_mspass_geolab_reset.py

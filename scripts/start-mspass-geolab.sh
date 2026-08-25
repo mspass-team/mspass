@@ -1,14 +1,14 @@
 #!/bin/sh
 set -eu
 
-export HOME=/home/jovyan
-export NB_HOME=/home/jovyan
-export MSPASS_WORK_DIR=/home/jovyan
-configured_workspace_root="${MSPASS_WORKDIR:-/home/jovyan}"
-export MSPASS_WORKDIR=/home/jovyan
-export MSPASS_DB_DIR="${MSPASS_DB_DIR:-/home/jovyan/db}"
-export MSPASS_LOG_DIR="${MSPASS_LOG_DIR:-/home/jovyan/logs}"
-export MSPASS_WORKER_DIR="${MSPASS_WORKER_DIR:-/home/jovyan/work}"
+export NB_HOME="${NB_HOME:-/home/jovyan}"
+export HOME="${HOME:-$NB_HOME}"
+export MSPASS_WORK_DIR="${MSPASS_WORK_DIR:-$NB_HOME}"
+configured_workspace_root="${MSPASS_WORKDIR:-$MSPASS_WORK_DIR}"
+export MSPASS_WORKDIR="$configured_workspace_root"
+export MSPASS_DB_DIR="${MSPASS_DB_DIR:-$NB_HOME/db}"
+export MSPASS_LOG_DIR="${MSPASS_LOG_DIR:-$NB_HOME/logs}"
+export MSPASS_WORKER_DIR="${MSPASS_WORKER_DIR:-$NB_HOME/work}"
 MONGO_DATA_DIR_IS_EXPLICITLY_EMPTY=false
 if [ "${MONGO_DATA_DIR+x}" = "x" ] && [ -z "$MONGO_DATA_DIR" ]; then
     MONGO_DATA_DIR_IS_EXPLICITLY_EMPTY=true
@@ -22,6 +22,8 @@ export MSPASS_SCHEDULER="${MSPASS_SCHEDULER:-dask}"
 export MSPASS_SCHEDULER_ADDRESS="${MSPASS_SCHEDULER_ADDRESS:-127.0.0.1}"
 export MSPASS_DB_ADDRESS="${MSPASS_DB_ADDRESS:-127.0.0.1}"
 export DASK_SCHEDULER_PORT="${DASK_SCHEDULER_PORT:-8786}"
+export MSPASS_STARTUP_TIMEOUT_SECONDS="${MSPASS_STARTUP_TIMEOUT_SECONDS:-120}"
+export MSPASS_STARTUP_POLL_SECONDS="${MSPASS_STARTUP_POLL_SECONDS:-2}"
 
 # GeoLab currently provides up to 4 CPUs.  Use multiple single-threaded
 # worker processes by default to avoid Python GIL contention.
@@ -29,12 +31,43 @@ export MSPASS_DASK_WORKER_COUNT="${MSPASS_DASK_WORKER_COUNT:-4}"
 export MSPASS_DASK_WORKER_THREADS="${MSPASS_DASK_WORKER_THREADS:-1}"
 export MSPASS_DASK_WORKER_MEMORY_LIMIT="${MSPASS_DASK_WORKER_MEMORY_LIMIT:-0}"
 
+case "$MSPASS_STARTUP_TIMEOUT_SECONDS" in
+    *[!0-9]*|"")
+        echo "Fatal: MSPASS_STARTUP_TIMEOUT_SECONDS must be a positive integer." >&2
+        exit 2
+        ;;
+esac
+if [ "$MSPASS_STARTUP_TIMEOUT_SECONDS" -le 0 ]; then
+    echo "Fatal: MSPASS_STARTUP_TIMEOUT_SECONDS must be a positive integer." >&2
+    exit 2
+fi
+
+if ! awk -v value="$MSPASS_STARTUP_POLL_SECONDS" '
+    BEGIN {
+        if (value ~ /^[0-9]+([.][0-9]+)?$/ && value > 0) {
+            exit 0
+        }
+        exit 1
+    }
+' </dev/null; then
+    echo "Fatal: MSPASS_STARTUP_POLL_SECONDS must be a positive number." >&2
+    exit 2
+fi
+
+LOCAL_DASK_ENABLED=false
 case "${MSPASS_ENABLE_LOCAL_DASK}" in
+    true|TRUE|True|1|yes|YES|Yes)
+        LOCAL_DASK_ENABLED=true
+        ;;
     false|FALSE|False|0|no|NO|No)
         if [ "${MSPASS_SCHEDULER}" = "dask" ] && \
             [ "${MSPASS_SCHEDULER_ADDRESS}" = "127.0.0.1" ]; then
             export MSPASS_SCHEDULER=none
         fi
+        ;;
+    *)
+        echo "Fatal: MSPASS_ENABLE_LOCAL_DASK must be a boolean value." >&2
+        exit 2
         ;;
 esac
 
@@ -61,13 +94,19 @@ if [ "${MSPASS_RESET_MONGO_DB:-false}" = "true" ]; then
     if ! home_root=$(realpath -m -- "$HOME"); then
         refuse_mongo_reset "cannot canonicalize HOME: $HOME"
     fi
+    if ! nb_home_root=$(realpath -m -- "$NB_HOME"); then
+        refuse_mongo_reset "cannot canonicalize NB_HOME: $NB_HOME"
+    fi
+    if ! work_dir_root=$(realpath -m -- "$MSPASS_WORK_DIR"); then
+        refuse_mongo_reset "cannot canonicalize MSPASS_WORK_DIR: $MSPASS_WORK_DIR"
+    fi
     if ! workspace_root=$(realpath -m -- "$configured_workspace_root"); then
         refuse_mongo_reset \
             "cannot canonicalize configured MSPASS_WORKDIR: $configured_workspace_root"
     fi
 
     case "$mongo_data_target" in
-        /|"$home_root"|"$workspace_root"|"$mongo_db_root")
+        /|"$home_root"|"$nb_home_root"|"$work_dir_root"|"$workspace_root"|"$mongo_db_root")
             refuse_mongo_reset "unsafe target: $mongo_data_target"
             ;;
     esac
@@ -97,46 +136,99 @@ DASK_SCHEDULER_PID=""
 DASK_WORKER_PIDS=""
 FRONTEND_PID=""
 
+terminate_and_wait() {
+    child_pid=$1
+    if [ -z "$child_pid" ]; then
+        return 0
+    fi
+    if kill -0 "$child_pid" 2>/dev/null; then
+        kill "$child_pid" 2>/dev/null || true
+    fi
+    wait "$child_pid" 2>/dev/null || true
+}
+
 cleanup() {
     status=$?
     trap - INT TERM EXIT
 
-    if [ -n "$FRONTEND_PID" ] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
-        kill "$FRONTEND_PID" 2>/dev/null || true
-        wait "$FRONTEND_PID" 2>/dev/null || true
-    fi
+    terminate_and_wait "$FRONTEND_PID"
 
     for worker_pid in $DASK_WORKER_PIDS; do
-        if kill -0 "$worker_pid" 2>/dev/null; then
-            kill "$worker_pid" 2>/dev/null || true
-            wait "$worker_pid" 2>/dev/null || true
-        fi
+        terminate_and_wait "$worker_pid"
     done
 
-    if [ -n "$DASK_SCHEDULER_PID" ] && kill -0 "$DASK_SCHEDULER_PID" 2>/dev/null; then
-        kill "$DASK_SCHEDULER_PID" 2>/dev/null || true
-        wait "$DASK_SCHEDULER_PID" 2>/dev/null || true
-    fi
-
-    if [ -n "$MONGO_PID" ] && kill -0 "$MONGO_PID" 2>/dev/null; then
-        mongosh --host 127.0.0.1 --port "$MONGODB_PORT" --quiet \
-            --eval 'db.getSiblingDB("admin").shutdownServer({force: true})' \
-            >/dev/null 2>&1 || true
-        wait "$MONGO_PID" 2>/dev/null || true
-    fi
+    terminate_and_wait "$DASK_SCHEDULER_PID"
+    terminate_and_wait "$MONGO_PID"
 
     exit "$status"
 }
 
-trap cleanup INT TERM EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap cleanup EXIT
 
-mongo_process_exited() {
-    mongo_state="$(ps -p "$MONGO_PID" -o stat= 2>/dev/null || true)"
-    case "$mongo_state" in
+child_exited() {
+    child_state="$(ps -p "$1" -o stat= 2>/dev/null || true)"
+    case "$child_state" in
         ""|Z*) return 0 ;;
         *) return 1 ;;
     esac
 }
+
+owned_child_exited() {
+    if [ -n "$MONGO_PID" ] && child_exited "$MONGO_PID"; then
+        echo "Fatal: mongod exited during startup." >&2
+        echo "Last MongoDB log lines:" >&2
+        tail -200 "$MONGO_LOG" >&2 || true
+        return 0
+    fi
+    if [ -n "$DASK_SCHEDULER_PID" ] && child_exited "$DASK_SCHEDULER_PID"; then
+        echo "Fatal: Dask scheduler exited during startup." >&2
+        echo "Last Dask scheduler log lines:" >&2
+        tail -200 "$MSPASS_LOG_DIR/dask-scheduler.log" >&2 || true
+        return 0
+    fi
+    return 1
+}
+
+build_dask_endpoint() {
+    scheduler_address=$1
+    scheduler_port=$2
+    case "$scheduler_address" in
+        *://*) scheduler_endpoint=$scheduler_address ;;
+        *) scheduler_endpoint="tcp://$scheduler_address" ;;
+    esac
+    scheduler_host_port=${scheduler_endpoint#*://}
+    case "$scheduler_host_port" in
+        \[*\]) scheduler_endpoint="${scheduler_endpoint}:$scheduler_port" ;;
+        \[*\]:*|*:*) ;;
+        *) scheduler_endpoint="${scheduler_endpoint}:$scheduler_port" ;;
+    esac
+    printf '%s' "$scheduler_endpoint"
+}
+
+mongo_is_ready() {
+    mongosh --host "$MSPASS_DB_ADDRESS" --port "$MONGODB_PORT" --quiet \
+        --eval 'db.adminCommand({ping: 1}).ok' >/dev/null 2>&1
+}
+
+dask_is_ready() {
+    DASK_SCHEDULER_ENDPOINT=$1
+    export DASK_SCHEDULER_ENDPOINT
+    python -c '
+import os
+import distributed
+
+client = distributed.Client(os.environ["DASK_SCHEDULER_ENDPOINT"], timeout="2s")
+try:
+    client.scheduler_info()
+finally:
+    client.close()
+' >/dev/null 2>&1
+}
+
+startup_started="$(date +%s)"
+startup_deadline=$((startup_started + MSPASS_STARTUP_TIMEOUT_SECONDS))
 
 if [ "${MSPASS_SKIP_LOCAL_MONGO:-false}" != "true" ]; then
     if ! command -v mongod >/dev/null 2>&1; then
@@ -150,61 +242,62 @@ if [ "${MSPASS_SKIP_LOCAL_MONGO:-false}" != "true" ]; then
         --logpath "$MONGO_LOG" \
         --bind_ip_all &
     MONGO_PID=$!
-
-    mongo_ready=false
-    timeout="${MSPASS_MONGO_STARTUP_TIMEOUT:-30}"
-    i=0
-    while [ "$i" -lt "$timeout" ]; do
-        if mongosh --host 127.0.0.1 --port "$MONGODB_PORT" --quiet \
-            --eval 'db.adminCommand({ping: 1}).ok' >/dev/null 2>&1; then
-            mongo_ready=true
-            break
-        fi
-
-        if mongo_process_exited; then
-            echo "Fatal: mongod exited during startup." >&2
-            echo "Last MongoDB log lines:" >&2
-            tail -200 "$MONGO_LOG" >&2 || true
-            exit 1
-        fi
-
-        i=$((i + 1))
-        sleep 1
-    done
-
-    if [ "$mongo_ready" != "true" ]; then
-        echo "Fatal: mongod did not become ready before timeout." >&2
-        echo "Last MongoDB log lines:" >&2
-        tail -200 "$MONGO_LOG" >&2 || true
-        exit 1
-    fi
 fi
 
-case "${MSPASS_ENABLE_LOCAL_DASK:-false}" in
-    true|TRUE|True|1|yes|YES|Yes)
-        export MSPASS_SCHEDULER=dask
-        dask scheduler --host 127.0.0.1 --port "$DASK_SCHEDULER_PORT" \
-            > "$MSPASS_LOG_DIR/dask-scheduler.log" 2>&1 &
-        DASK_SCHEDULER_PID=$!
+if [ "$LOCAL_DASK_ENABLED" = "true" ]; then
+    export MSPASS_SCHEDULER=dask
+    dask scheduler --host "$MSPASS_SCHEDULER_ADDRESS" \
+        --port "$DASK_SCHEDULER_PORT" \
+        > "$MSPASS_LOG_DIR/dask-scheduler.log" 2>&1 &
+    DASK_SCHEDULER_PID=$!
+fi
 
-        sleep 5
+DASK_SCHEDULER_ENDPOINT="$(
+    build_dask_endpoint "$MSPASS_SCHEDULER_ADDRESS" "$DASK_SCHEDULER_PORT"
+)"
+export DASK_SCHEDULER_ENDPOINT
 
-        worker_index=1
-        while [ "$worker_index" -le "$MSPASS_DASK_WORKER_COUNT" ]; do
-            worker_dir="$MSPASS_WORKER_DIR/worker-${worker_index}"
-            mkdir -p "$worker_dir"
+while :; do
+    mongo_ready=false
+    dask_ready=false
 
-            dask worker \
-                --nthreads "$MSPASS_DASK_WORKER_THREADS" \
-                --memory-limit="$MSPASS_DASK_WORKER_MEMORY_LIMIT" \
-                --local-directory "$worker_dir" \
-                "tcp://127.0.0.1:${DASK_SCHEDULER_PORT}" \
-                > "$MSPASS_LOG_DIR/dask-worker-${worker_index}.log" 2>&1 &
-            DASK_WORKER_PIDS="$DASK_WORKER_PIDS $!"
-            worker_index=$((worker_index + 1))
-        done
-        ;;
-esac
+    if mongo_is_ready; then
+        mongo_ready=true
+    fi
+    if [ "$MSPASS_SCHEDULER" != "dask" ] || \
+        dask_is_ready "$DASK_SCHEDULER_ENDPOINT"; then
+        dask_ready=true
+    fi
+
+    if owned_child_exited; then
+        exit 1
+    fi
+    if [ "$(date +%s)" -ge "$startup_deadline" ]; then
+        echo "Fatal: GeoLab services did not become ready within ${MSPASS_STARTUP_TIMEOUT_SECONDS} seconds." >&2
+        exit 1
+    fi
+    if [ "$mongo_ready" = "true" ] && [ "$dask_ready" = "true" ]; then
+        break
+    fi
+    sleep "$MSPASS_STARTUP_POLL_SECONDS"
+done
+
+if [ "$LOCAL_DASK_ENABLED" = "true" ]; then
+    worker_index=1
+    while [ "$worker_index" -le "$MSPASS_DASK_WORKER_COUNT" ]; do
+        worker_dir="$MSPASS_WORKER_DIR/worker-${worker_index}"
+        mkdir -p "$worker_dir"
+
+        dask worker \
+            --nthreads "$MSPASS_DASK_WORKER_THREADS" \
+            --memory-limit="$MSPASS_DASK_WORKER_MEMORY_LIMIT" \
+            --local-directory "$worker_dir" \
+            "$DASK_SCHEDULER_ENDPOINT" \
+            > "$MSPASS_LOG_DIR/dask-worker-${worker_index}.log" 2>&1 &
+        DASK_WORKER_PIDS="$DASK_WORKER_PIDS $!"
+        worker_index=$((worker_index + 1))
+    done
+fi
 
 cd "$MSPASS_WORKDIR" || {
     echo "Cannot change to MSPASS_WORKDIR: $MSPASS_WORKDIR" >&2
