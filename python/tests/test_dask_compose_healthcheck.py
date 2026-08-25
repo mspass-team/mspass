@@ -36,6 +36,16 @@ def _resolve_compose(path):
     if docker is None:
         pytest.skip("Docker Compose is required to inspect the resolved configuration")
 
+    compose_version = subprocess.run(
+        [docker, "compose", "version"],
+        cwd=REPOSITORY_ROOT,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    if compose_version.returncode != 0:
+        pytest.skip("Docker Compose is not available in this environment")
+
     result = subprocess.run(
         [docker, "compose", "-f", str(path), "config", "--format", "json"],
         cwd=REPOSITORY_ROOT,
@@ -165,6 +175,30 @@ def test_dask_health_probe_is_single_attempt_and_propagates_failures(
 
     assert result.returncode == expected_returncode
     assert log.read_text().splitlines() == expected_events
+
+
+def test_live_compose_workflow_is_path_filtered_and_enables_integration_tests():
+    workflow = yaml.safe_load(
+        (REPOSITORY_ROOT / ".github" / "workflows" / "compose-health.yml").read_text()
+    )
+    expected_paths = [
+        ".github/workflows/compose-health.yml",
+        "data/yaml/compose.yaml",
+        "data/yaml/docker-compose_sharding.yaml",
+        "scripts/IU_examples/python/configuration_docker.yaml",
+        "python/tests/test_dask_compose_healthcheck.py",
+    ]
+    assert workflow["on"]["pull_request"]["paths"] == expected_paths
+    assert workflow["on"]["push"] == {
+        "branches": ["master"],
+        "paths": expected_paths,
+    }
+    job = workflow["jobs"]["compose-health"]
+    assert job["env"]["MSPASS_RUN_COMPOSE_HEALTHCHECK_TESTS"] == "1"
+    assert job["timeout-minutes"] == 60
+    assert job["steps"][-1]["run"] == (
+        "python -m pytest -q python/tests/test_dask_compose_healthcheck.py"
+    )
 
 
 RUN_COMPOSE_TESTS = os.environ.get("MSPASS_RUN_COMPOSE_HEALTHCHECK_TESTS") == "1"
