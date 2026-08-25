@@ -12,6 +12,13 @@ case "$command_name" in
             exec /usr/sbin/start-mspass-geolab.sh "$@"
         fi
         ;;
+    python|python[0-9]*)
+        wrapped_command_name=${2:-}
+        wrapped_command_name=${wrapped_command_name##*/}
+        if [ "$wrapped_command_name" = "jupyterhub-singleuser" ]; then
+            exec /usr/sbin/start-mspass-geolab.sh "$@"
+        fi
+        ;;
 esac
 
 exec "$@"
