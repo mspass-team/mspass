@@ -17,7 +17,9 @@ REPOSITORY_ROOT = Path(
 )
 START_SCRIPT = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab.sh"
 ENTRYPOINT_SCRIPT = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab-entrypoint.sh"
+SINGLEUSER_SCRIPT = REPOSITORY_ROOT / "scripts" / "start-mspass-geolab-singleuser.py"
 DOCKERFILE = REPOSITORY_ROOT / "Dockerfile"
+DOCKERIGNORE = REPOSITORY_ROOT / ".dockerignore"
 GEOLAB_WORKFLOW = REPOSITORY_ROOT / ".github" / "workflows" / "geolab-bootstrap.yml"
 
 
@@ -278,6 +280,14 @@ def test_geolab_image_default_uses_the_dispatching_entrypoint():
     geolab_stage = geolab_stage.split("\nFROM dev-package AS dev", 1)[0]
     assert 'ENTRYPOINT ["/usr/sbin/start-mspass-geolab-entrypoint.sh"]' in geolab_stage
     assert 'CMD ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser"]' in geolab_stage
+    assert (
+        "singleuser=/srv/conda/envs/notebook/bin/jupyterhub-singleuser;" in geolab_stage
+    )
+    assert 'mv "$singleuser" "$singleuser.mspass-original";' in geolab_stage
+    assert (
+        'cp /usr/sbin/start-mspass-geolab-singleuser.py "$singleuser";' in geolab_stage
+    )
+    assert "!scripts/start-mspass-geolab-singleuser.py" in DOCKERIGNORE.read_text()
 
 
 def test_live_geolab_workflow_is_path_filtered_and_enables_container_test():
@@ -286,6 +296,7 @@ def test_live_geolab_workflow_is_path_filtered_and_enables_container_test():
         ".github/workflows/geolab-bootstrap.yml",
         "Dockerfile",
         "scripts/start-mspass-geolab-entrypoint.sh",
+        "scripts/start-mspass-geolab-singleuser.py",
         "scripts/start-mspass-geolab.sh",
         "python/tests/test_geolab_bootstrap.py",
         "python/tests/test_start_mspass_geolab_reset.py",
@@ -302,11 +313,11 @@ def test_live_geolab_workflow_is_path_filtered_and_enables_container_test():
     "command_name,arguments,expected_route",
     (
         ("jupyter", ("lab", "--no-browser"), "bootstrap"),
-        ("jupyterhub-singleuser", ("--port=8888",), "bootstrap"),
+        ("jupyterhub-singleuser", ("--port=8888",), "direct"),
         (
             "python3.12",
             ("/srv/conda/envs/notebook/bin/jupyterhub-singleuser",),
-            "bootstrap",
+            "direct",
         ),
         ("python3.12", ("-m", "distributed.cli.dask_scheduler"), "direct"),
         ("dask-scheduler", ("--port", "8786"), "direct"),
@@ -360,6 +371,47 @@ def test_entrypoint_routes_only_jupyter_frontends(
     else:
         assert result.returncode == 23
         assert events == [f"direct|{command_name}|{' '.join(arguments)}"]
+
+
+def test_singleuser_wrapper_bootstraps_original_script(tmp_path):
+    event_log = tmp_path / "singleuser-events"
+    bootstrap = tmp_path / "bootstrap"
+    _write_executable(
+        bootstrap,
+        """
+        #!/bin/sh
+        printf 'bootstrap|%s\n' "$*" >> "$SINGLEUSER_EVENT_LOG"
+        exec "$@"
+        """,
+    )
+    wrapper = tmp_path / "jupyterhub-singleuser"
+    wrapper.write_text(
+        SINGLEUSER_SCRIPT.read_text().replace(
+            "/usr/sbin/start-mspass-geolab.sh", str(bootstrap)
+        )
+    )
+    original = tmp_path / "jupyterhub-singleuser.mspass-original"
+    original.write_text(
+        "import os, sys\n"
+        "with open(os.environ['SINGLEUSER_EVENT_LOG'], 'a') as stream:\n"
+        "    stream.write('singleuser|' + '|'.join(sys.argv[1:]) + '\\n')\n"
+    )
+    environment = os.environ.copy()
+    environment["SINGLEUSER_EVENT_LOG"] = str(event_log)
+
+    result = subprocess.run(
+        [sys.executable, str(wrapper), "--port=8888", "--flag", "value"],
+        env=environment,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    events = event_log.read_text().splitlines()
+    assert events[0] == (
+        f"bootstrap|{sys.executable} {original} --port=8888 --flag value"
+    )
+    assert events[1] == "singleuser|--port=8888|--flag|value"
 
 
 def test_bootstrap_preserves_paths_and_checks_configured_endpoints(tmp_path):
@@ -667,46 +719,47 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
     state_dir.mkdir()
     state_dir.chmod(0o777)
     mounted_start_script = tmp_path / START_SCRIPT.name
-    mounted_entrypoint_script = tmp_path / ENTRYPOINT_SCRIPT.name
-    for source, mounted in (
-        (START_SCRIPT, mounted_start_script),
-        (ENTRYPOINT_SCRIPT, mounted_entrypoint_script),
-    ):
-        shutil.copy2(source, mounted)
-        mounted.chmod(0o755)
-    frontend_check = tmp_path / "verify-geolab-frontend.py"
-    frontend_check.write_text(
+    shutil.copy2(START_SCRIPT, mounted_start_script)
+    mounted_start_script.chmod(0o755)
+    mounted_singleuser = tmp_path / "jupyterhub-singleuser"
+    shutil.copy2(SINGLEUSER_SCRIPT, mounted_singleuser)
+    mounted_singleuser.chmod(0o755)
+    original_singleuser = tmp_path / "jupyterhub-singleuser.mspass-original"
+    original_singleuser.write_text(
         textwrap.dedent(
             """
             import os
+            from pathlib import Path
 
             from distributed import Client
+            from pymongo import MongoClient
+
+            mongo = MongoClient(
+                os.environ["MSPASS_DB_ADDRESS"],
+                int(os.environ["MONGODB_PORT"]),
+                serverSelectionTimeoutMS=5000,
+            )
+            mongo.admin.command("ping")
 
             client = Client(os.environ["DASK_SCHEDULER_ENDPOINT"], timeout="5s")
             try:
                 client.scheduler_info()
             finally:
                 client.close()
+
+            Path("/test-state/frontend-ready").write_text(
+                "|".join(
+                    os.environ[name]
+                    for name in (
+                        "NB_HOME",
+                        "HOME",
+                        "MSPASS_WORK_DIR",
+                        "MSPASS_WORKDIR",
+                    )
+                )
+            )
             """
         ).lstrip()
-    )
-    fake_python = tmp_path / "python3.12"
-    _write_executable(
-        fake_python,
-        """
-        #!/bin/sh
-        set -eu
-        mongosh --host "$MSPASS_DB_ADDRESS" --port "$MONGODB_PORT" --quiet \
-            --eval 'db.adminCommand({ping: 1}).ok' >/dev/null
-        python /test-bin/verify-geolab-frontend.py
-        printf '%s\n' \
-            "$NB_HOME|$HOME|$MSPASS_WORK_DIR|$MSPASS_WORKDIR" \
-            > /test-state/frontend-ready
-        """,
-    )
-    fake_singleuser = tmp_path / "jupyterhub-singleuser"
-    fake_singleuser.write_text(
-        "# GeoLab passes this script to the Python interpreter.\n"
     )
 
     image = os.environ.get("MSPASS_GEOLAB_TEST_IMAGE", "mspass/mspass:geolab")
@@ -724,17 +777,13 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         "--volume",
         f"{mounted_start_script}:/usr/sbin/start-mspass-geolab.sh:ro",
         "--volume",
-        f"{mounted_entrypoint_script}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
+        f"{mounted_singleuser}:/test-bin/jupyterhub-singleuser:ro",
         "--volume",
-        f"{fake_python}:/test-bin/python3.12:ro",
-        "--volume",
-        f"{fake_singleuser}:/test-bin/jupyterhub-singleuser:ro",
-        "--volume",
-        f"{frontend_check}:/test-bin/verify-geolab-frontend.py:ro",
+        f"{original_singleuser}:/test-bin/jupyterhub-singleuser.mspass-original:ro",
         "--volume",
         f"{state_dir}:/test-state",
-        "--env",
-        "PATH=/test-bin:/srv/conda/envs/notebook/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "--entrypoint",
+        "/srv/conda/envs/notebook/bin/python3.12",
         "--env",
         "NB_HOME=/test-state",
         "--env",
@@ -760,7 +809,6 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         "--env",
         "MSPASS_STARTUP_POLL_SECONDS=1",
         image,
-        "/test-bin/python3.12",
         "/test-bin/jupyterhub-singleuser",
     ]
     try:

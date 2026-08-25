@@ -6,6 +6,7 @@ on:
       - .github/workflows/geolab-bootstrap.yml
       - Dockerfile
       - scripts/start-mspass-geolab-entrypoint.sh
+      - scripts/start-mspass-geolab-singleuser.py
       - scripts/start-mspass-geolab.sh
       - python/tests/test_geolab_bootstrap.py
       - python/tests/test_start_mspass_geolab_reset.py
@@ -15,6 +16,7 @@ on:
       - .github/workflows/geolab-bootstrap.yml
       - Dockerfile
       - scripts/start-mspass-geolab-entrypoint.sh
+      - scripts/start-mspass-geolab-singleuser.py
       - scripts/start-mspass-geolab.sh
       - python/tests/test_geolab_bootstrap.py
       - python/tests/test_start_mspass_geolab_reset.py
