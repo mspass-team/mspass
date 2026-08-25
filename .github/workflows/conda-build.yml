@@ -24,6 +24,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Resolve package version
+        id: provenance
+        shell: bash
+        run: |
+          set -euxo pipefail
+          requirements_file="$(mktemp)"
+          trap 'rm -f "$requirements_file"' EXIT
+          printf '%s\n' \
+            'setuptools_scm==8.3.1 --hash=sha256:332ca0d43791b818b841213e76b1971b7711a960761c5bea5fc5cdb5196fbce3' \
+            > "$requirements_file"
+          python -m pip install --user --no-deps --require-hashes --requirement "$requirements_file"
+          echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
           
@@ -37,6 +51,8 @@ jobs:
           outputs: type=local,dest=${{ runner.temp }}/conda-package
           build-args: |
             PYTHON_VERSION=${{ matrix.python-version }}
+            MSPASS_VERSION=${{ steps.provenance.outputs.version }}
+            MSPASS_VCS_REF=${{ steps.provenance.outputs.revision }}
 
       - name: Install Anaconda upload client
         shell: bash
@@ -65,6 +81,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Resolve package version
+        id: provenance
+        shell: bash
+        run: |
+          set -euxo pipefail
+          requirements_file="$(mktemp)"
+          trap 'rm -f "$requirements_file"' EXIT
+          printf '%s\n' \
+            'setuptools_scm==8.3.1 --hash=sha256:332ca0d43791b818b841213e76b1971b7711a960761c5bea5fc5cdb5196fbce3' \
+            > "$requirements_file"
+          python -m pip install --user --no-deps --require-hashes --requirement "$requirements_file"
+          echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
           
@@ -78,6 +108,8 @@ jobs:
           outputs: type=local,dest=${{ runner.temp }}/conda-package
           build-args: |
             PYTHON_VERSION=${{ matrix.python-version }}
+            MSPASS_VERSION=${{ steps.provenance.outputs.version }}
+            MSPASS_VCS_REF=${{ steps.provenance.outputs.revision }}
 
       - name: Install Anaconda upload client
         shell: bash

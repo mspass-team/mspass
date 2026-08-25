@@ -7,11 +7,14 @@
 #   dev     - debug build with development and documentation dependencies
 #   geolab  - GeoLab/Kubernetes image with non-root Jupyter runtime
 #   mpi     - standard image built with the MPI base image
-#             docker build --target mpi --build-arg MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest .
+#             docker build --target mpi --build-arg MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest@sha256:737c7527bc43d2648ad4f7a8c11b9ba8fb93f14c06e06c5baae38e4e019fd2a5 .
 #   tacc    - standard runtime image with TACC interactive access enabled
 
-ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab
+ARG MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:ubuntu22.04_jupyterlab@sha256:2902ea5d00d7b9bc71ab9c1efd9ebc1b9c4b46c987979e840e8f2aca7391feb4
 ARG GEOLAB_BASE_IMAGE=ghcr.io/mspass-team/geolab-base-mirror@sha256:7aa0b713de225288188163c13519efce1ac5248ea386e734d88ad7c54b0abe27
+ARG ALPINE_BASE_IMAGE=alpine:3.20@sha256:d9e853e87e55526f6b2917df91a2115c36dd7c696a35be12163d44e6e2a4b6bc
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
 ARG PYTHON_VERSION=3.12
 ARG DASK_LABEXTENSION_VERSION=7.0.0
 ARG SPARK_VERSION=3.5.8
@@ -20,32 +23,61 @@ ARG SPARK_ARCHIVE=${SPARK_PACKAGE}.tgz
 ARG APACHE_MIRROR=https://archive.apache.org/dist
 ARG SPARK_URL=${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}
 ARG SPARK_SHA512=5d5d2e6e111182ee1210d4a46a17ae27107c7ccc70433da0ded3d8197e027f949b00445bb5678ed0c1d5c59f12993d9b9ed12e43686d5aad89a9ec570e93a083
+ARG TINI_VERSION=v0.19.0
+ARG TINI_SHA256_AMD64=93dcc18adc78c65a028a84799ecf8ad40c936fdfc5f2a57b1acda5a8117fa82c
+ARG TINI_SHA256_ARM64=07952557df20bfd2a95f9bef198b445e006171969499a1d361bd9e6f8e5e0e81
 
 FROM scratch AS spark-build-assets
 
-FROM alpine:3.20 AS spark-archive
+FROM ${ALPINE_BASE_IMAGE} AS verified-build-assets
 
 ARG SPARK_ARCHIVE
 ARG SPARK_SHA512
 ARG SPARK_URL
+ARG TARGETARCH
+ARG TINI_VERSION
+ARG TINI_SHA256_AMD64
+ARG TINI_SHA256_ARM64
+
+COPY --chmod=0755 scripts/verify-container-download.sh /usr/local/bin/
+
+RUN apk add --no-cache ca-certificates curl
 
 RUN --mount=type=bind,from=spark-build-assets,source=/,target=/mnt/build-assets,readonly \
     set -eux; \
     if [ -f "/mnt/build-assets/${SPARK_ARCHIVE}" ]; then \
         cp "/mnt/build-assets/${SPARK_ARCHIVE}" /spark.tgz; \
     else \
-        apk add --no-cache ca-certificates curl; \
         curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
             --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 900 \
             -o /spark.tgz "${SPARK_URL}"; \
     fi; \
-    echo "${SPARK_SHA512}  /spark.tgz" | sha512sum -c -
+    verify-container-download.sh sha512 "${SPARK_SHA512}" /spark.tgz
+
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+        amd64) tini_sha256="${TINI_SHA256_AMD64}" ;; \
+        arm64) tini_sha256="${TINI_SHA256_ARM64}" ;; \
+        *) echo "Unsupported Tini architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+        --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 300 \
+        -o /tini "https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH}"; \
+    verify-container-download.sh sha256 "${tini_sha256}" /tini; \
+    chmod 0755 /tini
 
 FROM ${MSPASS_BASE_IMAGE} AS mspass-base
 
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
 ARG PYTHON_VERSION
 
-LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
+LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>" \
+    org.opencontainers.image.source="https://github.com/mspass-team/mspass" \
+    org.opencontainers.image.version="${MSPASS_VERSION}" \
+    org.opencontainers.image.revision="${MSPASS_VCS_REF}"
+
+COPY --chmod=0755 scripts/verify-container-download.sh /usr/local/bin/
 
 # The SCOPED base currently pins Python 3.10.  GeoLab's notebook environment
 # uses Python 3.12, so move every target derived from mspass-base (runtime, dev,
@@ -70,7 +102,7 @@ RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		ca-certificates \
-		dirmngr \
+		curl \
 		gnupg \
 		jq \
 		numactl \
@@ -81,41 +113,29 @@ RUN set -eux; \
 
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
 ENV JSYAML_VERSION=3.13.1
+ARG JSYAML_SHA256=01680f005cd0b602240745d28b8bd439bc41001875f92413252ec0e50983e921
 
-RUN set -ex; \
-	\
-	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		wget \
-	; \
-	rm -rf /var/lib/apt/lists/*; \
-	\
-	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-	gpgconf --kill all; \
-	\
-	wget -O /js-yaml.js "https://github.com/nodeca/js-yaml/raw/${JSYAML_VERSION}/dist/js-yaml.js"; \
-# TODO some sort of download verification here
-	\
-	apt-mark auto '.*' > /dev/null; \
-	apt-mark manual $savedAptMark > /dev/null; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-	&& docker-clean
+RUN set -eux; \
+	curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+		--connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 300 \
+		-o /js-yaml.js "https://raw.githubusercontent.com/nodeca/js-yaml/${JSYAML_VERSION}/dist/js-yaml.js"; \
+	verify-container-download.sh sha256 "${JSYAML_SHA256}" /js-yaml.js; \
+	docker-clean
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-RUN set -ex; \
+ARG MONGODB_KEY_URL=https://pgp.mongodb.com/server-6.0.asc
+ARG MONGODB_KEY_FINGERPRINT=39BD841E4BE5FB195A65400E6A26B1AE64C3C388
+RUN set -eux; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	set -- '39BD841E4BE5FB195A65400E6A26B1AE64C3C388'; \
-	for key; do \
-		gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
-	done; \
+	curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+		--connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 300 \
+		-o /tmp/mongodb-server.asc "${MONGODB_KEY_URL}"; \
+	actual_fingerprint="$(gpg --batch --show-keys --with-colons /tmp/mongodb-server.asc | awk -F: '$1 == "fpr" { print $10; exit }')"; \
+	test "${actual_fingerprint}" = "${MONGODB_KEY_FINGERPRINT}"; \
 	mkdir -p /etc/apt/keyrings; \
-	gpg --batch --export "$@" > /etc/apt/keyrings/mongodb.gpg; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME" \
+	gpg --batch --dearmor --output /etc/apt/keyrings/mongodb.gpg /tmp/mongodb-server.asc; \
+	rm -rf "${GNUPGHOME}" /tmp/mongodb-server.asc \
 	&& docker-clean
 
 # Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
@@ -127,7 +147,7 @@ ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
 ENV MONGO_MAJOR=6.0
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
+RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.gpg ] https://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
 # https://docs.mongodb.org/master/release-notes/6.0/
 ENV MONGO_VERSION=6.0.5
@@ -181,8 +201,8 @@ ENV SPARK_HOME=/usr/local/spark
 ENV PYSPARK_PYTHON=python3
 
 # Install Spark from the CI-provided build asset when present; otherwise the
-# spark-archive stage downloads it with retries, speed limits, and checksum verification.
-COPY --from=spark-archive /spark.tgz /tmp/spark.tgz
+# verified-build-assets stage downloads it with retries, speed limits, and checksum verification.
+COPY --from=verified-build-assets /spark.tgz /tmp/spark.tgz
 RUN tar -xzf /tmp/spark.tgz -C /usr/local/ \
     && cd /usr/local && ln -s ${SPARK_PACKAGE} spark \
     && rm /tmp/spark.tgz \
@@ -214,7 +234,13 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then export CFLAGS="-O3" \
 # Download & install pybind11
 ARG PYBIND11_VERSION=2.13.6
 ARG PYBIND11_URL=https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
-RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
+ARG PYBIND11_SHA256=e08cb87f4773da97fa7b5f035de8763abc656d87d5773e62f6da0587d1f0ec20
+RUN curl -fL --retry 5 --retry-all-errors --retry-delay 10 \
+        --connect-timeout 20 --speed-limit 1024 --speed-time 60 --max-time 300 \
+        -o /tmp/pybind11.tar.gz "${PYBIND11_URL}" \
+    && verify-container-download.sh sha256 "${PYBIND11_SHA256}" /tmp/pybind11.tar.gz \
+    && tar -xzf /tmp/pybind11.tar.gz -C /usr/local/ \
+    && rm /tmp/pybind11.tar.gz \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
     && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install && docker-clean
 RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
@@ -231,30 +257,43 @@ ENV MSPASS_HOME=/mspass
 
 FROM mspass-source AS runtime-package
 
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
 # Build the Python extension and C++ library once, then install the C++ artifacts
 # from the CMake build tree retained by setuptools.
 ADD data /mspass/data
+ADD LICENSE /mspass/LICENSE
+ADD README.md /mspass/README.md
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
-ADD .git /mspass/.git
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
-	&& pip3 install /mspass -v \
+RUN test -n "${MSPASS_VERSION}" \
+	&& test -n "${MSPASS_VCS_REF}" \
+	&& ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
+	&& SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY="${MSPASS_VERSION}" pip3 install /mspass -v \
+	&& python -c "import importlib.metadata as md; expected='${MSPASS_VERSION}'; actual=md.version('mspasspy'); assert actual == expected, (actual, expected)" \
 	&& cmake --install /mspass/build/temp.* \
-	&& rm -rf /mspass/build /mspass/.git && docker-clean
+	&& rm -rf /mspass/build && docker-clean
 
 FROM mspass-source AS dev-package
 
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
+
 # Build the debug Python extension and C++ library once.
 ADD data /mspass/data
+ADD LICENSE /mspass/LICENSE
+ADD README.md /mspass/README.md
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
-ADD .git /mspass/.git
-RUN ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
-	&& MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench,test]' -v \
+RUN test -n "${MSPASS_VERSION}" \
+	&& test -n "${MSPASS_VCS_REF}" \
+	&& ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
+	&& SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY="${MSPASS_VERSION}" MSPASS_CMAKE_BUILD_TYPE=Debug pip3 install '/mspass[seisbench,test]' -v \
+	&& python -c "import importlib.metadata as md; expected='${MSPASS_VERSION}'; actual=md.version('mspasspy'); assert actual == expected, (actual, expected)" \
 	&& cmake --install /mspass/build/temp.* \
-	&& rm -rf /mspass/build /mspass/.git && docker-clean
+	&& rm -rf /mspass/build && docker-clean
 
 # Add docs and dependencies to build docs
 ADD docs /mspass/docs
@@ -269,10 +308,7 @@ FROM runtime-package AS runtime-common
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
-ARG TARGETARCH
-ARG TINI_VERSION=v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
-RUN chmod +x /usr/sbin/tini
+COPY --from=verified-build-assets /tini /usr/sbin/tini
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
@@ -318,7 +354,13 @@ FROM ${GEOLAB_BASE_IMAGE} AS geolab
 # Gateway server.
 USER root
 
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
 ARG PYTHON_VERSION
+
+LABEL org.opencontainers.image.source="https://github.com/mspass-team/mspass" \
+    org.opencontainers.image.version="${MSPASS_VERSION}" \
+    org.opencontainers.image.revision="${MSPASS_VCS_REF}"
 
 # Keep the base GeoLab uid/gid/user identity so mounted /home/jovyan workspaces
 # and Dask Gateway scheduler/worker pods match the official GeoLab runtime.
@@ -328,6 +370,8 @@ ARG NB_GID=1000
 ARG NB_HOME=/home/jovyan
 ARG MONGO_MAJOR=6.0
 ARG MONGO_VERSION=6.0.5
+ARG MONGODB_KEY_URL=https://pgp.mongodb.com/server-6.0.asc
+ARG MONGODB_KEY_FINGERPRINT=39BD841E4BE5FB195A65400E6A26B1AE64C3C388
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GID=${NB_GID} \
@@ -369,8 +413,12 @@ RUN set -eux; \
         libyaml-cpp-dev \
     ; \
     install -d -m 0755 /etc/apt/keyrings; \
-    curl -fsSL "https://pgp.mongodb.com/server-${MONGO_MAJOR}.asc" \
-        | gpg --dearmor -o "/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg"; \
+    export GNUPGHOME="$(mktemp -d)"; \
+    curl -fsSL "${MONGODB_KEY_URL}" \
+        -o /tmp/mongodb-server.asc; \
+    actual_fingerprint="$(gpg --batch --show-keys --with-colons /tmp/mongodb-server.asc | awk -F: '$1 == "fpr" { print $10; exit }')"; \
+    test "${actual_fingerprint}" = "${MONGODB_KEY_FINGERPRINT}"; \
+    gpg --batch --dearmor -o "/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg" /tmp/mongodb-server.asc; \
     echo "deb [ arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_MAJOR}.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/${MONGO_MAJOR} multiverse" \
         > "/etc/apt/sources.list.d/mongodb-org-${MONGO_MAJOR}.list"; \
     apt-get update; \
@@ -380,16 +428,20 @@ RUN set -eux; \
         mongodb-org-shell=${MONGO_VERSION} \
         mongodb-org-mongos=${MONGO_VERSION} \
         mongodb-org-tools=${MONGO_VERSION}; \
+    rm -rf "${GNUPGHOME}" /tmp/mongodb-server.asc; \
     rm -rf /var/lib/apt/lists/*
 
 ADD cxx /mspass/cxx
 ADD data /mspass/data
+ADD LICENSE /mspass/LICENSE
+ADD README.md /mspass/README.md
 ADD setup.py /mspass/setup.py
 ADD pyproject.toml /mspass/pyproject.toml
 ADD python /mspass/python
-ADD .git /mspass/.git
 
 RUN set -eux; \
+    test -n "${MSPASS_VERSION}"; \
+    test -n "${MSPASS_VCS_REF}"; \
     /srv/conda/envs/notebook/bin/python -c "import sys; expected='${PYTHON_VERSION}'; actual=f'{sys.version_info.major}.{sys.version_info.minor}'; assert actual == expected, (actual, expected)"; \
     printf '%s\n' \
         'dask==2026.3.0' \
@@ -402,15 +454,16 @@ RUN set -eux; \
         'dask[complete]==2026.3.0' \
         'distributed==2026.3.0' \
         'dask-gateway==2026.3.0'; \
-    /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
+    SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY="${MSPASS_VERSION}" \
+        /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir -v \
         --constraint /tmp/geolab-dask-constraints.txt \
         /mspass; \
     /srv/conda/envs/notebook/bin/python -m pip install --no-cache-dir --force-reinstall --no-deps \
         dask==2026.3.0 \
         distributed==2026.3.0 \
         dask-gateway==2026.3.0; \
-    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
-    rm -rf /mspass/build /mspass/.git /root/.cache /tmp/geolab-dask-constraints.txt
+    /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0','mspasspy':'${MSPASS_VERSION}'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
+    rm -rf /mspass/build /root/.cache /tmp/geolab-dask-constraints.txt
 
 ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh
 ADD scripts/start-mspass-geolab.sh /usr/sbin/start-mspass-geolab.sh
@@ -431,10 +484,7 @@ ARG DASK_LABEXTENSION_VERSION
 RUN pip3 --no-cache-dir install jedi==0.17.2 && docker-clean
 
 # Tini operates as a process subreaper for jupyter.
-ARG TARGETARCH
-ARG TINI_VERSION=v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${TARGETARCH} /usr/sbin/tini
-RUN chmod +x /usr/sbin/tini
+COPY --from=verified-build-assets /tini /usr/sbin/tini
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh

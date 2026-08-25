@@ -36,8 +36,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      mspass_version: ${{ steps.provenance.outputs.version }}
+      mspass_vcs_ref: ${{ steps.provenance.outputs.revision }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Resolve package provenance
+        id: provenance
+        shell: bash
+        run: |
+          set -euxo pipefail
+          requirements_file="$(mktemp)"
+          trap 'rm -f "$requirements_file"' EXIT
+          printf '%s\n' \
+            'setuptools_scm==8.3.1 --hash=sha256:332ca0d43791b818b841213e76b1971b7711a960761c5bea5fc5cdb5196fbce3' \
+            > "$requirements_file"
+          python -m pip install --user --no-deps --require-hashes --requirement "$requirements_file"
+          echo "version=$(python -m setuptools_scm)" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Restore Spark archive cache
         id: spark-cache
         uses: actions/cache@v5
@@ -159,6 +181,9 @@ jobs:
         with:
           context: .
           target: runtime
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: false
           tags: ${{ steps.meta.outputs.tags }}
@@ -173,6 +198,9 @@ jobs:
         with:
           context: .
           target: runtime
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.amd64-tags.outputs.tags }}
@@ -201,6 +229,9 @@ jobs:
         with:
           context: .
           target: geolab
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.amd64-geolab-tags.outputs.tags }}
@@ -214,6 +245,9 @@ jobs:
         with:
           context: .
           target: tacc
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
@@ -313,6 +347,9 @@ jobs:
         with:
           context: .
           target: runtime
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/arm64
           push: false
           tags: ${{ steps.arm64-tags.outputs.tags }}
@@ -327,6 +364,9 @@ jobs:
         with:
           context: .
           target: runtime
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/arm64
           push: true
           tags: ${{ steps.arm64-tags.outputs.tags }}
@@ -472,6 +512,9 @@ jobs:
         with:
           context: .
           target: dev
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
@@ -488,6 +531,9 @@ jobs:
         with:
           context: .
           target: dev
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.amd64-dev-tags.outputs.tags }}
@@ -582,6 +628,9 @@ jobs:
         with:
           context: .
           target: dev
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/arm64
           push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
@@ -598,6 +647,9 @@ jobs:
         with:
           context: .
           target: dev
+          build-args: |
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/arm64
           push: true
           tags: ${{ steps.arm64-dev-tags.outputs.tags }}
@@ -754,7 +806,9 @@ jobs:
           context: .
           target: mpi
           build-args: |
-            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest
+            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest@sha256:737c7527bc43d2648ad4f7a8c11b9ba8fb93f14c06e06c5baae38e4e019fd2a5
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: false
           tags: |
@@ -772,7 +826,9 @@ jobs:
           context: .
           target: mpi
           build-args: |
-            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest
+            MSPASS_BASE_IMAGE=ghcr.io/seisscoped/container-base:latest@sha256:737c7527bc43d2648ad4f7a8c11b9ba8fb93f14c06e06c5baae38e4e019fd2a5
+            MSPASS_VERSION=${{ needs.download-spark.outputs.mspass_version }}
+            MSPASS_VCS_REF=${{ needs.download-spark.outputs.mspass_vcs_ref }}
           platforms: linux/amd64
           push: true
           tags: |

@@ -1,4 +1,7 @@
-FROM continuumio/miniconda3:latest AS build
+FROM continuumio/miniconda3:latest@sha256:1808b31ef43e9c521cde5884ba4df9ec26d8d503a314cea787590f8550358a63 AS build
+
+ARG MSPASS_VERSION
+ARG MSPASS_VCS_REF
 
 RUN conda install -n base -y conda-build && \
     conda config --add channels conda-forge && \
@@ -6,8 +9,9 @@ RUN conda install -n base -y conda-build && \
     conda clean -afy
 
 ADD . /mspass
-ADD .git /mspass/.git
-RUN mv /mspass /mspasspy_build && cd /mspasspy_build && git status
+RUN test -n "${MSPASS_VERSION}" \
+    && test -n "${MSPASS_VCS_REF}" \
+    && mv /mspass /mspasspy_build
 
 ARG PYTHON_VERSION
 ARG TARGETARCH
@@ -22,6 +26,7 @@ RUN apt-get update --fix-missing && \
 
 RUN cd /mspasspy_build \
     && export CONDA_BUILD_DEBUG=1 \
+    && export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY="${MSPASS_VERSION}" \
     && PACKAGE_PATH=$(conda build . --python ${PYTHON_VERSION} --output) \
     && conda build . --python ${PYTHON_VERSION} --debug \
     && mkdir -p /conda-package \
