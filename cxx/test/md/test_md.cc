@@ -13,7 +13,7 @@ void print_metadata(Metadata& md)
 }
 int main(int argc, char **argv)
 {
-	char *pfname=strdup("test_md.pf");
+	const string pfname("test_md.pf");
 	try {
             cout << "Test program for Metadata object, AntelopePf, and ErrorLogger"
                 <<endl
