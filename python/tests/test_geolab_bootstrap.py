@@ -668,6 +668,18 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
     ):
         shutil.copy2(source, mounted)
         mounted.chmod(0o755)
+    frontend_check = tmp_path / "verify-geolab-frontend.py"
+    frontend_check.write_text(textwrap.dedent("""
+            import os
+
+            from distributed import Client
+
+            client = Client(os.environ["DASK_SCHEDULER_ENDPOINT"], timeout="5s")
+            try:
+                client.scheduler_info()
+            finally:
+                client.close()
+            """).lstrip())
     fake_jupyter = tmp_path / "jupyter"
     _write_executable(
         fake_jupyter,
@@ -676,16 +688,7 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         set -eu
         mongosh --host "$MSPASS_DB_ADDRESS" --port "$MONGODB_PORT" --quiet \
             --eval 'db.adminCommand({ping: 1}).ok' >/dev/null
-        python - <<'PY'
-        import os
-        from distributed import Client
-
-        client = Client(os.environ["DASK_SCHEDULER_ENDPOINT"], timeout="5s")
-        try:
-            client.scheduler_info()
-        finally:
-            client.close()
-        PY
+        python /test-bin/verify-geolab-frontend.py
         printf '%s\n' \
             "$NB_HOME|$HOME|$MSPASS_WORK_DIR|$MSPASS_WORKDIR" \
             > /test-state/frontend-ready
@@ -710,6 +713,8 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         f"{mounted_entrypoint_script}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
         "--volume",
         f"{fake_jupyter}:/test-bin/jupyter:ro",
+        "--volume",
+        f"{frontend_check}:/test-bin/verify-geolab-frontend.py:ro",
         "--volume",
         f"{state_dir}:/test-state",
         "--env",
