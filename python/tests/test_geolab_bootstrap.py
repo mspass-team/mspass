@@ -660,6 +660,14 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
     state_dir = tmp_path / "state"
     state_dir.mkdir()
     state_dir.chmod(0o777)
+    mounted_start_script = tmp_path / START_SCRIPT.name
+    mounted_entrypoint_script = tmp_path / ENTRYPOINT_SCRIPT.name
+    for source, mounted in (
+        (START_SCRIPT, mounted_start_script),
+        (ENTRYPOINT_SCRIPT, mounted_entrypoint_script),
+    ):
+        shutil.copy2(source, mounted)
+        mounted.chmod(0o755)
     fake_jupyter = tmp_path / "jupyter"
     _write_executable(
         fake_jupyter,
@@ -697,9 +705,9 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         "--name",
         container_name,
         "--volume",
-        f"{START_SCRIPT}:/usr/sbin/start-mspass-geolab.sh:ro",
+        f"{mounted_start_script}:/usr/sbin/start-mspass-geolab.sh:ro",
         "--volume",
-        f"{ENTRYPOINT_SCRIPT}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
+        f"{mounted_entrypoint_script}:/usr/sbin/start-mspass-geolab-entrypoint.sh:ro",
         "--volume",
         f"{fake_jupyter}:/test-bin/jupyter:ro",
         "--volume",
