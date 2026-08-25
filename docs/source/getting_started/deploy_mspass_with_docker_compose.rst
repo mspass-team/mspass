@@ -65,10 +65,13 @@ other important variables describe the scheduler and connect the services:
   to the cluster.  Each entry has the form ``name/host:port``.
 * ``MSPASS_SHARD_ID`` gives each shard a unique identity and keeps its data
   separate when shards share a mounted filesystem.
-* ``MSPASS_JUPYTER_PWD`` optionally sets the Jupyter password.  If it is
-  unset, Jupyter generates a login token and prints it in the frontend log.
-  An empty value permits access without a password and should be used only in
-  an appropriately protected environment.
+* ``MSPASS_MONGO_AUTH`` enables MongoDB authentication when set to ``true``.
+  It is ``false`` by default so existing local research workflows continue to
+  run without MongoDB credentials.
+* ``MONGO_INITDB_ROOT_USERNAME`` and ``MONGO_INITDB_ROOT_PASSWORD`` are
+  required only when ``MSPASS_MONGO_AUTH=true``.
+* ``MSPASS_JUPYTER_PWD`` optionally sets the Jupyter password.  The supplied
+  Compose files retain the historical ``mspass`` default.
 
 Several port variables are also available: ``JUPYTER_PORT`` defaults to
 ``8888``, ``DASK_SCHEDULER_PORT`` to ``8786``, ``SPARK_MASTER_PORT`` to
@@ -117,7 +120,8 @@ log with:
 
 Open ``http://127.0.0.1:8888/`` in a browser and enter the password
 ``mspass``.  The Dask dashboard is available at
-``http://127.0.0.1:8787/status``.
+``http://127.0.0.1:8787/status``.  All published service ports in the supplied
+files are bound to the host loopback interface.
 
 When finished, stop and remove the containers with:
 
@@ -132,16 +136,30 @@ scripts create ``db/`` for MongoDB data, ``logs/`` for service logs, and
 Common adjustments
 ------------------
 
-The supplied file is intended for local use.  It publishes service ports on
-all host interfaces, uses the known Jupyter password ``mspass``, and does not
-enable MongoDB authentication.  On an untrusted network, choose a private
-Jupyter password and bind published ports to loopback; for example, change
-``8888:8888`` to ``127.0.0.1:8888:8888``.
+The supplied files bind every published service port to ``127.0.0.1`` and do
+not enable MongoDB authentication by default.  This preserves the existing
+low-friction behavior for a local research workstation.  To opt in, define all
+three authentication variables before starting Compose:
+
+.. code-block:: bash
+
+   export MSPASS_MONGO_AUTH=true
+   export MONGO_INITDB_ROOT_USERNAME=mspass
+   read -r -s -p "MongoDB password: " MONGO_INITDB_ROOT_PASSWORD
+   echo
+   export MONGO_INITDB_ROOT_PASSWORD
+   docker compose up -d
+
+When authentication is enabled, the database, health checks, and frontend use
+the same credentials.  Keep them private.  Review firewall and authentication
+requirements separately before changing a binding to a non-loopback host
+address.
 
 Other common changes are:
 
 * Change the host side of a port mapping if a port is already in use.  For
-  example, ``9999:8888`` makes JupyterLab available on host port ``9999``.
+  example, ``127.0.0.1:9999:8888`` makes JupyterLab available on host port
+  ``9999`` without publishing it on other host interfaces.
 * Adjust ``MSPASS_WORKER_ARG`` to change the number of Dask worker processes.
   Do not request more CPU or memory than Docker has available.
 * Add the same bind mount to every service that needs access to waveform data
