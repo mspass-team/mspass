@@ -103,7 +103,8 @@ def test_resolved_dask_compose_uses_protocol_probe_and_health_gating(compose_pat
 
 
 def _write_fake_distributed_module(tmp_path):
-    (tmp_path / "distributed.py").write_text("""import os
+    (tmp_path / "distributed.py").write_text(
+        """import os
 from pathlib import Path
 
 
@@ -128,7 +129,8 @@ class Client:
         _record("close")
         if os.environ["PROBE_FAILURE"] == "close":
             raise RuntimeError("close failed")
-""")
+"""
+    )
 
 
 @pytest.mark.parametrize(
