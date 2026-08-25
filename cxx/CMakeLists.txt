@@ -150,6 +150,12 @@ else()
 endif()
 
 if (Python_FOUND)
+  # Preserve the dependent system libraries required by static libpython.
+  # FindPython records them on its imported embedding target, but not in the
+  # legacy Python_LIBRARIES path list used by the native test targets below.
+  if (TARGET Python::Python)
+    set (Python_LIBRARIES Python::Python)
+  endif ()
   find_package (pybind11)
   if (NOT pybind11_FOUND)
     message (STATUS "Building Pybind11")
