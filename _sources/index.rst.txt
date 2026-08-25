@@ -126,6 +126,7 @@ Choose your path
    user_manual/FAQ
    user_manual/development_strategies
    CMake dependency maintenance <getting_started/cmake_dependency_maintenance>
+   Static analysis and sanitizer gates <getting_started/static_gates_ci>
 
 .. toctree::
    :maxdepth: 2
