@@ -669,7 +669,9 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
         shutil.copy2(source, mounted)
         mounted.chmod(0o755)
     frontend_check = tmp_path / "verify-geolab-frontend.py"
-    frontend_check.write_text(textwrap.dedent("""
+    frontend_check.write_text(
+        textwrap.dedent(
+            """
             import os
 
             from distributed import Client
@@ -679,7 +681,9 @@ def test_live_geolab_container_startup_readiness_and_cleanup(tmp_path):
                 client.scheduler_info()
             finally:
                 client.close()
-            """).lstrip())
+            """
+        ).lstrip()
+    )
     fake_jupyter = tmp_path / "jupyter"
     _write_executable(
         fake_jupyter,
