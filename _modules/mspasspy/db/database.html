@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev99+g85eba33cc documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev100+gf50a69c20 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=e47ea689"></script>
+    <script src="../../../_static/documentation_options.js?v=9c15c12c"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev99" />
+  <meta name="docsearch:version" content="2.4.4.dev100" />
   </head>
   
   
@@ -3851,6 +3851,16 @@
         <span class="c1"># Now handle update of sample data.  The gridfs method used here</span>
         <span class="c1"># handles that correctly based on the gridfs id.</span>
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">original_storage_mode</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">"storage_mode"</span> <span class="ow">in</span> <span class="n">mspass_object</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">original_has_gridfs_id</span> <span class="o">=</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span>
+            <span class="n">original_gridfs_id</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="k">if</span> <span class="n">original_has_gridfs_id</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="n">file_to_gridfs_transition</span> <span class="o">=</span> <span class="n">original_storage_mode</span> <span class="o">==</span> <span class="s2">"file"</span>
             <span class="k">if</span> <span class="s2">"storage_mode"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
                 <span class="n">storage_mode</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
@@ -3862,6 +3872,8 @@
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
+                    <span class="k">if</span> <span class="n">file_to_gridfs_transition</span><span class="p">:</span>
+                        <span class="n">update_record</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                     <span class="n">alg_name</span><span class="p">,</span>
@@ -3872,7 +3884,10 @@
                 <span class="n">update_record</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
             <span class="c1"># Supplying the replacement id lets rollback remove a blob even</span>
             <span class="c1"># when GridFS writes it and then raises an exception.</span>
-            <span class="n">staged_gridfs_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span> <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="c1"># A file-backed datum never treats a stale gridfs_id as its active</span>
+            <span class="c1"># sample reference; storage_mode remains authoritative.</span>
+            <span class="n">active_old_gridfs_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">file_to_gridfs_transition</span> <span class="k">else</span> <span class="n">old_gridfs_id</span>
+            <span class="n">staged_gridfs_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span> <span class="k">if</span> <span class="n">active_old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">new_gridfs_id</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -3908,7 +3923,6 @@
                             <span class="s2">"to the waveform"</span><span class="p">,</span>
                             <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                         <span class="p">)</span>
-
                 <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_id"</span>
                     <span class="c1"># FIXME I think here we should check if elog_id field exists in the mspass_object</span>
@@ -3933,13 +3947,15 @@
                     <span class="p">)</span>
 
                 <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}</span>
-                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">filter_</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
+                <span class="k">if</span> <span class="n">active_old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">filter_</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">active_old_gridfs_id</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="n">update_record</span><span class="p">})</span>
-                <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">matched_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">active_old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">file_to_gridfs_transition</span>
+                <span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">matched_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                        <span class="s2">"Database.update_data could not replace the expected "</span>
-                        <span class="s2">"GridFS reference"</span><span class="p">,</span>
+                        <span class="s2">"Database.update_data could not commit the new GridFS "</span>
+                        <span class="s2">"reference"</span><span class="p">,</span>
                         <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">original_error</span><span class="p">:</span>
@@ -3960,10 +3976,12 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">cleanup_error</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">original_error</span> <span class="kn">from</span><span class="w"> </span><span class="nn">cleanup_error</span>
                 <span class="k">finally</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_gridfs_id</span>
+                    <span class="k">if</span> <span class="n">original_has_gridfs_id</span><span class="p">:</span>
+                        <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_gridfs_id</span>
                     <span class="k">elif</span> <span class="s2">"gridfs_id"</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
                         <span class="n">mspass_object</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">file_to_gridfs_transition</span><span class="p">:</span>
+                        <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_storage_mode</span>
                 <span class="k">raise</span>
             <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
             <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
@@ -3975,11 +3993,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_reset_processing_history</span><span class="p">(</span>
                     <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">history_save_uuid</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="n">old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">active_old_gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">old_gridfs_id</span><span class="p">):</span>
-                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">old_gridfs_id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">active_old_gridfs_id</span><span class="p">):</span>
+                        <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">active_old_gridfs_id</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                         <span class="n">alg_name</span><span class="p">,</span>
