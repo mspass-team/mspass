@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev92+g2860e604e documentation</title>
+    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev93+g017f35995 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=c509e5c8"></script>
+    <script src="../_static/documentation_options.js?v=27703dbd"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.seismic" href="mspasspy.seismic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev92" />
+  <meta name="docsearch:version" content="2.4.4.dev93" />
   </head>
   
   
@@ -1564,9 +1564,12 @@ mspass/data/yaml/Janitor.yaml to see the format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keeper_file</strong> (<em>string defining yaml file name.  Default is None
-which assumed a default path</em><em> of </em><em>$MSPASS_HOME/data/yaml/Janitor.yaml.</em>) – yaml file containing the keys to be retained
-for TimeSeries and Seismogram objects.</p></li>
+<li><p><strong>keepers_file</strong> (<em>string defining yaml file name.  Default is None</em><em>,
+</em><em>which uses $MSPASS_HOME/data/yaml/Janitor.yaml when MSPASS_HOME is set
+and the installed package-data Janitor.yaml otherwise.</em>) – yaml file containing the keys to be retained
+for TimeSeries and Seismogram objects.  Relative paths are resolved
+against the caller’s current working directory.  A bare filename that
+is absent there falls back to the installed package-data directory.</p></li>
 <li><p><strong>TimeSeries_keepers</strong> (<em>assumeed to be a list</em><em> of </em><em>strings</em><em> of
 </em><em>attributes to be retained for TimeSeries objects.
 Default is None which causes this

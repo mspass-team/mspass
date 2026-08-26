@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.Janitor &#8212; MsPASS 2.4.4.dev92+g2860e604e documentation</title>
+    <title>mspasspy.util.Janitor &#8212; MsPASS 2.4.4.dev93+g017f35995 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=c509e5c8"></script>
+    <script src="../../../_static/documentation_options.js?v=27703dbd"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev92" />
+  <meta name="docsearch:version" content="2.4.4.dev93" />
   </head>
   
   
@@ -483,6 +483,8 @@
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="n">MsPASSError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -547,10 +549,13 @@
 <span class="sd">    keys "TimeSeries" and "Seismogram".   See the default in</span>
 <span class="sd">    mspass/data/yaml/Janitor.yaml to see the format.</span>
 
-<span class="sd">    :param keeper_file:   yaml file containing the keys to be retained</span>
-<span class="sd">      for TimeSeries and Seismogram objects.</span>
-<span class="sd">    :type keeper_file:  string defining yaml file name.  Default is None</span>
-<span class="sd">      which assumed a default path of $MSPASS_HOME/data/yaml/Janitor.yaml.</span>
+<span class="sd">    :param keepers_file:   yaml file containing the keys to be retained</span>
+<span class="sd">      for TimeSeries and Seismogram objects.  Relative paths are resolved</span>
+<span class="sd">      against the caller's current working directory.  A bare filename that</span>
+<span class="sd">      is absent there falls back to the installed package-data directory.</span>
+<span class="sd">    :type keepers_file:  string defining yaml file name.  Default is None,</span>
+<span class="sd">      which uses $MSPASS_HOME/data/yaml/Janitor.yaml when MSPASS_HOME is set</span>
+<span class="sd">      and the installed package-data Janitor.yaml otherwise.</span>
 <span class="sd">    :param TimeSeries_keepers:  Use to override list defined in yaml</span>
 <span class="sd">      file for TimeSeries objects.  If defined, it</span>
 <span class="sd">      should be list of attributes to be retained.  Use this option</span>
@@ -594,27 +599,33 @@
         <span class="n">ensemble_keepers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">process_ensemble_members</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="n">package_data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">"data/yaml"</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">package_data_directory</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">"MSPASS_HOME"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="n">package_data_directory</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MSPASS_HOME"</span><span class="p">])</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"data/yaml"</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">keepers_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">"MSPASS_HOME"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                <span class="n">keepers_file</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MSPASS_HOME"</span><span class="p">])</span>
-                    <span class="o">+</span> <span class="s2">"/data/yaml/Janitor.yaml"</span>
+                <span class="n">keepers_path</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MSPASS_HOME"</span><span class="p">])</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="s2">"data/yaml/Janitor.yaml"</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/../data/yaml/Janitor.yaml"</span>
-                <span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">keepers_file</span><span class="p">):</span>
-            <span class="k">if</span> <span class="s2">"MSPASS_HOME"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-                <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"MSPASS_HOME"</span><span class="p">]),</span>
-                    <span class="s2">"data/yaml"</span><span class="p">,</span>
-                    <span class="n">keepers_file</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">keepers_path</span> <span class="o">=</span> <span class="n">package_data_directory</span> <span class="o">/</span> <span class="s2">"Janitor.yaml"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">keepers_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">"../data/yaml"</span><span class="p">,</span> <span class="n">keepers_file</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">requested_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">keepers_file</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">requested_path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+                <span class="n">keepers_path</span> <span class="o">=</span> <span class="n">requested_path</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">caller_path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="n">requested_path</span>
+                <span class="k">if</span> <span class="n">caller_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="n">keepers_path</span> <span class="o">=</span> <span class="n">caller_path</span>
+                <span class="k">elif</span> <span class="n">requested_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
+                    <span class="n">keepers_path</span> <span class="o">=</span> <span class="n">package_data_directory</span> <span class="o">/</span> <span class="n">requested_path</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">keepers_path</span> <span class="o">=</span> <span class="n">caller_path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">keepers_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">keepers_path</span><span class="p">)</span>
+        <span class="n">keepers_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">keepers_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">keepers_file</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
                 <span class="n">keepers_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
@@ -624,19 +635,21 @@
                 <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
                 <span class="s2">"Fatal"</span><span class="p">,</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-        <span class="k">except</span> <span class="ne">EnvironmentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
                 <span class="s2">"Janitor constructor:  Cannot open keepers_file = "</span> <span class="o">+</span> <span class="n">keepers_file</span><span class="p">,</span>
                 <span class="s2">"Fatal"</span><span class="p">,</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_yaml_file</span><span class="p">(</span><span class="n">keepers_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_ensemble_members</span> <span class="o">=</span> <span class="n">process_ensemble_members</span>
-        <span class="k">if</span> <span class="n">TimeSeries_keepers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">TimeSeries_keepers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">TimeSeries_keepers</span> <span class="o">=</span> <span class="n">TimeSeries_keepers</span>
-        <span class="k">if</span> <span class="n">Seismogram_keepers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Seismogram_keepers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Seismogram_keepers</span> <span class="o">=</span> <span class="n">Seismogram_keepers</span>
-        <span class="k">if</span> <span class="n">ensemble_keepers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ensemle_keepers</span> <span class="o">=</span> <span class="n">ensemble_keepers</span>
+        <span class="k">if</span> <span class="n">ensemble_keepers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ensemble_keepers</span> <span class="o">=</span> <span class="n">ensemble_keepers</span>
 
 <div class="viewcode-block" id="Janitor.clean">
 <a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.Janitor.Janitor.clean">[docs]</a>
