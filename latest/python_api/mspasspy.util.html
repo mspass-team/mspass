@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev95+g6a80fe14b documentation</title>
+    <title>mspasspy.util &#8212; MsPASS 2.4.4.dev94+g9c061a93d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e62e789e"></script>
+    <script src="../_static/documentation_options.js?v=9b7c948f"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.seismic" href="mspasspy.seismic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev95" />
+  <meta name="docsearch:version" content="2.4.4.dev94" />
   </head>
   
   
@@ -2035,11 +2035,13 @@ the Monty Python movie “Search for the Holy Grail”.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – must be either a TimeSeriesEnsemble or SeismogramEnsemble of
 data to be processed.</p></li>
-<li><p><strong>bury</strong> – if true the bury method will be called on each dead
-member before returning.</p></li>
-<li><p><strong>save_history</strong> – option forwarded to bury for every dead member.</p></li>
-<li><p><strong>mummify_atomic_data</strong> – option forwarded to bury for every dead
-member.</p></li>
+<li><p><strong>bury</strong> – if true the bury method will be called on the
+ensemble of dead data before returning.   Note a limitation of
+using this method is there is no way to save the optional
+history data via this method.  If you need to save history
+run this with bury=False and then run bury with save_history
+true on the dead ensemble.   There is also no way to specify
+an alternative to the default collection name of “cemetery”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2109,8 +2111,7 @@ MongoDB collection hard wired into the _save_history method of
 Database.  Default is False</p></li>
 <li><p><strong>mummify_atomic_data</strong> – When True (default) atomic data
 marked dead will be passed through self.mummify to reduce
-memory use of the remains.  For ensembles this option is forwarded
-when each dead member is buried.</p></li>
+memory use of the remains.   This parameter is ignored for ensembles.</p></li>
 </ul>
 </dd>
 </dl>
