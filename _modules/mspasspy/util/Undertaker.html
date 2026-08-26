@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.4.dev93+g017f35995 documentation</title>
+    <title>mspasspy.util.Undertaker &#8212; MsPASS 2.4.4.dev96+ga10429c4e documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=27703dbd"></script>
+    <script src="../../../_static/documentation_options.js?v=36b72ba7"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev93" />
+  <meta name="docsearch:version" content="2.4.4.dev96" />
   </head>
   
   
@@ -715,7 +715,8 @@
 
 <span class="sd">        :param mummify_atomic_data:  When True (default) atomic data</span>
 <span class="sd">          marked dead will be passed through self.mummify to reduce</span>
-<span class="sd">          memory use of the remains.   This parameter is ignored for ensembles.</span>
+<span class="sd">          memory use of the remains.  For ensembles this option is forwarded</span>
+<span class="sd">          when each dead member is buried.</span>
 <span class="sd">        """</span>
         <span class="c1"># set as symbol to mesh with Database api.  It would make no sense</span>
         <span class="c1"># to ever set this False.  Done this way to make that clear</span>
@@ -766,15 +767,20 @@
                 <span class="n">newens</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">nlive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"Undertaker.bury"</span><span class="p">,</span>
-                    <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
+                    <span class="s2">"Undertaker.bury: Coding error - newens constructor section "</span>
+                    <span class="s2">"has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code "</span>
+                    <span class="s2">"was incorrectly changed"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                     <span class="n">newens</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span> <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                        <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="n">mummify_atomic_data</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="k">if</span> <span class="n">nlive</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">newens</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">newens</span>
@@ -853,8 +859,9 @@
                 <span class="n">newens</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">nlive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"Undertaker.cremate:  "</span><span class="p">,</span>
-                    <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
+                    <span class="s2">"Undertaker.cremate: Coding error - newens constructor section "</span>
+                    <span class="s2">"has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code "</span>
+                    <span class="s2">"was incorrectly changed"</span><span class="p">,</span>
                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
@@ -896,13 +903,11 @@
 
 <span class="sd">        :param d:  must be either a TimeSeriesEnsemble or SeismogramEnsemble of</span>
 <span class="sd">           data to be processed.</span>
-<span class="sd">        :param bury:  if true the bury method will be called on the</span>
-<span class="sd">           ensemble of dead data before returning.   Note a limitation of</span>
-<span class="sd">           using this method is there is no way to save the optional</span>
-<span class="sd">           history data via this method.  If you need to save history</span>
-<span class="sd">           run this with bury=False and then run bury with save_history</span>
-<span class="sd">           true on the dead ensemble.   There is also no way to specify</span>
-<span class="sd">           an alternative to the default collection name of "cemetery"</span>
+<span class="sd">        :param bury:  if true the bury method will be called on each dead</span>
+<span class="sd">           member before returning.</span>
+<span class="sd">        :param save_history:  option forwarded to bury for every dead member.</span>
+<span class="sd">        :param mummify_atomic_data:  option forwarded to bury for every dead</span>
+<span class="sd">           member.</span>
 <span class="sd">        :return: python list with two elements. 0 is ensemble with live data</span>
 <span class="sd">           and 1 is ensemble with dead data.</span>
 <span class="sd">        :rtype:  python list with two components</span>
@@ -932,8 +937,9 @@
             <span class="n">bodies</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">ensmd</span><span class="p">,</span> <span class="n">ndead</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                <span class="s2">"Undertaker.bring_out_your_dead"</span><span class="p">,</span>
-                <span class="s2">"Coding error - newens constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless the original code was incorrectly changed"</span><span class="p">,</span>
+                <span class="s2">"Undertaker.bring_out_your_dead: Coding error - newens "</span>
+                <span class="s2">"constructor section has invalid type</span><span class="se">\n</span><span class="s2">That cannot happen unless "</span>
+                <span class="s2">"the original code was incorrectly changed"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -941,10 +947,12 @@
                 <span class="n">newens</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">bodies</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-                <span class="c1"># Note we don't support save_history through this</span>
-                <span class="c1"># mechanism.</span>
                 <span class="k">if</span> <span class="n">bury</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span>
+                        <span class="n">x</span><span class="p">,</span>
+                        <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                        <span class="n">mummify_atomic_data</span><span class="o">=</span><span class="n">mummify_atomic_data</span><span class="p">,</span>
+                    <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newens</span><span class="o">.</span><span class="n">member</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">newens</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">newens</span><span class="p">,</span> <span class="n">bodies</span><span class="p">]</span></div>
@@ -1109,7 +1117,8 @@
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">"Warning:  dead datum has is_abortion attribute undefined - assumed False</span><span class="se">\n</span><span class="s2">"</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="s2">"MsPASS readers should always set this attribute"</span>
                 <span class="n">err</span> <span class="o">=</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"Undertaker._is_abortion"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span>
+                    <span class="s2">"Undertaker._is_abortion: "</span> <span class="o">+</span> <span class="n">message</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
