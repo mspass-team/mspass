@@ -108,7 +108,14 @@ the docstring pages for detailed and most up to date usage:
     Each atomic datum is stored as an independent object.  Reading the saved
     waveform requires passing a compatible client to
     :code:`db.read_data(..., object_store_client=s3_client)`.  Authentication
-    and client lifetime are intentionally managed by the caller.
+    and client lifetime are intentionally managed by the caller.  Native
+    binary samples use the versioned :code:`float64-le-v1` encoding (IEEE 754
+    64-bit floats in little-endian byte order); formatted writes use the
+    selected ObsPy format.  If a later MongoDB write fails, :code:`save_data`
+    removes any uploaded objects that have not acquired waveform documents
+    and reports their full S3 locations if that compensation also fails.
+    :code:`update_data` does not replace samples for object-store data; save a
+    new datum with :code:`save_data` instead.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before

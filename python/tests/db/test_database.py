@@ -8,6 +8,7 @@ from pathlib import Path
 import gridfs
 import numpy as np
 import obspy
+import pymongo.errors
 import pytest
 import sys
 import re
@@ -482,6 +483,11 @@ class TestDatabase:
         originals = [get_live_timeseries(), get_live_seismogram()]
         collections = ["wf_TimeSeries", "wf_Seismogram"]
         for original, collection in zip(originals, collections):
+            original["gridfs_id"] = ObjectId()
+            original["dir"] = "/stale"
+            original["dfile"] = "stale.dat"
+            original["foff"] = 100
+            original["url"] = "https://invalid.example/stale"
             saved = self.db.save_data(
                 original,
                 storage_mode="object_store",
@@ -494,13 +500,33 @@ class TestDatabase:
             assert location["provider"] == "s3"
             assert location["bucket"] == bucket
             assert location["object_name"].startswith("waveforms/")
+            assert location["encoding"] == "float64-le-v1"
+            assert "gridfs_id" not in saved
+            assert "dir" not in saved
+            assert "dfile" not in saved
+            assert "foff" not in saved
+            assert "url" not in saved
             assert saved["nbytes"] == 8 * saved.npts * (
                 1 if isinstance(saved, TimeSeries) else 3
             )
+            response = s3_client.get_object(
+                Bucket=location["bucket"], Key=location["object_name"]
+            )
+            try:
+                assert response["Body"].read() == np.asarray(
+                    original.data, dtype="<f8"
+                ).tobytes(order="C")
+            finally:
+                response["Body"].close()
 
             document = self.db[collection].find_one({"_id": saved["_id"]})
             assert document["storage_mode"] == "object_store"
             assert document["object_store"] == location
+            assert "gridfs_id" not in document
+            assert "dir" not in document
+            assert "dfile" not in document
+            assert "foff" not in document
+            assert "url" not in document
             loaded = self.db.read_data(
                 document,
                 collection=collection,
@@ -543,26 +569,32 @@ class TestDatabase:
         s3_client = boto3.client("s3", region_name="us-east-1")
         bucket = "mspass-object-store-mseed-test"
         s3_client.create_bucket(Bucket=bucket)
-        original = get_live_timeseries()
-        saved = self.db.save_data(
-            original,
-            storage_mode="object_store",
-            format="MSEED",
-            object_store={"provider": "s3", "bucket": bucket},
-            object_store_client=s3_client,
-            return_data=True,
-        )
+        for original, collection in (
+            (get_live_timeseries(), "wf_TimeSeries"),
+            (get_live_seismogram(), "wf_Seismogram"),
+        ):
+            saved = self.db.save_data(
+                original,
+                storage_mode="object_store",
+                format="MSEED",
+                object_store={"provider": "s3", "bucket": bucket},
+                object_store_client=s3_client,
+                return_data=True,
+            )
 
-        assert saved["format"] == "MSEED"
-        assert saved["object_store"]["object_name"].endswith(".mseed")
-        document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
-        loaded = self.db.read_data(
-            document,
-            collection="wf_TimeSeries",
-            object_store_client=s3_client,
-        )
-        assert loaded.live
-        np.testing.assert_allclose(np.asarray(loaded.data), np.asarray(original.data))
+            assert saved["format"] == "MSEED"
+            assert saved["object_store"]["object_name"].endswith(".mseed")
+            assert "encoding" not in saved["object_store"]
+            document = self.db[collection].find_one({"_id": saved["_id"]})
+            loaded = self.db.read_data(
+                document,
+                collection=collection,
+                object_store_client=s3_client,
+            )
+            assert loaded.live
+            np.testing.assert_allclose(
+                np.asarray(loaded.data), np.asarray(original.data)
+            )
 
     @mock_aws
     def test_object_store_reports_client_and_payload_errors(self):
@@ -594,6 +626,7 @@ class TestDatabase:
                     "provider": "s3",
                     "bucket": bucket,
                     "object_name": "missing.bin",
+                    "encoding": "float64-le-v1",
                 },
             }
         )
@@ -625,6 +658,174 @@ class TestDatabase:
                 collection="wf_TimeSeries",
                 object_store_client=unavailable_client,
             )
+
+    def test_object_store_partial_ensemble_upload_is_compensated(self):
+        ensemble = TimeSeriesEnsemble()
+        ensemble.member.append(get_live_timeseries())
+        ensemble.member.append(get_live_timeseries())
+        ensemble.set_live()
+        object_store_client = Mock()
+        object_store_client.put_object.side_effect = [
+            {},
+            botocore.exceptions.EndpointConnectionError(
+                endpoint_url="https://s3.invalid"
+            ),
+        ]
+
+        with pytest.raises(MsPASSError, match="Error while writing"):
+            self.db._save_sample_data_to_object_store(
+                ensemble,
+                {"provider": "s3", "bucket": "test-bucket"},
+                object_store_client,
+            )
+
+        uploads = [
+            call.kwargs for call in object_store_client.put_object.call_args_list
+        ]
+        deletions = [
+            call.kwargs for call in object_store_client.delete_object.call_args_list
+        ]
+        assert {(deletion["Bucket"], deletion["Key"]) for deletion in deletions} == {
+            (upload["Bucket"], upload["Key"]) for upload in uploads
+        }
+        assert "object_store" not in ensemble.member[0]
+
+    def test_object_store_compensation_reports_unreconciled_object(self):
+        ensemble = TimeSeriesEnsemble()
+        ensemble.member.append(get_live_timeseries())
+        ensemble.member.append(get_live_timeseries())
+        ensemble.set_live()
+        object_store_client = Mock()
+        object_store_client.put_object.side_effect = [
+            {},
+            botocore.exceptions.EndpointConnectionError(
+                endpoint_url="https://s3.invalid"
+            ),
+        ]
+        object_store_client.delete_object.side_effect = (
+            botocore.exceptions.EndpointConnectionError(
+                endpoint_url="https://s3.invalid"
+            )
+        )
+
+        with pytest.raises(MsPASSError, match="could not remove: s3://test-bucket/"):
+            self.db._save_sample_data_to_object_store(
+                ensemble,
+                {"provider": "s3", "bucket": "test-bucket"},
+                object_store_client,
+            )
+
+    @mock_aws
+    def test_object_store_mongodb_failure_is_compensated(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-mongodb-failure-test"
+        s3_client.create_bucket(Bucket=bucket)
+
+        with patch.object(
+            Collection,
+            "insert_one",
+            side_effect=pymongo.errors.OperationFailure("forced failure"),
+        ):
+            with pytest.raises(pymongo.errors.OperationFailure, match="forced"):
+                self.db.save_data(
+                    get_live_timeseries(),
+                    storage_mode="object_store",
+                    object_store={"provider": "s3", "bucket": bucket},
+                    object_store_client=s3_client,
+                    save_history=False,
+                )
+
+        assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
+
+    @mock_aws
+    def test_update_data_rejects_object_store_and_ignores_stale_gridfs_id(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-update-test"
+        s3_client.create_bucket(Bucket=bucket)
+        saved = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+            save_history=False,
+        )
+        gfsh = gridfs.GridFS(self.db)
+        unrelated_gridfs_id = gfsh.put(b"unrelated")
+        saved["gridfs_id"] = unrelated_gridfs_id
+
+        with pytest.raises(ValueError, match="does not support sample updates"):
+            self.db.update_data(saved, save_history=False)
+
+        assert gfsh.exists(unrelated_gridfs_id)
+        document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+        assert document["storage_mode"] == "object_store"
+        assert document["object_store"] == saved["object_store"]
+        gfsh.delete(unrelated_gridfs_id)
+
+    @mock_aws
+    def test_object_store_lite_schema_round_trip(self):
+        alternate_db_name = "dbtest_object_store_lite"
+        alternate_db = Database(
+            self.db.client, alternate_db_name, schema="mspass_lite.yaml"
+        )
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-lite-schema-test"
+        s3_client.create_bucket(Bucket=bucket)
+        try:
+            original = get_live_timeseries()
+            saved = alternate_db.save_data(
+                original,
+                storage_mode="object_store",
+                object_store={"provider": "s3", "bucket": bucket},
+                object_store_client=s3_client,
+                return_data=True,
+                mode="pedantic",
+            )
+            document = alternate_db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+            loaded = alternate_db.read_data(
+                document,
+                collection="wf_TimeSeries",
+                mode="pedantic",
+                object_store_client=s3_client,
+            )
+            np.testing.assert_allclose(
+                np.asarray(loaded.data), np.asarray(original.data)
+            )
+        finally:
+            self.db.client.drop_database(alternate_db_name)
+
+    def test_object_store_rejects_incapable_custom_schema_before_upload(self):
+        custom_schema = copy.deepcopy(self.db.metadata_schema)
+        custom_schema.TimeSeries._main_dic.pop("object_store")
+        custom_db = Database(
+            self.db.client,
+            "dbtest_object_store_custom_schema",
+            db_schema=self.db.database_schema,
+            md_schema=custom_schema,
+        )
+        object_store_client = Mock()
+
+        with pytest.raises(ValueError, match="object_store is undefined"):
+            custom_db.save_data(
+                get_live_timeseries(),
+                storage_mode="object_store",
+                object_store={"provider": "s3", "bucket": "test-bucket"},
+                object_store_client=object_store_client,
+                mode="cautious",
+            )
+
+        object_store_client.put_object.assert_not_called()
+        with pytest.raises(ValueError, match="object_store is excluded"):
+            self.db.save_data(
+                get_live_timeseries(),
+                storage_mode="object_store",
+                object_store={"provider": "s3", "bucket": "test-bucket"},
+                object_store_client=object_store_client,
+                exclude_keys=["object_store"],
+                mode="promiscuous",
+            )
+        object_store_client.put_object.assert_not_called()
 
     def test_mspass_type_helper(self):
         schema = self.metadata_def.Seismogram

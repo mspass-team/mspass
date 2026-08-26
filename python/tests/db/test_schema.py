@@ -12,6 +12,25 @@ from mspasspy.db.schema import (
 )
 
 
+@pytest.mark.parametrize(
+    "schema_file",
+    ["mspass.yaml", "mspass_lite.yaml", "mspass_fdsn.yaml", "mspass_s3.yaml"],
+)
+def test_shipped_schemas_support_object_store_writes(schema_file):
+    metadata_schema = MetadataSchema(schema_file)
+    required_attributes = {
+        "storage_mode": str,
+        "object_store": dict,
+        "format": str,
+        "nbytes": int,
+    }
+    for data_schema in (metadata_schema.TimeSeries, metadata_schema.Seismogram):
+        for key, expected_type in required_attributes.items():
+            assert data_schema.is_defined(key)
+            assert data_schema.type(key) is expected_type
+            assert data_schema.writeable(key)
+
+
 class TestSchema:
     def setup_class(self):
         self.mdschema = MetadataSchema()
