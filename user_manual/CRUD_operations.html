@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.4.dev101+g6d7b82c98 documentation</title>
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.4.dev102+gb311abfd1 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=99ce0e14"></script>
+    <script src="../_static/documentation_options.js?v=2de660c5"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev101" />
+  <meta name="docsearch:version" content="2.4.4.dev102" />
   </head>
   
   
@@ -884,13 +884,16 @@ A good starting point is to look at the signature of the simple core delete
 method of the Database class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span>
                 <span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>As with the read methods, <code class="code docutils literal notranslate"><span class="pre">object_id</span></code> is the ObjectId of the waveform
 document that references the data to be deleted.  <code class="code docutils literal notranslate"><span class="pre">object_type</span></code> must be
 either <code class="code docutils literal notranslate"><span class="pre">&quot;TimeSeries&quot;</span></code> or <code class="code docutils literal notranslate"><span class="pre">&quot;Seismogram&quot;</span></code> and selects the
-corresponding waveform collection.
+corresponding default waveform collection.  Set <code class="code docutils literal notranslate"><span class="pre">collection</span></code> to a
+schema-defined waveform collection of that type to delete from an explicit
+collection instead.
 Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)

@@ -441,12 +441,15 @@ method of the Database class:
 
   def delete_data(self, object_id, object_type,
                   remove_unreferenced_files=False,
-                  clear_history=True, clear_elog=True):
+                  clear_history=True, clear_elog=True,
+                  collection=None):
 
 As with the read methods, :code:`object_id` is the ObjectId of the waveform
 document that references the data to be deleted.  :code:`object_type` must be
 either :code:`"TimeSeries"` or :code:`"Seismogram"` and selects the
-corresponding waveform collection.
+corresponding default waveform collection.  Set :code:`collection` to a
+schema-defined waveform collection of that type to delete from an explicit
+collection instead.
 Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)

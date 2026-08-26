@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev101+g6d7b82c98 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev102+gb311abfd1 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=99ce0e14"></script>
+    <script src="../_static/documentation_options.js?v=2de660c5"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev101" />
+  <meta name="docsearch:version" content="2.4.4.dev102" />
   </head>
   
   
@@ -833,7 +833,7 @@ document in a timeseries collection expires.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.delete_data">
-<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unreferenced_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unreferenced_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_data" title="Link to this definition">#</a></dt>
 <dd><p>Delete method for handling mspass data objects (TimeSeries and Seismograms).</p>
 <p>Delete is one of the basic operations any database system should
 support (the last letter of the acronymn CRUD is delete).  Deletion is
@@ -862,6 +862,8 @@ commands to delete waveform files.</p>
 <li><p><strong>remove_unreferenced_files</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will try to remove the file that no wf data is referencing. Default to be <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 <li><p><strong>clear_history</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the processing history of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 <li><p><strong>clear_elog</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the elog entries of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>collection</strong> – explicit waveform collection containing the object. If
+omitted, use the default collection for <code class="docutils literal notranslate"><span class="pre">object_type</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
