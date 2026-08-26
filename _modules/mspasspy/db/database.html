@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev100+gf50a69c20 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev101+g6d7b82c98 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=9c15c12c"></script>
+    <script src="../../../_static/documentation_options.js?v=99ce0e14"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev100" />
+  <meta name="docsearch:version" content="2.4.4.dev101" />
   </head>
   
   
@@ -2548,28 +2548,40 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">print_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"</span><span class="si">{}{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_helper</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">))</span>
 
-        <span class="c1"># 3. try to fix the mismtach errors in the doc</span>
-        <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># 3. try to fix the mismtach errors in the doc.  Record only the</span>
+        <span class="c1"># fields this clean operation changes so an unrelated concurrent</span>
+        <span class="c1"># update cannot be overwritten by the scanned snapshot.</span>
+        <span class="n">set_updates</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">unset_updates</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">"_id"</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="c1"># if not the schema keys, ignore schema type check enforcement</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
                 <span class="c1"># delete undefined attributes in the doc if delete_undefined is True</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">delete_undefined</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">delete_undefined</span><span class="p">:</span>
+                    <span class="n">unset_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+                <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># try to rename the user specified keys</span>
                     <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rename_undefined</span><span class="p">:</span>
-                        <span class="n">update_dict</span><span class="p">[</span><span class="n">rename_undefined</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">update_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="n">new_key</span> <span class="o">=</span> <span class="n">rename_undefined</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">new_key</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                            <span class="n">set_updates</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                            <span class="n">unset_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+                        <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">set_updates</span><span class="p">:</span>
+                            <span class="n">set_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">set_updates</span><span class="p">:</span>
+                        <span class="n">set_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="k">continue</span>
             <span class="c1"># to remove aliases, get the unique key name defined in the schema</span>
             <span class="n">unique_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">unique_k</span><span class="p">)):</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">update_dict</span><span class="p">[</span><span class="n">unique_k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">(</span>
+                    <span class="n">set_updates</span><span class="p">[</span><span class="n">unique_k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">(</span>
                         <span class="n">unique_k</span>
                     <span class="p">)(</span><span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">unique_k</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                        <span class="n">unset_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
                     <span class="n">print_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="s2">"</span><span class="si">{}</span><span class="s2">attribute </span><span class="si">{}</span><span class="s2"> conversion from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> is done."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="n">log_helper</span><span class="p">,</span>
@@ -2583,6 +2595,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">fixed_cnt</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="k">except</span><span class="p">:</span>
+                    <span class="n">unset_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
                     <span class="n">print_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="s2">"</span><span class="si">{}</span><span class="s2">attribute </span><span class="si">{}</span><span class="s2"> conversion from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> cannot be done."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                             <span class="n">log_helper</span><span class="p">,</span>
@@ -2592,13 +2605,25 @@
                         <span class="p">)</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># attribute values remain the same</span>
-                <span class="n">update_dict</span><span class="p">[</span><span class="n">unique_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="c1"># Canonicalize aliases without rewriting an already-canonical</span>
+                <span class="c1"># field that did not change.</span>
+                <span class="k">if</span> <span class="n">unique_k</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                    <span class="n">set_updates</span><span class="p">[</span><span class="n">unique_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                    <span class="n">unset_updates</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+                <span class="k">elif</span> <span class="n">unique_k</span> <span class="ow">in</span> <span class="n">set_updates</span><span class="p">:</span>
+                    <span class="n">set_updates</span><span class="p">[</span><span class="n">unique_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
         <span class="c1"># 4. update the fixed attributes in the document in the collection</span>
         <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]}</span>
-        <span class="c1"># use replace_one here because there may be some aliases in the document</span>
-        <span class="n">col</span><span class="o">.</span><span class="n">replace_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="n">update_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">set_updates</span><span class="p">:</span>
+            <span class="n">unset_updates</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">update_document</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">set_updates</span><span class="p">:</span>
+            <span class="n">update_document</span><span class="p">[</span><span class="s2">"$set"</span><span class="p">]</span> <span class="o">=</span> <span class="n">set_updates</span>
+        <span class="k">if</span> <span class="n">unset_updates</span><span class="p">:</span>
+            <span class="n">update_document</span><span class="p">[</span><span class="s2">"$unset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unset_updates</span>
+        <span class="k">if</span> <span class="n">update_document</span><span class="p">:</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="n">update_document</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">print_messages</span><span class="p">:</span>
@@ -2901,12 +2926,15 @@
             <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">with</span> <span class="n">_managed_collection_cursor</span><span class="p">(</span><span class="n">dbcol</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">no_cursor_timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">documents</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
-                <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="nb">id</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span>
+                <span class="n">original_doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="n">original_doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
+                <span class="n">working_doc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="n">working_doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"_id"</span><span class="p">)</span>
+                <span class="n">touched_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">rename_map</span><span class="p">:</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
-                        <span class="n">val</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">working_doc</span><span class="p">:</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">working_doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                         <span class="n">newkey</span> <span class="o">=</span> <span class="n">rename_map</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                             <span class="nb">print</span><span class="p">(</span><span class="s2">"Document id="</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
@@ -2917,10 +2945,26 @@
                                 <span class="n">newkey</span><span class="p">,</span>
                             <span class="p">)</span>
                             <span class="nb">print</span><span class="p">(</span><span class="s2">"Attribute value="</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-                        <span class="n">doc</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                        <span class="n">working_doc</span><span class="p">[</span><span class="n">newkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                        <span class="k">if</span> <span class="n">newkey</span> <span class="o">!=</span> <span class="n">k</span><span class="p">:</span>
+                            <span class="n">touched_keys</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">newkey</span><span class="p">))</span>
                         <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">dbcol</span><span class="o">.</span><span class="n">replace_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="n">doc</span><span class="p">)</span>
+                <span class="n">set_updates</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">unset_updates</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">touched_keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">working_doc</span><span class="p">:</span>
+                        <span class="n">unset_updates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">""</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">original_doc</span> <span class="ow">or</span> <span class="n">working_doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">original_doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="n">set_updates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">working_doc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">update_document</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">set_updates</span><span class="p">:</span>
+                    <span class="n">update_document</span><span class="p">[</span><span class="s2">"$set"</span><span class="p">]</span> <span class="o">=</span> <span class="n">set_updates</span>
+                <span class="k">if</span> <span class="n">unset_updates</span><span class="p">:</span>
+                    <span class="n">update_document</span><span class="p">[</span><span class="s2">"$unset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unset_updates</span>
+                <span class="k">if</span> <span class="n">update_document</span><span class="p">:</span>
+                    <span class="n">dbcol</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="nb">id</span><span class="p">},</span> <span class="n">update_document</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">counts</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fix_attribute_types</span><span class="p">(</span>
