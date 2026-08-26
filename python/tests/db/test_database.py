@@ -718,24 +718,41 @@ class TestDatabase:
     @mock_aws
     def test_object_store_mongodb_failure_is_compensated(self):
         s3_client = boto3.client("s3", region_name="us-east-1")
-        bucket = "mspass-object-store-mongodb-failure-test"
-        s3_client.create_bucket(Bucket=bucket)
-
-        with patch.object(
-            Collection,
-            "insert_one",
-            side_effect=pymongo.errors.OperationFailure("forced failure"),
-        ):
-            with pytest.raises(pymongo.errors.OperationFailure, match="forced"):
-                self.db.save_data(
-                    get_live_timeseries(),
-                    storage_mode="object_store",
-                    object_store={"provider": "s3", "bucket": bucket},
-                    object_store_client=s3_client,
-                    save_history=False,
+        original_insert_one = Collection.insert_one
+        failure_cases = (
+            ("history_object", True, False),
+            ("elog", False, True),
+            ("wf_TimeSeries", False, False),
+        )
+        for failed_collection, save_history, add_elog in failure_cases:
+            bucket = "mspass-object-store-{}-failure-test".format(
+                failed_collection.lower().replace("_", "-")
+            )
+            s3_client.create_bucket(Bucket=bucket)
+            datum = get_live_timeseries()
+            if save_history:
+                logging_helper.info(datum, "history-test", "test_save_data")
+            if add_elog:
+                datum.elog.log_error(
+                    "test_save_data", "forced elog save", ErrorSeverity.Complaint
                 )
 
-        assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
+            def fail_selected_insert(collection, *args, **kwargs):
+                if collection.name == failed_collection:
+                    raise pymongo.errors.OperationFailure("forced failure")
+                return original_insert_one(collection, *args, **kwargs)
+
+            with patch.object(Collection, "insert_one", new=fail_selected_insert):
+                with pytest.raises(pymongo.errors.OperationFailure, match="forced"):
+                    self.db.save_data(
+                        datum,
+                        storage_mode="object_store",
+                        object_store={"provider": "s3", "bucket": bucket},
+                        object_store_client=s3_client,
+                        save_history=save_history,
+                    )
+
+            assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
 
     @mock_aws
     def test_update_data_rejects_object_store_and_ignores_stale_gridfs_id(self):
