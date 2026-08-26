@@ -168,12 +168,16 @@ def test_child_cleanup_failure_keeps_parent_and_retry_finishes_deletion(
     assert (
         database[collection].find_one({"_id": graph.parent_id}) == graph.parent_document
     )
-    assert sample_exists(database, graph) is (failure_stage in {"file", "gridfs"})
+    assert sample_exists(database, graph)
     assert bool(database["history_object"].find_one({"_id": graph.history_id})) is (
-        failure_stage in {"file", "gridfs", "history"}
+        failure_stage == "history"
     )
-    assert database["elog"].find_one({"_id": graph.elog_id})
-    assert database["elog"].find_one({"_id": graph.linked_elog_id})
+    assert bool(database["elog"].find_one({"_id": graph.elog_id})) is (
+        failure_stage in {"history", "elog"}
+    )
+    assert bool(database["elog"].find_one({"_id": graph.linked_elog_id})) is (
+        failure_stage in {"history", "elog"}
+    )
     assert_unrelated_resources_exist(database, graph)
 
     database.delete_data(
@@ -338,3 +342,34 @@ def test_shared_file_across_waveform_types_is_removed_only_after_the_last_parent
 
     database.delete_data(second_id, "Seismogram", remove_unreferenced_files=True)
     assert not shared_file.exists()
+
+
+def test_schema_defined_waveform_collection_preserves_a_shared_file(database, tmp_path):
+    shared_file = tmp_path / "shared-with-archive.bin"
+    shared_file.write_bytes(b"shared samples")
+    parent_id = (
+        database["wf_TimeSeries"]
+        .insert_one(
+            {
+                "storage_mode": "file",
+                "dir": str(tmp_path),
+                "dfile": shared_file.name,
+            }
+        )
+        .inserted_id
+    )
+    archive_collection = "wf_TimeSeries_archive"
+    database.database_schema[archive_collection] = copy.deepcopy(
+        database.database_schema["wf_TimeSeries"]
+    )
+    database[archive_collection].insert_one(
+        {
+            "storage_mode": "file",
+            "dir": str(tmp_path),
+            "dfile": shared_file.name,
+        }
+    )
+
+    database.delete_data(parent_id, "TimeSeries", remove_unreferenced_files=True)
+
+    assert shared_file.exists()

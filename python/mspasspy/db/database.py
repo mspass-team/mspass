@@ -3968,9 +3968,12 @@ class Database(pymongo.database.Database):
         waveform data.  If the data are stored in gridfs the deletion of
         the waveform data will be immediate.  If the data are stored in
         disk files the file will be deleted when there are no more references
-        in the wf collection for the exact combination of dir and dfile associated
-        an atomic deletion.  Error log and history data deletion linked to
-        a datum is optional.  Note this is an expensive operation as it
+        in any schema-defined waveform collection for the exact combination
+        of dir and dfile associated with an atomic deletion.  Requested
+        history and error-log cleanup precedes sample deletion, and the
+        waveform document is removed last so a partial failure can be retried.
+        Error log and history data deletion linked to a datum is optional.
+        Note this is an expensive operation as it
         involves extensive database interactions.   It is best used for
         surgical solutions.   Deletion of large components of a data set
         (e.g. all data with a given data_tag value) are best done with
@@ -4041,8 +4044,20 @@ class Database(pymongo.database.Database):
         elog_id_name = elog_collection + "_id"
         elog_id = object_doc.get(elog_id_name)
 
-        # Delete gridfs/file samples first.  Missing children are the expected
-        # state when retrying after a later child cleanup failed.
+        # Clear database-owned auxiliary records before removing samples.  If
+        # one of these operations fails, the parent still identifies every
+        # remaining child and its waveform samples are still readable.
+        if clear_history and history_obj_id is not None:
+            self[history_collection].delete_one({"_id": history_obj_id})
+
+        if clear_elog:
+            if elog_id is not None:
+                self[elog_collection].delete_one({"_id": elog_id})
+            self[elog_collection].delete_many({wf_id_name: oid})
+
+        # Remove samples only after the requested history and elog cleanup.
+        # Missing children are the expected state when retrying a partially
+        # completed deletion.
         if storage_mode == "gridfs" and gridfs_id is not None:
             gfsh = gridfs.GridFS(self)
             if gfsh.exists(gridfs_id):
@@ -4055,12 +4070,13 @@ class Database(pymongo.database.Database):
             and dfile_name is not None
         ):
             # The parent is deliberately still present, so exclude it while
-            # checking both supported waveform collections for another
+            # checking every schema-defined waveform collection for another
             # reference to the same file.
             file_is_referenced = False
             waveform_collections = {
-                schema.TimeSeries.collection("_id"),
-                schema.Seismogram.collection("_id"),
+                collection_name
+                for collection_name, definition in self.database_schema._attr_dict.items()
+                if definition.data_type() in (TimeSeries, Seismogram)
             }
             for collection_name in waveform_collections:
                 reference_query = {"dir": dir_name, "dfile": dfile_name}
@@ -4075,18 +4091,6 @@ class Database(pymongo.database.Database):
                     os.remove(fname)
                 except FileNotFoundError:
                     pass
-
-        # clear history
-        if clear_history and history_obj_id is not None:
-            self[history_collection].delete_one({"_id": history_obj_id})
-
-        # clear elog
-        if clear_elog:
-            # delete the one by elog_id in mspass object
-            if elog_id is not None:
-                self[elog_collection].delete_one({"_id": elog_id})
-            # delete the documents with the wf_id equals to obejct['_id']
-            self[elog_collection].delete_many({wf_id_name: oid})
 
         # Remove the durable retry record only after all requested child
         # cleanup operations have completed successfully.
