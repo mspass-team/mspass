@@ -6924,12 +6924,12 @@ class Database(pymongo.database.Database):
                     else:
                         fh.seek(0, 2)
                         foff = fh.tell()
-                    f_byte = io.BytesIO()
                     for i in range(len(mspass_object.member)):
                         # silently skip any dead members
                         if mspass_object.member[i].dead():
                             continue
                         d = mspass_object.member[i]
+                        f_byte = io.BytesIO()
                         if isinstance(d, TimeSeries):
                             d.toTrace().write(f_byte, format=format)
                         else:
