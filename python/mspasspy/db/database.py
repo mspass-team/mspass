@@ -3338,6 +3338,16 @@ class Database(pymongo.database.Database):
         # Now handle update of sample data.  The gridfs method used here
         # handles that correctly based on the gridfs id.
         if mspass_object.live:
+            original_storage_mode = (
+                mspass_object["storage_mode"]
+                if "storage_mode" in mspass_object
+                else None
+            )
+            original_has_gridfs_id = "gridfs_id" in mspass_object
+            original_gridfs_id = (
+                mspass_object["gridfs_id"] if original_has_gridfs_id else None
+            )
+            file_to_gridfs_transition = original_storage_mode == "file"
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3349,6 +3359,8 @@ class Database(pymongo.database.Database):
                         ErrorSeverity.Complaint,
                     )
                     mspass_object["storage_mode"] = "gridfs"
+                    if file_to_gridfs_transition:
+                        update_record["storage_mode"] = "gridfs"
             else:
                 mspass_object.elog.log_error(
                     alg_name,
@@ -3359,7 +3371,10 @@ class Database(pymongo.database.Database):
                 update_record["storage_mode"] = "gridfs"
             # Supplying the replacement id lets rollback remove a blob even
             # when GridFS writes it and then raises an exception.
-            staged_gridfs_id = ObjectId() if old_gridfs_id is not None else None
+            # A file-backed datum never treats a stale gridfs_id as its active
+            # sample reference; storage_mode remains authoritative.
+            active_old_gridfs_id = None if file_to_gridfs_transition else old_gridfs_id
+            staged_gridfs_id = ObjectId() if active_old_gridfs_id is not None else None
             new_gridfs_id = None
             elog_id = None
             old_elog_id = None
@@ -3395,7 +3410,6 @@ class Database(pymongo.database.Database):
                             "to the waveform",
                             ErrorSeverity.Invalid,
                         )
-
                 if mspass_object.elog.size() > 0:
                     elog_id_name = self.database_schema.default_name("elog") + "_id"
                     # FIXME I think here we should check if elog_id field exists in the mspass_object
@@ -3420,13 +3434,15 @@ class Database(pymongo.database.Database):
                     )
 
                 filter_ = {"_id": mspass_object["_id"]}
-                if old_gridfs_id is not None:
-                    filter_["gridfs_id"] = old_gridfs_id
+                if active_old_gridfs_id is not None:
+                    filter_["gridfs_id"] = active_old_gridfs_id
                 result = wf_collection.update_one(filter_, {"$set": update_record})
-                if old_gridfs_id is not None and result.matched_count != 1:
+                if (
+                    active_old_gridfs_id is not None or file_to_gridfs_transition
+                ) and result.matched_count != 1:
                     raise MsPASSError(
-                        "Database.update_data could not replace the expected "
-                        "GridFS reference",
+                        "Database.update_data could not commit the new GridFS "
+                        "reference",
                         ErrorSeverity.Invalid,
                     )
             except Exception as original_error:
@@ -3447,10 +3463,12 @@ class Database(pymongo.database.Database):
                 except Exception as cleanup_error:
                     raise original_error from cleanup_error
                 finally:
-                    if old_gridfs_id is not None:
-                        mspass_object["gridfs_id"] = old_gridfs_id
+                    if original_has_gridfs_id:
+                        mspass_object["gridfs_id"] = original_gridfs_id
                     elif "gridfs_id" in mspass_object:
                         mspass_object.erase("gridfs_id")
+                    if file_to_gridfs_transition:
+                        mspass_object["storage_mode"] = original_storage_mode
                 raise
             # we may probably set the elog_id field in the mspass_object
             if elog_id:
@@ -3462,11 +3480,11 @@ class Database(pymongo.database.Database):
                 self._reset_processing_history(
                     mspass_object, alg_name, alg_id, history_save_uuid
                 )
-            if old_gridfs_id is not None:
+            if active_old_gridfs_id is not None:
                 try:
                     gfsh = gridfs.GridFS(self)
-                    if gfsh.exists(old_gridfs_id):
-                        gfsh.delete(old_gridfs_id)
+                    if gfsh.exists(active_old_gridfs_id):
+                        gfsh.delete(active_old_gridfs_id)
                 except Exception as error:
                     mspass_object.elog.log_error(
                         alg_name,
