@@ -539,6 +539,32 @@ class TestDatabase:
         assert len(s3_client.list_objects_v2(Bucket=bucket)["Contents"]) == 2
 
     @mock_aws
+    def test_object_store_mseed_round_trip(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-mseed-test"
+        s3_client.create_bucket(Bucket=bucket)
+        original = get_live_timeseries()
+        saved = self.db.save_data(
+            original,
+            storage_mode="object_store",
+            format="MSEED",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+        )
+
+        assert saved["format"] == "MSEED"
+        assert saved["object_store"]["object_name"].endswith(".mseed")
+        document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+        loaded = self.db.read_data(
+            document,
+            collection="wf_TimeSeries",
+            object_store_client=s3_client,
+        )
+        assert loaded.live
+        np.testing.assert_allclose(np.asarray(loaded.data), np.asarray(original.data))
+
+    @mock_aws
     def test_object_store_reports_client_and_payload_errors(self):
         s3_client = boto3.client("s3", region_name="us-east-1")
         bucket = "mspass-object-store-error-test"
