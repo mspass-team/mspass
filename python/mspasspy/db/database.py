@@ -581,6 +581,7 @@ class Database(pymongo.database.Database):
         merge_interpolation_samples=0,
         aws_access_key_id=None,
         aws_secret_access_key=None,
+        object_store_client=None,
     ):
         """
         Top-level MsPASS reader for seismic waveform data objects.
@@ -646,6 +647,11 @@ class Database(pymongo.database.Database):
           slow and unreliable response to FDSN data queries.  It is likely,
           however, to become a major component with FDSN services moving to
           cloud systems.
+        - `object_store` reads an object managed by a cloud object store.  The
+          waveform document must contain an ``object_store`` subdocument with
+          ``provider``, ``bucket``, and ``object_name`` fields.  Currently the
+          only supported provider is ``s3`` and a boto3-compatible client must
+          be supplied with ``object_store_client``.
         - This reader has prototype support for reading SCEC data stored on
           AWS s3.   The two valid values for defining those "storage_mode"s
           are "s3_continuous" and "s3_event", which map to two different
@@ -918,6 +924,10 @@ class Database(pymongo.database.Database):
           for details.
         :type interpolation_samples: :class:`int`
 
+        :param object_store_client: boto3-compatible S3 client used only for
+          data whose ``storage_mode`` is ``object_store``.  Authentication and
+          client lifetime remain the caller's responsibility.
+
         :return: for ObjectId python dictionary values of arg0 will return
           either a :class:`mspasspy.ccore.seismic.TimeSeries`
           or :class:`mspasspy.ccore.seismic.Seismogram` object.
@@ -1088,6 +1098,7 @@ class Database(pymongo.database.Database):
                 merge_interpolation_samples,
                 aws_access_key_id,
                 aws_secret_access_key,
+                object_store_client,
             )
             if elog.size() > 0:
                 # Any messages posted here will be out of order if there are
@@ -1181,6 +1192,7 @@ class Database(pymongo.database.Database):
                     merge_interpolation_samples,
                     aws_access_key_id,
                     aws_secret_access_key,
+                    object_store_client,
                 )
                 if normalize or normalize_ensemble:
                     import mspasspy.db.normalize as normalize_module
@@ -1268,6 +1280,8 @@ class Database(pymongo.database.Database):
         normalizing_collections=["channel", "site", "source"],
         alg_name="save_data",
         alg_id="0",
+        object_store=None,
+        object_store_client=None,
     ):
         """
         Standard method to save all seismic data objects to be managed by
@@ -1299,8 +1313,9 @@ class Database(pymongo.database.Database):
             an abstraction that even in FORTRAN days hid a lot of complexity.
             A call to this function supports multiple save mechanisms we
             define through the `storage_mode` keyword. At present
-            "storage_mode" can be only one of two options:  "file" and
-            "gridfs".  Note this class has prototype code for reading data
+            "storage_mode" can be "file", "gridfs", or "object_store".
+            ``object_store`` currently supports S3 through a caller-supplied
+            boto3-compatible client.  Note this class has prototype code for reading data
             in AWS s3 cloud storage that is not yet part of this interface.
             The API, however, was designed to allow adding one or more
             "storage_mode" options that allow other mechanisms to save
@@ -1550,11 +1565,13 @@ class Database(pymongo.database.Database):
           being the default.  See the User's manual for more details on
           the concepts and how to use this option.
         :type mode: :class:`str`
-        :param storage_mode: Current must be either "gridfs" or "file.  When set to
+        :param storage_mode: Must be "gridfs", "file", or "object_store".  When set to
           "gridfs" the waveform data are stored internally and managed by
           MongoDB.  If set to "file" the data will be stored in a file system
           with the dir and dfile arguments defining a file name.   The
-          default is "gridfs".  See above for more details.
+          default is "gridfs".  ``object_store`` writes each atomic datum to
+          an independent object at the destination given by ``object_store``.
+          See above for more details.
         :type storage_mode: :class:`str`
         :param dir: file directory for storage.  This argument is ignored if
           storage_mode is set to "gridfs".  When storage_mode is "file" it
@@ -1609,6 +1626,15 @@ class Database(pymongo.database.Database):
           set before more extensive processing.  It can only be used when
           storage_mode is set to gridfs.
         :type overwrite:  boolean
+
+        :param object_store: destination description required when
+          ``storage_mode="object_store"``.  It must be a dictionary containing
+          ``provider="s3"`` and ``bucket``.  The optional ``key_prefix`` is
+          prepended to the unique object name generated for each atomic datum.
+        :type object_store: :class:`dict`
+        :param object_store_client: boto3-compatible S3 client used to write
+          object-store sample data.  Authentication and client lifetime remain
+          the caller's responsibility.
 
         :param exclude_keys: Metadata can often become contaminated with
           attributes that are no longer needed or a mismatch with the data.
@@ -1670,10 +1696,14 @@ class Database(pymongo.database.Database):
             )
             message += "Must be a MsPASS seismic data object"
             raise TypeError(message)
-        # WARNING - if we add a storage_mode this will need to change
-        if storage_mode not in ["file", "gridfs"]:
+        if storage_mode not in ["file", "gridfs", "object_store"]:
             raise TypeError(
                 "Database.save_data:  Unsupported storage_mode={}".format(storage_mode)
+            )
+        if storage_mode == "object_store" and overwrite:
+            raise ValueError(
+                "Database.save_data: overwrite=True is not supported for "
+                "storage_mode=object_store"
             )
         if mode not in ["promiscuous", "cautious", "pedantic"]:
             message = "Database.save_data:  Illegal value of mode={}\n".format(mode)
@@ -1822,6 +1852,8 @@ class Database(pymongo.database.Database):
                 dfile=dfile,
                 format=format,
                 overwrite=overwrite,
+                object_store=object_store,
+                object_store_client=object_store_client,
             )
             # ensembles need to loop over members to do the atomic operations
             # remaining.  Hence, this conditional
@@ -5438,6 +5470,30 @@ class Database(pymongo.database.Database):
             mspass_object.kill()
 
     @staticmethod
+    def _load_data_from_formatted_bytes(mspass_object, payload, format=None):
+        """Load one formatted waveform payload into an atomic MsPASS object."""
+        st = obspy.read(io.BytesIO(payload), format=format)
+        if isinstance(mspass_object, TimeSeries):
+            # The index for URL and object-store data is expected to identify
+            # one net, sta, chan, loc grouping, so only one Trace is loaded.
+            # Convert its NumPy array to double to match DoubleVector.
+            tr_data = st[0].data.astype("float64")
+            mspass_object.npts = len(tr_data)
+            mspass_object.data = DoubleVector(tr_data)
+        elif isinstance(mspass_object, Seismogram):
+            # This conversion assumes the stream contains three traces in
+            # E, N, Z order, matching the prior URL-reader behavior.
+            sm = st.toSeismogram(cardinal=True)
+            mspass_object.npts = sm.data.columns()
+            mspass_object.data = sm.data
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        if mspass_object.npts > 0:
+            mspass_object.set_live()
+        else:
+            mspass_object.kill()
+
+    @staticmethod
     def _read_data_from_url(mspass_object, url, format=None):
         """
         Read a file from url and loads it into a mspasspy object.
@@ -5456,31 +5512,74 @@ class Database(pymongo.database.Database):
         except Exception as e:
             raise MsPASSError("Error while downloading: %s" % url, "Fatal") from e
 
-        flh = io.BytesIO(payload)
-        st = obspy.read(flh, format=format)
+        Database._load_data_from_formatted_bytes(mspass_object, payload, format)
+
+    @staticmethod
+    def _read_data_from_object_store(
+        mspass_object, object_store, object_store_client, format=None
+    ):
+        """Read one atomic datum from an S3-compatible object store."""
+        if not isinstance(object_store, dict):
+            raise TypeError("object_store metadata must be a dictionary")
+        if object_store.get("provider") != "s3":
+            raise ValueError("object_store provider must be 's3'")
+        bucket = object_store.get("bucket")
+        object_name = object_store.get("object_name")
+        if not isinstance(bucket, str) or not bucket:
+            raise ValueError("object_store bucket must be a nonempty string")
+        if not isinstance(object_name, str) or not object_name:
+            raise ValueError("object_store object_name must be a nonempty string")
+        if object_store_client is None:
+            raise ValueError(
+                "object_store_client is required to read object_store data"
+            )
+
+        try:
+            response = object_store_client.get_object(Bucket=bucket, Key=object_name)
+            body = response["Body"]
+            try:
+                payload = body.read()
+            finally:
+                body.close()
+        except (
+            botocore.exceptions.BotoCoreError,
+            botocore.exceptions.ClientError,
+            OSError,
+        ) as err:
+            raise MsPASSError(
+                "Error while reading s3://{}/{}".format(bucket, object_name),
+                "Fatal",
+            ) from err
+
+        if format is not None and format != "binary":
+            Database._load_data_from_formatted_bytes(
+                mspass_object, payload, format=format
+            )
+            return
+
         if isinstance(mspass_object, TimeSeries):
-            # st is a "stream" but it only has one member here because we are
-            # reading single net,sta,chan,loc grouping defined by the index
-            # We only want the Trace object not the stream to convert
-            tr = st[0]
-            # Now we convert this to a TimeSeries and load other Metadata
-            # Note the exclusion copy and the test verifying net,sta,chan,
-            # loc, and startime all match
-            tr_data = tr.data.astype(
-                "float64"
-            )  #   Convert the nparray type to double, to match the DoubleVector
-            mspass_object.npts = len(tr_data)
-            mspass_object.data = DoubleVector(tr_data)
+            sample_count = mspass_object.npts
         elif isinstance(mspass_object, Seismogram):
-            # Note that the following convertion could be problematic because
-            # it assumes there are three traces in the file, and they are in
-            # the order of E, N, Z.
-            sm = st.toSeismogram(cardinal=True)
-            mspass_object.npts = sm.data.columns()
-            mspass_object.data = sm.data
+            sample_count = 3 * mspass_object.npts
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-        # this is not a error proof test for validity, but best I can do here
+        expected_nbytes = sample_count * 8
+        if len(payload) != expected_nbytes:
+            raise MsPASSError(
+                "Object-store payload size is {} bytes but {} bytes are required".format(
+                    len(payload), expected_nbytes
+                ),
+                "Invalid",
+            )
+        if isinstance(mspass_object, TimeSeries):
+            float_array = array("d")
+            float_array.frombytes(payload)
+            mspass_object.data = DoubleVector(float_array)
+        else:
+            np_arr = np.frombuffer(payload, dtype=np.float64).reshape(
+                3, mspass_object.npts
+            )
+            mspass_object.data = dmatrix(np_arr)
         if mspass_object.npts > 0:
             mspass_object.set_live()
         else:
@@ -6792,6 +6891,8 @@ class Database(pymongo.database.Database):
         dfile=None,
         format=None,
         overwrite=False,
+        object_store=None,
+        object_store_client=None,
     ):
         """
         Function to save sample data arrays for any MsPASS data objects.
@@ -6812,9 +6913,8 @@ class Database(pymongo.database.Database):
         See description below of "use_member_dfile_value" parameter.
 
         2) The "storage_mode" argument determines what medium will hold the
-        sample data.  Currently accepted values are "file" and "gridfs"
-        but other options may be added in the near future to support cloud
-        computing.
+        sample data.  Currently accepted values are "file", "gridfs", and
+        "object_store".
 
         3) The "format" argument can be used to specify an alternative
         format for the output.  Most formats mix up metadata and sample
@@ -6842,6 +6942,8 @@ class Database(pymongo.database.Database):
           (1) "file" causes data to be written to external files.
           (2) "gridfs" (the default) causes the sample data to be stored
                within the gridfs file system of MongoDB.
+          (3) "object_store" writes each atomic datum to an independent
+               object using a boto3-compatible S3 client.
           See User's manuals for guidance on storage option tradeoffs.
 
         :param dir:  directory file is to be written. Just be writable
@@ -6900,6 +7002,13 @@ class Database(pymongo.database.Database):
                 mspass_object = self._save_sample_data_to_gridfs(
                     mspass_object,
                     overwrite,
+                )
+            elif storage_mode == "object_store":
+                mspass_object = self._save_sample_data_to_object_store(
+                    mspass_object,
+                    object_store,
+                    object_store_client,
+                    format,
                 )
             else:
                 message = (
@@ -7204,6 +7313,90 @@ class Database(pymongo.database.Database):
                         # make sure we are at the end of file
                         fh.seek(0, 2)
                         foff = fh.tell()
+        return mspass_object
+
+    def _save_sample_data_to_object_store(
+        self,
+        mspass_object,
+        object_store,
+        object_store_client,
+        format=None,
+    ):
+        """Write sample data to independent objects in an S3-compatible store."""
+        if mspass_object.dead():
+            return mspass_object
+        if not isinstance(object_store, dict):
+            raise TypeError(
+                "object_store must be a dictionary for storage_mode=object_store"
+            )
+        if object_store.get("provider") != "s3":
+            raise ValueError("object_store provider must be 's3'")
+        bucket = object_store.get("bucket")
+        if not isinstance(bucket, str) or not bucket:
+            raise ValueError("object_store bucket must be a nonempty string")
+        key_prefix = object_store.get("key_prefix", "")
+        if not isinstance(key_prefix, str):
+            raise TypeError("object_store key_prefix must be a string")
+        if object_store_client is None:
+            raise ValueError(
+                "object_store_client is required for storage_mode=object_store"
+            )
+
+        if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            for datum in mspass_object.member:
+                if datum.live:
+                    self._save_sample_data_to_object_store(
+                        datum,
+                        object_store,
+                        object_store_client,
+                        format,
+                    )
+            return mspass_object
+
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only MsPASS seismic data objects are supported")
+
+        if format is None:
+            format = "binary"
+        if format == "binary":
+            payload = bytes(np.array(mspass_object.data))
+            suffix = ".bin"
+        else:
+            buffer = io.BytesIO()
+            if isinstance(mspass_object, TimeSeries):
+                mspass_object.toTrace().write(buffer, format=format)
+            else:
+                mspass_object.toStream().write(buffer, format=format)
+            payload = buffer.getvalue()
+            suffix = "." + format.lower()
+
+        object_name = uuid.uuid4().hex + suffix
+        if key_prefix:
+            object_name = key_prefix.rstrip("/") + "/" + object_name
+        try:
+            object_store_client.put_object(
+                Bucket=bucket,
+                Key=object_name,
+                Body=payload,
+            )
+        except (
+            botocore.exceptions.BotoCoreError,
+            botocore.exceptions.ClientError,
+            OSError,
+        ) as err:
+            raise MsPASSError(
+                "Error while writing s3://{}/{}".format(bucket, object_name),
+                "Fatal",
+            ) from err
+
+        mspass_object["storage_mode"] = "object_store"
+        mspass_object["object_store"] = {
+            "provider": "s3",
+            "bucket": bucket,
+            "object_name": object_name,
+        }
+        mspass_object["format"] = format
+        mspass_object["nbytes"] = len(payload)
         return mspass_object
 
     def _save_sample_data_to_gridfs(
@@ -7834,6 +8027,7 @@ class Database(pymongo.database.Database):
         merge_interpolation_samples,
         aws_access_key_id,
         aws_secret_access_key,
+        object_store_client,
     ):
         func = "Database._construct_atomic_object"
         try:
@@ -7929,6 +8123,18 @@ class Database(pymongo.database.Database):
             self._read_data_from_url(
                 mspass_object,
                 md["url"],
+                format=None if "format" not in md else md["format"],
+            )
+        elif storage_mode == "object_store":
+            if not md.is_defined("object_store"):
+                raise MsPASSError(
+                    "object_store storage mode requires object_store metadata",
+                    "Invalid",
+                )
+            self._read_data_from_object_store(
+                mspass_object,
+                md["object_store"],
+                object_store_client,
                 format=None if "format" not in md else md["format"],
             )
         elif storage_mode == "s3_continuous":
@@ -8255,6 +8461,7 @@ class Database(pymongo.database.Database):
         merge_interpolation_samples,
         aws_access_key_id,
         aws_secret_access_key,
+        object_store_client,
     ):
         """
         Private method to create an ensemble from a list of Metadata
@@ -8320,6 +8527,7 @@ class Database(pymongo.database.Database):
                                     merge_interpolation_samples,
                                     aws_access_key_id,
                                     aws_secret_access_key,
+                                    object_store_client,
                                 )
                                 if d.live:
                                     ensemble.member.append(d)
@@ -8345,6 +8553,7 @@ class Database(pymongo.database.Database):
                                 merge_interpolation_samples,
                                 aws_access_key_id,
                                 aws_secret_access_key,
+                                object_store_client,
                             )
                             if d.live:
                                 ensemble.member.append(d)
@@ -8362,6 +8571,7 @@ class Database(pymongo.database.Database):
                             merge_interpolation_samples,
                             aws_access_key_id,
                             aws_secret_access_key,
+                            object_store_client,
                         )
                         if d.live:
                             ensemble.member.append(d)

@@ -14,6 +14,7 @@ import re
 
 import boto3
 from moto import mock_aws
+import botocore.exceptions
 import botocore.session
 from unittest.mock import patch, Mock
 import json
@@ -466,6 +467,138 @@ class TestDatabase:
         with patch("urllib.request.urlopen", new=self.mock_urlopen_failure):
             with pytest.raises(MsPASSError, match="Error while downloading"):
                 self.db._read_data_from_url(tmp_ts, bad_url)
+
+    @mock_aws
+    def test_object_store_binary_round_trip(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-test"
+        s3_client.create_bucket(Bucket=bucket)
+        destination = {
+            "provider": "s3",
+            "bucket": bucket,
+            "key_prefix": "waveforms",
+        }
+
+        originals = [get_live_timeseries(), get_live_seismogram()]
+        collections = ["wf_TimeSeries", "wf_Seismogram"]
+        for original, collection in zip(originals, collections):
+            saved = self.db.save_data(
+                original,
+                storage_mode="object_store",
+                object_store=destination,
+                object_store_client=s3_client,
+                return_data=True,
+                mode="cautious",
+            )
+            location = saved["object_store"]
+            assert location["provider"] == "s3"
+            assert location["bucket"] == bucket
+            assert location["object_name"].startswith("waveforms/")
+            assert saved["nbytes"] == 8 * saved.npts * (
+                1 if isinstance(saved, TimeSeries) else 3
+            )
+
+            document = self.db[collection].find_one({"_id": saved["_id"]})
+            assert document["storage_mode"] == "object_store"
+            assert document["object_store"] == location
+            loaded = self.db.read_data(
+                document,
+                collection=collection,
+                mode="cautious",
+                object_store_client=s3_client,
+            )
+            assert loaded.live
+            np.testing.assert_allclose(
+                np.asarray(loaded.data), np.asarray(original.data)
+            )
+
+    @mock_aws
+    def test_object_store_ensemble_uses_independent_objects(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-ensemble-test"
+        s3_client.create_bucket(Bucket=bucket)
+        ensemble = TimeSeriesEnsemble()
+        ensemble.member.append(get_live_timeseries())
+        ensemble.member.append(get_live_timeseries())
+        ensemble.set_live()
+
+        saved = self.db.save_data(
+            ensemble,
+            storage_mode="object_store",
+            object_store={
+                "provider": "s3",
+                "bucket": bucket,
+                "key_prefix": "ensemble",
+            },
+            object_store_client=s3_client,
+            return_data=True,
+        )
+        object_names = [d["object_store"]["object_name"] for d in saved.member]
+        assert len(set(object_names)) == 2
+        assert all(name.startswith("ensemble/") for name in object_names)
+        assert len(s3_client.list_objects_v2(Bucket=bucket)["Contents"]) == 2
+
+    @mock_aws
+    def test_object_store_reports_client_and_payload_errors(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-error-test"
+        s3_client.create_bucket(Bucket=bucket)
+        datum = get_live_timeseries()
+
+        with pytest.raises(ValueError, match="object_store_client is required"):
+            self.db.save_data(
+                datum,
+                storage_mode="object_store",
+                object_store={"provider": "s3", "bucket": bucket},
+            )
+        with pytest.raises(ValueError, match="provider must be 's3'"):
+            self.db.save_data(
+                datum,
+                storage_mode="object_store",
+                object_store={"provider": "gcs", "bucket": bucket},
+                object_store_client=s3_client,
+            )
+
+        missing_document = dict(datum)
+        missing_document.update(
+            {
+                "storage_mode": "object_store",
+                "format": "binary",
+                "object_store": {
+                    "provider": "s3",
+                    "bucket": bucket,
+                    "object_name": "missing.bin",
+                },
+            }
+        )
+        with pytest.raises(MsPASSError, match="Error while reading"):
+            self.db.read_data(
+                missing_document,
+                collection="wf_TimeSeries",
+                object_store_client=s3_client,
+            )
+
+        s3_client.put_object(Bucket=bucket, Key="short.bin", Body=b"short")
+        missing_document["object_store"]["object_name"] = "short.bin"
+        with pytest.raises(MsPASSError, match="payload size"):
+            self.db.read_data(
+                missing_document,
+                collection="wf_TimeSeries",
+                object_store_client=s3_client,
+            )
+
+        unavailable_client = Mock()
+        unavailable_client.get_object.side_effect = (
+            botocore.exceptions.EndpointConnectionError(
+                endpoint_url="https://s3.invalid"
+            )
+        )
+        with pytest.raises(MsPASSError, match="Error while reading"):
+            self.db.read_data(
+                missing_document,
+                collection="wf_TimeSeries",
+                object_store_client=unavailable_client,
+            )
 
     def test_mspass_type_helper(self):
         schema = self.metadata_def.Seismogram

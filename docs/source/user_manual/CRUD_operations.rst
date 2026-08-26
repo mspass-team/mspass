@@ -86,6 +86,30 @@ the docstring pages for detailed and most up to date usage:
     Set :code:`return_data=True` when an
     intermediate save needs the updated data object returned to the workflow.
 
+    Sample data can instead be stored in an S3-compatible object store by
+    supplying an authenticated boto3 client and an explicit destination:
+
+    .. code-block:: python
+
+        import boto3
+
+        s3_client = boto3.client("s3")
+        db.save_data(
+            d,
+            storage_mode="object_store",
+            object_store={
+                "provider": "s3",
+                "bucket": "earthscope-scratch",
+                "key_prefix": "auth0|user-id/waveforms",
+            },
+            object_store_client=s3_client,
+        )
+
+    Each atomic datum is stored as an independent object.  Reading the saved
+    waveform requires passing a compatible client to
+    :code:`db.read_data(..., object_store_client=s3_client)`.  Authentication
+    and client lifetime are intentionally managed by the caller.
+
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before
     the member is saved.  A common pattern for miniseed data is to bundle
