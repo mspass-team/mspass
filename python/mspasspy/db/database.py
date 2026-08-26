@@ -3582,8 +3582,14 @@ class Database(pymongo.database.Database):
         old_gridfs_id = (
             mspass_object["gridfs_id"] if "gridfs_id" in mspass_object else None
         )
+        metadata_had_storage_mode = "storage_mode" in mspass_object
+        metadata_storage_mode = (
+            mspass_object["storage_mode"] if metadata_had_storage_mode else None
+        )
         if old_gridfs_id is not None:
             mspass_object.erase("gridfs_id")
+        if metadata_had_storage_mode:
+            mspass_object.erase("storage_mode")
         try:
             self.update_metadata(
                 mspass_object,
@@ -3597,6 +3603,8 @@ class Database(pymongo.database.Database):
         finally:
             if old_gridfs_id is not None:
                 mspass_object["gridfs_id"] = old_gridfs_id
+            if metadata_had_storage_mode:
+                mspass_object["storage_mode"] = metadata_storage_mode
         logsize = mspass_object.elog.size()
         # A bit verbose, but we post this warning to make it clear the
         # problem originated from update_data - probably not really needed

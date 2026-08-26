@@ -230,7 +230,14 @@ def test_reference_compare_miss_removes_new_blob_without_overwriting_current_ref
             replace_samples(database, datum, entrypoint)
 
     assert error.value.severity == ErrorSeverity.Invalid
-    assert final_queries == [{"_id": waveform_id, "gridfs_id": old_gridfs_id}]
+    assert final_queries == [
+        {
+            "_id": waveform_id,
+            "storage_mode": "gridfs",
+            "object_store": {"$exists": False},
+            "gridfs_id": old_gridfs_id,
+        }
+    ]
     assert datum["gridfs_id"] == old_gridfs_id
     document = database[collection].find_one({"_id": waveform_id})
     assert document["gridfs_id"] == old_gridfs_id
