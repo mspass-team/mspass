@@ -3373,12 +3373,8 @@ class Database(pymongo.database.Database):
             # when GridFS writes it and then raises an exception.
             # A file-backed datum never treats a stale gridfs_id as its active
             # sample reference; storage_mode remains authoritative.
-            active_old_gridfs_id = (
-                None if file_to_gridfs_transition else old_gridfs_id
-            )
-            staged_gridfs_id = (
-                ObjectId() if active_old_gridfs_id is not None else None
-            )
+            active_old_gridfs_id = None if file_to_gridfs_transition else old_gridfs_id
+            staged_gridfs_id = ObjectId() if active_old_gridfs_id is not None else None
             new_gridfs_id = None
             elog_id = None
             old_elog_id = None
