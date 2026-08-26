@@ -124,6 +124,7 @@ def test_file_to_gridfs_update_round_trips_new_samples(
     assert document["gridfs_id"] == result["gridfs_id"]
     if stale_gridfs_reference:
         assert document["gridfs_id"] != stale_gridfs_id
+        assert gridfs.GridFS(database).exists(stale_gridfs_id)
     assert gridfs.GridFS(database).exists(document["gridfs_id"])
     reread = database.read_data(result["_id"], collection=collection)
     assert reread.live
