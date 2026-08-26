@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev102+gb311abfd1 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev103+gfef900863 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=2de660c5"></script>
+    <script src="../../../_static/documentation_options.js?v=aac9e0d3"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev102" />
+  <meta name="docsearch:version" content="2.4.4.dev103" />
   </head>
   
   
@@ -4499,9 +4499,12 @@
 <span class="sd">        waveform data.  If the data are stored in gridfs the deletion of</span>
 <span class="sd">        the waveform data will be immediate.  If the data are stored in</span>
 <span class="sd">        disk files the file will be deleted when there are no more references</span>
-<span class="sd">        in the wf collection for the exact combination of dir and dfile associated</span>
-<span class="sd">        an atomic deletion.  Error log and history data deletion linked to</span>
-<span class="sd">        a datum is optional.  Note this is an expensive operation as it</span>
+<span class="sd">        in any schema-defined waveform collection for the exact combination</span>
+<span class="sd">        of dir and dfile associated with an atomic deletion.  Requested</span>
+<span class="sd">        history and error-log cleanup precedes sample deletion, and the</span>
+<span class="sd">        waveform document is removed last so a partial failure can be retried.</span>
+<span class="sd">        Error log and history data deletion linked to a datum is optional.</span>
+<span class="sd">        Note this is an expensive operation as it</span>
 <span class="sd">        involves extensive database interactions.   It is best used for</span>
 <span class="sd">        surgical solutions.   Deletion of large components of a data set</span>
 <span class="sd">        (e.g. all data with a given data_tag value) are best done with</span>
@@ -4557,47 +4560,72 @@
                 <span class="s2">"Invalid"</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="c1"># delete the document just retrieved from the database</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
+        <span class="c1"># Resolve every child reference before starting cleanup.  The waveform</span>
+        <span class="c1"># document remains the durable retry record until all referenced</span>
+        <span class="c1"># children have been removed or confirmed absent.</span>
+        <span class="n">storage_mode</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"storage_mode"</span><span class="p">)</span>
+        <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"gridfs_id"</span><span class="p">)</span>
+        <span class="n">dir_name</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dir"</span><span class="p">)</span>
+        <span class="n">dfile_name</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"dfile"</span><span class="p">)</span>
+        <span class="n">history_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span>
+        <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="n">history_collection</span> <span class="o">+</span> <span class="s2">"_id"</span>
+        <span class="n">history_obj_id</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">history_obj_id_name</span><span class="p">)</span>
+        <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
+        <span class="n">elog_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span>
+        <span class="n">elog_id_name</span> <span class="o">=</span> <span class="n">elog_collection</span> <span class="o">+</span> <span class="s2">"_id"</span>
+        <span class="n">elog_id</span> <span class="o">=</span> <span class="n">object_doc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">elog_id_name</span><span class="p">)</span>
 
-        <span class="c1"># delete gridfs/file depends on storage mode, and unreferenced files</span>
-        <span class="n">storage_mode</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
-            <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">object_doc</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]):</span>
-                <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">object_doc</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">])</span>
+        <span class="c1"># Clear database-owned auxiliary records before removing samples.  If</span>
+        <span class="c1"># one of these operations fails, the parent still identifies every</span>
+        <span class="c1"># remaining child and its waveform samples are still readable.</span>
+        <span class="k">if</span> <span class="n">clear_history</span> <span class="ow">and</span> <span class="n">history_obj_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">history_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">history_obj_id</span><span class="p">})</span>
 
-        <span class="k">elif</span> <span class="n">storage_mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"file"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">remove_unreferenced_files</span><span class="p">:</span>
-            <span class="n">dir_name</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">"dir"</span><span class="p">]</span>
-            <span class="n">dfile_name</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="s2">"dfile"</span><span class="p">]</span>
-            <span class="c1"># find if there are any remaining matching documents with dir and dfile</span>
-            <span class="n">match_doc_cnt</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">"dir"</span><span class="p">:</span> <span class="n">dir_name</span><span class="p">,</span> <span class="s2">"dfile"</span><span class="p">:</span> <span class="n">dfile_name</span><span class="p">}</span>
-            <span class="p">)</span>
-            <span class="c1"># delete this file</span>
-            <span class="k">if</span> <span class="n">match_doc_cnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="n">dfile_name</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-
-        <span class="c1"># clear history</span>
-        <span class="k">if</span> <span class="n">clear_history</span><span class="p">:</span>
-            <span class="n">history_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"history_object"</span><span class="p">)</span>
-            <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="n">history_collection</span> <span class="o">+</span> <span class="s2">"_id"</span>
-            <span class="k">if</span> <span class="n">history_obj_id_name</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">history_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]}</span>
-                <span class="p">)</span>
-
-        <span class="c1"># clear elog</span>
         <span class="k">if</span> <span class="n">clear_elog</span><span class="p">:</span>
-            <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s2">"_id"</span>
-            <span class="n">elog_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s2">"elog"</span><span class="p">)</span>
-            <span class="n">elog_id_name</span> <span class="o">=</span> <span class="n">elog_collection</span> <span class="o">+</span> <span class="s2">"_id"</span>
-            <span class="c1"># delete the one by elog_id in mspass object</span>
-            <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]})</span>
-            <span class="c1"># delete the documents with the wf_id equals to obejct['_id']</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span></div>
+            <span class="k">if</span> <span class="n">elog_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">})</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">elog_collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
+
+        <span class="c1"># Remove samples only after the requested history and elog cleanup.</span>
+        <span class="c1"># Missing children are the expected state when retrying a partially</span>
+        <span class="c1"># completed deletion.</span>
+        <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span> <span class="ow">and</span> <span class="n">gridfs_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
+                <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"file"</span>
+            <span class="ow">and</span> <span class="n">remove_unreferenced_files</span>
+            <span class="ow">and</span> <span class="n">dir_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">dfile_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="c1"># The parent is deliberately still present, so exclude it while</span>
+            <span class="c1"># checking every schema-defined waveform collection for another</span>
+            <span class="c1"># reference to the same file.</span>
+            <span class="n">file_is_referenced</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">waveform_collections</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">collection_name</span>
+                <span class="k">for</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">definition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">_attr_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">data_type</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">collection_name</span> <span class="ow">in</span> <span class="n">waveform_collections</span><span class="p">:</span>
+                <span class="n">reference_query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"dir"</span><span class="p">:</span> <span class="n">dir_name</span><span class="p">,</span> <span class="s2">"dfile"</span><span class="p">:</span> <span class="n">dfile_name</span><span class="p">}</span>
+                <span class="k">if</span> <span class="n">collection_name</span> <span class="o">==</span> <span class="n">wf_collection_name</span><span class="p">:</span>
+                    <span class="n">reference_query</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$ne"</span><span class="p">:</span> <span class="n">oid</span><span class="p">}</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">reference_query</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">file_is_referenced</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file_is_referenced</span><span class="p">:</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="n">dfile_name</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># Remove the durable retry record only after all requested child</span>
+        <span class="c1"># cleanup operations have completed successfully.</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_collection_metadata</span><span class="p">(</span>

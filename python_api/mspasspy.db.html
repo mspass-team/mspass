@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev102+gb311abfd1 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev103+gfef900863 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=2de660c5"></script>
+    <script src="../_static/documentation_options.js?v=aac9e0d3"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev102" />
+  <meta name="docsearch:version" content="2.4.4.dev103" />
   </head>
   
   
@@ -846,9 +846,12 @@ collections, it will delete the wf document entry and manage the
 waveform data.  If the data are stored in gridfs the deletion of
 the waveform data will be immediate.  If the data are stored in
 disk files the file will be deleted when there are no more references
-in the wf collection for the exact combination of dir and dfile associated
-an atomic deletion.  Error log and history data deletion linked to
-a datum is optional.  Note this is an expensive operation as it
+in any schema-defined waveform collection for the exact combination
+of dir and dfile associated with an atomic deletion.  Requested
+history and error-log cleanup precedes sample deletion, and the
+waveform document is removed last so a partial failure can be retried.
+Error log and history data deletion linked to a datum is optional.
+Note this is an expensive operation as it
 involves extensive database interactions.   It is best used for
 surgical solutions.   Deletion of large components of a data set
 (e.g. all data with a given data_tag value) are best done with
