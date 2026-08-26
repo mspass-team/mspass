@@ -664,6 +664,31 @@ class TestDatabase:
         ensemble.member.append(get_live_timeseries())
         ensemble.member.append(get_live_timeseries())
         ensemble.set_live()
+        storage_keys = (
+            "storage_mode",
+            "object_store",
+            "gridfs_id",
+            "dir",
+            "dfile",
+            "foff",
+            "url",
+            "format",
+            "nbytes",
+        )
+        for index, member in enumerate(ensemble.member):
+            member["storage_mode"] = "gridfs"
+            member["object_store"] = {"old": index}
+            member["gridfs_id"] = ObjectId()
+            member["dir"] = "/old/{}".format(index)
+            member["dfile"] = "old-{}.dat".format(index)
+            member["foff"] = index
+            member["url"] = "https://old.example/{}".format(index)
+            member["format"] = "old-format"
+            member["nbytes"] = index + 1
+        original_storage_metadata = [
+            {key: copy.deepcopy(member[key]) for key in storage_keys}
+            for member in ensemble.member
+        ]
         object_store_client = Mock()
         object_store_client.put_object.side_effect = [
             {},
@@ -688,7 +713,10 @@ class TestDatabase:
         assert {(deletion["Bucket"], deletion["Key"]) for deletion in deletions} == {
             (upload["Bucket"], upload["Key"]) for upload in uploads
         }
-        assert "object_store" not in ensemble.member[0]
+        for member, original_metadata in zip(
+            ensemble.member, original_storage_metadata
+        ):
+            assert {key: member[key] for key in storage_keys} == original_metadata
 
     def test_object_store_compensation_reports_unreconciled_object(self):
         ensemble = TimeSeriesEnsemble()
@@ -714,6 +742,10 @@ class TestDatabase:
                 {"provider": "s3", "bucket": "test-bucket"},
                 object_store_client,
             )
+        for member in ensemble.member:
+            assert member["storage_mode"] == "object_store"
+            assert member["object_store"]["bucket"] == "test-bucket"
+            assert member["object_store"]["object_name"]
 
     @mock_aws
     def test_object_store_mongodb_failure_is_compensated(self):
@@ -730,6 +762,29 @@ class TestDatabase:
             )
             s3_client.create_bucket(Bucket=bucket)
             datum = get_live_timeseries()
+            datum["storage_mode"] = "gridfs"
+            datum["gridfs_id"] = ObjectId()
+            datum["dir"] = "/old"
+            datum["dfile"] = "old.dat"
+            datum["foff"] = 123
+            datum["url"] = "https://old.example/data"
+            datum["format"] = "old-format"
+            datum["nbytes"] = 456
+            storage_keys = (
+                "storage_mode",
+                "object_store",
+                "gridfs_id",
+                "dir",
+                "dfile",
+                "foff",
+                "url",
+                "format",
+                "nbytes",
+            )
+            original_storage_metadata = {
+                key: (key in datum, copy.deepcopy(datum[key]) if key in datum else None)
+                for key in storage_keys
+            }
             if save_history:
                 logging_helper.info(datum, "history-test", "test_save_data")
             if add_elog:
@@ -753,11 +808,116 @@ class TestDatabase:
                     )
 
             assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
+            for key, (was_defined, value) in original_storage_metadata.items():
+                assert (key in datum) is was_defined
+                if was_defined:
+                    assert datum[key] == value
 
     @mock_aws
-    def test_update_data_rejects_object_store_and_ignores_stale_gridfs_id(self):
+    def test_update_data_rejects_persisted_object_store_after_metadata_tampering(
+        self,
+    ):
         s3_client = boto3.client("s3", region_name="us-east-1")
         bucket = "mspass-object-store-update-test"
+        s3_client.create_bucket(Bucket=bucket)
+        for tampering in (
+            "change",
+            "erase",
+            "erase_all_storage_fields",
+            "persisted_mode_changed",
+        ):
+            saved = self.db.save_data(
+                get_live_timeseries(),
+                storage_mode="object_store",
+                object_store={"provider": "s3", "bucket": bucket},
+                object_store_client=s3_client,
+                return_data=True,
+                save_history=False,
+            )
+            original_document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+            original_location = copy.deepcopy(original_document["object_store"])
+            if tampering == "persisted_mode_changed":
+                self.db["wf_TimeSeries"].update_one(
+                    {"_id": saved["_id"]}, {"$set": {"storage_mode": "gridfs"}}
+                )
+                original_document = self.db["wf_TimeSeries"].find_one(
+                    {"_id": saved["_id"]}
+                )
+            original_gridfs_count = self.db["fs.files"].count_documents({})
+            if tampering == "change":
+                saved["storage_mode"] = "gridfs"
+            else:
+                saved.erase("storage_mode")
+            if tampering in ("erase_all_storage_fields", "persisted_mode_changed"):
+                saved.erase("object_store")
+
+            with pytest.raises(ValueError, match="does not support sample updates"):
+                self.db.update_data(saved, save_history=False)
+
+            assert (
+                self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+                == original_document
+            )
+            assert self.db["fs.files"].count_documents({}) == original_gridfs_count
+            response = s3_client.get_object(
+                Bucket=original_location["bucket"],
+                Key=original_location["object_name"],
+            )
+            response["Body"].close()
+
+    @mock_aws
+    def test_delete_data_removes_object_store_samples_last(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-delete-test"
+        s3_client.create_bucket(Bucket=bucket)
+        datum = get_live_timeseries()
+        logging_helper.info(datum, "delete-test", "test_delete_data")
+        datum.elog.log_error(
+            "test_delete_data", "delete lifecycle", ErrorSeverity.Complaint
+        )
+        saved = self.db.save_data(
+            datum,
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+            save_history=True,
+        )
+        document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+        location = document["object_store"]
+
+        with pytest.raises(ValueError, match="object_store_client is required"):
+            self.db.delete_data(
+                saved["_id"],
+                "TimeSeries",
+                remove_unreferenced_files=True,
+            )
+        assert self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]}) == document
+        assert self.db["history_object"].find_one(
+            {"_id": document["history_object_id"]}
+        )
+        assert self.db["elog"].find_one({"_id": document["elog_id"]})
+
+        self.db.delete_data(
+            saved["_id"],
+            "TimeSeries",
+            remove_unreferenced_files=True,
+            object_store_client=s3_client,
+        )
+        assert not self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+        assert not self.db["history_object"].find_one(
+            {"_id": document["history_object_id"]}
+        )
+        assert not self.db["elog"].find_one({"_id": document["elog_id"]})
+        with pytest.raises(botocore.exceptions.ClientError):
+            s3_client.head_object(
+                Bucket=location["bucket"], Key=location["object_name"]
+            )
+
+    @mock_aws
+    def test_delete_data_retains_waveform_when_object_store_delete_fails(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-delete-failure-test"
         s3_client.create_bucket(Bucket=bucket)
         saved = self.db.save_data(
             get_live_timeseries(),
@@ -767,18 +927,27 @@ class TestDatabase:
             return_data=True,
             save_history=False,
         )
-        gfsh = gridfs.GridFS(self.db)
-        unrelated_gridfs_id = gfsh.put(b"unrelated")
-        saved["gridfs_id"] = unrelated_gridfs_id
-
-        with pytest.raises(ValueError, match="does not support sample updates"):
-            self.db.update_data(saved, save_history=False)
-
-        assert gfsh.exists(unrelated_gridfs_id)
         document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
-        assert document["storage_mode"] == "object_store"
-        assert document["object_store"] == saved["object_store"]
-        gfsh.delete(unrelated_gridfs_id)
+        failing_client = Mock()
+        failing_client.delete_object.side_effect = (
+            botocore.exceptions.EndpointConnectionError(
+                endpoint_url="https://s3.invalid"
+            )
+        )
+
+        with pytest.raises(MsPASSError, match="waveform document was retained"):
+            self.db.delete_data(
+                saved["_id"],
+                "TimeSeries",
+                object_store_client=failing_client,
+            )
+
+        assert self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]}) == document
+        location = document["object_store"]
+        response = s3_client.get_object(
+            Bucket=location["bucket"], Key=location["object_name"]
+        )
+        response["Body"].close()
 
     @mock_aws
     def test_object_store_lite_schema_round_trip(self):

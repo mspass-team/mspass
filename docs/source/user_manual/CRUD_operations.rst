@@ -109,13 +109,22 @@ the docstring pages for detailed and most up to date usage:
     waveform requires passing a compatible client to
     :code:`db.read_data(..., object_store_client=s3_client)`.  Authentication
     and client lifetime are intentionally managed by the caller.  Native
-    binary samples use the versioned :code:`float64-le-v1` encoding (IEEE 754
-    64-bit floats in little-endian byte order); formatted writes use the
-    selected ObsPy format.  If a later MongoDB write fails, :code:`save_data`
-    removes any uploaded objects that have not acquired waveform documents
-    and reports their full S3 locations if that compensation also fails.
+    binary samples use the versioned :code:`float64-le-v1` encoding.  A
+    TimeSeries payload is :code:`npts` contiguous IEEE 754 float64 values in
+    little-endian byte order.  A Seismogram payload is three component-major
+    rows of :code:`npts` contiguous values in C order.  Formatted writes use
+    the selected ObsPy format.  If a later MongoDB write raises an exception
+    caught by the current process, :code:`save_data` removes uploaded objects
+    that have not acquired waveform documents, restores the caller's original
+    storage Metadata, and reports full S3 locations if compensation also
+    fails.  Abrupt process or host termination cannot run this in-process
+    compensation and requires durable reconciliation outside this operation;
+    that recovery work is tracked in `GitHub issue #1013
+    <https://github.com/mspass-team/mspass/issues/1013>`_.
     :code:`update_data` does not replace samples for object-store data; save a
-    new datum with :code:`save_data` instead.
+    new datum with :code:`save_data` instead.  :code:`delete_data` requires
+    the caller-owned :code:`object_store_client` for object-store data and
+    retains the waveform document if the external object cannot be deleted.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before

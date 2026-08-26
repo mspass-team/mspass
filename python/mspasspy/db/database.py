@@ -75,6 +75,17 @@ from mspasspy.util.converter import Textfile2Dataframe
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
 _GRIDFS_IO_CHUNK_BYTES = 1024 * 1024
 _OBJECT_STORE_BINARY_ENCODING = "float64-le-v1"
+_OBJECT_STORE_STORAGE_KEYS = (
+    "storage_mode",
+    "object_store",
+    "gridfs_id",
+    "dir",
+    "dfile",
+    "foff",
+    "url",
+    "format",
+    "nbytes",
+)
 
 
 class _NativeSampleReader(io.RawIOBase):
@@ -1817,6 +1828,18 @@ class Database(pymongo.database.Database):
                 # A weird construct
                 wf_collection_name = save_schema.collection("_id")
             wf_collection = self[wf_collection_name]
+            atomic_data = (
+                [mspass_object]
+                if isinstance(mspass_object, (TimeSeries, Seismogram))
+                else mspass_object.member
+            )
+            object_store_metadata_snapshots = []
+            if storage_mode == "object_store":
+                object_store_metadata_snapshots = [
+                    self._snapshot_object_store_metadata(datum) if datum.live else None
+                    for datum in atomic_data
+                ]
+
             # We need to make sure storage_mode is set in all live data
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
                 mspass_object.sync_metadata()
@@ -1827,11 +1850,6 @@ class Database(pymongo.database.Database):
                 # only atomic data can land here
                 mspass_object["storage_mode"] = storage_mode
 
-            atomic_data = (
-                [mspass_object]
-                if isinstance(mspass_object, (TimeSeries, Seismogram))
-                else mspass_object.member
-            )
             for datum in atomic_data:
                 if datum.live:
                     self._sync_metadata_before_update(datum)
@@ -1859,12 +1877,17 @@ class Database(pymongo.database.Database):
                 overwrite=overwrite,
                 object_store=object_store,
                 object_store_client=object_store_client,
+                object_store_metadata_snapshots=object_store_metadata_snapshots,
             )
             staged_object_store_data = []
             if storage_mode == "object_store":
                 staged_object_store_data = [
-                    (datum, copy.deepcopy(datum["object_store"]))
-                    for datum in atomic_data
+                    (
+                        datum,
+                        copy.deepcopy(datum["object_store"]),
+                        object_store_metadata_snapshots[index],
+                    )
+                    for index, datum in enumerate(atomic_data)
                     if datum.live and "object_store" in datum
                 ]
             try:
@@ -1904,11 +1927,8 @@ class Database(pymongo.database.Database):
                             alg_id,
                         )
                         if saved_datum.live:
-                            staged_object_store_data = [
-                                staged
-                                for staged in staged_object_store_data
-                                if staged[0] is not datum
-                            ]
+                            if storage_mode == "object_store":
+                                staged_object_store_data.pop(0)
             except Exception as original_error:
                 cleanup_failures = self._cleanup_staged_object_store_data(
                     object_store_client, staged_object_store_data
@@ -3527,10 +3547,30 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
+        if collection:
+            wf_collection_name = collection
+        else:
+            wf_collection_name = save_schema.collection("_id")
+        wf_collection = self[wf_collection_name]
+        persisted_document = None
+        if "_id" in mspass_object:
+            persisted_document = wf_collection.find_one(
+                {"_id": mspass_object["_id"]},
+                {"storage_mode": 1, "object_store": 1},
+            )
+        if persisted_document is not None and (
+            persisted_document.get("storage_mode") == "object_store"
+            or "object_store" in persisted_document
+        ):
+            raise ValueError(
+                "Database.update_data does not support sample updates for "
+                "persisted object_store data; save a new datum with "
+                "Database.save_data instead"
+            )
         if (
             "storage_mode" in mspass_object
             and mspass_object["storage_mode"] == "object_store"
-        ):
+        ) or "object_store" in mspass_object:
             raise ValueError(
                 "Database.update_data does not support sample updates for "
                 "object_store data; save a new datum with Database.save_data instead"
@@ -3640,14 +3680,6 @@ class Database(pymongo.database.Database):
                 new_gridfs_id = mspass_object["gridfs_id"]
                 update_record["gridfs_id"] = new_gridfs_id
 
-                # should define wf_collection here because if the mspass_object is dead
-                if collection:
-                    wf_collection_name = collection
-                else:
-                    # This returns a string that is the collection name for this atomic data type
-                    # A weird construct
-                    wf_collection_name = save_schema.collection("_id")
-                wf_collection = self[wf_collection_name]
                 if history_object_id is not None:
                     wf_id_name = wf_collection_name + "_id"
                     history_result = self[
@@ -3686,6 +3718,12 @@ class Database(pymongo.database.Database):
                     )
 
                 filter_ = {"_id": mspass_object["_id"]}
+                if persisted_document is not None:
+                    if "storage_mode" in persisted_document:
+                        filter_["storage_mode"] = persisted_document["storage_mode"]
+                    else:
+                        filter_["storage_mode"] = {"$exists": False}
+                    filter_["object_store"] = {"$exists": False}
                 if active_old_gridfs_id is not None:
                     filter_["gridfs_id"] = active_old_gridfs_id
                 update_operation = {"$set": update_record}
@@ -4156,6 +4194,7 @@ class Database(pymongo.database.Database):
         clear_history=True,
         clear_elog=True,
         collection=None,
+        object_store_client=None,
     ):
         """
         Delete method for handling mspass data objects (TimeSeries and Seismograms).
@@ -4170,7 +4209,9 @@ class Database(pymongo.database.Database):
         collections, it will delete the wf document entry and manage the
         waveform data.  If the data are stored in gridfs the deletion of
         the waveform data will be immediate.  If the data are stored in
-        disk files the file will be deleted when there are no more references
+        object store the independent object is deleted through the caller-owned
+        client.  If the data are stored in disk files the file will be deleted
+        when there are no more references
         in any schema-defined waveform collection for the exact combination
         of dir and dfile associated with an atomic deletion.  Requested
         history and error-log cleanup precedes sample deletion, and the
@@ -4193,6 +4234,9 @@ class Database(pymongo.database.Database):
         :param clear_elog: if ``True``, we will clear the elog entries of the associated wf object, default to be ``True``
         :param collection: explicit waveform collection containing the object. If
           omitted, use the default collection for ``object_type``.
+        :param object_store_client: boto3-compatible S3 client required to delete
+          data whose persisted ``storage_mode`` is ``object_store``.  Client
+          construction, credentials, and lifetime remain caller-owned.
         """
         if object_type not in ["TimeSeries", "Seismogram"]:
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -4236,6 +4280,7 @@ class Database(pymongo.database.Database):
         # document remains the durable retry record until all referenced
         # children have been removed or confirmed absent.
         storage_mode = object_doc.get("storage_mode")
+        object_store_location = object_doc.get("object_store")
         gridfs_id = object_doc.get("gridfs_id")
         dir_name = object_doc.get("dir")
         dfile_name = object_doc.get("dfile")
@@ -4246,6 +4291,33 @@ class Database(pymongo.database.Database):
         elog_collection = self.database_schema.default_name("elog")
         elog_id_name = elog_collection + "_id"
         elog_id = object_doc.get(elog_id_name)
+
+        # Validate external deletion before touching database-owned children.
+        # A malformed location or missing client must leave the complete
+        # waveform document available for a corrected retry.
+        if storage_mode == "object_store":
+            if not isinstance(object_store_location, dict):
+                raise ValueError(
+                    "object_store metadata must be a dictionary to delete data"
+                )
+            if object_store_location.get("provider") != "s3":
+                raise ValueError("object_store provider must be 's3'")
+            bucket = object_store_location.get("bucket")
+            object_name = object_store_location.get("object_name")
+            if not isinstance(bucket, str) or not bucket:
+                raise ValueError("object_store bucket must be a nonempty string")
+            if not isinstance(object_name, str) or not object_name:
+                raise ValueError("object_store object_name must be a nonempty string")
+            if object_store_client is None:
+                raise ValueError(
+                    "object_store_client is required to delete object_store data"
+                )
+        elif "object_store" in object_doc:
+            raise MsPASSError(
+                "Waveform document has an object_store location but "
+                "storage_mode is not object_store",
+                ErrorSeverity.Invalid,
+            )
 
         # Clear database-owned auxiliary records before removing samples.  If
         # one of these operations fails, the parent still identifies every
@@ -4265,6 +4337,20 @@ class Database(pymongo.database.Database):
             gfsh = gridfs.GridFS(self)
             if gfsh.exists(gridfs_id):
                 gfsh.delete(gridfs_id)
+
+        elif storage_mode == "object_store":
+            try:
+                object_store_client.delete_object(
+                    Bucket=bucket,
+                    Key=object_name,
+                )
+            except Exception as error:
+                raise MsPASSError(
+                    "Could not delete object-store samples at "
+                    "s3://{}/{}; the waveform document was retained for "
+                    "retry".format(bucket, object_name),
+                    ErrorSeverity.Fatal,
+                ) from error
 
         elif (
             storage_mode == "file"
@@ -5622,10 +5708,31 @@ class Database(pymongo.database.Database):
             )
 
     @staticmethod
+    def _snapshot_object_store_metadata(mspass_object):
+        """Capture storage metadata so a failed staged write can be undone."""
+        return {
+            key: (
+                (True, copy.deepcopy(mspass_object[key]))
+                if key in mspass_object
+                else (False, None)
+            )
+            for key in _OBJECT_STORE_STORAGE_KEYS
+        }
+
+    @staticmethod
+    def _restore_object_store_metadata(mspass_object, snapshot):
+        """Restore storage metadata captured before an object-store write."""
+        for key, (was_defined, value) in snapshot.items():
+            if was_defined:
+                mspass_object[key] = copy.deepcopy(value)
+            elif key in mspass_object:
+                mspass_object.erase(key)
+
+    @staticmethod
     def _cleanup_staged_object_store_data(object_store_client, staged_data):
         """Delete uploaded objects that have no committed waveform document."""
         failures = []
-        for datum, location in staged_data:
+        for datum, location, metadata_snapshot in staged_data:
             bucket = location["bucket"]
             object_name = location["object_name"]
             try:
@@ -5633,8 +5740,7 @@ class Database(pymongo.database.Database):
             except Exception:
                 failures.append("s3://{}/{}".format(bucket, object_name))
                 continue
-            if "object_store" in datum and datum["object_store"] == location:
-                datum.erase("object_store")
+            Database._restore_object_store_metadata(datum, metadata_snapshot)
         return failures
 
     @staticmethod
@@ -7020,6 +7126,7 @@ class Database(pymongo.database.Database):
         overwrite=False,
         object_store=None,
         object_store_client=None,
+        object_store_metadata_snapshots=None,
     ):
         """
         Function to save sample data arrays for any MsPASS data objects.
@@ -7136,6 +7243,7 @@ class Database(pymongo.database.Database):
                     object_store,
                     object_store_client,
                     format,
+                    metadata_snapshots=object_store_metadata_snapshots,
                 )
             else:
                 message = (
@@ -7456,6 +7564,7 @@ class Database(pymongo.database.Database):
         object_store,
         object_store_client,
         format=None,
+        metadata_snapshots=None,
     ):
         """Write sample data to independent objects in an S3-compatible store."""
         if mspass_object.dead():
@@ -7478,18 +7587,29 @@ class Database(pymongo.database.Database):
             )
 
         if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            if metadata_snapshots is None:
+                metadata_snapshots = [
+                    self._snapshot_object_store_metadata(datum) if datum.live else None
+                    for datum in mspass_object.member
+                ]
             staged_data = []
             try:
-                for datum in mspass_object.member:
+                for index, datum in enumerate(mspass_object.member):
                     if datum.live:
+                        metadata_snapshot = metadata_snapshots[index]
                         self._save_sample_data_to_object_store(
                             datum,
                             object_store,
                             object_store_client,
                             format,
+                            metadata_snapshots=[metadata_snapshot],
                         )
                         staged_data.append(
-                            (datum, copy.deepcopy(datum["object_store"]))
+                            (
+                                datum,
+                                copy.deepcopy(datum["object_store"]),
+                                metadata_snapshot,
+                            )
                         )
             except Exception as original_error:
                 cleanup_failures = self._cleanup_staged_object_store_data(
@@ -7506,6 +7626,10 @@ class Database(pymongo.database.Database):
 
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only MsPASS seismic data objects are supported")
+        if metadata_snapshots is None:
+            metadata_snapshot = self._snapshot_object_store_metadata(mspass_object)
+        else:
+            metadata_snapshot = metadata_snapshots[0]
 
         if format is None:
             format = "binary"
@@ -7531,6 +7655,11 @@ class Database(pymongo.database.Database):
         }
         if format == "binary":
             location["encoding"] = _OBJECT_STORE_BINARY_ENCODING
+        mspass_object["storage_mode"] = "object_store"
+        mspass_object["object_store"] = location
+        mspass_object["format"] = format
+        mspass_object["nbytes"] = len(payload)
+        Database._normalize_storage_pointers(mspass_object, "object_store")
         try:
             object_store_client.put_object(
                 Bucket=bucket,
@@ -7543,7 +7672,8 @@ class Database(pymongo.database.Database):
             OSError,
         ) as err:
             cleanup_failures = self._cleanup_staged_object_store_data(
-                object_store_client, [(mspass_object, location)]
+                object_store_client,
+                [(mspass_object, location, metadata_snapshot)],
             )
             if cleanup_failures:
                 raise MsPASSError(
@@ -7558,11 +7688,6 @@ class Database(pymongo.database.Database):
                 "Fatal",
             ) from err
 
-        mspass_object["storage_mode"] = "object_store"
-        mspass_object["object_store"] = location
-        mspass_object["format"] = format
-        mspass_object["nbytes"] = len(payload)
-        Database._normalize_storage_pointers(mspass_object, "object_store")
         return mspass_object
 
     def _save_sample_data_to_gridfs(
