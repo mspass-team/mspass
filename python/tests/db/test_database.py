@@ -585,6 +585,9 @@ class TestDatabase:
         assert self.db["object_store_staging"].count_documents({}) == staging_count
         assert self.db["wf_TimeSeries"].count_documents({}) == waveform_count
         object_store_client.put_object.assert_not_called()
+        assert "cemetery_id" in saved
+        cleanup = self.db["cemetery"].delete_one({"_id": saved["cemetery_id"]})
+        assert cleanup.deleted_count == 1
 
     def test_object_store_zero_length_ensemble_member_is_buried_without_upload(self):
         zero_length = get_live_timeseries(ts_size=0)
@@ -613,6 +616,15 @@ class TestDatabase:
         assert self.db["object_store_staging"].count_documents({}) == staging_count
         assert self.db["wf_TimeSeries"].count_documents({}) == waveform_count + 1
         assert object_store_client.put_object.call_count == 1
+        assert "cemetery_id" in saved.member[0]
+        cemetery_cleanup = self.db["cemetery"].delete_one(
+            {"_id": saved.member[0]["cemetery_id"]}
+        )
+        waveform_cleanup = self.db["wf_TimeSeries"].delete_one(
+            {"_id": saved.member[1]["_id"]}
+        )
+        assert cemetery_cleanup.deleted_count == 1
+        assert waveform_cleanup.deleted_count == 1
 
     @mock_aws
     def test_object_store_mseed_round_trip(self):
