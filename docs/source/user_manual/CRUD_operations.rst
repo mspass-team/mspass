@@ -122,8 +122,12 @@ the docstring pages for detailed and most up to date usage:
     to :code:`db.reconcile_object_store_staging(s3_client)`, which reports
     uncommitted S3 URIs without deleting them.  After stopping concurrent
     object-store writers, pass :code:`delete_uncommitted=True` to delete those
-    objects and their staging records.  A record that exactly matches a
-    committed waveform document is cleared without deleting its S3 object.
+    objects and their staging records.  Reconciliation treats
+    :code:`provider`, :code:`bucket`, and :code:`object_name` as the canonical
+    S3 object identity and checks every schema-defined waveform collection.
+    A referenced identity is cleared from staging without deleting its S3
+    object; nonidentity fields such as :code:`encoding` or :code:`etag` do not
+    affect that decision.
     Object-store ensemble members use this upload-and-commit sequence one at a
     time, bounding the uncommitted window to one member.
     :code:`update_data` does not replace samples for object-store data; save a

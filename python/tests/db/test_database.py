@@ -564,6 +564,56 @@ class TestDatabase:
         assert all(name.startswith("ensemble/") for name in object_names)
         assert len(s3_client.list_objects_v2(Bucket=bucket)["Contents"]) == 2
 
+    def test_object_store_zero_length_atomic_is_buried_without_upload(self):
+        datum = get_live_timeseries(ts_size=0)
+        object_store_client = Mock()
+        cemetery_count = self.db["cemetery"].count_documents({})
+        staging_count = self.db["object_store_staging"].count_documents({})
+        waveform_count = self.db["wf_TimeSeries"].count_documents({})
+
+        saved = self.db.save_data(
+            datum,
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": "unused"},
+            object_store_client=object_store_client,
+            return_data=True,
+        )
+
+        assert saved.dead()
+        assert saved.npts == 0
+        assert self.db["cemetery"].count_documents({}) == cemetery_count + 1
+        assert self.db["object_store_staging"].count_documents({}) == staging_count
+        assert self.db["wf_TimeSeries"].count_documents({}) == waveform_count
+        object_store_client.put_object.assert_not_called()
+
+    def test_object_store_zero_length_ensemble_member_is_buried_without_upload(self):
+        zero_length = get_live_timeseries(ts_size=0)
+        live = get_live_timeseries()
+        ensemble = TimeSeriesEnsemble()
+        ensemble.member.append(zero_length)
+        ensemble.member.append(live)
+        ensemble.set_live()
+        object_store_client = Mock()
+        cemetery_count = self.db["cemetery"].count_documents({})
+        staging_count = self.db["object_store_staging"].count_documents({})
+        waveform_count = self.db["wf_TimeSeries"].count_documents({})
+
+        saved = self.db.save_data(
+            ensemble,
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": "unused"},
+            object_store_client=object_store_client,
+            return_data=True,
+        )
+
+        assert saved.member[0].dead()
+        assert saved.member[0].npts == 0
+        assert saved.member[1].live
+        assert self.db["cemetery"].count_documents({}) == cemetery_count + 1
+        assert self.db["object_store_staging"].count_documents({}) == staging_count
+        assert self.db["wf_TimeSeries"].count_documents({}) == waveform_count + 1
+        assert object_store_client.put_object.call_count == 1
+
     @mock_aws
     def test_object_store_mseed_round_trip(self):
         s3_client = boto3.client("s3", region_name="us-east-1")
@@ -1026,6 +1076,42 @@ class TestDatabase:
         response["Body"].close()
 
     @mock_aws
+    def test_delete_data_ignores_concurrent_nonidentity_metadata_change(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-delete-etag-test"
+        s3_client.create_bucket(Bucket=bucket)
+        saved = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+            save_history=False,
+        )
+        location = copy.deepcopy(saved["object_store"])
+        concurrent_client = Mock()
+
+        def delete_then_add_etag(Bucket, Key):
+            s3_client.delete_object(Bucket=Bucket, Key=Key)
+            self.db["wf_TimeSeries"].update_one(
+                {"_id": saved["_id"]},
+                {"$set": {"object_store.etag": "concurrent-etag"}},
+            )
+
+        concurrent_client.delete_object.side_effect = delete_then_add_etag
+        self.db.delete_data(
+            saved["_id"],
+            "TimeSeries",
+            object_store_client=concurrent_client,
+        )
+
+        assert self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]}) is None
+        with pytest.raises(botocore.exceptions.ClientError):
+            s3_client.head_object(
+                Bucket=location["bucket"], Key=location["object_name"]
+            )
+
+    @mock_aws
     def test_object_store_staging_reconciles_interrupted_and_committed_writes(self):
         s3_client = boto3.client("s3", region_name="us-east-1")
         bucket = "mspass-object-store-staging-test"
@@ -1091,6 +1177,10 @@ class TestDatabase:
                 "object_store": committed_location,
             }
         )
+        self.db["wf_TimeSeries"].update_one(
+            {"_id": committed["_id"]},
+            {"$set": {"object_store.etag": "added-after-commit"}},
+        )
         committed_uri = "s3://{}/{}".format(
             committed_location["bucket"], committed_location["object_name"]
         )
@@ -1108,6 +1198,57 @@ class TestDatabase:
             Key=committed_location["object_name"],
         )
         response["Body"].close()
+
+        shared_location = {
+            "provider": "s3",
+            "bucket": bucket,
+            "object_name": "referenced-by-another-waveform.bin",
+            "encoding": "float64-le-v1",
+        }
+        s3_client.put_object(
+            Bucket=bucket,
+            Key=shared_location["object_name"],
+            Body=b"shared",
+        )
+        abandoned_waveform_id = ObjectId()
+        referenced_waveform_id = (
+            self.db["wf_Seismogram"]
+            .insert_one(
+                {
+                    "storage_mode": "object_store",
+                    "object_store": {
+                        **shared_location,
+                        "etag": "nonidentity-metadata",
+                    },
+                }
+            )
+            .inserted_id
+        )
+        self.db["object_store_staging"].insert_one(
+            {
+                "_id": abandoned_waveform_id,
+                "waveform_id": abandoned_waveform_id,
+                "waveform_collection": "wf_TimeSeries",
+                "object_store": shared_location,
+            }
+        )
+        shared_uri = "s3://{}/{}".format(
+            shared_location["bucket"], shared_location["object_name"]
+        )
+        report = self.db.reconcile_object_store_staging(
+            s3_client, delete_uncommitted=True
+        )
+        assert report == {
+            "committed": [shared_uri],
+            "uncommitted": [],
+            "deleted": [],
+            "failures": [],
+        }
+        response = s3_client.get_object(
+            Bucket=shared_location["bucket"], Key=shared_location["object_name"]
+        )
+        response["Body"].close()
+        self.db["wf_Seismogram"].delete_one({"_id": referenced_waveform_id})
 
     @mock_aws
     def test_object_store_lite_schema_round_trip(self):

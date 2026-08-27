@@ -1871,6 +1871,7 @@ class Database(pymongo.database.Database):
                         datum.kill()
 
             if storage_mode == "object_store":
+                mspass_object = self._kill_zero_length_live(mspass_object)
                 # Each live member is serialized, durably staged, uploaded,
                 # and committed before the next member starts.  This both
                 # gives interrupted writes a persistent reconciliation record
@@ -4426,12 +4427,7 @@ class Database(pymongo.database.Database):
             # checking every schema-defined waveform collection for another
             # reference to the same file.
             file_is_referenced = False
-            waveform_collections = {
-                collection_name
-                for collection_name, definition in self.database_schema._attr_dict.items()
-                if definition.data_type() in (TimeSeries, Seismogram)
-            }
-            for collection_name in waveform_collections:
+            for collection_name in self._waveform_collection_names():
                 reference_query = {"dir": dir_name, "dfile": dfile_name}
                 if collection_name == wf_collection_name:
                     reference_query["_id"] = {"$ne": oid}
@@ -4454,7 +4450,9 @@ class Database(pymongo.database.Database):
         else:
             final_delete_filter["storage_mode"] = {"$exists": False}
         if storage_mode == "object_store":
-            final_delete_filter["object_store"] = object_store_location
+            final_delete_filter.update(
+                self._object_store_identity_filter(object_store_location)
+            )
         elif storage_mode == "gridfs":
             final_delete_filter["gridfs_id"] = (
                 gridfs_id if gridfs_id is not None else {"$exists": False}
@@ -5772,6 +5770,41 @@ class Database(pymongo.database.Database):
                 mspass_object.erase(key)
 
     @staticmethod
+    def _object_store_identity(location):
+        """Return the fields that uniquely identify one supported S3 object."""
+        return (
+            location.get("provider"),
+            location.get("bucket"),
+            location.get("object_name"),
+        )
+
+    @staticmethod
+    def _object_store_identity_filter(location, field="object_store"):
+        """Build a MongoDB filter for an S3 object's canonical identity."""
+        provider, bucket, object_name = Database._object_store_identity(location)
+        return {
+            "{}.provider".format(field): provider,
+            "{}.bucket".format(field): bucket,
+            "{}.object_name".format(field): object_name,
+        }
+
+    def _waveform_collection_names(self):
+        """Return every schema-defined atomic waveform collection."""
+        return {
+            collection_name
+            for collection_name, definition in self.database_schema._attr_dict.items()
+            if definition.data_type() in (TimeSeries, Seismogram)
+        }
+
+    def _object_store_is_referenced(self, location):
+        """Return True if any waveform document names this S3 object."""
+        query = self._object_store_identity_filter(location)
+        return any(
+            self[collection_name].find_one(query, {"_id": 1}) is not None
+            for collection_name in self._waveform_collection_names()
+        )
+
+    @staticmethod
     def _validate_object_store_schema(save_schema, mode, exclude_keys=None):
         """Reject schemas that would discard object-store location metadata."""
         required_attributes = {
@@ -5835,9 +5868,9 @@ class Database(pymongo.database.Database):
             Database._restore_object_store_metadata(datum, metadata_snapshot)
             if stage_id is not None:
                 try:
-                    self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(
-                        {"_id": stage_id, "object_store": location}
-                    )
+                    stage_filter = {"_id": stage_id}
+                    stage_filter.update(self._object_store_identity_filter(location))
+                    self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(stage_filter)
                 except Exception:
                     failures.append("staging record {}".format(stage_id))
         return failures
@@ -5845,9 +5878,9 @@ class Database(pymongo.database.Database):
     def _complete_object_store_stage(self, stage_id, location):
         """Remove a staging record after its waveform reference is durable."""
         try:
-            result = self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(
-                {"_id": stage_id, "object_store": location}
-            )
+            stage_filter = {"_id": stage_id}
+            stage_filter.update(self._object_store_identity_filter(location))
+            result = self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(stage_filter)
             return result.deleted_count == 1
         except Exception:
             return False
@@ -5859,10 +5892,11 @@ class Database(pymongo.database.Database):
 
         A staging record is written before each S3 upload and removed only
         after the corresponding waveform document has been committed.  A
-        record whose waveform document contains the exact same object-store
-        location is committed; reconciliation removes only the stale staging
-        record and never its sample object.  Other records are reported as
-        uncommitted by default.
+        record whose canonical S3 identity (provider, bucket, and object
+        name) is referenced by any schema-defined waveform collection is
+        committed; reconciliation removes only the stale staging record and
+        never its sample object.  Other records are reported as uncommitted by
+        default.
 
         Set ``delete_uncommitted=True`` only while object-store writers are
         quiescent.  MongoDB and S3 cannot provide a cross-system transaction,
@@ -5899,17 +5933,11 @@ class Database(pymongo.database.Database):
                 )
                 continue
             uri = "s3://{}/{}".format(location["bucket"], location["object_name"])
-            waveform = self[waveform_collection].find_one(
-                {"_id": waveform_id}, {"storage_mode": 1, "object_store": 1}
-            )
-            if waveform is not None and (
-                waveform.get("storage_mode") == "object_store"
-                and waveform.get("object_store") == location
-            ):
+            if self._object_store_is_referenced(location):
                 try:
-                    result = staging_collection.delete_one(
-                        {"_id": stage_id, "object_store": location}
-                    )
+                    stage_filter = {"_id": stage_id}
+                    stage_filter.update(self._object_store_identity_filter(location))
+                    result = staging_collection.delete_one(stage_filter)
                     if result.deleted_count == 1:
                         report["committed"].append(uri)
                     else:
@@ -5928,9 +5956,9 @@ class Database(pymongo.database.Database):
                 object_store_client.delete_object(
                     Bucket=location["bucket"], Key=location["object_name"]
                 )
-                result = staging_collection.delete_one(
-                    {"_id": stage_id, "object_store": location}
-                )
+                stage_filter = {"_id": stage_id}
+                stage_filter.update(self._object_store_identity_filter(location))
+                result = staging_collection.delete_one(stage_filter)
                 if result.deleted_count == 1:
                     report["deleted"].append(uri)
                 else:
