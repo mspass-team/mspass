@@ -86,6 +86,31 @@ the docstring pages for detailed and most up to date usage:
     Set :code:`return_data=True` when an
     intermediate save needs the updated data object returned to the workflow.
 
+    GridFS saves, including
+    :code:`write_distributed_data(..., storage_mode="gridfs")`, use a durable
+    :code:`gridfs_staging` record containing
+    preallocated waveform, GridFS, history, and elog ids before sample bytes
+    are written.  A network or write-concern result that cannot prove whether
+    a write committed leaves that stage and the caller's recovery ids intact.
+    After stopping GridFS writers and waiting for outstanding MongoDB requests,
+    call :code:`db.reconcile_gridfs_staging()`.  Its default mode repairs
+    committed auxiliary links and reports unresolved stages without deleting
+    samples; :code:`delete_uncommitted=True` also removes unreferenced files,
+    partial chunks, auxiliary documents, and stages.  Lifecycle reads use the
+    primary and writes use majority acknowledgement even if the caller's
+    Database handle requests weaker options.  The shared-reference scan and
+    GridFS delete are not one MongoDB transaction.  If :code:`gridfs_id`
+    values are intentionally shared or edited manually, writers capable of
+    creating those references must also remain quiescent during replacement,
+    :code:`delete_data`, and reconciliation.  Reference scans cover every
+    schema-defined waveform collection plus the staged/requested collection;
+    they cannot discover a manually created reference in an unrelated custom
+    collection that is absent from the active database schema.
+    During known-failure compensation, a caller's original storage Metadata
+    is restored as soon as staged samples are confirmed deleted.  If later
+    auxiliary or staging-record cleanup fails, the durable stage remains for
+    reconciliation; the caller is not left pointing at the deleted samples.
+
     Sample data can instead be stored in an S3-compatible object store by
     supplying an authenticated boto3 client and an explicit destination:
 
@@ -114,29 +139,56 @@ the docstring pages for detailed and most up to date usage:
     little-endian byte order.  A Seismogram payload is three component-major
     rows of :code:`npts` contiguous values in C order.  Formatted writes use
     the selected ObsPy format.  Each upload is preceded by a durable MongoDB
-    staging record containing its preallocated waveform id and exact S3
-    location.  If a later MongoDB write raises an exception caught by the
-    current process, :code:`save_data` removes the object and restores the
-    caller's original storage Metadata only after MongoDB confirms that no
-    waveform document references the object.  If commit status cannot be
-    determined because an attempted waveform insert ends with a connection,
-    topology, or write-concern error, no immediate negative reference query is
-    treated as a commit barrier.  The S3 object, staging record, and new caller
-    Metadata are retained for reconciliation and the save raises an explicit
-    fatal error.  The same retention rule applies when the intended waveform
-    owner is already durable.
+    staging record containing the preallocated waveform, history, and elog
+    ids plus the exact S3 location.  This lifecycle currently supports only
+    unversioned S3 buckets; bucket version ids are not persisted or passed to
+    deletion operations.  Lifecycle state is written with MongoDB majority
+    write concern, and owner/reference decisions are read from the primary;
+    these safety settings override weaker options on the caller's Database
+    handle.
+
+    Once :code:`put_object` has been invoked, an exception cannot prove that
+    the upload did not finish at the service.  MsPASS therefore retains the
+    S3 location, staging record, preallocated waveform :code:`_id`, and new
+    caller Metadata and raises an explicit fatal error.  It does not issue an
+    immediate compensating delete.  The same rule applies to connection,
+    topology, timeout, or write-concern failures after a staged MongoDB write
+    has been attempted.  If an error is known to precede those uncertain
+    operations, :code:`save_data` removes the object and staged auxiliary
+    documents and restores the caller's original storage Metadata, including
+    its original :code:`_id`, only after MongoDB confirms that no waveform
+    document references the object.
+    Once an unreferenced S3 object is confirmed deleted, the caller's original
+    storage Metadata is restored even if later auxiliary or staging-record
+    cleanup fails.  The retained durable stage then records the remaining
+    reconciliation work without making the caller point at a deleted object.
+
+    On an uncertain result, the datum held by the caller is a recovery handle:
+    its :code:`_id` is the preallocated waveform id recorded in staging, not
+    the id of a previous waveform document.  Do not reuse that in-memory datum
+    directly after reconciliation.  If the staged owner committed, reload it
+    by that :code:`_id`; if reconciliation removes the uncommitted save,
+    discard the datum or restore it from an application-owned copy of its
+    prior state.
     An abrupt process or host termination leaves the staging record available
-    to :code:`db.reconcile_object_store_staging(s3_client)`, which reports
-    uncommitted S3 URIs without deleting them.  After stopping concurrent
-    object-store writers, pass :code:`delete_uncommitted=True` to delete those
-    objects and their staging records.  Reconciliation treats
+    for reconciliation.  Stop concurrent object-store reference writers and
+    wait for all outstanding S3 and MongoDB requests before every call to
+    :code:`db.reconcile_object_store_staging(s3_client)`: even its default
+    mode repairs committed auxiliary links and clears resolved staging
+    records.  The default reports unresolved S3 URIs without deleting their
+    samples.  Pass :code:`delete_uncommitted=True` to also delete uncommitted
+    objects, any staged history/elog documents, and their staging records.
+    Reconciliation treats
     :code:`provider`, :code:`bucket`, and :code:`object_name` as the canonical
     S3 object identity.  It first queries the exact staged waveform id and
     collection, including alternate collections not present in the database
     schema, then checks every schema-defined waveform collection for shared
-    references.  A referenced identity is cleared from staging without
-    deleting its S3 object; nonidentity fields such as :code:`encoding` or
-    :code:`etag` do not affect that decision.
+    references.  For the exact intended owner, it validates the saved
+    history/elog ids and repairs their reverse waveform links before clearing
+    staging.  If only another waveform shares the S3 identity, it preserves
+    the object while removing the failed owner's staged auxiliary documents.
+    Nonidentity fields such as :code:`encoding` or :code:`etag` do not affect
+    that decision.
     Object-store ensemble members use this upload-and-commit sequence one at a
     time, bounding the uncommitted window to one member.
     :code:`update_data` does not replace samples for object-store data; save a
@@ -440,6 +492,52 @@ updates Metadata, the error log, history, and sample data for an atomic
 records should be managed through these APIs rather than edited directly with
 PyMongo.
 
+For waveform documents backed by GridFS or an object store,
+:code:`update_metadata` reads the owner from the MongoDB primary and
+deliberately excludes lifecycle-owned sample and history/elog pointers from
+its update payload.  A real change to :code:`storage_mode`, :code:`gridfs_id`,
+an object-store canonical identity, or an auxiliary-document id is rejected.
+Adding nonidentity object-store Metadata such as :code:`etag` is allowed only
+while a compare-and-swap still matches the same provider, bucket, and object
+name.  Existing file- and URL-backed Metadata repair behavior is unchanged.
+Use :code:`save_data`, :code:`update_data`, or :code:`delete_data` for storage
+transitions so staging and compensation remain consistent.  Direct PyMongo
+edits bypass this protection and must be treated as an offline repair: stop
+all related writers and reconcile durable stages before resuming normal CRUD
+operations.  For backward compatibility, :code:`update_metadata` can still
+upsert when its primary read finds no waveform.  Once that read finds an
+existing waveform, however, the operation is fixed as non-upserting so a
+concurrent deletion cannot recreate a metadata-only document.
+
+:code:`update_data` requires an existing waveform :code:`_id`.  It reads the
+persisted sample location from the MongoDB primary before performing any
+write, writes replacement GridFS samples with majority write concern, and
+commits the new pointer with a primary/majority compare-and-swap against the
+complete old location.  Only a confirmed commit permits deletion of the old
+GridFS object.  If the GridFS write or pointer commit has an uncertain network
+or write-concern result, both the old and staged objects plus the durable stage
+are retained.  Wait for outstanding MongoDB writes to finish, run
+:code:`reconcile_gridfs_staging`, and reload the waveform by :code:`_id` from
+the primary; the in-memory datum is only a recovery handle during that
+interval.  A file or URL source is converted to an explicit
+:code:`storage_mode="gridfs"` based on the persisted source location, not on
+mutable caller Metadata.
+If a prior save committed its waveform but could not remove its staging
+record, a later :code:`update_data` or :code:`delete_data` first repairs its
+auxiliary links, finishes any safe old-GridFS cleanup, and removes that exact
+committed stage.  A conflicting or unreadable stage stops the new operation
+and must be reconciled before the waveform location can change again.
+The selected Metadata schema must be able to persist writable
+:code:`storage_mode` and :code:`gridfs_id` fields, and those fields cannot be
+listed in :code:`exclude_keys`.  The same preflight applies to direct updates,
+serial overwrite, and distributed GridFS saves before any sample write.  A
+live zero-length datum is never allowed to replace an existing GridFS object;
+the old waveform and samples remain unchanged.
+For new saves, metadata-validation failures and live zero-length data follow
+the normal :code:`cremate` contract: :code:`cremate=True` discards them
+without creating cemetery documents, including atomic and ensemble members
+saved through :code:`write_distributed_data`.
+
 As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
@@ -508,7 +606,7 @@ method of the Database class:
   def delete_data(self, object_id, object_type,
                   remove_unreferenced_files=False,
                   clear_history=True, clear_elog=True,
-                  collection=None):
+                  collection=None, object_store_client=None):
 
 As with the read methods, :code:`object_id` is the ObjectId of the waveform
 document that references the data to be deleted.  :code:`object_type` must be
@@ -525,6 +623,16 @@ true will result in a loss of information that might be needed to address
 problems during processing.  Both default to true to perform a complete
 delete and avoid orphaned records.  Set either false only when intentionally
 retaining those records and prepared to manage the broken waveform reference.
+Before deleting any requested auxiliary record, :code:`delete_data` places a
+durable internal claim on the waveform document.  Supported metadata and
+sample writers cannot commit while that claim exists.  The waveform and claim
+are retained if a later sample deletion fails, and a subsequent
+:code:`delete_data` call resumes the idempotent cleanup.  The claim is removed
+only with the final waveform deletion and is never copied into a newly saved
+waveform.  Claim, auxiliary cleanup, reference checks, and final parent
+deletion use primary reads and majority writes for every storage mode,
+including file and URL data, even when the caller's Database handle requests
+weaker options.
 
 The main complexity in this method is behind the boolean argument with the name
 :code:`remove_unreferenced_files`.  First, recognize this argument is completely

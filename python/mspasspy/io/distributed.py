@@ -22,6 +22,12 @@ from mspasspy.util.db_utils import fetch_dbhandle, _WorkerDatabaseReference
 from mspasspy.ccore.utility import (
     ErrorLogger,
 )
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    SeismogramEnsemble,
+    TimeSeries,
+    TimeSeriesEnsemble,
+)
 
 try:
     import dask
@@ -1313,6 +1319,46 @@ def _atomic_extract_wf_document(
     return doc
 
 
+def _save_distributed_gridfs_item(
+    item,
+    db,
+    mode,
+    exclude_keys,
+    collection,
+    data_tag,
+    post_elog,
+    save_history,
+    post_history,
+    cremate,
+    normalizing_collections,
+    alg_name,
+    alg_id,
+):
+    """Save one distributed item through Database's durable GridFS saga."""
+    saved = db.save_data(
+        item,
+        return_data=True,
+        mode=mode,
+        storage_mode="gridfs",
+        overwrite=False,
+        exclude_keys=exclude_keys,
+        collection=collection,
+        data_tag=data_tag,
+        cremate=cremate,
+        save_history=save_history,
+        normalizing_collections=normalizing_collections,
+        alg_name=alg_name,
+        alg_id=alg_id,
+        _post_elog=post_elog,
+        _post_history=post_history,
+    )
+    if isinstance(saved, (TimeSeries, Seismogram)):
+        return saved["_id"] if saved.live and "_id" in saved else None
+    if saved.dead():
+        return []
+    return [datum["_id"] for datum in saved.member if datum.live and "_id" in datum]
+
+
 def write_distributed_data(
     data,
     db,
@@ -1354,12 +1400,13 @@ def write_distributed_data(
              also abstracts how the data are written with different
              things done depending on the "storage_mode" attribute
              that can optionally be defined for each atomic object.
-        2.   After the sample data are saved we use a MongoDB
-             "update_many" operator with the "many" defined by the
-             partition size.  That reduces database transaction delays
-             by 1/object_per_partition.  For ensembles the partitioning
-             is natural with bulk writes controlled by the number of
-             ensemble members.
+        2.   File-backed output keeps the partitioned bulk-document writer
+             to reduce database transaction delays.  GridFS output instead
+             saves each atomic datum through :meth:`Database.save_data` so a
+             durable staging record exists before its sample bytes and its
+             waveform document are written.  This gives up GridFS bulk inserts
+             in exchange for crash-safe reconciliation; workers still process
+             different data in parallel.
 
     The function also handles data marked dead in a standardized way
     though the use of the :class:`mspasspy.util.Undertaker` now
@@ -1468,7 +1515,9 @@ def write_distributed_data(
 
     :param storage_mode: Must be either "gridfs" or "file.  When set to
         "gridfs" the waveform data are stored internally and managed by
-        MongoDB.  If set to "file" the data will be stored in a file system.
+        MongoDB using the same durable staging lifecycle as
+        :meth:`Database.save_data`.  If set to "file" the data will be stored
+        in a file system.
         File names are derived from attributes with the tags "dir" and
         "dfile" in the standard way.   Any datum for which dir or dfile
         aren't defined will default to the behaviour of the Database
@@ -1643,6 +1692,32 @@ def write_distributed_data(
         )
         message += "Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"
         raise ValueError(message)
+
+    if storage_mode == "gridfs":
+        db._validate_gridfs_schema(save_schema, mode, exclude_keys=exclude_keys)
+        save_kwargs = {
+            "db": db,
+            "mode": mode,
+            "exclude_keys": exclude_keys,
+            "collection": collection,
+            "data_tag": data_tag,
+            "post_elog": post_elog,
+            "save_history": save_history,
+            "post_history": post_history,
+            "cremate": cremate,
+            "normalizing_collections": normalizing_collections,
+            "alg_name": alg_name,
+            "alg_id": alg_id,
+        }
+        if scheduler == "spark":
+            data = data.map(
+                lambda item: _save_distributed_gridfs_item(item, **save_kwargs)
+            )
+            return data.collect()
+        data = data.map(_save_distributed_gridfs_item, **save_kwargs)
+        if dask_client is not None:
+            return data.compute(scheduler=dask_client)
+        return data.compute()
 
     stedronsky = Undertaker(db)
     if scheduler == "spark":

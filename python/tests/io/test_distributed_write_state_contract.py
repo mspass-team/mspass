@@ -12,9 +12,10 @@ import pymongo
 import pytest
 
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
-from mspasspy.ccore.utility import AtomicType, ErrorLogger, ErrorSeverity
+from mspasspy.ccore.utility import AtomicType, ErrorLogger, ErrorSeverity, MsPASSError
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
+import mspasspy.db.database as database_module
 from mspasspy.db.serialization import decode_processing_history
 import mspasspy.io.distributed as distributed_module
 from mspasspy.util.Undertaker import Undertaker
@@ -95,18 +96,18 @@ def conversion_logger(enabled):
 
 
 def install_md2doc(monkeypatch, with_conversion_log):
-    def fake_md2doc(datum, **kwargs):
-        doc = {
-            "waveform_marker": datum["waveform_marker"],
-            "preserved_number": datum["preserved_number"],
-        }
+    def fake_md2doc(datum, *args, **kwargs):
+        doc = dict(datum)
+        doc["waveform_marker"] = datum["waveform_marker"]
+        doc["preserved_number"] = datum["preserved_number"]
         return doc, True, conversion_logger(with_conversion_log)
 
     monkeypatch.setattr(distributed_module, "md2doc", fake_md2doc)
+    monkeypatch.setattr(database_module, "md2doc", fake_md2doc)
 
 
 def install_rejected_md2doc(monkeypatch):
-    def fake_md2doc(datum, **kwargs):
+    def fake_md2doc(datum, *args, **kwargs):
         return (
             {
                 "waveform_marker": datum["waveform_marker"],
@@ -117,6 +118,7 @@ def install_rejected_md2doc(monkeypatch):
         )
 
     monkeypatch.setattr(distributed_module, "md2doc", fake_md2doc)
+    monkeypatch.setattr(database_module, "md2doc", fake_md2doc)
 
 
 def persist_distributed_document(
@@ -424,3 +426,123 @@ def test_elog_posting_matrix_preserves_every_entry_and_honors_flag(
         else:
             assert "elog_id" not in persisted
             assert database["elog"].count_documents({}) == 0
+
+
+def test_distributed_post_modes_retain_only_waveform_stage_on_uncertain_insert(
+    monkeypatch, database
+):
+    datum = make_datum("uncertain_post_modes")
+    datum.elog.log_error("datum_log", "datum diagnostic", ErrorSeverity.Complaint)
+    original_insert_one = database_module.Collection.insert_one
+
+    def fail_waveform_insert(collection, document, *args, **kwargs):
+        if collection.name == "wf_TimeSeries":
+            raise pymongo.errors.AutoReconnect("waveform result unknown")
+        return original_insert_one(collection, document, *args, **kwargs)
+
+    monkeypatch.setattr(database_module.Collection, "insert_one", fail_waveform_insert)
+
+    with pytest.raises(MsPASSError, match="could not determine whether"):
+        distributed_module._save_distributed_gridfs_item(
+            datum,
+            database,
+            mode="promiscuous",
+            exclude_keys=None,
+            collection="wf_TimeSeries",
+            data_tag=None,
+            post_elog=True,
+            save_history=True,
+            post_history=True,
+            cremate=False,
+            normalizing_collections=[],
+            alg_name="write_distributed_data",
+            alg_id="0",
+        )
+
+    stage = database["gridfs_staging"].find_one({})
+    assert stage is not None
+    assert database["history_object"].count_documents({}) == 0
+    assert database["elog"].count_documents({}) == 0
+    assert "history_object_id" not in datum
+    assert "elog_id" not in datum
+
+
+@pytest.mark.parametrize("path", ["atomic", "ensemble"])
+def test_distributed_gridfs_cremate_discards_metadata_rejections(
+    monkeypatch, database, path
+):
+    install_rejected_md2doc(monkeypatch)
+    datum = make_datum(path + "_cremate_rejected")
+    if path == "atomic":
+        item = datum
+    else:
+        item = TimeSeriesEnsemble()
+        item.member.append(datum)
+        item.set_live()
+
+    with dask.config.set(scheduler="synchronous"):
+        result = distributed_module.write_distributed_data(
+            dask.bag.from_sequence([item], npartitions=1),
+            database,
+            data_are_atomic=path == "atomic",
+            storage_mode="gridfs",
+            mode="pedantic",
+            cremate=True,
+        )
+
+    assert result == ([None] if path == "atomic" else [[]])
+    assert database["cemetery"].count_documents({}) == 0
+    assert database["wf_TimeSeries"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+    assert database["gridfs_staging"].count_documents({}) == 0
+
+
+@pytest.mark.parametrize("path", ["atomic", "ensemble"])
+def test_distributed_gridfs_cremate_discards_live_zero_length(database, path):
+    datum = TimeSeries(0)
+    datum.set_live()
+    datum["waveform_marker"] = path + "_zero_length"
+    if path == "atomic":
+        item = datum
+    else:
+        item = TimeSeriesEnsemble()
+        item.member.append(datum)
+        item.set_live()
+
+    with dask.config.set(scheduler="synchronous"):
+        result = distributed_module.write_distributed_data(
+            dask.bag.from_sequence([item], npartitions=1),
+            database,
+            data_are_atomic=path == "atomic",
+            storage_mode="gridfs",
+            mode="promiscuous",
+            cremate=True,
+        )
+
+    assert result == ([None] if path == "atomic" else [[]])
+    assert database["cemetery"].count_documents({}) == 0
+    assert database["wf_TimeSeries"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+    assert database["gridfs_staging"].count_documents({}) == 0
+
+
+def test_distributed_dead_ensemble_does_not_report_stale_member_ids(database):
+    member = make_datum("dead_ensemble_stale_id")
+    member["_id"] = ObjectId()
+    ensemble = TimeSeriesEnsemble()
+    ensemble.member.append(member)
+    ensemble.kill()
+
+    with dask.config.set(scheduler="synchronous"):
+        result = distributed_module.write_distributed_data(
+            dask.bag.from_sequence([ensemble], npartitions=1),
+            database,
+            data_are_atomic=False,
+            storage_mode="gridfs",
+            cremate=True,
+        )
+
+    assert result == [[]]
+    assert database["cemetery"].count_documents({}) == 0
+    assert database["wf_TimeSeries"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
