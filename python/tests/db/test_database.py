@@ -12,6 +12,7 @@ import pymongo.errors
 import pytest
 import sys
 import re
+import threading
 
 import boto3
 from moto import mock_aws
@@ -914,7 +915,9 @@ class TestDatabase:
             return original_insert_one(collection, document, *args, **kwargs)
 
         with patch.object(Collection, "insert_one", new=insert_then_raise):
-            with pytest.raises(MsPASSError, match="reference became durable"):
+            with pytest.raises(
+                MsPASSError, match="could not determine whether.*committed"
+            ):
                 self.db.save_data(
                     datum,
                     storage_mode="object_store",
@@ -953,6 +956,89 @@ class TestDatabase:
             Bucket=bucket, Key=stage["object_store"]["object_name"]
         )
         response["Body"].close()
+        self.db["wf_TimeSeries"].delete_one({"_id": stage["waveform_id"]})
+        s3_client.delete_object(Bucket=bucket, Key=stage["object_store"]["object_name"])
+
+    @mock_aws
+    def test_object_store_inflight_waveform_insert_is_not_compensated(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-inflight-insert-test"
+        s3_client.create_bucket(Bucket=bucket)
+        datum = get_live_timeseries()
+        original_insert_one = Collection.insert_one
+        allow_insert = threading.Event()
+        worker = None
+        worker_errors = []
+
+        def insert_later(collection, document):
+            try:
+                if not allow_insert.wait(timeout=10):
+                    raise TimeoutError("test did not release delayed waveform insert")
+                original_insert_one(collection, document)
+            except BaseException as error:
+                worker_errors.append(error)
+
+        def start_insert_then_raise(collection, document, *args, **kwargs):
+            nonlocal worker
+            if collection.name == "wf_TimeSeries":
+                worker = threading.Thread(
+                    target=insert_later,
+                    args=(collection, copy.deepcopy(document)),
+                    name="delayed-waveform-insert",
+                )
+                worker.start()
+                raise pymongo.errors.AutoReconnect("waveform result unknown")
+            return original_insert_one(collection, document, *args, **kwargs)
+
+        stage = None
+        try:
+            with patch.object(Collection, "insert_one", new=start_insert_then_raise):
+                with pytest.raises(
+                    MsPASSError, match="could not determine whether.*committed"
+                ):
+                    self.db.save_data(
+                        datum,
+                        storage_mode="object_store",
+                        object_store={"provider": "s3", "bucket": bucket},
+                        object_store_client=s3_client,
+                        save_history=False,
+                    )
+
+            stage = self.db["object_store_staging"].find_one(
+                {"object_store.bucket": bucket}
+            )
+            assert stage is not None
+            assert (
+                self.db["wf_TimeSeries"].find_one({"_id": stage["waveform_id"]}) is None
+            )
+            response = s3_client.get_object(
+                Bucket=bucket, Key=stage["object_store"]["object_name"]
+            )
+            response["Body"].close()
+        finally:
+            allow_insert.set()
+            if worker is not None:
+                worker.join(timeout=10)
+
+        assert worker is not None
+        assert not worker.is_alive()
+        assert worker_errors == []
+        assert stage is not None
+        waveform = self.db["wf_TimeSeries"].find_one({"_id": stage["waveform_id"]})
+        assert waveform
+        assert datum["storage_mode"] == "object_store"
+        assert datum["object_store"] == stage["object_store"]
+        response = s3_client.get_object(
+            Bucket=bucket, Key=stage["object_store"]["object_name"]
+        )
+        response["Body"].close()
+
+        report = self.db.reconcile_object_store_staging(
+            s3_client, delete_uncommitted=True
+        )
+        assert len(report["committed"]) == 1
+        assert report["deleted"] == []
+        assert report["failures"] == []
         self.db["wf_TimeSeries"].delete_one({"_id": stage["waveform_id"]})
         s3_client.delete_object(Bucket=bucket, Key=stage["object_store"]["object_name"])
 

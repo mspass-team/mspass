@@ -119,9 +119,12 @@ the docstring pages for detailed and most up to date usage:
     current process, :code:`save_data` removes the object and restores the
     caller's original storage Metadata only after MongoDB confirms that no
     waveform document references the object.  If commit status cannot be
-    determined, or the intended waveform owner is already durable, the S3
-    object, staging record, and new caller Metadata are retained for
-    reconciliation and the save raises an explicit fatal error.
+    determined because an attempted waveform insert ends with a connection,
+    topology, or write-concern error, no immediate negative reference query is
+    treated as a commit barrier.  The S3 object, staging record, and new caller
+    Metadata are retained for reconciliation and the save raises an explicit
+    fatal error.  The same retention rule applies when the intended waveform
+    owner is already durable.
     An abrupt process or host termination leaves the staging record available
     to :code:`db.reconcile_object_store_staging(s3_client)`, which reports
     uncommitted S3 URIs without deleting them.  After stopping concurrent
@@ -142,7 +145,12 @@ the docstring pages for detailed and most up to date usage:
     retains the waveform document if the external object cannot be deleted.
     If another waveform document references the same canonical S3 identity,
     only the requested waveform and auxiliary documents are removed; the
-    shared S3 object is retained.
+    shared S3 object is retained.  The MongoDB shared-reference query and S3
+    deletion cannot be one atomic operation.  If identities are intentionally
+    shared or can be edited manually, all writers capable of creating or
+    changing object-store references must remain quiescent for the duration of
+    :code:`delete_data`.  Concurrent creation of a new shared reference is not
+    protected by this API.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before

@@ -200,6 +200,22 @@ def _managed_response_stream(stream):
         stream.close()
 
 
+class _ObjectStoreWaveformCommitUncertain(Exception):
+    """Signal that an attempted waveform insert may still become durable."""
+
+
+def _waveform_insert_result_is_uncertain(error):
+    """Return True when PyMongo cannot prove an attempted insert was rejected."""
+    if not isinstance(error, pymongo.errors.PyMongoError):
+        return False
+    if error.has_error_label("NoWritesPerformed"):
+        return False
+    return isinstance(
+        error,
+        (pymongo.errors.ConnectionFailure, pymongo.errors.WriteConcernError),
+    ) or error.has_error_label("RetryableWriteError")
+
+
 @contextmanager
 def _managed_collection_cursor(collection, query, no_cursor_timeout=False):
     """Yield a cursor that is closed reliably after a collection scan.
@@ -1648,7 +1664,10 @@ class Database(pymongo.database.Database):
         :type object_store: :class:`dict`
         :param object_store_client: boto3-compatible S3 client used to write
           object-store sample data.  Authentication and client lifetime remain
-          the caller's responsibility.
+          the caller's responsibility.  If an attempted waveform insert ends
+          with an uncertain MongoDB result, the uploaded samples, durable
+          staging record, and new caller metadata are retained for later
+          reconciliation instead of being compensated in process.
 
         :param exclude_keys: Metadata can often become contaminated with
           attributes that are no longer needed or a mismatch with the data.
@@ -1931,6 +1950,17 @@ class Database(pymongo.database.Database):
                             alg_id,
                             waveform_id=waveform_id,
                         )
+                    except _ObjectStoreWaveformCommitUncertain as original_error:
+                        raise MsPASSError(
+                            "Database.save_data could not determine whether the "
+                            "waveform insert committed; the object-store samples, "
+                            "staging record, and new caller metadata were retained "
+                            "for reconciliation: "
+                            "s3://{}/{}".format(
+                                location["bucket"], location["object_name"]
+                            ),
+                            "Fatal",
+                        ) from original_error
                     except Exception as original_error:
                         (
                             cleanup_failures,
@@ -4307,7 +4337,11 @@ class Database(pymongo.database.Database):
         the waveform data will be immediate.  If the data are stored in
         object store the independent object is deleted through the caller-owned
         client when no other waveform document references the same canonical
-        identity.  If the data are stored in disk files the file will be deleted
+        identity.  That MongoDB reference check and the external deletion are
+        not atomic.  Callers that intentionally share or manually edit object-
+        store identities must keep all reference writers quiescent until this
+        method returns.  Concurrent creation of a new shared reference is not
+        protected.  If the data are stored in disk files the file will be deleted
         when there are no more references
         in any schema-defined waveform collection for the exact combination
         of dir and dfile associated with an atomic deletion.  Requested
@@ -8275,7 +8309,14 @@ class Database(pymongo.database.Database):
             try:
                 if wfid is not None:
                     insertion_dict["_id"] = wfid
-                wfid = wf_collection.insert_one(insertion_dict).inserted_id
+                try:
+                    wfid = wf_collection.insert_one(insertion_dict).inserted_id
+                except Exception as error:
+                    if storage_mode == "object_store" and (
+                        _waveform_insert_result_is_uncertain(error)
+                    ):
+                        raise _ObjectStoreWaveformCommitUncertain() from error
+                    raise
                 waveform_inserted = True
                 if history_object_id is not None:
                     wf_id_name = wf_collection.name + "_id"
@@ -8289,6 +8330,8 @@ class Database(pymongo.database.Database):
                             "to the waveform",
                             ErrorSeverity.Invalid,
                         )
+            except _ObjectStoreWaveformCommitUncertain:
+                raise
             except Exception:
                 if waveform_inserted:
                     wf_collection.delete_one({"_id": wfid})
