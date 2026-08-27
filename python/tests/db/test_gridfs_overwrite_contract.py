@@ -384,6 +384,106 @@ def test_gridfs_stage_insert_failure_restores_new_save_caller(database, monkeypa
     assert database["fs.files"].count_documents({}) == 0
 
 
+def test_initial_gridfs_put_uncertainty_detaches_source_owner(database, monkeypatch):
+    storage = gridfs.GridFS(database)
+    old_waveform_id = ObjectId()
+    old_gridfs_id = storage.put(b"old samples")
+    old_history_id = ObjectId()
+    old_elog_id = ObjectId()
+    old_delete_token = ObjectId()
+    old_waveform = {
+        "_id": old_waveform_id,
+        "storage_mode": "gridfs",
+        "gridfs_id": old_gridfs_id,
+        "history_object_id": old_history_id,
+        "elog_id": old_elog_id,
+        "_mspass_delete_token": old_delete_token,
+    }
+    database["wf_TimeSeries"].insert_one(copy.deepcopy(old_waveform))
+    datum = make_timeseries([1.0, 2.0, 3.0, 4.0])
+    for key, value in old_waveform.items():
+        datum[key] = value
+    original_put = gridfs.GridFS.put
+
+    def put_then_lose_result(handle, *args, **kwargs):
+        original_put(handle, *args, **kwargs)
+        raise pymongo.errors.AutoReconnect("initial GridFS put result unknown")
+
+    monkeypatch.setattr(gridfs.GridFS, "put", put_then_lose_result)
+    with pytest.raises(MsPASSError, match="staged GridFS write committed"):
+        database.save_data(
+            datum,
+            mode="promiscuous",
+            storage_mode="gridfs",
+            save_history=False,
+            return_data=True,
+        )
+
+    stage = database["gridfs_staging"].find_one(
+        {"waveform_id": datum["_id"], "new_gridfs_id": datum["gridfs_id"]}
+    )
+    assert stage is not None
+    assert datum["_id"] != old_waveform_id
+    assert datum["storage_mode"] == "gridfs"
+    assert datum["gridfs_id"] != old_gridfs_id
+    assert "history_object_id" not in datum
+    assert "elog_id" not in datum
+    assert "_mspass_delete_token" not in datum
+    assert database["wf_TimeSeries"].find_one({"_id": old_waveform_id}) == old_waveform
+    assert storage.exists(old_gridfs_id)
+    assert storage.exists(datum["gridfs_id"])
+
+    report = database.reconcile_gridfs_staging(delete_uncommitted=True)
+    assert report["deleted"] == [str(stage["new_gridfs_id"])]
+    assert database["gridfs_staging"].find_one({"_id": stage["_id"]}) is None
+    assert storage.exists(old_gridfs_id)
+    assert not storage.exists(stage["new_gridfs_id"])
+
+
+def test_delete_data_prefers_literal_collection_over_default_alias(database):
+    saved = database.save_data(
+        make_timeseries([1.0, 2.0, 3.0, 4.0]),
+        collection="wf",
+        storage_mode="gridfs",
+        mode="promiscuous",
+        save_history=False,
+        return_data=True,
+    )
+    storage = gridfs.GridFS(database)
+    literal_gridfs_id = saved["gridfs_id"]
+    default_gridfs_id = storage.put(b"default owner samples")
+    default_owner = {
+        "_id": saved["_id"],
+        "storage_mode": "gridfs",
+        "gridfs_id": default_gridfs_id,
+    }
+    database["wf_TimeSeries"].insert_one(copy.deepcopy(default_owner))
+
+    database.delete_data(saved["_id"], "TimeSeries", collection="wf")
+
+    assert database["wf"].find_one({"_id": saved["_id"]}) is None
+    assert database["wf_TimeSeries"].find_one({"_id": saved["_id"]}) == default_owner
+    assert not storage.exists(literal_gridfs_id)
+    assert storage.exists(default_gridfs_id)
+
+
+def test_delete_data_default_alias_fallback(database):
+    saved = database.save_data(
+        make_timeseries([1.0, 2.0, 3.0, 4.0]),
+        storage_mode="gridfs",
+        mode="promiscuous",
+        save_history=False,
+        return_data=True,
+    )
+    storage = gridfs.GridFS(database)
+    saved_gridfs_id = saved["gridfs_id"]
+
+    database.delete_data(saved["_id"], "TimeSeries", collection="wf")
+
+    assert database["wf_TimeSeries"].find_one({"_id": saved["_id"]}) is None
+    assert not storage.exists(saved_gridfs_id)
+
+
 def test_update_gridfs_pointer_lifecycle_forces_primary_and_majority(
     database, monkeypatch
 ):
@@ -410,7 +510,9 @@ def test_update_gridfs_pointer_lifecycle_forces_primary_and_majority(
             and args
             and "storage_mode" in args[0]
         ):
-            owner_read_options.append(collection.read_preference)
+            owner_read_options.append(
+                (collection.read_preference, collection.read_concern.level)
+            )
         return original_find_one(collection, query, *args, **kwargs)
 
     def capture_update(collection, query, update, *args, **kwargs):
@@ -419,6 +521,7 @@ def test_update_gridfs_pointer_lifecycle_forces_primary_and_majority(
             cas_options.append(
                 (
                     collection.read_preference,
+                    collection.read_concern.level,
                     collection.write_concern.document,
                 )
             )
@@ -428,6 +531,7 @@ def test_update_gridfs_pointer_lifecycle_forces_primary_and_majority(
         gridfs_write_options.append(
             (
                 handle._files.read_preference,
+                handle._files.read_concern.level,
                 handle._files.write_concern.document,
             )
         )
@@ -439,9 +543,13 @@ def test_update_gridfs_pointer_lifecycle_forces_primary_and_majority(
 
     configured_database.update_data(datum, mode="promiscuous", save_history=False)
 
-    assert owner_read_options == [pymongo.ReadPreference.PRIMARY]
-    assert cas_options == [(pymongo.ReadPreference.PRIMARY, {"w": "majority"})]
-    assert gridfs_write_options == [(pymongo.ReadPreference.PRIMARY, {"w": "majority"})]
+    assert owner_read_options == [(pymongo.ReadPreference.PRIMARY, "majority")]
+    assert cas_options == [
+        (pymongo.ReadPreference.PRIMARY, "majority", {"w": "majority"})
+    ]
+    assert gridfs_write_options == [
+        (pymongo.ReadPreference.PRIMARY, "majority", {"w": "majority"})
+    ]
     document = database["wf_TimeSeries"].find_one({"_id": datum["_id"]})
     assert document["gridfs_id"] == datum["gridfs_id"]
     assert document["gridfs_id"] != old_gridfs_id
@@ -1820,6 +1928,75 @@ def test_serial_gridfs_cremate_discards_live_zero_length(database):
 
     assert result.dead()
     assert database["cemetery"].count_documents({}) == 0
+    assert database["wf_TimeSeries"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+    assert database["gridfs_staging"].count_documents({}) == 0
+
+
+def test_atomic_gridfs_zero_length_restores_source_owner(database):
+    datum = TimeSeries(0)
+    datum.set_live()
+    original_owner = {
+        "_id": ObjectId(),
+        "storage_mode": "file",
+        "dir": "/source",
+        "dfile": "source.bin",
+        "foff": 128,
+        "history_object_id": ObjectId(),
+        "elog_id": ObjectId(),
+        "_mspass_delete_token": ObjectId(),
+    }
+    for key, value in original_owner.items():
+        datum[key] = value
+
+    result = database.save_data(
+        datum,
+        storage_mode="gridfs",
+        mode="promiscuous",
+        cremate=True,
+        save_history=False,
+        return_data=True,
+    )
+
+    assert result.dead()
+    for key, value in original_owner.items():
+        assert result[key] == value
+    assert "gridfs_id" not in result
+    assert database["wf_TimeSeries"].count_documents({}) == 0
+    assert database["fs.files"].count_documents({}) == 0
+    assert database["gridfs_staging"].count_documents({}) == 0
+
+
+def test_atomic_gridfs_metadata_rejection_restores_source_owner(database, monkeypatch):
+    datum = make_timeseries([1.0, 2.0, 3.0, 4.0])
+    original_owner = {
+        "_id": ObjectId(),
+        "storage_mode": "url",
+        "url": "https://example.invalid/source",
+        "history_object_id": ObjectId(),
+        "elog_id": ObjectId(),
+        "_mspass_delete_token": ObjectId(),
+    }
+    for key, value in original_owner.items():
+        datum[key] = value
+
+    def reject_metadata(*args, **kwargs):
+        return dict(datum), False, database_module.ErrorLogger()
+
+    monkeypatch.setattr(database_module, "md2doc", reject_metadata)
+    result = database.save_data(
+        datum,
+        storage_mode="gridfs",
+        mode="pedantic",
+        cremate=True,
+        save_history=False,
+        return_data=True,
+    )
+
+    assert result.dead()
+    for key, value in original_owner.items():
+        assert result[key] == value
+    assert "gridfs_id" not in result
     assert database["wf_TimeSeries"].count_documents({}) == 0
     assert database["fs.files"].count_documents({}) == 0
     assert database["gridfs_staging"].count_documents({}) == 0

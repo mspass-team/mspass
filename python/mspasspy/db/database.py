@@ -28,6 +28,7 @@ except ImportError:
 import gridfs
 import pymongo
 import pymongo.errors
+from pymongo.read_concern import ReadConcern
 from bson import ObjectId
 import numpy as np
 import obspy
@@ -1797,20 +1798,8 @@ class Database(pymongo.database.Database):
                             "_id and gridfs_id for every previously saved member"
                         )
                 if any("_id" in d for d in live_members):
-                    ownership_keys = _OBJECT_STORE_STORAGE_KEYS + (
-                        self.database_schema.default_name("history_object") + "_id",
-                        self.database_schema.default_name("elog") + "_id",
-                    )
                     member_storage_snapshots = [
-                        {
-                            key: (
-                                (True, copy.deepcopy(d[key]))
-                                if key in d
-                                else (False, None)
-                            )
-                            for key in ownership_keys
-                        }
-                        for d in live_members
+                        self._snapshot_object_store_metadata(d) for d in live_members
                     ]
                     mspass_object, bodies = self.stedronsky.bring_out_your_dead(
                         mspass_object
@@ -2101,6 +2090,9 @@ class Database(pymongo.database.Database):
                 mspass_object = self._kill_zero_length_live(mspass_object)
                 for index, datum in enumerate(atomic_data):
                     if datum.dead():
+                        self._restore_object_store_metadata(
+                            datum, storage_metadata_snapshots[index]
+                        )
                         buried_datum = self._atomic_save_all_documents(
                             datum,
                             save_schema,
@@ -2148,8 +2140,7 @@ class Database(pymongo.database.Database):
                     datum["storage_mode"] = "gridfs"
                     datum["gridfs_id"] = new_gridfs_id
                     Database._normalize_storage_pointers(datum, "gridfs")
-                    if _DELETE_CLAIM_KEY in datum:
-                        datum.erase(_DELETE_CLAIM_KEY)
+                    self._clear_inherited_owner_metadata(datum)
                     try:
                         self._save_sample_data_to_gridfs(
                             datum,
@@ -4846,13 +4837,25 @@ class Database(pymongo.database.Database):
         :param clear_history: if ``True``, we will clear the processing history of the associated wf object, default to be ``True``
         :param clear_elog: if ``True``, we will clear the elog entries of the associated wf object, default to be ``True``
         :param collection: explicit waveform collection containing the object. If
-          omitted, use the default collection for ``object_type``.
+          omitted, use the default collection for ``object_type``.  Literal
+          alternate collections accepted by :meth:`save_data` are supported
+          even when absent from DatabaseSchema; in that case ``object_type``
+          supplies the atomic waveform type.
         :param object_store_client: boto3-compatible S3 client required to delete
           data whose persisted ``storage_mode`` is ``object_store``.  Client
           construction, credentials, and lifetime remain caller-owned.
         """
         if object_type not in ["TimeSeries", "Seismogram"]:
             raise TypeError("only TimeSeries and Seismogram are supported")
+
+        # User code sometimes passes a datum instead of its ObjectId.  Resolve
+        # that before interpreting ``collection`` because literal names that
+        # also happen to be schema default aliases must be disambiguated by
+        # the persisted owner.
+        try:
+            oid = object_id["_id"]
+        except:
+            oid = object_id
 
         if collection is None:
             schema = self.metadata_schema
@@ -4862,10 +4865,27 @@ class Database(pymongo.database.Database):
                 delete_schema = schema.Seismogram
             wf_collection_name = delete_schema.collection("_id")
         else:
-            wf_collection_name = self.database_schema.default_name(collection)
             expected_type = TimeSeries if object_type == "TimeSeries" else Seismogram
+            if collection in self.database_schema:
+                wf_collection_name = collection
+            else:
+                literal_collection = self._object_store_lifecycle_collection(collection)
+                if literal_collection.find_one({"_id": oid}, {"_id": 1}) is not None:
+                    wf_collection_name = collection
+                else:
+                    try:
+                        wf_collection_name = self.database_schema.default_name(
+                            collection
+                        )
+                    except MsPASSError:
+                        # ``save_data`` accepts a literal export collection that
+                        # is not present in DatabaseSchema.  Preserve that
+                        # contract for the matching delete lifecycle;
+                        # object_type supplies the atomic waveform type.
+                        wf_collection_name = collection
             if (
-                self.database_schema[wf_collection_name].data_type()
+                wf_collection_name in self.database_schema
+                and self.database_schema[wf_collection_name].data_type()
                 is not expected_type
             ):
                 raise MsPASSError(
@@ -4874,12 +4894,6 @@ class Database(pymongo.database.Database):
                     ),
                     ErrorSeverity.Invalid,
                 )
-
-        # user might pass a mspass object by mistake
-        try:
-            oid = object_id["_id"]
-        except:
-            oid = object_id
 
         # Fetch the owner from the primary.  ``delete_data`` may authorize an
         # irreversible external-object deletion from this state, so a stale
@@ -5059,7 +5073,9 @@ class Database(pymongo.database.Database):
             # checking every schema-defined waveform collection for another
             # reference to the same file.
             file_is_referenced = False
-            for collection_name in self._waveform_collection_names():
+            waveform_collections = self._waveform_collection_names()
+            waveform_collections.add(wf_collection_name)
+            for collection_name in waveform_collections:
                 reference_query = {"dir": dir_name, "dfile": dfile_name}
                 if collection_name == wf_collection_name:
                     reference_query["_id"] = {"$ne": oid}
@@ -6490,17 +6506,19 @@ class Database(pymongo.database.Database):
         }
 
     def _object_store_lifecycle_collection(self, name):
-        """Return a primary/majority collection for lifecycle decisions."""
+        """Return a majority-committed collection for lifecycle decisions."""
         return self.get_collection(
             name,
             read_preference=pymongo.ReadPreference.PRIMARY,
+            read_concern=ReadConcern("majority"),
             write_concern=pymongo.write_concern.WriteConcern(w="majority"),
         )
 
     def _gridfs_lifecycle_handle(self):
-        """Return a primary/majority GridFS handle for pointer replacement."""
+        """Return a majority-committed GridFS handle for pointer replacement."""
         database = self.with_options(
             read_preference=pymongo.ReadPreference.PRIMARY,
+            read_concern=ReadConcern("majority"),
             write_concern=pymongo.write_concern.WriteConcern(w="majority"),
         )
         return gridfs.GridFS(database)
@@ -6754,17 +6772,32 @@ class Database(pymongo.database.Database):
                 "schema: {}".format(", ".join(problems))
             )
 
-    @staticmethod
-    def _snapshot_object_store_metadata(mspass_object):
-        """Capture storage metadata so a failed staged write can be undone."""
+    def _snapshot_object_store_metadata(self, mspass_object):
+        """Capture owner metadata so a failed staged write can be undone."""
+        ownership_keys = _OBJECT_STORE_STORAGE_KEYS + (
+            self.database_schema.default_name("history_object") + "_id",
+            self.database_schema.default_name("elog") + "_id",
+            _DELETE_CLAIM_KEY,
+        )
         return {
             key: (
                 (True, copy.deepcopy(mspass_object[key]))
                 if key in mspass_object
                 else (False, None)
             )
-            for key in _OBJECT_STORE_STORAGE_KEYS
+            for key in ownership_keys
         }
+
+    def _clear_inherited_owner_metadata(self, mspass_object):
+        """Detach a staged owner from auxiliary pointers owned by the source."""
+        inherited_keys = (
+            self.database_schema.default_name("history_object") + "_id",
+            self.database_schema.default_name("elog") + "_id",
+            _DELETE_CLAIM_KEY,
+        )
+        for key in inherited_keys:
+            if key in mspass_object:
+                mspass_object.erase(key)
 
     @staticmethod
     def _restore_object_store_metadata(mspass_object, snapshot):
@@ -9213,8 +9246,7 @@ class Database(pymongo.database.Database):
             mspass_object["format"] = format
             mspass_object["nbytes"] = len(payload)
             Database._normalize_storage_pointers(mspass_object, "object_store")
-            if _DELETE_CLAIM_KEY in mspass_object:
-                mspass_object.erase(_DELETE_CLAIM_KEY)
+            self._clear_inherited_owner_metadata(mspass_object)
             upload_invoked = True
             object_store_client.put_object(
                 Bucket=bucket,

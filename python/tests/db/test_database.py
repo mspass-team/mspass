@@ -855,10 +855,19 @@ class TestDatabase:
         datum["_id"] = old_waveform_id
         datum["storage_mode"] = "gridfs"
         datum["gridfs_id"] = old_gridfs_id
+        old_history_id = ObjectId()
+        old_elog_id = ObjectId()
+        old_delete_token = ObjectId()
+        datum["history_object_id"] = old_history_id
+        datum["elog_id"] = old_elog_id
+        datum["_mspass_delete_token"] = old_delete_token
         old_waveform = {
             "_id": old_waveform_id,
             "storage_mode": "gridfs",
             "gridfs_id": old_gridfs_id,
+            "history_object_id": old_history_id,
+            "elog_id": old_elog_id,
+            "_mspass_delete_token": old_delete_token,
         }
         self.db["wf_TimeSeries"].insert_one(copy.deepcopy(old_waveform))
         allow_upload = threading.Event()
@@ -907,6 +916,9 @@ class TestDatabase:
             assert datum["_id"] != old_waveform_id
             assert datum["storage_mode"] == "object_store"
             assert datum["object_store"] == stage["object_store"]
+            assert "history_object_id" not in datum
+            assert "elog_id" not in datum
+            assert "_mspass_delete_token" not in datum
             tracking_client.delete_object.assert_not_called()
             with pytest.raises(botocore.exceptions.ClientError):
                 s3_client.head_object(
@@ -1990,6 +2002,7 @@ class TestDatabase:
                     (
                         collection.name,
                         collection.read_preference,
+                        collection.read_concern.level,
                         collection.write_concern.document,
                     )
                 )
@@ -2001,6 +2014,7 @@ class TestDatabase:
                     (
                         collection.name,
                         collection.read_preference,
+                        collection.read_concern.level,
                         collection.write_concern.document,
                     )
                 )
@@ -2019,21 +2033,24 @@ class TestDatabase:
                 return_data=True,
             )
 
-        assert {name for name, _, _ in write_options} == {
+        assert {name for name, _, _, _ in write_options} == {
             "object_store_staging",
             "history_object",
             "elog",
             "wf_TimeSeries",
         }
-        for _, read_preference, write_concern in write_options:
+        for _, read_preference, read_concern, write_concern in write_options:
             assert read_preference == pymongo.ReadPreference.PRIMARY
+            assert read_concern == "majority"
             assert write_concern == {"w": "majority"}
 
         original_find_one = Collection.find_one
         read_options = []
 
         def capture_find(collection, *args, **kwargs):
-            read_options.append(collection.read_preference)
+            read_options.append(
+                (collection.read_preference, collection.read_concern.level)
+            )
             return original_find_one(collection, *args, **kwargs)
 
         lifecycle_delete_options = []
@@ -2044,6 +2061,7 @@ class TestDatabase:
                 (
                     collection.name,
                     collection.read_preference,
+                    collection.read_concern.level,
                     collection.write_concern.document,
                 )
             )
@@ -2054,6 +2072,7 @@ class TestDatabase:
                 (
                     collection.name,
                     collection.read_preference,
+                    collection.read_concern.level,
                     collection.write_concern.document,
                 )
             )
@@ -2077,15 +2096,22 @@ class TestDatabase:
         assert read_options
         assert all(
             read_preference == pymongo.ReadPreference.PRIMARY
-            for read_preference in read_options
+            and read_concern == "majority"
+            for read_preference, read_concern in read_options
         )
-        assert {name for name, _, _ in lifecycle_delete_options} == {
+        assert {name for name, _, _, _ in lifecycle_delete_options} == {
             "history_object",
             "elog",
             "wf_TimeSeries",
         }
-        for _, read_preference, write_concern in lifecycle_delete_options:
+        for (
+            _,
+            read_preference,
+            read_concern,
+            write_concern,
+        ) in lifecycle_delete_options:
             assert read_preference == pymongo.ReadPreference.PRIMARY
+            assert read_concern == "majority"
             assert write_concern == {"w": "majority"}
 
     @mock_aws
@@ -2156,10 +2182,24 @@ class TestDatabase:
         )
         response["Body"].close()
 
-        self.db[collection].delete_one({"_id": saved["_id"]})
-        self.db[history_plan["collection"]].delete_one({"_id": history_plan["_id"]})
-        self.db[elog_plan["collection"]].delete_one({"_id": elog_plan["_id"]})
-        s3_client.delete_object(Bucket=bucket, Key=stage["object_store"]["object_name"])
+        self.db.delete_data(
+            saved["_id"],
+            "TimeSeries",
+            collection=collection,
+            object_store_client=s3_client,
+        )
+        assert self.db[collection].find_one({"_id": saved["_id"]}) is None
+        assert (
+            self.db[history_plan["collection"]].find_one({"_id": history_plan["_id"]})
+            is None
+        )
+        assert (
+            self.db[elog_plan["collection"]].find_one({"_id": elog_plan["_id"]}) is None
+        )
+        with pytest.raises(botocore.exceptions.ClientError):
+            s3_client.head_object(
+                Bucket=bucket, Key=stage["object_store"]["object_name"]
+            )
 
     @mock_aws
     def test_object_store_lite_schema_round_trip(self):
@@ -3755,6 +3795,49 @@ class TestDatabase:
         # file not exists
         fname = os.path.join(res2["dir"], res2["dfile"])
         assert not os.path.exists(fname)
+
+    def test_delete_literal_collection_preserves_shared_file(self, tmp_path):
+        collection = "export_file_waveforms"
+        dfile = "shared.bin"
+        first = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="file",
+            dir=str(tmp_path),
+            dfile=dfile,
+            collection=collection,
+            save_history=False,
+            return_data=True,
+        )
+        second = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="file",
+            dir=str(tmp_path),
+            dfile=dfile,
+            collection=collection,
+            save_history=False,
+            return_data=True,
+        )
+        path = tmp_path / dfile
+        assert path.exists()
+
+        self.db.delete_data(
+            first["_id"],
+            "TimeSeries",
+            collection=collection,
+            remove_unreferenced_files=True,
+        )
+        assert path.exists()
+        assert self.db[collection].find_one({"_id": first["_id"]}) is None
+        assert self.db[collection].find_one({"_id": second["_id"]}) is not None
+
+        self.db.delete_data(
+            second["_id"],
+            "TimeSeries",
+            collection=collection,
+            remove_unreferenced_files=True,
+        )
+        assert not path.exists()
+        assert self.db[collection].find_one({"_id": second["_id"]}) is None
 
     def test_clean_collection(self):
         # clear all the wf collection documents

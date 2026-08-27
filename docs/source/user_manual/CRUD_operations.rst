@@ -97,8 +97,9 @@ the docstring pages for detailed and most up to date usage:
     committed auxiliary links and reports unresolved stages without deleting
     samples; :code:`delete_uncommitted=True` also removes unreferenced files,
     partial chunks, auxiliary documents, and stages.  Lifecycle reads use the
-    primary and writes use majority acknowledgement even if the caller's
-    Database handle requests weaker options.  The shared-reference scan and
+    primary with majority read concern and writes use majority acknowledgement
+    even if the caller's Database handle requests weaker options.  The
+    shared-reference scan and
     GridFS delete are not one MongoDB transaction.  If :code:`gridfs_id`
     values are intentionally shared or edited manually, writers capable of
     creating those references must also remain quiescent during replacement,
@@ -143,9 +144,10 @@ the docstring pages for detailed and most up to date usage:
     ids plus the exact S3 location.  This lifecycle currently supports only
     unversioned S3 buckets; bucket version ids are not persisted or passed to
     deletion operations.  Lifecycle state is written with MongoDB majority
-    write concern, and owner/reference decisions are read from the primary;
-    these safety settings override weaker options on the caller's Database
-    handle.
+    write concern, and owner/reference decisions are read from the primary
+    with majority read concern.  Thus irreversible cleanup decisions use only
+    majority-committed state; these safety settings override weaker options on
+    the caller's Database handle.
 
     Once :code:`put_object` has been invoked, an exception cannot prove that
     the upload did not finish at the service.  MsPASS therefore retains the
@@ -165,11 +167,12 @@ the docstring pages for detailed and most up to date usage:
 
     On an uncertain result, the datum held by the caller is a recovery handle:
     its :code:`_id` is the preallocated waveform id recorded in staging, not
-    the id of a previous waveform document.  Do not reuse that in-memory datum
-    directly after reconciliation.  If the staged owner committed, reload it
-    by that :code:`_id`; if reconciliation removes the uncommitted save,
-    discard the datum or restore it from an application-owned copy of its
-    prior state.
+    the id of a previous waveform document.  History, elog, and deletion-claim
+    pointers inherited from a previous owner are removed because they do not
+    belong to the staged owner.  Do not reuse that in-memory datum directly
+    after reconciliation.  If the staged owner committed, reload it by that
+    :code:`_id`; if reconciliation removes the uncommitted save, discard the
+    datum or restore it from an application-owned copy of its prior state.
     An abrupt process or host termination leaves the staging record available
     for reconciliation.  Stop concurrent object-store reference writers and
     wait for all outstanding S3 and MongoDB requests before every call to
@@ -611,9 +614,11 @@ method of the Database class:
 As with the read methods, :code:`object_id` is the ObjectId of the waveform
 document that references the data to be deleted.  :code:`object_type` must be
 either :code:`"TimeSeries"` or :code:`"Seismogram"` and selects the
-corresponding default waveform collection.  Set :code:`collection` to a
-schema-defined waveform collection of that type to delete from an explicit
-collection instead.
+corresponding default waveform collection.  Set :code:`collection` to an
+explicit waveform collection instead.  Schema-defined collections are checked
+against :code:`object_type`; a literal alternate collection accepted by
+:code:`save_data` can also be deleted even when absent from the active database
+schema, with :code:`object_type` supplying its atomic waveform type.
 Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
@@ -630,9 +635,9 @@ are retained if a later sample deletion fails, and a subsequent
 :code:`delete_data` call resumes the idempotent cleanup.  The claim is removed
 only with the final waveform deletion and is never copied into a newly saved
 waveform.  Claim, auxiliary cleanup, reference checks, and final parent
-deletion use primary reads and majority writes for every storage mode,
-including file and URL data, even when the caller's Database handle requests
-weaker options.
+deletion use primary reads with majority read concern and majority writes for
+every storage mode, including file and URL data, even when the caller's
+Database handle requests weaker options.
 
 The main complexity in this method is behind the boolean argument with the name
 :code:`remove_unreferenced_files`.  First, recognize this argument is completely
