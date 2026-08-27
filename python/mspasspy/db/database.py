@@ -1907,7 +1907,15 @@ class Database(pymongo.database.Database):
                         waveform_collection=wf_collection_name,
                     )
                     location = copy.deepcopy(datum["object_store"])
-                    staged_data = [(datum, location, snapshot, waveform_id)]
+                    staged_data = [
+                        (
+                            datum,
+                            location,
+                            snapshot,
+                            waveform_id,
+                            wf_collection_name,
+                        )
+                    ]
                     try:
                         saved_datum = self._atomic_save_all_documents(
                             datum,
@@ -1924,13 +1932,26 @@ class Database(pymongo.database.Database):
                             waveform_id=waveform_id,
                         )
                     except Exception as original_error:
-                        cleanup_failures = self._cleanup_staged_object_store_data(
+                        (
+                            cleanup_failures,
+                            durable_references,
+                        ) = self._cleanup_staged_object_store_data(
                             object_store_client, staged_data
                         )
+                        if durable_references:
+                            raise MsPASSError(
+                                "Database.save_data failed after the waveform "
+                                "reference became durable; the object-store "
+                                "samples and staging record were retained for "
+                                "reconciliation: {}".format(
+                                    ", ".join(durable_references)
+                                ),
+                                "Fatal",
+                            ) from original_error
                         if cleanup_failures:
                             raise MsPASSError(
                                 "Database.save_data failed and object-store "
-                                "compensation could not remove: {}".format(
+                                "compensation could not safely remove: {}".format(
                                     ", ".join(cleanup_failures)
                                 ),
                                 "Fatal",
@@ -1946,13 +1967,25 @@ class Database(pymongo.database.Database):
                                 ErrorSeverity.Complaint,
                             )
                     else:
-                        cleanup_failures = self._cleanup_staged_object_store_data(
+                        (
+                            cleanup_failures,
+                            durable_references,
+                        ) = self._cleanup_staged_object_store_data(
                             object_store_client, staged_data
                         )
+                        if durable_references:
+                            raise MsPASSError(
+                                "Waveform samples are durably referenced; the "
+                                "object-store samples and staging record were "
+                                "retained for reconciliation: {}".format(
+                                    ", ".join(durable_references)
+                                ),
+                                "Fatal",
+                            )
                         if cleanup_failures:
                             raise MsPASSError(
                                 "Waveform document was not committed and object-store "
-                                "compensation could not remove: {}".format(
+                                "compensation could not safely remove: {}".format(
                                     ", ".join(cleanup_failures)
                                 ),
                                 "Fatal",
@@ -4273,7 +4306,8 @@ class Database(pymongo.database.Database):
         waveform data.  If the data are stored in gridfs the deletion of
         the waveform data will be immediate.  If the data are stored in
         object store the independent object is deleted through the caller-owned
-        client.  If the data are stored in disk files the file will be deleted
+        client when no other waveform document references the same canonical
+        identity.  If the data are stored in disk files the file will be deleted
         when there are no more references
         in any schema-defined waveform collection for the exact combination
         of dir and dfile associated with an atomic deletion.  Requested
@@ -4405,17 +4439,31 @@ class Database(pymongo.database.Database):
 
         elif storage_mode == "object_store":
             try:
-                object_store_client.delete_object(
-                    Bucket=bucket,
-                    Key=object_name,
+                object_store_is_shared = self._object_store_is_referenced(
+                    object_store_location,
+                    exclude_collection=wf_collection_name,
+                    exclude_id=oid,
                 )
             except Exception as error:
                 raise MsPASSError(
-                    "Could not delete object-store samples at "
-                    "s3://{}/{}; the waveform document was retained for "
-                    "retry".format(bucket, object_name),
+                    "Could not determine whether object-store samples at "
+                    "s3://{}/{} are shared; the waveform document was "
+                    "retained for retry".format(bucket, object_name),
                     ErrorSeverity.Fatal,
                 ) from error
+            if not object_store_is_shared:
+                try:
+                    object_store_client.delete_object(
+                        Bucket=bucket,
+                        Key=object_name,
+                    )
+                except Exception as error:
+                    raise MsPASSError(
+                        "Could not delete object-store samples at "
+                        "s3://{}/{}; the waveform document was retained for "
+                        "retry".format(bucket, object_name),
+                        ErrorSeverity.Fatal,
+                    ) from error
 
         elif (
             storage_mode == "file"
@@ -5796,13 +5844,50 @@ class Database(pymongo.database.Database):
             if definition.data_type() in (TimeSeries, Seismogram)
         }
 
-    def _object_store_is_referenced(self, location):
-        """Return True if any waveform document names this S3 object."""
-        query = self._object_store_identity_filter(location)
-        return any(
-            self[collection_name].find_one(query, {"_id": 1}) is not None
-            for collection_name in self._waveform_collection_names()
-        )
+    def _object_store_is_referenced(
+        self,
+        location,
+        expected_collection=None,
+        expected_id=None,
+        exclude_collection=None,
+        exclude_id=None,
+    ):
+        """Return True if a waveform document names this S3 object.
+
+        ``expected_collection`` and ``expected_id`` identify a staging
+        record's intended owner and provide an indexed fast path, including
+        for alternate collections not present in ``DatabaseSchema``.
+        ``exclude_collection`` and ``exclude_id`` omit the waveform document
+        currently being deleted while retaining shared-reference checks.
+        """
+        if (expected_collection is None) != (expected_id is None):
+            raise ValueError(
+                "expected_collection and expected_id must be supplied together"
+            )
+        if (exclude_collection is None) != (exclude_id is None):
+            raise ValueError(
+                "exclude_collection and exclude_id must be supplied together"
+            )
+
+        identity_query = self._object_store_identity_filter(location)
+        if expected_collection is not None:
+            owner_query = {"_id": expected_id}
+            owner_query.update(identity_query)
+            if self[expected_collection].find_one(owner_query, {"_id": 1}) is not None:
+                return True
+
+        collection_names = self._waveform_collection_names()
+        if expected_collection is not None:
+            collection_names.add(expected_collection)
+        if exclude_collection is not None:
+            collection_names.add(exclude_collection)
+        for collection_name in collection_names:
+            query = dict(identity_query)
+            if collection_name == exclude_collection:
+                query["_id"] = {"$ne": exclude_id}
+            if self[collection_name].find_one(query, {"_id": 1}) is not None:
+                return True
+        return False
 
     @staticmethod
     def _validate_object_store_schema(save_schema, mode, exclude_keys=None):
@@ -5853,17 +5938,33 @@ class Database(pymongo.database.Database):
                 mspass_object.erase(key)
 
     def _cleanup_staged_object_store_data(self, object_store_client, staged_data):
-        """Delete uploaded objects that have no committed waveform document."""
+        """Delete uploads only after MongoDB proves they are unreferenced."""
         failures = []
+        durable_references = []
         for staged_item in staged_data:
             datum, location, metadata_snapshot = staged_item[:3]
             stage_id = staged_item[3] if len(staged_item) > 3 else None
+            waveform_collection = staged_item[4] if len(staged_item) > 4 else None
             bucket = location["bucket"]
             object_name = location["object_name"]
+            uri = "s3://{}/{}".format(bucket, object_name)
+            if stage_id is not None and waveform_collection is not None:
+                try:
+                    referenced = self._object_store_is_referenced(
+                        location,
+                        expected_collection=waveform_collection,
+                        expected_id=stage_id,
+                    )
+                except Exception:
+                    failures.append("reference status for {}".format(uri))
+                    continue
+                if referenced:
+                    durable_references.append(uri)
+                    continue
             try:
                 object_store_client.delete_object(Bucket=bucket, Key=object_name)
             except Exception:
-                failures.append("s3://{}/{}".format(bucket, object_name))
+                failures.append(uri)
                 continue
             Database._restore_object_store_metadata(datum, metadata_snapshot)
             if stage_id is not None:
@@ -5873,7 +5974,7 @@ class Database(pymongo.database.Database):
                     self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(stage_filter)
                 except Exception:
                     failures.append("staging record {}".format(stage_id))
-        return failures
+        return failures, durable_references
 
     def _complete_object_store_stage(self, stage_id, location):
         """Remove a staging record after its waveform reference is durable."""
@@ -5892,11 +5993,13 @@ class Database(pymongo.database.Database):
 
         A staging record is written before each S3 upload and removed only
         after the corresponding waveform document has been committed.  A
-        record whose canonical S3 identity (provider, bucket, and object
-        name) is referenced by any schema-defined waveform collection is
-        committed; reconciliation removes only the stale staging record and
-        never its sample object.  Other records are reported as uncommitted by
-        default.
+        record whose intended owner has the same canonical S3 identity
+        (provider, bucket, and object name) is committed, including owners in
+        alternate collections not present in ``DatabaseSchema``.  If that
+        exact owner is absent, every schema-defined waveform collection is
+        checked for a shared reference.  Reconciliation removes only the
+        stale staging record for committed objects and never their samples.
+        Other records are reported as uncommitted by default.
 
         Set ``delete_uncommitted=True`` only while object-store writers are
         quiescent.  MongoDB and S3 cannot provide a cross-system transaction,
@@ -5933,7 +6036,18 @@ class Database(pymongo.database.Database):
                 )
                 continue
             uri = "s3://{}/{}".format(location["bucket"], location["object_name"])
-            if self._object_store_is_referenced(location):
+            try:
+                referenced = self._object_store_is_referenced(
+                    location,
+                    expected_collection=waveform_collection,
+                    expected_id=waveform_id,
+                )
+            except Exception as error:
+                report["failures"].append(
+                    "{}: could not determine waveform references: {}".format(uri, error)
+                )
+                continue
+            if referenced:
                 try:
                     stage_filter = {"_id": stage_id}
                     stage_filter.update(self._object_store_identity_filter(location))
@@ -7840,13 +7954,27 @@ class Database(pymongo.database.Database):
                             )
                         )
             except Exception as original_error:
-                cleanup_failures = self._cleanup_staged_object_store_data(
+                (
+                    cleanup_failures,
+                    durable_references,
+                ) = self._cleanup_staged_object_store_data(
                     object_store_client, staged_data
                 )
+                if durable_references:
+                    raise MsPASSError(
+                        "Object-store ensemble upload failed after a waveform "
+                        "reference became durable; samples and staging were "
+                        "retained for reconciliation: {}".format(
+                            ", ".join(durable_references)
+                        ),
+                        "Fatal",
+                    ) from original_error
                 if cleanup_failures:
                     raise MsPASSError(
                         "Object-store ensemble upload failed and compensation "
-                        "could not remove: {}".format(", ".join(cleanup_failures)),
+                        "could not safely remove: {}".format(
+                            ", ".join(cleanup_failures)
+                        ),
                         "Fatal",
                     ) from original_error
                 raise
@@ -7913,14 +8041,33 @@ class Database(pymongo.database.Database):
                 Body=payload,
             )
         except Exception as err:
-            cleanup_failures = self._cleanup_staged_object_store_data(
+            (
+                cleanup_failures,
+                durable_references,
+            ) = self._cleanup_staged_object_store_data(
                 object_store_client,
-                [(mspass_object, location, metadata_snapshot, stage_id)],
+                [
+                    (
+                        mspass_object,
+                        location,
+                        metadata_snapshot,
+                        stage_id,
+                        waveform_collection,
+                    )
+                ],
             )
+            if durable_references:
+                raise MsPASSError(
+                    "Error while writing {}; a waveform reference is durable, "
+                    "so samples and staging were retained for reconciliation".format(
+                        durable_references[0]
+                    ),
+                    "Fatal",
+                ) from err
             if cleanup_failures:
                 raise MsPASSError(
                     "Error while writing s3://{}/{}; compensation could not "
-                    "remove: {}".format(
+                    "safely remove: {}".format(
                         bucket, object_name, ", ".join(cleanup_failures)
                     ),
                     "Fatal",

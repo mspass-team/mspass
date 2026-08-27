@@ -116,24 +116,33 @@ the docstring pages for detailed and most up to date usage:
     the selected ObsPy format.  Each upload is preceded by a durable MongoDB
     staging record containing its preallocated waveform id and exact S3
     location.  If a later MongoDB write raises an exception caught by the
-    current process, :code:`save_data` removes the uncommitted object and
-    staging record, then restores the caller's original storage Metadata.
+    current process, :code:`save_data` removes the object and restores the
+    caller's original storage Metadata only after MongoDB confirms that no
+    waveform document references the object.  If commit status cannot be
+    determined, or the intended waveform owner is already durable, the S3
+    object, staging record, and new caller Metadata are retained for
+    reconciliation and the save raises an explicit fatal error.
     An abrupt process or host termination leaves the staging record available
     to :code:`db.reconcile_object_store_staging(s3_client)`, which reports
     uncommitted S3 URIs without deleting them.  After stopping concurrent
     object-store writers, pass :code:`delete_uncommitted=True` to delete those
     objects and their staging records.  Reconciliation treats
     :code:`provider`, :code:`bucket`, and :code:`object_name` as the canonical
-    S3 object identity and checks every schema-defined waveform collection.
-    A referenced identity is cleared from staging without deleting its S3
-    object; nonidentity fields such as :code:`encoding` or :code:`etag` do not
-    affect that decision.
+    S3 object identity.  It first queries the exact staged waveform id and
+    collection, including alternate collections not present in the database
+    schema, then checks every schema-defined waveform collection for shared
+    references.  A referenced identity is cleared from staging without
+    deleting its S3 object; nonidentity fields such as :code:`encoding` or
+    :code:`etag` do not affect that decision.
     Object-store ensemble members use this upload-and-commit sequence one at a
     time, bounding the uncommitted window to one member.
     :code:`update_data` does not replace samples for object-store data; save a
     new datum with :code:`save_data` instead.  :code:`delete_data` requires
     the caller-owned :code:`object_store_client` for object-store data and
     retains the waveform document if the external object cannot be deleted.
+    If another waveform document references the same canonical S3 identity,
+    only the requested waveform and auxiliary documents are removed; the
+    shared S3 object is retained.
 
     When :code:`save_data` is passed an ensemble, it writes each live member
     as an atomic datum.  Ensemble Metadata are copied to each member before
