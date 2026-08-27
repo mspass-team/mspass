@@ -1509,7 +1509,6 @@ class TestDatabase:
 
         self.db[collection].delete_one({"_id": saved["_id"]})
         s3_client.delete_object(Bucket=bucket, Key=stage["object_store"]["object_name"])
-        self.db[collection].drop()
 
     @mock_aws
     def test_object_store_lite_schema_round_trip(self):
