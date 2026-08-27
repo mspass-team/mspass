@@ -140,6 +140,114 @@ def test_successful_overwrite_commits_new_reference_before_removing_old_blob(
 
 
 @pytest.mark.parametrize("factory,collection", CASES)
+def test_update_legacy_gridfs_document_without_storage_mode_removes_old_blob(
+    database, factory, collection
+):
+    original = save_original(database, factory)
+    waveform_id = original["_id"]
+    old_gridfs_id = original["gridfs_id"]
+    database[collection].update_one(
+        {"_id": waveform_id}, {"$unset": {"storage_mode": ""}}
+    )
+    legacy_document = database[collection].find_one({"_id": waveform_id})
+    assert "storage_mode" not in legacy_document
+    datum = database.read_data(legacy_document, collection=collection)
+    datum.data = factory([5.0, 6.0, 7.0, 8.0]).data
+
+    database.update_data(datum, mode="promiscuous", save_history=False)
+
+    document = database[collection].find_one({"_id": waveform_id})
+    assert document["storage_mode"] == "gridfs"
+    assert document["gridfs_id"] != old_gridfs_id
+    storage = gridfs.GridFS(database)
+    assert not storage.exists(old_gridfs_id)
+    assert storage.exists(document["gridfs_id"])
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_delete_legacy_gridfs_document_without_storage_mode_removes_blob(
+    database, factory, collection
+):
+    datum = save_original(database, factory)
+    waveform_id = datum["_id"]
+    gridfs_id = datum["gridfs_id"]
+    database[collection].update_one(
+        {"_id": waveform_id}, {"$unset": {"storage_mode": ""}}
+    )
+
+    database.delete_data(
+        waveform_id,
+        "TimeSeries" if factory is make_timeseries else "Seismogram",
+        collection=collection,
+    )
+
+    assert database[collection].find_one({"_id": waveform_id}) is None
+    assert not gridfs.GridFS(database).exists(gridfs_id)
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_update_uses_persisted_gridfs_id_when_caller_metadata_loses_it(
+    database, factory, collection
+):
+    datum = save_original(database, factory)
+    old_gridfs_id = datum["gridfs_id"]
+    datum.erase("gridfs_id")
+    datum.data = factory([5.0, 6.0, 7.0, 8.0]).data
+
+    database.update_data(datum, mode="promiscuous", save_history=False)
+
+    document = database[collection].find_one({"_id": datum["_id"]})
+    assert document["gridfs_id"] == datum["gridfs_id"]
+    assert document["gridfs_id"] != old_gridfs_id
+    storage = gridfs.GridFS(database)
+    assert not storage.exists(old_gridfs_id)
+    assert storage.exists(document["gridfs_id"])
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
+def test_update_gridfs_cas_rejects_concurrent_reference_change(
+    database, monkeypatch, factory, collection
+):
+    datum = save_original(database, factory)
+    waveform_id = datum["_id"]
+    old_gridfs_id = datum["gridfs_id"]
+    datum.data = factory([5.0, 6.0, 7.0, 8.0]).data
+    storage = gridfs.GridFS(database)
+    concurrent_gridfs_id = storage.put(b"concurrent samples")
+    original_update_one = Collection.update_one
+    concurrent_change_applied = False
+
+    def change_reference_before_cas(self, query, update, *args, **kwargs):
+        nonlocal concurrent_change_applied
+        new_gridfs_id = update.get("$set", {}).get("gridfs_id")
+        if (
+            self.name == collection
+            and new_gridfs_id is not None
+            and new_gridfs_id not in (old_gridfs_id, concurrent_gridfs_id)
+            and not concurrent_change_applied
+        ):
+            concurrent_change_applied = True
+            original_update_one(
+                self,
+                {"_id": waveform_id},
+                {"$set": {"gridfs_id": concurrent_gridfs_id}},
+            )
+        return original_update_one(self, query, update, *args, **kwargs)
+
+    monkeypatch.setattr(Collection, "update_one", change_reference_before_cas)
+    with pytest.raises(MsPASSError, match="could not commit the new GridFS"):
+        database.update_data(datum, mode="promiscuous", save_history=False)
+
+    assert concurrent_change_applied
+    document = database[collection].find_one({"_id": waveform_id})
+    assert document["gridfs_id"] == concurrent_gridfs_id
+    assert datum["gridfs_id"] == old_gridfs_id
+    assert storage.exists(old_gridfs_id)
+    assert storage.exists(concurrent_gridfs_id)
+    assert database["fs.files"].count_documents({}) == 2
+
+
+@pytest.mark.parametrize("factory,collection", CASES)
 @pytest.mark.parametrize("entrypoint", ["update_data", "save_data"])
 def test_new_put_failure_preserves_old_reference_and_blob(
     database, factory, collection, entrypoint

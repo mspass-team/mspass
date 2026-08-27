@@ -113,14 +113,19 @@ the docstring pages for detailed and most up to date usage:
     TimeSeries payload is :code:`npts` contiguous IEEE 754 float64 values in
     little-endian byte order.  A Seismogram payload is three component-major
     rows of :code:`npts` contiguous values in C order.  Formatted writes use
-    the selected ObsPy format.  If a later MongoDB write raises an exception
-    caught by the current process, :code:`save_data` removes uploaded objects
-    that have not acquired waveform documents, restores the caller's original
-    storage Metadata, and reports full S3 locations if compensation also
-    fails.  Abrupt process or host termination cannot run this in-process
-    compensation and requires durable reconciliation outside this operation;
-    that recovery work is tracked in `GitHub issue #1013
-    <https://github.com/mspass-team/mspass/issues/1013>`_.
+    the selected ObsPy format.  Each upload is preceded by a durable MongoDB
+    staging record containing its preallocated waveform id and exact S3
+    location.  If a later MongoDB write raises an exception caught by the
+    current process, :code:`save_data` removes the uncommitted object and
+    staging record, then restores the caller's original storage Metadata.
+    An abrupt process or host termination leaves the staging record available
+    to :code:`db.reconcile_object_store_staging(s3_client)`, which reports
+    uncommitted S3 URIs without deleting them.  After stopping concurrent
+    object-store writers, pass :code:`delete_uncommitted=True` to delete those
+    objects and their staging records.  A record that exactly matches a
+    committed waveform document is cleared without deleting its S3 object.
+    Object-store ensemble members use this upload-and-commit sequence one at a
+    time, bounding the uncommitted window to one member.
     :code:`update_data` does not replace samples for object-store data; save a
     new datum with :code:`save_data` instead.  :code:`delete_data` requires
     the caller-owned :code:`object_store_client` for object-store data and

@@ -602,6 +602,7 @@ class TestDatabase:
         bucket = "mspass-object-store-error-test"
         s3_client.create_bucket(Bucket=bucket)
         datum = get_live_timeseries()
+        original_storage_metadata = self.db._snapshot_object_store_metadata(datum)
 
         with pytest.raises(ValueError, match="object_store_client is required"):
             self.db.save_data(
@@ -609,6 +610,9 @@ class TestDatabase:
                 storage_mode="object_store",
                 object_store={"provider": "s3", "bucket": bucket},
             )
+        assert (
+            self.db._snapshot_object_store_metadata(datum) == original_storage_metadata
+        )
         with pytest.raises(ValueError, match="provider must be 's3'"):
             self.db.save_data(
                 datum,
@@ -616,6 +620,22 @@ class TestDatabase:
                 object_store={"provider": "gcs", "bucket": bucket},
                 object_store_client=s3_client,
             )
+        assert (
+            self.db._snapshot_object_store_metadata(datum) == original_storage_metadata
+        )
+        with pytest.raises(ValueError, match="Writing format"):
+            self.db.save_data(
+                datum,
+                storage_mode="object_store",
+                format="NOT_A_REAL_OBSPY_FORMAT",
+                object_store={"provider": "s3", "bucket": bucket},
+                object_store_client=s3_client,
+            )
+        assert (
+            self.db._snapshot_object_store_metadata(datum) == original_storage_metadata
+        )
+        assert self.db["object_store_staging"].count_documents({}) == 0
+        assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
 
         missing_document = dict(datum)
         missing_document.update(
@@ -919,13 +939,18 @@ class TestDatabase:
         s3_client = boto3.client("s3", region_name="us-east-1")
         bucket = "mspass-object-store-delete-failure-test"
         s3_client.create_bucket(Bucket=bucket)
+        datum = get_live_timeseries()
+        logging_helper.info(datum, "delete-failure-test", "test_delete_data")
+        datum.elog.log_error(
+            "test_delete_data", "delete failure lifecycle", ErrorSeverity.Complaint
+        )
         saved = self.db.save_data(
-            get_live_timeseries(),
+            datum,
             storage_mode="object_store",
             object_store={"provider": "s3", "bucket": bucket},
             object_store_client=s3_client,
             return_data=True,
-            save_history=False,
+            save_history=True,
         )
         document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
         failing_client = Mock()
@@ -943,9 +968,144 @@ class TestDatabase:
             )
 
         assert self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]}) == document
+        assert not self.db["history_object"].find_one(
+            {"_id": document["history_object_id"]}
+        )
+        assert not self.db["elog"].find_one({"_id": document["elog_id"]})
         location = document["object_store"]
         response = s3_client.get_object(
             Bucket=location["bucket"], Key=location["object_name"]
+        )
+        response["Body"].close()
+
+    @mock_aws
+    def test_delete_data_retains_concurrently_changed_object_store_reference(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-delete-concurrent-test"
+        s3_client.create_bucket(Bucket=bucket)
+        saved = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+            save_history=False,
+        )
+        old_location = copy.deepcopy(saved["object_store"])
+        new_location = {
+            "provider": "s3",
+            "bucket": bucket,
+            "object_name": "concurrent.bin",
+            "encoding": "float64-le-v1",
+        }
+        s3_client.put_object(Bucket=bucket, Key="concurrent.bin", Body=b"new")
+        concurrent_client = Mock()
+
+        def delete_then_change_reference(Bucket, Key):
+            s3_client.delete_object(Bucket=Bucket, Key=Key)
+            self.db["wf_TimeSeries"].update_one(
+                {"_id": saved["_id"]},
+                {"$set": {"object_store": copy.deepcopy(new_location)}},
+            )
+
+        concurrent_client.delete_object.side_effect = delete_then_change_reference
+        with pytest.raises(MsPASSError, match="changed during delete_data"):
+            self.db.delete_data(
+                saved["_id"],
+                "TimeSeries",
+                object_store_client=concurrent_client,
+            )
+
+        document = self.db["wf_TimeSeries"].find_one({"_id": saved["_id"]})
+        assert document["object_store"] == new_location
+        with pytest.raises(botocore.exceptions.ClientError):
+            s3_client.head_object(
+                Bucket=old_location["bucket"], Key=old_location["object_name"]
+            )
+        response = s3_client.get_object(Bucket=bucket, Key="concurrent.bin")
+        response["Body"].close()
+
+    @mock_aws
+    def test_object_store_staging_reconciles_interrupted_and_committed_writes(self):
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        bucket = "mspass-object-store-staging-test"
+        s3_client.create_bucket(Bucket=bucket)
+        interrupted = get_live_timeseries()
+
+        with patch.object(
+            Database,
+            "_atomic_save_all_documents",
+            side_effect=KeyboardInterrupt("simulated process interruption"),
+        ):
+            with pytest.raises(KeyboardInterrupt, match="process interruption"):
+                self.db.save_data(
+                    interrupted,
+                    storage_mode="object_store",
+                    object_store={"provider": "s3", "bucket": bucket},
+                    object_store_client=s3_client,
+                    return_data=True,
+                    save_history=False,
+                )
+
+        stage = self.db["object_store_staging"].find_one({})
+        assert stage is not None
+        assert stage["waveform_id"] == stage["_id"]
+        assert stage["waveform_collection"] == "wf_TimeSeries"
+        assert self.db["wf_TimeSeries"].find_one({"_id": stage["waveform_id"]}) is None
+        interrupted_uri = "s3://{}/{}".format(
+            stage["object_store"]["bucket"], stage["object_store"]["object_name"]
+        )
+        report = self.db.reconcile_object_store_staging(s3_client)
+        assert report == {
+            "committed": [],
+            "uncommitted": [interrupted_uri],
+            "deleted": [],
+            "failures": [],
+        }
+        report = self.db.reconcile_object_store_staging(
+            s3_client, delete_uncommitted=True
+        )
+        assert report == {
+            "committed": [],
+            "uncommitted": [],
+            "deleted": [interrupted_uri],
+            "failures": [],
+        }
+        assert self.db["object_store_staging"].count_documents({}) == 0
+        assert s3_client.list_objects_v2(Bucket=bucket)["KeyCount"] == 0
+
+        committed = self.db.save_data(
+            get_live_timeseries(),
+            storage_mode="object_store",
+            object_store={"provider": "s3", "bucket": bucket},
+            object_store_client=s3_client,
+            return_data=True,
+            save_history=False,
+        )
+        committed_location = copy.deepcopy(committed["object_store"])
+        self.db["object_store_staging"].insert_one(
+            {
+                "_id": committed["_id"],
+                "waveform_id": committed["_id"],
+                "waveform_collection": "wf_TimeSeries",
+                "object_store": committed_location,
+            }
+        )
+        committed_uri = "s3://{}/{}".format(
+            committed_location["bucket"], committed_location["object_name"]
+        )
+        report = self.db.reconcile_object_store_staging(
+            s3_client, delete_uncommitted=True
+        )
+        assert report == {
+            "committed": [committed_uri],
+            "uncommitted": [],
+            "deleted": [],
+            "failures": [],
+        }
+        response = s3_client.get_object(
+            Bucket=committed_location["bucket"],
+            Key=committed_location["object_name"],
         )
         response["Body"].close()
 

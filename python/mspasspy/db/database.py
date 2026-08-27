@@ -4,6 +4,7 @@ import copy
 import pathlib
 import pickle
 import tempfile
+from datetime import datetime, timezone
 from time import monotonic
 import urllib.error
 import urllib.request
@@ -75,6 +76,7 @@ from mspasspy.util.converter import Textfile2Dataframe
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
 _GRIDFS_IO_CHUNK_BYTES = 1024 * 1024
 _OBJECT_STORE_BINARY_ENCODING = "float64-le-v1"
+_OBJECT_STORE_STAGING_COLLECTION = "object_store_staging"
 _OBJECT_STORE_STORAGE_KEYS = (
     "storage_mode",
     "object_store",
@@ -1840,14 +1842,19 @@ class Database(pymongo.database.Database):
                     for datum in atomic_data
                 ]
 
-            # We need to make sure storage_mode is set in all live data
             if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
                 mspass_object.sync_metadata()
-                for d in mspass_object.member:
-                    if d.live:
-                        d["storage_mode"] = storage_mode
-            else:
-                # only atomic data can land here
+                if storage_mode == "object_store":
+                    for index, datum in enumerate(atomic_data):
+                        if datum.live:
+                            self._restore_object_store_metadata(
+                                datum, object_store_metadata_snapshots[index]
+                            )
+                else:
+                    for datum in atomic_data:
+                        if datum.live:
+                            datum["storage_mode"] = storage_mode
+            elif storage_mode != "object_store":
                 mspass_object["storage_mode"] = storage_mode
 
             for datum in atomic_data:
@@ -1863,36 +1870,101 @@ class Database(pymongo.database.Database):
                     if not metadata_is_valid:
                         datum.kill()
 
-            # Complete schema validation before creating sample data.
-
-            # Extend this method to add new storge modes
-            # Note this implementation alters metadata in mspass_object
-            # and all members of ensembles
-            mspass_object = self._save_sample_data(
-                mspass_object,
-                storage_mode=storage_mode,
-                dir=dir,
-                dfile=dfile,
-                format=format,
-                overwrite=overwrite,
-                object_store=object_store,
-                object_store_client=object_store_client,
-                object_store_metadata_snapshots=object_store_metadata_snapshots,
-            )
-            staged_object_store_data = []
             if storage_mode == "object_store":
-                staged_object_store_data = [
-                    (
+                # Each live member is serialized, durably staged, uploaded,
+                # and committed before the next member starts.  This both
+                # gives interrupted writes a persistent reconciliation record
+                # and bounds an ensemble's uncommitted upload window to one
+                # object.
+                for index, datum in enumerate(atomic_data):
+                    if datum.dead():
+                        buried_datum = self._atomic_save_all_documents(
+                            datum,
+                            save_schema,
+                            exclude_keys,
+                            mode,
+                            wf_collection,
+                            save_history,
+                            data_tag,
+                            storage_mode,
+                            normalizing_collections,
+                            alg_name,
+                            alg_id,
+                        )
+                        if isinstance(mspass_object, (TimeSeries, Seismogram)):
+                            mspass_object = buried_datum
+                        continue
+                    waveform_id = ObjectId()
+                    snapshot = object_store_metadata_snapshots[index]
+                    self._save_sample_data_to_object_store(
                         datum,
-                        copy.deepcopy(datum["object_store"]),
-                        object_store_metadata_snapshots[index],
+                        object_store,
+                        object_store_client,
+                        format=format,
+                        metadata_snapshots=[snapshot],
+                        waveform_id=waveform_id,
+                        waveform_collection=wf_collection_name,
                     )
-                    for index, datum in enumerate(atomic_data)
-                    if datum.live and "object_store" in datum
-                ]
-            try:
-                # ensembles need to loop over members to do the atomic operations
-                # remaining.  Hence, this conditional
+                    location = copy.deepcopy(datum["object_store"])
+                    staged_data = [(datum, location, snapshot, waveform_id)]
+                    try:
+                        saved_datum = self._atomic_save_all_documents(
+                            datum,
+                            save_schema,
+                            exclude_keys,
+                            mode,
+                            wf_collection,
+                            save_history,
+                            data_tag,
+                            storage_mode,
+                            normalizing_collections,
+                            alg_name,
+                            alg_id,
+                            waveform_id=waveform_id,
+                        )
+                    except Exception as original_error:
+                        cleanup_failures = self._cleanup_staged_object_store_data(
+                            object_store_client, staged_data
+                        )
+                        if cleanup_failures:
+                            raise MsPASSError(
+                                "Database.save_data failed and object-store "
+                                "compensation could not remove: {}".format(
+                                    ", ".join(cleanup_failures)
+                                ),
+                                "Fatal",
+                            ) from original_error
+                        raise
+                    if saved_datum.live:
+                        if not self._complete_object_store_stage(waveform_id, location):
+                            saved_datum.elog.log_error(
+                                "Database.save_data",
+                                "Waveform data were committed, but the durable "
+                                "object-store staging record could not be removed; "
+                                "reconciliation will preserve the committed object",
+                                ErrorSeverity.Complaint,
+                            )
+                    else:
+                        cleanup_failures = self._cleanup_staged_object_store_data(
+                            object_store_client, staged_data
+                        )
+                        if cleanup_failures:
+                            raise MsPASSError(
+                                "Waveform document was not committed and object-store "
+                                "compensation could not remove: {}".format(
+                                    ", ".join(cleanup_failures)
+                                ),
+                                "Fatal",
+                            )
+            else:
+                mspass_object = self._save_sample_data(
+                    mspass_object,
+                    storage_mode=storage_mode,
+                    dir=dir,
+                    dfile=dfile,
+                    format=format,
+                    overwrite=overwrite,
+                )
                 if isinstance(mspass_object, (TimeSeries, Seismogram)):
                     mspass_object = self._atomic_save_all_documents(
                         mspass_object,
@@ -1907,13 +1979,9 @@ class Database(pymongo.database.Database):
                         alg_name,
                         alg_id,
                     )
-                    if mspass_object.live:
-                        staged_object_store_data.clear()
-
                 else:
-                    # note else not elif because above guarantees only ensembles land here
                     for datum in mspass_object.member:
-                        saved_datum = self._atomic_save_all_documents(
+                        self._atomic_save_all_documents(
                             datum,
                             save_schema,
                             exclude_keys,
@@ -1926,31 +1994,6 @@ class Database(pymongo.database.Database):
                             alg_name,
                             alg_id,
                         )
-                        if saved_datum.live:
-                            if storage_mode == "object_store":
-                                staged_object_store_data.pop(0)
-            except Exception as original_error:
-                cleanup_failures = self._cleanup_staged_object_store_data(
-                    object_store_client, staged_object_store_data
-                )
-                if cleanup_failures:
-                    raise MsPASSError(
-                        "Database.save_data failed and object-store compensation "
-                        "could not remove: {}".format(", ".join(cleanup_failures)),
-                        "Fatal",
-                    ) from original_error
-                raise
-            cleanup_failures = self._cleanup_staged_object_store_data(
-                object_store_client, staged_object_store_data
-            )
-            if cleanup_failures:
-                raise MsPASSError(
-                    "Waveform documents were not committed and object-store "
-                    "compensation could not remove: {}".format(
-                        ", ".join(cleanup_failures)
-                    ),
-                    "Fatal",
-                )
         elif not overwrite_handled:
             # may need to clean Metadata before calling this method
             # to assure there are not values that will cause MongoDB
@@ -3556,7 +3599,7 @@ class Database(pymongo.database.Database):
         if "_id" in mspass_object:
             persisted_document = wf_collection.find_one(
                 {"_id": mspass_object["_id"]},
-                {"storage_mode": 1, "object_store": 1},
+                {"storage_mode": 1, "object_store": 1, "gridfs_id": 1},
             )
         if persisted_document is not None and (
             persisted_document.get("storage_mode") == "object_store"
@@ -3647,7 +3690,16 @@ class Database(pymongo.database.Database):
             original_gridfs_id = (
                 mspass_object["gridfs_id"] if original_has_gridfs_id else None
             )
-            transition_to_gridfs = original_storage_mode != "gridfs"
+            caller_storage_mode_changed = original_storage_mode != "gridfs"
+            if persisted_document is not None:
+                persisted_storage_mode = persisted_document.get(
+                    "storage_mode", "gridfs"
+                )
+                persisted_gridfs_id = persisted_document.get("gridfs_id")
+            else:
+                persisted_storage_mode = original_storage_mode
+                persisted_gridfs_id = original_gridfs_id
+            transition_to_gridfs = persisted_storage_mode != "gridfs"
             if "storage_mode" in mspass_object:
                 storage_mode = mspass_object["storage_mode"]
                 if not storage_mode == "gridfs":
@@ -3670,11 +3722,12 @@ class Database(pymongo.database.Database):
                 update_record["storage_mode"] = "gridfs"
             # Supplying the replacement id lets rollback remove a blob even
             # when GridFS writes it and then raises an exception.
-            # A datum transitioning from another mode never treats a stale
-            # gridfs_id as its active sample reference; storage_mode remains
-            # authoritative.
-            active_old_gridfs_id = None if transition_to_gridfs else old_gridfs_id
-            staged_gridfs_id = ObjectId() if active_old_gridfs_id is not None else None
+            # Only the durable waveform document can identify the active old
+            # sample object.  Caller metadata is mutable and may be stale or
+            # incomplete, so it must never select the object used by the CAS
+            # or the object deleted after a successful reference change.
+            active_old_gridfs_id = None if transition_to_gridfs else persisted_gridfs_id
+            staged_gridfs_id = ObjectId()
             new_gridfs_id = None
             elog_id = None
             old_elog_id = None
@@ -3732,17 +3785,18 @@ class Database(pymongo.database.Database):
                     else:
                         filter_["storage_mode"] = {"$exists": False}
                     filter_["object_store"] = {"$exists": False}
-                if active_old_gridfs_id is not None:
-                    filter_["gridfs_id"] = active_old_gridfs_id
+                    if persisted_storage_mode == "gridfs":
+                        if active_old_gridfs_id is None:
+                            filter_["gridfs_id"] = {"$exists": False}
+                        else:
+                            filter_["gridfs_id"] = active_old_gridfs_id
                 update_operation = {"$set": update_record}
                 inactive_pointer_keys = Database._inactive_storage_pointer_keys(
                     "gridfs"
                 )
                 update_operation["$unset"] = {key: "" for key in inactive_pointer_keys}
                 result = wf_collection.update_one(filter_, update_operation)
-                if (
-                    active_old_gridfs_id is not None or transition_to_gridfs
-                ) and result.matched_count != 1:
+                if persisted_document is not None and result.matched_count != 1:
                     raise MsPASSError(
                         "Database.update_data could not commit the new GridFS "
                         "reference",
@@ -3770,7 +3824,7 @@ class Database(pymongo.database.Database):
                         mspass_object["gridfs_id"] = original_gridfs_id
                     elif "gridfs_id" in mspass_object:
                         mspass_object.erase("gridfs_id")
-                    if transition_to_gridfs:
+                    if caller_storage_mode_changed:
                         if original_has_storage_mode:
                             mspass_object["storage_mode"] = original_storage_mode
                         elif "storage_mode" in mspass_object:
@@ -4287,7 +4341,9 @@ class Database(pymongo.database.Database):
         # Resolve every child reference before starting cleanup.  The waveform
         # document remains the durable retry record until all referenced
         # children have been removed or confirmed absent.
-        storage_mode = object_doc.get("storage_mode")
+        # Match the reader's compatibility rule: legacy waveform documents
+        # without an explicit mode are GridFS documents.
+        storage_mode = object_doc.get("storage_mode", "gridfs")
         object_store_location = object_doc.get("object_store")
         gridfs_id = object_doc.get("gridfs_id")
         dir_name = object_doc.get("dir")
@@ -4389,9 +4445,36 @@ class Database(pymongo.database.Database):
                 except FileNotFoundError:
                     pass
 
-        # Remove the durable retry record only after all requested child
-        # cleanup operations have completed successfully.
-        self[wf_collection_name].delete_one({"_id": oid})
+        # Remove the durable retry record only if it still names the exact
+        # sample location deleted above.  A concurrent storage transition
+        # must retain its new waveform reference.
+        final_delete_filter = {"_id": oid}
+        if "storage_mode" in object_doc:
+            final_delete_filter["storage_mode"] = storage_mode
+        else:
+            final_delete_filter["storage_mode"] = {"$exists": False}
+        if storage_mode == "object_store":
+            final_delete_filter["object_store"] = object_store_location
+        elif storage_mode == "gridfs":
+            final_delete_filter["gridfs_id"] = (
+                gridfs_id if gridfs_id is not None else {"$exists": False}
+            )
+        elif storage_mode == "file":
+            for key in ("dir", "dfile", "foff"):
+                final_delete_filter[key] = (
+                    object_doc[key] if key in object_doc else {"$exists": False}
+                )
+        elif storage_mode == "url":
+            final_delete_filter["url"] = (
+                object_doc["url"] if "url" in object_doc else {"$exists": False}
+            )
+        result = self[wf_collection_name].delete_one(final_delete_filter)
+        if result.deleted_count != 1:
+            raise MsPASSError(
+                "Waveform storage metadata changed during delete_data; the "
+                "current waveform document was retained",
+                ErrorSeverity.Invalid,
+            )
 
     def _load_collection_metadata(
         self, mspass_object, exclude_keys, include_undefined=False, collection=None
@@ -5736,11 +5819,12 @@ class Database(pymongo.database.Database):
             elif key in mspass_object:
                 mspass_object.erase(key)
 
-    @staticmethod
-    def _cleanup_staged_object_store_data(object_store_client, staged_data):
+    def _cleanup_staged_object_store_data(self, object_store_client, staged_data):
         """Delete uploaded objects that have no committed waveform document."""
         failures = []
-        for datum, location, metadata_snapshot in staged_data:
+        for staged_item in staged_data:
+            datum, location, metadata_snapshot = staged_item[:3]
+            stage_id = staged_item[3] if len(staged_item) > 3 else None
             bucket = location["bucket"]
             object_name = location["object_name"]
             try:
@@ -5749,7 +5833,113 @@ class Database(pymongo.database.Database):
                 failures.append("s3://{}/{}".format(bucket, object_name))
                 continue
             Database._restore_object_store_metadata(datum, metadata_snapshot)
+            if stage_id is not None:
+                try:
+                    self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(
+                        {"_id": stage_id, "object_store": location}
+                    )
+                except Exception:
+                    failures.append("staging record {}".format(stage_id))
         return failures
+
+    def _complete_object_store_stage(self, stage_id, location):
+        """Remove a staging record after its waveform reference is durable."""
+        try:
+            result = self[_OBJECT_STORE_STAGING_COLLECTION].delete_one(
+                {"_id": stage_id, "object_store": location}
+            )
+            return result.deleted_count == 1
+        except Exception:
+            return False
+
+    def reconcile_object_store_staging(
+        self, object_store_client, delete_uncommitted=False
+    ):
+        """Report or remove durable object-store staging records.
+
+        A staging record is written before each S3 upload and removed only
+        after the corresponding waveform document has been committed.  A
+        record whose waveform document contains the exact same object-store
+        location is committed; reconciliation removes only the stale staging
+        record and never its sample object.  Other records are reported as
+        uncommitted by default.
+
+        Set ``delete_uncommitted=True`` only while object-store writers are
+        quiescent.  MongoDB and S3 cannot provide a cross-system transaction,
+        so an active writer could otherwise commit between the waveform check
+        and the S3 delete.
+
+        :return: a dictionary containing deterministic URI lists named
+          ``committed``, ``uncommitted``, ``deleted``, and ``failures``.
+        """
+        if object_store_client is None:
+            raise ValueError("object_store_client is required for reconciliation")
+        report = {
+            "committed": [],
+            "uncommitted": [],
+            "deleted": [],
+            "failures": [],
+        }
+        staging_collection = self[_OBJECT_STORE_STAGING_COLLECTION]
+        for stage in staging_collection.find({}).sort("_id", pymongo.ASCENDING):
+            stage_id = stage.get("_id")
+            waveform_id = stage.get("waveform_id")
+            waveform_collection = stage.get("waveform_collection")
+            location = stage.get("object_store")
+            if (
+                waveform_id is None
+                or not isinstance(waveform_collection, str)
+                or not isinstance(location, dict)
+                or location.get("provider") != "s3"
+                or not isinstance(location.get("bucket"), str)
+                or not isinstance(location.get("object_name"), str)
+            ):
+                report["failures"].append(
+                    "staging record {} is invalid".format(stage_id)
+                )
+                continue
+            uri = "s3://{}/{}".format(location["bucket"], location["object_name"])
+            waveform = self[waveform_collection].find_one(
+                {"_id": waveform_id}, {"storage_mode": 1, "object_store": 1}
+            )
+            if waveform is not None and (
+                waveform.get("storage_mode") == "object_store"
+                and waveform.get("object_store") == location
+            ):
+                try:
+                    result = staging_collection.delete_one(
+                        {"_id": stage_id, "object_store": location}
+                    )
+                    if result.deleted_count == 1:
+                        report["committed"].append(uri)
+                    else:
+                        report["failures"].append(
+                            "staging record {} changed during reconciliation".format(
+                                stage_id
+                            )
+                        )
+                except Exception as error:
+                    report["failures"].append("{}: {}".format(uri, error))
+                continue
+            if not delete_uncommitted:
+                report["uncommitted"].append(uri)
+                continue
+            try:
+                object_store_client.delete_object(
+                    Bucket=location["bucket"], Key=location["object_name"]
+                )
+                result = staging_collection.delete_one(
+                    {"_id": stage_id, "object_store": location}
+                )
+                if result.deleted_count == 1:
+                    report["deleted"].append(uri)
+                else:
+                    report["failures"].append(
+                        "{}: staging record changed during reconciliation".format(uri)
+                    )
+            except Exception as error:
+                report["failures"].append("{}: {}".format(uri, error))
+        return report
 
     @staticmethod
     def _read_data_from_object_store(
@@ -7573,6 +7763,8 @@ class Database(pymongo.database.Database):
         object_store_client,
         format=None,
         metadata_snapshots=None,
+        waveform_id=None,
+        waveform_collection=None,
     ):
         """Write sample data to independent objects in an S3-compatible store."""
         if mspass_object.dead():
@@ -7653,7 +7845,9 @@ class Database(pymongo.database.Database):
             payload = buffer.getvalue()
             suffix = "." + format.lower()
 
-        object_name = uuid.uuid4().hex + suffix
+        object_name = (
+            str(waveform_id) if waveform_id is not None else uuid.uuid4().hex
+        ) + suffix
         if key_prefix:
             object_name = key_prefix.rstrip("/") + "/" + object_name
         location = {
@@ -7663,25 +7857,37 @@ class Database(pymongo.database.Database):
         }
         if format == "binary":
             location["encoding"] = _OBJECT_STORE_BINARY_ENCODING
-        mspass_object["storage_mode"] = "object_store"
-        mspass_object["object_store"] = location
-        mspass_object["format"] = format
-        mspass_object["nbytes"] = len(payload)
-        Database._normalize_storage_pointers(mspass_object, "object_store")
+        stage_id = None
+        if waveform_id is not None or waveform_collection is not None:
+            if waveform_id is None or not isinstance(waveform_collection, str):
+                raise ValueError(
+                    "waveform_id and waveform_collection must be supplied together"
+                )
+            stage_id = waveform_id
+            self[_OBJECT_STORE_STAGING_COLLECTION].insert_one(
+                {
+                    "_id": stage_id,
+                    "waveform_id": waveform_id,
+                    "waveform_collection": waveform_collection,
+                    "object_store": copy.deepcopy(location),
+                    "created_at": datetime.now(timezone.utc),
+                }
+            )
         try:
+            mspass_object["storage_mode"] = "object_store"
+            mspass_object["object_store"] = location
+            mspass_object["format"] = format
+            mspass_object["nbytes"] = len(payload)
+            Database._normalize_storage_pointers(mspass_object, "object_store")
             object_store_client.put_object(
                 Bucket=bucket,
                 Key=object_name,
                 Body=payload,
             )
-        except (
-            botocore.exceptions.BotoCoreError,
-            botocore.exceptions.ClientError,
-            OSError,
-        ) as err:
+        except Exception as err:
             cleanup_failures = self._cleanup_staged_object_store_data(
                 object_store_client,
-                [(mspass_object, location, metadata_snapshot)],
+                [(mspass_object, location, metadata_snapshot, stage_id)],
             )
             if cleanup_failures:
                 raise MsPASSError(
@@ -7782,6 +7988,7 @@ class Database(pymongo.database.Database):
         normalizing_collections,
         alg_name,
         alg_id,
+        waveform_id=None,
     ):
         """
         Does all the MongoDB operations needed to save an atomic
@@ -7888,9 +8095,13 @@ class Database(pymongo.database.Database):
             insertion_dict[elog_id_name] = elog_id
 
         if mspass_object.live:
-            wfid = None
+            wfid = waveform_id
+            waveform_inserted = False
             try:
+                if wfid is not None:
+                    insertion_dict["_id"] = wfid
                 wfid = wf_collection.insert_one(insertion_dict).inserted_id
+                waveform_inserted = True
                 if history_object_id is not None:
                     wf_id_name = wf_collection.name + "_id"
                     history_result = self[history_collection_name].update_one(
@@ -7904,7 +8115,7 @@ class Database(pymongo.database.Database):
                             ErrorSeverity.Invalid,
                         )
             except Exception:
-                if wfid is not None:
+                if waveform_inserted:
                     wf_collection.delete_one({"_id": wfid})
                 if history_object_id is not None:
                     self[history_collection_name].delete_one({"_id": history_object_id})
