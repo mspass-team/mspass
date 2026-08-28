@@ -165,9 +165,9 @@ def test_child_cleanup_failure_keeps_parent_and_retry_finishes_deletion(
             )
 
     assert error.value is failure
-    assert (
-        database[collection].find_one({"_id": graph.parent_id}) == graph.parent_document
-    )
+    retained_parent = database[collection].find_one({"_id": graph.parent_id})
+    assert isinstance(retained_parent.pop("_mspass_delete_token"), ObjectId)
+    assert retained_parent == graph.parent_document
     assert sample_exists(database, graph)
     assert bool(database["history_object"].find_one({"_id": graph.history_id})) is (
         failure_stage == "history"
