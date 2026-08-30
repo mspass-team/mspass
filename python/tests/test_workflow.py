@@ -1,9 +1,11 @@
 from collections import Counter
 from contextlib import contextmanager
+import gc
 from pathlib import Path
 import subprocess
 import sys
 import time
+import weakref
 
 import dask
 import pytest
@@ -96,6 +98,16 @@ def fail_completion(value):
 
 def fail_accumulator(old, value):
     raise RuntimeError("accumulator failed")
+
+
+class CompletionPayload:
+    pass
+
+
+def make_completion_payload(value, references):
+    payload = CompletionPayload()
+    references.append(weakref.ref(payload))
+    return payload
 
 
 class OneShotIterable:
@@ -387,6 +399,67 @@ def test_completion_order_and_return_modes(dask_client):
     assert result == [20, 10, 0]
 
 
+def test_results_can_be_discarded(dask_client):
+    retained_references = []
+    retained = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=make_completion_payload,
+        cfunc_args=[retained_references],
+    )
+
+    assert len(retained) == 3
+    assert all(
+        reference() is payload
+        for reference, payload in zip(retained_references, retained)
+    )
+
+    del retained
+    gc.collect()
+    assert all(reference() is None for reference in retained_references)
+
+    references = []
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=make_completion_payload,
+        cfunc_args=[references],
+        retain_results=False,
+    )
+
+    gc.collect()
+    assert result is None
+    assert len(references) == 3
+    assert all(reference() is None for reference in references)
+
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        retain_results=False,
+    )
+    assert result is None
+
+
+def test_retain_results_does_not_disable_accumulator(dask_client):
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=simple_completion,
+        accumulator=simple_accumulator,
+        retain_results=False,
+    )
+
+    assert result == 12
+
+
 def test_empty_input_in_all_return_modes(dask_client):
     assert (
         sliding_window_pipeline([], simple_no_args, dask_client, sliding_window_size=1)
@@ -569,6 +642,8 @@ def test_swp_error_handlers(dask_client):
         sliding_window_pipeline(
             [], simple_no_args, dask_client, progress_report_interval=0
         )
+    with pytest.raises(ValueError, match="retain_results"):
+        sliding_window_pipeline([], simple_no_args, dask_client, retain_results="false")
     # test arg1 handling
     with pytest.raises(
         ValueError,
