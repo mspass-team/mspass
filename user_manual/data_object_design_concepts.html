@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data Object Design Concepts &#8212; MsPASS 2.4.4.dev103+gfef900863 documentation</title>
+    <title>Data Object Design Concepts &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=aac9e0d3"></script>
+    <script src="../_static/documentation_options.js?v=6d326756"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using MsPASS on EarthScope GeoLab" href="../getting_started/deploy_mspass_on_geolab.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev103" />
+  <meta name="docsearch:version" content="2.4.4.dev104" />
   </head>
   
   
@@ -582,7 +582,7 @@ to reduce all Metadata to
 name:value pairs.</p></li>
 <li><p>ObsPy represents both three-component groups and larger collections with
 its general-purpose
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container.  MsPASS distinguishes the
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container.  MsPASS distinguishes the
 concepts represented by <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">Seismogram</span></code></a>
 and an ensemble.  For example, a collection of single
 component data like a seismic reflection shot gather is a very different
@@ -733,7 +733,7 @@ simple approach for two reasons:  (1) storage (times can be stored as
 a simple double precision (64 bit float) field), and (2) efficiency
 (computing relative times is trivial compared to handling calendar
 data).  ObsPy represents absolute start times with
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>.  Use that class when a Python
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UTCDateTime</span></code></a>.  Use that class when a Python
 workflow needs to convert between epoch seconds and calendar fields.</p></li>
 </ol>
 <div class="line-block">
@@ -773,7 +773,7 @@ modern concept of
 as “data that provides information about data”.  Packages like SAC use
 fixed (usually binary fields) slots in an external data format to
 define a finite set of attributes with a fixed namespace.   ObsPy uses
-a Python dictionary-like container called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a>
+a Python dictionary-like container called <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a>
 to store comparable information.   That approach allows metadata
 attributes to be extracted from a flexible container addressable by a
 keyword and that can contain a range of value types.  For example, a typical
@@ -1025,8 +1025,8 @@ that have to be unpacked and inserted into something like a vector
 container to be handled easily by a processing program.   The process
 becomes more complicated for three-component data because at least
 three channels have to be manipulated and time aligned.  ObsPy handles
-this issue with a general <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container of
-single-channel <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> objects.</p></li>
+this issue with a general <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> container of
+single-channel <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> objects.</p></li>
 </ul>
 <div class="line-block">
 <div class="line">We handle three component data in MsPASS by using a matrix to store the data

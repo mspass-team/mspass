@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev103+gfef900863 documentation</title>
+    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=aac9e0d3"></script>
+    <script src="../../_static/documentation_options.js?v=6d326756"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev103" />
+  <meta name="docsearch:version" content="2.4.4.dev104" />
   </head>
   
   
@@ -499,6 +499,7 @@
     <span class="n">a_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">progress_report_interval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">retain_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run a processing function and optional completion function on an</span>
@@ -565,8 +566,10 @@
 <span class="sd">    that of the processing function in the returned list.  Without a</span>
 <span class="sd">    completion function, processing results are returned directly.  Either</span>
 <span class="sd">    list has the same size as `dlist` and follows Future completion order,</span>
-<span class="sd">    which is not necessarily input order.  For large numbers of inputs such</span>
-<span class="sd">    a giant list can be problematic for a variety of reasons.</span>
+<span class="sd">    which is not necessarily input order.  Set ``retain_results=False`` when</span>
+<span class="sd">    the processing or completion function is used only for side effects and</span>
+<span class="sd">    its per-item return values are not needed.  For large numbers of inputs</span>
+<span class="sd">    retaining the results can be problematic for a variety of reasons.</span>
 <span class="sd">    For that reason this function has an optional `accumulator`</span>
 <span class="sd">    argument.  As the name implies it should be an accumulation function</span>
 <span class="sd">    that creates a summary of the output or some useful combination of</span>
@@ -597,6 +600,9 @@
 <span class="sd">      MongoDB documents.  Note although it should theoretically work we do not recommend</span>
 <span class="sd">      using a MongoDB CommandCursor for this argument as it is subject to</span>
 <span class="sd">      timeout errors if the processing function runs for a significant time.</span>
+<span class="sd">      The iterable is materialized in the driver, so its items should be small</span>
+<span class="sd">      specifications such as queries, dates, or document identifiers rather</span>
+<span class="sd">      than waveform data.</span>
 <span class="sd">    :param processing_function:   symbol defining the function object</span>
 <span class="sd">      (usually just the function name) to run on each component of dlist.</span>
 <span class="sd">      If the function has required arguments you must define the related</span>
@@ -665,6 +671,16 @@
 <span class="sd">    :param progress_report_interval: positive integer defining how many</span>
 <span class="sd">       completed items elapse between reports when ``verbose`` is True.</span>
 <span class="sd">       The default is 10000.  The final item is always reported.</span>
+<span class="sd">    :param retain_results: boolean controlling whether per-item processing or</span>
+<span class="sd">       completion results are retained in a list in the driver when no</span>
+<span class="sd">       accumulator is supplied.  The default is True for backward</span>
+<span class="sd">       compatibility.  Set False for sink-style workflows that need the</span>
+<span class="sd">       processing/completion side effects but not their return values.  In</span>
+<span class="sd">       that mode this function returns None.  This argument has no effect when</span>
+<span class="sd">       an accumulator is supplied because only the accumulated value is</span>
+<span class="sd">       retained.  It controls retention only:  processing results are still</span>
+<span class="sd">       gathered to the driver so task failures propagate, even when no</span>
+<span class="sd">       completion function is defined.</span>
 
 <span class="sd">    :return:   When the completion_function is not defined (default), return</span>
 <span class="sd">       a list of processing results.  With a completion function and no</span>
@@ -673,13 +689,14 @@
 <span class="sd">       order and do not preserve input order.</span>
 <span class="sd">       Be warned this list can get huge if the data set is large</span>
 <span class="sd">       and anything but a tiny datum is returned by processing_function.</span>
-<span class="sd">       The definitive use of this function in MsPASS is a function</span>
-<span class="sd">       that runs `Database.save_data` returning the default output of that</span>
-<span class="sd">       method.   That is easily handled as the default is the a list of</span>
-<span class="sd">       boolean values.  If, however, the same function is run with</span>
-<span class="sd">       `return_data=True` a memory overflow in the caller is likely</span>
-<span class="sd">       unless the entire output of the processing fits in the memory</span>
-<span class="sd">       space of the caller.</span>
+<span class="sd">       The default `Database.save_data(..., return_data=False)` output is a</span>
+<span class="sd">       small status/identifier dictionary.  Retaining one such dictionary per</span>
+<span class="sd">       input is normally much cheaper than retaining waveform objects, but the</span>
+<span class="sd">       list can still become significant for very large input collections.  If</span>
+<span class="sd">       the same function is run with `return_data=True`, a memory overflow in</span>
+<span class="sd">       the caller is likely unless the entire output of the processing fits in</span>
+<span class="sd">       the memory space of the caller.  When ``retain_results=False`` and no</span>
+<span class="sd">       accumulator is supplied, return None.</span>
 <span class="sd">    """</span>
     <span class="c1"># Materialize once so generators and other one-shot iterables have the same</span>
     <span class="c1"># behavior as lists throughout validation and submission.</span>
@@ -701,6 +718,8 @@
         <span class="ow">or</span> <span class="n">progress_report_interval</span> <span class="o">&lt;=</span> <span class="mi">0</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"progress_report_interval must be a positive integer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retain_results</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"retain_results must be a boolean"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pfunc_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># this and the comparable logic with kwargs is needed or a type error will be thrown when we use it</span>
         <span class="c1"># this is how python accepts a null args</span>
@@ -838,16 +857,22 @@
 
         <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">completed_futures</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">retain_results</span><span class="p">:</span>
+                            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
+                            <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
+                        <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">retain_results</span><span class="p">:</span>
                     <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
-                        <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="c1"># Do not keep the previous output while waiting for the next</span>
+                <span class="c1"># Future or gathering and deserializing its result.</span>
+                <span class="k">del</span> <span class="n">result</span>
 
             <span class="c1"># Release scheduler/client references as soon as each result has</span>
             <span class="c1"># been handled.</span>
@@ -880,7 +905,9 @@
         <span class="k">raise</span>
 
     <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">results</span>
+        <span class="k">if</span> <span class="n">retain_results</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">results</span>
+        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">accumulated_output</span></div>
 
 </pre></div>

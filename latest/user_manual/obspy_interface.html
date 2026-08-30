@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using ObsPy with MsPASS &#8212; MsPASS 2.4.4.dev103+gfef900863 documentation</title>
+    <title>Using ObsPy with MsPASS &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=aac9e0d3"></script>
+    <script src="../_static/documentation_options.js?v=6d326756"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using NumPy and SciPy with MsPASS" href="numpy_scipy_interface.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev103" />
+  <meta name="docsearch:version" content="2.4.4.dev104" />
   </head>
   
   
@@ -481,8 +481,8 @@
 <h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Link to this heading">#</a></h2>
 <p><a class="reference external" href="https://docs.obspy.org/">ObsPy</a> is an open-source Python framework for
 reading, representing, and processing seismological data.  Its core waveform
-model consists of NumPy-backed <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> objects
-held in list-like <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers.</p>
+model consists of NumPy-backed <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> objects
+held in list-like <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers.</p>
 <p>Python is sometimes called a “glue language” because of its capability for joining different software packages.
 Our integration of ObsPy in MsPASS is a case in point.
 Some users may find a good starting point for MsPASS is to treat it as a
@@ -500,14 +500,14 @@ We describe more details on converters below and how ObsPy processing algorithms
 They have similarities but some major differences that a software engineer might call “a collision in concept”.
 ObsPy defines two core data objects:</p>
 <ol class="arabic simple">
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
 An ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> maps almost directly into the MsPASS atomic object we call a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code></a>.
 Both containers store samples in a one-dimensional array.  ObsPy exposes a
 NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> whose dtype can vary with the source data; MsPASS stores
 samples as C++ <code class="docutils literal notranslate"><span class="pre">double</span></code> values, so conversion makes a copy and may cast
 the dtype.
 Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
-ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
+ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
 MsPASS defines a similar entity called
 <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a>.
 Some users may find it convenient to think of both as generalized
@@ -516,7 +516,7 @@ extensible.
 From a user’s perspective the “headers” in ObsPy and MsPASS behave the same but the API is different.
 In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
 (For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object “has a Stats” container while in MsPASS we say a TimeSeries “is a Metadata”.)</p></li>
-<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
 A <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> is very similar in concept to the MsPASS data object we call a <a class="reference internal" href="../python_api/mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code></a>.
 Both are containers holding a collection of single channel seismic data.
 In terms of the data they contain there is one important difference:
@@ -633,8 +633,8 @@ This should be clearer from an example.</p>
 <span class="n">stream</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">'bandpass'</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">obspy.read</span></code> returns a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>, and
-<code class="docutils literal notranslate"><span class="pre">Stream.filter</span></code> applies the filter to each <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
+<p><code class="docutils literal notranslate"><span class="pre">obspy.read</span></code> returns a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>, and
+<code class="docutils literal notranslate"><span class="pre">Stream.filter</span></code> applies the filter to each <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy v1.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
 it contains.  To filter only one channel, select the desired <code class="docutils literal notranslate"><span class="pre">Trace</span></code> from
 the <code class="docutils literal notranslate"><span class="pre">Stream</span></code> first.</p>
 <p>This little fragment uses the typical ObsPy approach of reading data from a file and applying an algorithm in a construct that makes the algorithm look like a method for the data class.
