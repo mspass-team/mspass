@@ -1,9 +1,12 @@
 from collections import Counter
 from contextlib import contextmanager
+import gc
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import time
+import weakref
 
 import dask
 import pytest
@@ -96,6 +99,23 @@ def fail_completion(value):
 
 def fail_accumulator(old, value):
     raise RuntimeError("accumulator failed")
+
+
+class CompletionPayload:
+    pass
+
+
+def make_or_block_payload(item, second_task_started, release_second_task):
+    if item == 1:
+        second_task_started.set()
+        if not release_second_task.wait(timeout=5):
+            raise TimeoutError("timed out waiting to release second task")
+    return CompletionPayload()
+
+
+def record_and_return_payload(payload, references):
+    references.append(weakref.ref(payload))
+    return payload
 
 
 class OneShotIterable:
@@ -387,6 +407,82 @@ def test_completion_order_and_return_modes(dask_client):
     assert result == [20, 10, 0]
 
 
+def test_results_can_be_discarded(dask_client):
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=simple_completion,
+        retain_results=False,
+    )
+
+    assert result is None
+
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        retain_results=False,
+    )
+    assert result is None
+
+
+def test_discarded_result_is_released_while_pipeline_runs(dask_client):
+    second_task_started = ddist.Event()
+    release_second_task = ddist.Event()
+    references = []
+    errors = []
+
+    def run_pipeline():
+        try:
+            sliding_window_pipeline(
+                [0, 1],
+                make_or_block_payload,
+                dask_client,
+                sliding_window_size=1,
+                completion_function=record_and_return_payload,
+                pfunc_args=[second_task_started, release_second_task],
+                cfunc_args=[references],
+                retain_results=False,
+            )
+        except BaseException as error:
+            errors.append(error)
+
+    pipeline_thread = threading.Thread(target=run_pipeline)
+    pipeline_thread.start()
+    second_started = False
+    first_result_released = False
+    try:
+        second_started = second_task_started.wait(timeout=5)
+        if second_started:
+            gc.collect()
+            first_result_released = len(references) == 1 and references[0]() is None
+    finally:
+        release_second_task.set()
+        pipeline_thread.join(timeout=5)
+
+    assert second_started
+    assert not pipeline_thread.is_alive()
+    assert errors == []
+    assert first_result_released
+
+
+def test_retain_results_does_not_disable_accumulator(dask_client):
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=simple_completion,
+        accumulator=simple_accumulator,
+        retain_results=False,
+    )
+
+    assert result == 12
+
+
 def test_empty_input_in_all_return_modes(dask_client):
     assert (
         sliding_window_pipeline([], simple_no_args, dask_client, sliding_window_size=1)
@@ -410,6 +506,27 @@ def test_empty_input_in_all_return_modes(dask_client):
             sliding_window_size=1,
             completion_function=simple_completion,
             accumulator=simple_accumulator,
+        )
+        is None
+    )
+    assert (
+        sliding_window_pipeline(
+            [],
+            simple_no_args,
+            dask_client,
+            sliding_window_size=1,
+            retain_results=False,
+        )
+        is None
+    )
+    assert (
+        sliding_window_pipeline(
+            [],
+            simple_no_args,
+            dask_client,
+            sliding_window_size=1,
+            completion_function=simple_completion,
+            retain_results=False,
         )
         is None
     )
@@ -569,6 +686,8 @@ def test_swp_error_handlers(dask_client):
         sliding_window_pipeline(
             [], simple_no_args, dask_client, progress_report_interval=0
         )
+    with pytest.raises(ValueError, match="retain_results"):
+        sliding_window_pipeline([], simple_no_args, dask_client, retain_results="false")
     # test arg1 handling
     with pytest.raises(
         ValueError,

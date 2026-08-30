@@ -21,6 +21,7 @@ def sliding_window_pipeline(
     a_kwargs=None,
     verbose=False,
     progress_report_interval=10000,
+    retain_results=True,
 ):
     """
     Run a processing function and optional completion function on an
@@ -87,8 +88,10 @@ def sliding_window_pipeline(
     that of the processing function in the returned list.  Without a
     completion function, processing results are returned directly.  Either
     list has the same size as `dlist` and follows Future completion order,
-    which is not necessarily input order.  For large numbers of inputs such
-    a giant list can be problematic for a variety of reasons.
+    which is not necessarily input order.  Set ``retain_results=False`` when
+    the processing or completion function is used only for side effects and
+    its per-item return values are not needed.  For large numbers of inputs
+    retaining the results can be problematic for a variety of reasons.
     For that reason this function has an optional `accumulator`
     argument.  As the name implies it should be an accumulation function
     that creates a summary of the output or some useful combination of
@@ -119,6 +122,9 @@ def sliding_window_pipeline(
       MongoDB documents.  Note although it should theoretically work we do not recommend
       using a MongoDB CommandCursor for this argument as it is subject to
       timeout errors if the processing function runs for a significant time.
+      The iterable is materialized in the driver, so its items should be small
+      specifications such as queries, dates, or document identifiers rather
+      than waveform data.
     :param processing_function:   symbol defining the function object
       (usually just the function name) to run on each component of dlist.
       If the function has required arguments you must define the related
@@ -187,6 +193,16 @@ def sliding_window_pipeline(
     :param progress_report_interval: positive integer defining how many
        completed items elapse between reports when ``verbose`` is True.
        The default is 10000.  The final item is always reported.
+    :param retain_results: boolean controlling whether per-item processing or
+       completion results are retained in a list in the driver when no
+       accumulator is supplied.  The default is True for backward
+       compatibility.  Set False for sink-style workflows that need the
+       processing/completion side effects but not their return values.  In
+       that mode this function returns None.  This argument has no effect when
+       an accumulator is supplied because only the accumulated value is
+       retained.  It controls retention only:  processing results are still
+       gathered to the driver so task failures propagate, even when no
+       completion function is defined.
 
     :return:   When the completion_function is not defined (default), return
        a list of processing results.  With a completion function and no
@@ -195,13 +211,14 @@ def sliding_window_pipeline(
        order and do not preserve input order.
        Be warned this list can get huge if the data set is large
        and anything but a tiny datum is returned by processing_function.
-       The definitive use of this function in MsPASS is a function
-       that runs `Database.save_data` returning the default output of that
-       method.   That is easily handled as the default is the a list of
-       boolean values.  If, however, the same function is run with
-       `return_data=True` a memory overflow in the caller is likely
-       unless the entire output of the processing fits in the memory
-       space of the caller.
+       The default `Database.save_data(..., return_data=False)` output is a
+       small status/identifier dictionary.  Retaining one such dictionary per
+       input is normally much cheaper than retaining waveform objects, but the
+       list can still become significant for very large input collections.  If
+       the same function is run with `return_data=True`, a memory overflow in
+       the caller is likely unless the entire output of the processing fits in
+       the memory space of the caller.  When ``retain_results=False`` and no
+       accumulator is supplied, return None.
     """
     # Materialize once so generators and other one-shot iterables have the same
     # behavior as lists throughout validation and submission.
@@ -223,6 +240,8 @@ def sliding_window_pipeline(
         or progress_report_interval <= 0
     ):
         raise ValueError("progress_report_interval must be a positive integer")
+    if not isinstance(retain_results, bool):
+        raise ValueError("retain_results must be a boolean")
     if pfunc_args is None:
         # this and the comparable logic with kwargs is needed or a type error will be thrown when we use it
         # this is how python accepts a null args
@@ -360,16 +379,22 @@ def sliding_window_pipeline(
 
         for future in completed_futures:
             result = future.result()
-            if run_completion_function:
-                result = completion_function(result, *cfunc_args, **cfunc_kwargs)
-                if accumulator is None:
+            try:
+                if run_completion_function:
+                    result = completion_function(result, *cfunc_args, **cfunc_kwargs)
+                    if accumulator is None:
+                        if retain_results:
+                            results.append(result)
+                    else:
+                        accumulated_output = accumulator(
+                            accumulated_output, result, *a_args, **a_kwargs
+                        )
+                elif retain_results:
                     results.append(result)
-                else:
-                    accumulated_output = accumulator(
-                        accumulated_output, result, *a_args, **a_kwargs
-                    )
-            else:
-                results.append(result)
+            finally:
+                # Do not keep the previous output while waiting for the next
+                # Future or gathering and deserializing its result.
+                del result
 
             # Release scheduler/client references as soon as each result has
             # been handled.
@@ -402,5 +427,7 @@ def sliding_window_pipeline(
         raise
 
     if accumulator is None:
-        return results
+        if retain_results:
+            return results
+        return None
     return accumulated_output
