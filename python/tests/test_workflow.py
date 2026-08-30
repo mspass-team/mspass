@@ -4,6 +4,7 @@ import gc
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import time
 import weakref
 
@@ -104,8 +105,15 @@ class CompletionPayload:
     pass
 
 
-def make_completion_payload(value, references):
-    payload = CompletionPayload()
+def make_or_block_payload(item, second_task_started, release_second_task):
+    if item == 1:
+        second_task_started.set()
+        if not release_second_task.wait(timeout=5):
+            raise TimeoutError("timed out waiting to release second task")
+    return CompletionPayload()
+
+
+def record_and_return_payload(payload, references):
     references.append(weakref.ref(payload))
     return payload
 
@@ -400,50 +408,65 @@ def test_completion_order_and_return_modes(dask_client):
 
 
 def test_results_can_be_discarded(dask_client):
-    retained_references = []
-    retained = sliding_window_pipeline(
+    result = sliding_window_pipeline(
         [1, 2, 3],
         simple_no_args,
         dask_client,
         sliding_window_size=1,
-        completion_function=make_completion_payload,
-        cfunc_args=[retained_references],
+        completion_function=simple_completion,
+        retain_results=False,
     )
 
-    assert len(retained) == 3
-    assert all(
-        reference() is payload
-        for reference, payload in zip(retained_references, retained)
+    assert result is None
+
+    result = sliding_window_pipeline(
+        [1, 2, 3],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        retain_results=False,
     )
+    assert result is None
 
-    del retained
-    gc.collect()
-    assert all(reference() is None for reference in retained_references)
 
+def test_discarded_result_is_released_while_pipeline_runs(dask_client):
+    second_task_started = ddist.Event()
+    release_second_task = ddist.Event()
     references = []
-    result = sliding_window_pipeline(
-        [1, 2, 3],
-        simple_no_args,
-        dask_client,
-        sliding_window_size=1,
-        completion_function=make_completion_payload,
-        cfunc_args=[references],
-        retain_results=False,
-    )
+    errors = []
 
-    gc.collect()
-    assert result is None
-    assert len(references) == 3
-    assert all(reference() is None for reference in references)
+    def run_pipeline():
+        try:
+            sliding_window_pipeline(
+                [0, 1],
+                make_or_block_payload,
+                dask_client,
+                sliding_window_size=1,
+                completion_function=record_and_return_payload,
+                pfunc_args=[second_task_started, release_second_task],
+                cfunc_args=[references],
+                retain_results=False,
+            )
+        except BaseException as error:
+            errors.append(error)
 
-    result = sliding_window_pipeline(
-        [1, 2, 3],
-        simple_no_args,
-        dask_client,
-        sliding_window_size=1,
-        retain_results=False,
-    )
-    assert result is None
+    pipeline_thread = threading.Thread(target=run_pipeline)
+    pipeline_thread.start()
+    second_started = False
+    first_result_released = False
+    try:
+        second_started = second_task_started.wait(timeout=5)
+        if second_started:
+            gc.collect()
+            first_result_released = len(references) == 1 and references[0]() is None
+    finally:
+        release_second_task.set()
+        pipeline_thread.join(timeout=5)
+
+    assert second_started
+    assert not pipeline_thread.is_alive()
+    assert errors == []
+    assert first_result_released
 
 
 def test_retain_results_does_not_disable_accumulator(dask_client):
@@ -483,6 +506,27 @@ def test_empty_input_in_all_return_modes(dask_client):
             sliding_window_size=1,
             completion_function=simple_completion,
             accumulator=simple_accumulator,
+        )
+        is None
+    )
+    assert (
+        sliding_window_pipeline(
+            [],
+            simple_no_args,
+            dask_client,
+            sliding_window_size=1,
+            retain_results=False,
+        )
+        is None
+    )
+    assert (
+        sliding_window_pipeline(
+            [],
+            simple_no_args,
+            dask_client,
+            sliding_window_size=1,
+            completion_function=simple_completion,
+            retain_results=False,
         )
         is None
     )

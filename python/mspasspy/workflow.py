@@ -200,7 +200,9 @@ def sliding_window_pipeline(
        processing/completion side effects but not their return values.  In
        that mode this function returns None.  This argument has no effect when
        an accumulator is supplied because only the accumulated value is
-       retained.
+       retained.  It controls retention only:  processing results are still
+       gathered to the driver so task failures propagate, even when no
+       completion function is defined.
 
     :return:   When the completion_function is not defined (default), return
        a list of processing results.  With a completion function and no
@@ -209,14 +211,14 @@ def sliding_window_pipeline(
        order and do not preserve input order.
        Be warned this list can get huge if the data set is large
        and anything but a tiny datum is returned by processing_function.
-       The definitive use of this function in MsPASS is a function
-       that runs `Database.save_data` returning the default output of that
-       method.   That is easily handled as the default is the a list of
-       boolean values.  If, however, the same function is run with
-       `return_data=True` a memory overflow in the caller is likely
-       unless the entire output of the processing fits in the memory
-       space of the caller.  When ``retain_results=False`` and no accumulator
-       is supplied, return None.
+       The default `Database.save_data(..., return_data=False)` output is a
+       small status/identifier dictionary.  Retaining one such dictionary per
+       input is normally much cheaper than retaining waveform objects, but the
+       list can still become significant for very large input collections.  If
+       the same function is run with `return_data=True`, a memory overflow in
+       the caller is likely unless the entire output of the processing fits in
+       the memory space of the caller.  When ``retain_results=False`` and no
+       accumulator is supplied, return None.
     """
     # Materialize once so generators and other one-shot iterables have the same
     # behavior as lists throughout validation and submission.
@@ -377,17 +379,22 @@ def sliding_window_pipeline(
 
         for future in completed_futures:
             result = future.result()
-            if run_completion_function:
-                result = completion_function(result, *cfunc_args, **cfunc_kwargs)
-                if accumulator is None:
-                    if retain_results:
-                        results.append(result)
-                else:
-                    accumulated_output = accumulator(
-                        accumulated_output, result, *a_args, **a_kwargs
-                    )
-            elif retain_results:
-                results.append(result)
+            try:
+                if run_completion_function:
+                    result = completion_function(result, *cfunc_args, **cfunc_kwargs)
+                    if accumulator is None:
+                        if retain_results:
+                            results.append(result)
+                    else:
+                        accumulated_output = accumulator(
+                            accumulated_output, result, *a_args, **a_kwargs
+                        )
+                elif retain_results:
+                    results.append(result)
+            finally:
+                # Do not keep the previous output while waiting for the next
+                # Future or gathering and deserializing its result.
+                del result
 
             # Release scheduler/client references as soon as each result has
             # been handled.
