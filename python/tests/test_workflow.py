@@ -105,6 +105,29 @@ class CompletionPayload:
     pass
 
 
+class WorkerOnlyPayload:
+    def __reduce__(self):
+        raise RuntimeError("worker-only payload was serialized")
+
+
+def make_worker_only_payload(_):
+    return WorkerOnlyPayload()
+
+
+def return_input(payload):
+    return payload
+
+
+def report_completion_location(value, prefix="", suffix=""):
+    try:
+        ddist.get_worker()
+    except ValueError:
+        location = "driver"
+    else:
+        location = "worker"
+    return f"{prefix}{location}{suffix}", value
+
+
 def make_or_block_payload(item, second_task_started, release_second_task):
     if item == 1:
         second_task_started.set()
@@ -146,6 +169,18 @@ def _local_dask_client():
 def dask_client():
     with _local_dask_client() as client:
         yield client
+
+
+@pytest.fixture
+def process_dask_client():
+    with ddist.LocalCluster(
+        n_workers=1,
+        threads_per_worker=1,
+        processes=True,
+        dashboard_address=None,
+    ) as cluster:
+        with ddist.Client(cluster) as client:
+            yield client
 
 
 def test_import_does_not_install_a_default_dask_client():
@@ -429,6 +464,94 @@ def test_results_can_be_discarded(dask_client):
     assert result is None
 
 
+def test_discarded_processing_result_is_not_gathered(process_dask_client):
+    result = sliding_window_pipeline(
+        [1],
+        make_worker_only_payload,
+        process_dask_client,
+        sliding_window_size=1,
+        retain_results=False,
+    )
+
+    assert result is None
+
+
+def test_completion_can_run_and_discard_output_on_worker(process_dask_client):
+    result = sliding_window_pipeline(
+        [1],
+        make_worker_only_payload,
+        process_dask_client,
+        sliding_window_size=1,
+        completion_function=return_input,
+        retain_results=False,
+        completion_on_worker=True,
+    )
+
+    assert result is None
+
+
+def test_completion_location_and_worker_result_modes(dask_client):
+    driver_result = sliding_window_pipeline(
+        [1],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=report_completion_location,
+    )
+    worker_result = sliding_window_pipeline(
+        [1],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=report_completion_location,
+        cfunc_args=["on-"],
+        cfunc_kwargs={"suffix": "-side"},
+        completion_on_worker=True,
+    )
+    accumulated_result = sliding_window_pipeline(
+        [1, 2],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=times_ten,
+        accumulator=simple_accumulator,
+        retain_results=False,
+        completion_on_worker=True,
+    )
+
+    assert driver_result == [("driver", 2)]
+    assert worker_result == [("on-worker-side", 2)]
+    assert accumulated_result == 50
+
+
+def test_future_cancel_is_requested_before_driver_completion(dask_client, monkeypatch):
+    submitted = []
+    statuses_during_completion = []
+    original_submit = dask_client.submit
+
+    def capture_submit(*args, **kwargs):
+        future = original_submit(*args, **kwargs)
+        submitted.append(future)
+        return future
+
+    def inspect_future_status(value):
+        statuses_during_completion.append(submitted[0].status)
+        return value
+
+    monkeypatch.setattr(dask_client, "submit", capture_submit)
+
+    result = sliding_window_pipeline(
+        [1],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=inspect_future_status,
+    )
+
+    assert result == [2]
+    assert statuses_during_completion == ["cancelled"]
+
+
 def test_discarded_result_is_released_while_pipeline_runs(dask_client):
     second_task_started = ddist.Event()
     release_second_task = ddist.Event()
@@ -621,6 +744,7 @@ def _assert_all_cancelled(futures):
         ("submit", "submit failed"),
         ("processing", "processing failed"),
         ("completion", "completion failed"),
+        ("worker_completion", "completion failed"),
         ("accumulator", "accumulator failed"),
     ],
 )
@@ -653,8 +777,12 @@ def test_failures_cancel_all_outstanding_futures(
         items = [("fail", 0), ("slow-1", 0.3), ("slow-2", 0.3)]
         processing_function = delayed_value
         kwargs["completion_function"] = (
-            fail_completion if failure_stage == "completion" else lambda value: value
+            fail_completion
+            if failure_stage in ("completion", "worker_completion")
+            else lambda value: value
         )
+        if failure_stage == "worker_completion":
+            kwargs["completion_on_worker"] = True
         if failure_stage == "accumulator":
             kwargs["accumulator"] = fail_accumulator
 
@@ -688,6 +816,14 @@ def test_swp_error_handlers(dask_client):
         )
     with pytest.raises(ValueError, match="retain_results"):
         sliding_window_pipeline([], simple_no_args, dask_client, retain_results="false")
+    with pytest.raises(ValueError, match="completion_on_worker must be a boolean"):
+        sliding_window_pipeline(
+            [], simple_no_args, dask_client, completion_on_worker="true"
+        )
+    with pytest.raises(ValueError, match="requires a completion_function"):
+        sliding_window_pipeline(
+            [], simple_no_args, dask_client, completion_on_worker=True
+        )
     # test arg1 handling
     with pytest.raises(
         ValueError,

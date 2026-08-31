@@ -5,6 +5,27 @@ from numbers import Integral, Real
 import dask.distributed as ddist
 
 
+def _execute_pipeline_task(
+    data_item,
+    processing_function,
+    pfunc_args,
+    pfunc_kwargs,
+    completion_function=None,
+    cfunc_args=(),
+    cfunc_kwargs=None,
+    discard_result=False,
+):
+    """Execute pipeline stages that must not exchange their intermediate."""
+    result = processing_function(data_item, *pfunc_args, **pfunc_kwargs)
+    if completion_function is not None:
+        if cfunc_kwargs is None:
+            cfunc_kwargs = {}
+        result = completion_function(result, *cfunc_args, **cfunc_kwargs)
+    if discard_result:
+        return None
+    return result
+
+
 def sliding_window_pipeline(
     dlist,
     processing_function,
@@ -22,6 +43,7 @@ def sliding_window_pipeline(
     verbose=False,
     progress_report_interval=10000,
     retain_results=True,
+    completion_on_worker=False,
 ):
     """
     Run a processing function and optional completion function on an
@@ -82,9 +104,11 @@ def sliding_window_pipeline(
     may not be running on the same node.  See the MsPASS User Manual for
     more guidance on this issue.
 
-    The other element of this function is the optional "completion_function"
-    argument.  That function is run on the output of every instance of
-    the function returned by workers.  When defined, its output replaces
+    The other element of this function is the optional ``completion_function``
+    argument.  By default that function is run in the driver on the output of
+    every instance of the function returned by workers.  Set
+    ``completion_on_worker=True`` to compose the processing and completion
+    functions into one worker task.  When defined, its output replaces
     that of the processing function in the returned list.  Without a
     completion function, processing results are returned directly.  Either
     list has the same size as `dlist` and follows Future completion order,
@@ -158,6 +182,17 @@ def sliding_window_pipeline(
     :param completion_function:   if defined the result returned by each submit
        will be processed with this function.   When defined the function
        output will be the single output of this function.
+    :param completion_on_worker: boolean controlling where
+       ``completion_function`` runs.  The default is False, which gathers each
+       processing result and runs completion serially in the driver.  Set True
+       to run processing and completion in the same worker task, avoiding
+       serialization and transfer of the intermediate processing result.  This
+       also allows completions to run concurrently, and requires the completion
+       function and its arguments to be serializable and worker-safe.  When
+       ``retain_results=False`` and no accumulator is supplied, the completion
+       return value is discarded in the worker as well.  Configure database and
+       object-store access on workers rather than passing live clients or
+       credentials as completion arguments.
     :param accumulator: optional accumulator function applied to the
        output of the completion function.   In most cases the large list
        returned by this function with or without a completion function is
@@ -200,9 +235,11 @@ def sliding_window_pipeline(
        processing/completion side effects but not their return values.  In
        that mode this function returns None.  This argument has no effect when
        an accumulator is supplied because only the accumulated value is
-       retained.  It controls retention only:  processing results are still
-       gathered to the driver so task failures propagate, even when no
-       completion function is defined.
+       retained.  With no completion function, the processing return value is
+       discarded in the worker instead of being gathered.  With the default
+       driver-side completion, the processing result must still be gathered.
+       Set ``completion_on_worker=True`` to avoid that transfer.  Task failures
+       propagate in all modes.
 
     :return:   When the completion_function is not defined (default), return
        a list of processing results.  With a completion function and no
@@ -242,6 +279,8 @@ def sliding_window_pipeline(
         raise ValueError("progress_report_interval must be a positive integer")
     if not isinstance(retain_results, bool):
         raise ValueError("retain_results must be a boolean")
+    if not isinstance(completion_on_worker, bool):
+        raise ValueError("completion_on_worker must be a boolean")
     if pfunc_args is None:
         # this and the comparable logic with kwargs is needed or a type error will be thrown when we use it
         # this is how python accepts a null args
@@ -252,6 +291,7 @@ def sliding_window_pipeline(
                 alg
             )
             raise ValueError(message)
+        pfunc_args = tuple(pfunc_args)
     if pfunc_kwargs is None:
         pfunc_kwargs = {}
     else:
@@ -260,8 +300,11 @@ def sliding_window_pipeline(
                 alg
             )
             raise ValueError(message)
+        pfunc_kwargs = dict(pfunc_kwargs)
     if completion_function is None:
         run_completion_function = False
+        if completion_on_worker:
+            raise ValueError("completion_on_worker requires a completion_function")
         if accumulator is not None:
             raise ValueError("accumulator requires a completion_function")
     else:
@@ -280,6 +323,7 @@ def sliding_window_pipeline(
                     alg
                 )
                 raise ValueError(message)
+            cfunc_args = tuple(cfunc_args)
         if cfunc_kwargs is None:
             cfunc_kwargs = {}
         else:
@@ -288,6 +332,7 @@ def sliding_window_pipeline(
                     alg
                 )
                 raise ValueError(message)
+            cfunc_kwargs = dict(cfunc_kwargs)
         if accumulator is not None:
             if not callable(accumulator):
                 message = "{}:  Illegal value for accumulator argument\n".format(alg)
@@ -364,15 +409,39 @@ def sliding_window_pipeline(
     outstanding = []
     completed_futures = ddist.as_completed(loop=dask_client.loop)
 
+    run_completion_in_driver = run_completion_function and not completion_on_worker
+    run_combined_worker_task = completion_on_worker or (
+        not run_completion_function and not retain_results
+    )
+    discard_worker_result = (
+        not retain_results and accumulator is None and run_combined_worker_task
+    )
+
+    def submit_item(data_item):
+        if run_combined_worker_task:
+            return dask_client.submit(
+                _execute_pipeline_task,
+                data_item,
+                processing_function,
+                pfunc_args,
+                pfunc_kwargs,
+                completion_function if completion_on_worker else None,
+                cfunc_args if completion_on_worker else (),
+                cfunc_kwargs if completion_on_worker else {},
+                discard_worker_result,
+                pure=False,
+            )
+        return dask_client.submit(
+            processing_function,
+            data_item,
+            *pfunc_args,
+            pure=False,
+            **pfunc_kwargs,
+        )
+
     try:
         while next_item < swsize:
-            future = dask_client.submit(
-                processing_function,
-                data_items[next_item],
-                *pfunc_args,
-                pure=False,
-                **pfunc_kwargs,
-            )
+            future = submit_item(data_items[next_item])
             outstanding.append(future)
             completed_futures.add(future)
             next_item += 1
@@ -380,15 +449,16 @@ def sliding_window_pipeline(
         for future in completed_futures:
             result = future.result()
             try:
-                if run_completion_function:
+                # Request release of the remote result before running a
+                # potentially slow driver-side completion.  The local result
+                # remains valid until the finally block below.
+                dask_client.cancel(future)
+                if run_completion_in_driver:
                     result = completion_function(result, *cfunc_args, **cfunc_kwargs)
-                    if accumulator is None:
-                        if retain_results:
-                            results.append(result)
-                    else:
-                        accumulated_output = accumulator(
-                            accumulated_output, result, *a_args, **a_kwargs
-                        )
+                if accumulator is not None:
+                    accumulated_output = accumulator(
+                        accumulated_output, result, *a_args, **a_kwargs
+                    )
                 elif retain_results:
                     results.append(result)
             finally:
@@ -396,9 +466,6 @@ def sliding_window_pipeline(
                 # Future or gathering and deserializing its result.
                 del result
 
-            # Release scheduler/client references as soon as each result has
-            # been handled.
-            dask_client.cancel(future)
             outstanding.remove(future)
             number_handled += 1
             if verbose and (
@@ -407,13 +474,7 @@ def sliding_window_pipeline(
                 print(f"Handled {number_handled} of {N} items")
 
             if next_item < N:
-                future = dask_client.submit(
-                    processing_function,
-                    data_items[next_item],
-                    *pfunc_args,
-                    pure=False,
-                    **pfunc_kwargs,
-                )
+                future = submit_item(data_items[next_item])
                 outstanding.append(future)
                 completed_futures.add(future)
                 next_item += 1
