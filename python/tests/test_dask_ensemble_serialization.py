@@ -107,7 +107,6 @@ def _assert_ensemble_equal(actual, expected, compare_process_ids=True):
 def _run_repository_subprocess(source):
     repository_root = Path(__file__).resolve().parents[2]
     env = os.environ.copy()
-    env["PYTHONPATH"] = str(repository_root / "python")
     return subprocess.run(
         [sys.executable, "-c", source],
         cwd=repository_root,
