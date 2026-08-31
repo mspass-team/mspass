@@ -556,7 +556,7 @@ That same workflow using `sliding_window_pipeline` is this:
    data_out = sliding_window_pipeline(doclist,
                        atomic_example,
                        dask_client,
-                       db.name)
+                       pfunc_args=(db.name,))
 
 For this case the example includes the code to instantiate a MsPASS Client,
 which was omitted in the map example.  It illustrates that `sliding_window_pipeline`
@@ -666,6 +666,48 @@ database and object-store access rather than passing live clients or secrets.
 This mode removes the driver transfer, but each combined task must still fit in
 one worker's memory.  Increase ``sliding_window_size`` only after measuring the
 per-task peak.
+
+Dask ensemble transport
+-----------------------
+When a native ``TimeSeriesEnsemble`` or ``SeismogramEnsemble`` must cross a
+Dask boundary, MsPASS automatically uses a frame-based Dask serializer.  The
+ordinary Python pickle representation is unchanged.  Consequently existing
+pickle files remain compatible, while Dask can transfer each member's sample
+array as a protocol-5 buffer instead of embedding every sample in one large
+``bytes`` object.
+
+A small protocol-level benchmark using the legacy nested-pickle ensemble state
+present when this serializer was introduced produced one approximately 241 KB
+pickle-only frame for three 10,000-sample TimeSeries members.  The default Dask
+serializer produced an approximately 1.4 KB control frame and three 80 KB
+sample frames.  Exact control sizes depend on Metadata and processing history.
+In one CPython 3.13/Dask 2025.10 development run, three 250,000-sample members
+used 4 frames and about 6.0 MB peak Python allocation with the Dask serializer,
+versus 1 frame and about 18.0 MB with the legacy pickle-only representation.
+Both took about 0.01 s after constructing the ensemble.  Conversely, 1,000
+ten-sample members generated 1,001 Dask frames and was not faster than the
+legacy single pickle frame (both about 0.03 s).  These figures are illustrative,
+not performance guarantees.  The following reports frame sizes for local data
+without requiring a cluster:
+
+.. code:: python
+
+  from distributed.protocol import serialize
+
+  dask_header, dask_frames = serialize(ensemble)
+  pickle_header, pickle_frames = serialize(
+      ensemble,
+      serializers=("pickle",),
+  )
+  print("Dask frames:", [memoryview(frame).nbytes for frame in dask_frames])
+  print("pickle-only frames:",
+        [memoryview(frame).nbytes for frame in pickle_frames])
+
+Frame count grows with ensemble member count.  Benchmark representative data
+before transferring ensembles containing very many small members.  This
+serializer also does not reduce the memory required to construct an ensemble
+or change an ordinary ``pickle.dump`` inside a task.  Prefer worker-side sink
+completion when the driver does not need the ensemble at all.
 
 HPC deployment
 --------------
