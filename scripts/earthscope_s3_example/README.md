@@ -4,12 +4,11 @@ This directory is a maintained example for one specific workflow: index
 EarthScope station-day miniSEED objects, extract event windows, and write
 bounded station batches.  It is not a universal EarthScope data API.
 
-The example contains no credentials or notebook output.  Authentication must
-come from the EarthScope SDK at runtime.  Do not print, save, commit, or place
-short-lived credentials in Dask task arguments.  Register one refreshable
-client per worker instead.  The SDK returns a refreshable boto3 session, so
-the worker plugin delegates credential refresh to the SDK and requests the
-current `s3-miniseed-v2` role:
+The example contains no credentials or notebook output.  Do not print, save,
+commit, or place short-lived credentials in Dask task arguments.  Register one
+client per worker instead.  The plugin uses boto3's standard credential chain,
+which lets the same GeoLab worker identity read the public input bucket and
+write its authorized scratch bucket:
 
 ```python
 from scripts.earthscope_s3_example.worker import EarthScopeS3Worker
@@ -20,22 +19,23 @@ dask_client.register_plugin(EarthScopeS3Worker())
 The input is intentionally limited to the AWS Open Data Program bucket,
 `earthscope-geophysical-data`, for networks AK, II, IU, N4, PB, TA, UU, and
 UW.  In particular, this is the correct current bucket for the 2014 TA data
-that motivated the example.  Other networks use a separately authorized
-EarthScope Repository access point and network-scoped credentials; adapt the
-example only after following the
+that motivated the example, and it does not require EarthScope temporary
+credentials.  Other networks use a separately authorized EarthScope
+Repository access point and network-scoped credentials; adapt the example only
+after following the
 [EarthScope direct-S3 guide](https://docs.earthscope.org/sdk/s3-direct-access-tutorial)
 for its current bucket, region, and credential rules.
 
-For serial indexing, obtain an authenticated session at runtime and pass it to
-`fetch_s3_client(session=...)`.  Use `index_days_for_year(year)` when building
-the station-day index; it includes the adjacent December 31 and January 1
-needed by padded windows.  `year_query(year)` is half-open, so an arrival at
-exactly January 1 belongs to only the new year.  Filter network values with
-`normalized_networks` instead of deleting an arbitrary element returned by
-MongoDB `distinct`.  Normalize every arrival with `normalize_station`; a
-station absent from the cross-reference keeps its original station code and
-receives the configured default network instead of inheriting stale loop
-state:
+For serial indexing, create a standard `boto3.Session` at runtime and pass it
+to `fetch_s3_client(session=...)`.  Use `index_days_for_year(year)` when
+building the station-day index; it includes the adjacent December 31 and
+January 1 needed by padded windows.  `year_query(year)` is half-open, so an
+arrival at exactly January 1 belongs to only the new year.  Filter network
+values with `normalized_networks` instead of deleting an arbitrary element
+returned by MongoDB `distinct`.  Normalize every arrival with
+`normalize_station`; a station absent from the cross-reference keeps its
+original station code and receives the configured default network instead of
+inheriting stale loop state:
 
 ```python
 from scripts.earthscope_s3_example.workflow import normalize_station

@@ -1,5 +1,6 @@
 """Worker-local EarthScope S3 client support for the example workflow."""
 
+from boto3 import Session
 from botocore.config import Config
 from dask.distributed import WorkerPlugin, get_worker
 
@@ -30,23 +31,20 @@ def fetch_s3_client(session=None, worker_data_key="earthscope_s3_client"):
         ) from error
 
 
-def create_earthscope_s3_client(role="s3-miniseed-v2"):
-    """Create an S3 client from the SDK's refreshable boto3 session."""
-    from earthscope_sdk import EarthScopeClient
-
-    session = EarthScopeClient().user.get_boto3_session(role=role)
+def create_s3_client():
+    """Create one client from the worker's standard AWS credential chain."""
+    session = Session()
     return session.client("s3", config=S3_CONFIG)
 
 
 class EarthScopeS3Worker(WorkerPlugin):
-    """Install one refreshable S3 client in each Dask worker."""
+    """Install one ambient-credential S3 client in each Dask worker."""
 
-    def __init__(self, key="earthscope_s3_client", role="s3-miniseed-v2"):
+    def __init__(self, key="earthscope_s3_client"):
         self.key = key
-        self.role = role
 
     def setup(self, worker):
-        worker.data[self.key] = create_earthscope_s3_client(role=self.role)
+        worker.data[self.key] = create_s3_client()
 
     def teardown(self, worker):
         client = worker.data.pop(self.key, None)

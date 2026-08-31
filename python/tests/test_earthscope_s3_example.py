@@ -1,8 +1,6 @@
-import sys
 from dataclasses import replace
 from io import BytesIO
 from pathlib import Path
-from types import SimpleNamespace
 
 from botocore.exceptions import ClientError
 import dask.distributed as ddist
@@ -432,7 +430,7 @@ def test_failed_worker_setup_has_safe_teardown(monkeypatch):
     def fail_setup(**kwargs):
         raise RuntimeError("setup failed")
 
-    monkeypatch.setattr(worker_support, "create_earthscope_s3_client", fail_setup)
+    monkeypatch.setattr(worker_support, "create_s3_client", fail_setup)
     with pytest.raises(RuntimeError, match="setup failed"):
         plugin.setup(worker)
     plugin.teardown(worker)
@@ -444,56 +442,31 @@ def test_failed_worker_setup_has_safe_teardown(monkeypatch):
     assert plugin.key not in worker.data
 
 
-def test_earthscope_sdk_session_owns_refresh_and_receives_role(monkeypatch):
-    captured = {}
+def test_worker_client_uses_standard_boto3_session(monkeypatch):
+    calls = []
     s3_client = object()
 
     class FakeSession:
         def client(self, service, config=None):
-            captured["client"] = (service, config)
+            calls.append((service, config))
             return s3_client
 
-    class FakeUser:
-        def get_boto3_session(self, *, role):
-            captured["scope"] = {"role": role}
-            return FakeSession()
+    monkeypatch.setattr(worker_support, "Session", FakeSession)
 
-    class FakeEarthScopeClient:
-        def __init__(self):
-            self.user = FakeUser()
-
-    monkeypatch.setitem(
-        sys.modules,
-        "earthscope_sdk",
-        SimpleNamespace(EarthScopeClient=FakeEarthScopeClient),
-    )
-
-    assert (
-        worker_support.create_earthscope_s3_client(role="s3-miniseed-v2") is s3_client
-    )
-    assert captured["scope"] == {"role": "s3-miniseed-v2"}
-    assert captured["client"] == ("s3", worker_support.S3_CONFIG)
-
-    assert worker_support.create_earthscope_s3_client() is s3_client
-    assert captured["scope"] == {"role": "s3-miniseed-v2"}
+    assert worker_support.create_s3_client() is s3_client
+    assert calls == [("s3", worker_support.S3_CONFIG)]
 
 
-def test_worker_plugin_forwards_role(monkeypatch):
-    captured = {}
+def test_worker_plugin_installs_shared_client(monkeypatch):
     client = CloseTracker()
 
-    def create_client(**kwargs):
-        captured.update(kwargs)
-        return client
-
-    monkeypatch.setattr(worker_support, "create_earthscope_s3_client", create_client)
+    monkeypatch.setattr(worker_support, "create_s3_client", lambda: client)
     worker = FakeWorker()
-    plugin = EarthScopeS3Worker(role="test-role")
+    plugin = EarthScopeS3Worker()
 
     plugin.setup(worker)
 
     assert worker.data[plugin.key] is client
-    assert captured == {"role": "test-role"}
 
 
 def test_worker_completion_keeps_unpickleable_payload_in_process():
