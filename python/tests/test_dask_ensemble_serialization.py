@@ -205,7 +205,8 @@ def test_native_and_pickle_only_formats_are_unchanged(ensemble_type):
 
 
 def test_first_dask_registration_does_not_change_native_pickle_bytes():
-    result = _run_repository_subprocess("""
+    result = _run_repository_subprocess(
+        """
 import pickle
 
 from distributed.protocol import serialize
@@ -221,7 +222,8 @@ headers = [serialize(item, on_error="raise")[0] for item in ensembles]
 assert [header["serializer"] for header in headers] == ["dask", "dask"]
 assert [pickle.dumps(item.__getstate__(), protocol=5) for item in ensembles] == state_before
 assert [pickle.dumps(item, protocol=5) for item in ensembles] == pickle_before
-""")
+"""
+    )
     assert result.returncode == 0, result.stderr
 
 
@@ -305,7 +307,8 @@ def test_raw_process_client_registers_on_driver_and_worker():
 
 
 def test_mspass_import_without_distributed():
-    result = _run_repository_subprocess("""
+    result = _run_repository_subprocess(
+        """
 import sys
 
 for module_name in ("dask", "dask.distributed", "distributed"):
@@ -323,5 +326,6 @@ client = client_module.Client(scheduler="none")
 assert client._scheduler_disabled is True
 assert client.get_scheduler() is None
 client.get_database_client().close()
-""")
+"""
+    )
     assert result.returncode == 0, result.stderr
