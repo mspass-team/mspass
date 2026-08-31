@@ -452,7 +452,12 @@ def sliding_window_pipeline(
                 # Request release of the remote result before running a
                 # potentially slow driver-side completion.  The local result
                 # remains valid until the finally block below.
-                dask_client.cancel(future)
+                try:
+                    dask_client.cancel(future)
+                except Exception:
+                    # Releasing remote memory is best-effort and must not
+                    # prevent the completion side effect from running.
+                    pass
                 if run_completion_in_driver:
                     result = completion_function(result, *cfunc_args, **cfunc_kwargs)
                 if accumulator is not None:

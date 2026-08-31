@@ -552,6 +552,30 @@ def test_future_cancel_is_requested_before_driver_completion(dask_client, monkey
     assert statuses_during_completion == ["cancelled"]
 
 
+def test_cancel_failure_does_not_skip_driver_completion(dask_client, monkeypatch):
+    completion_inputs = []
+
+    def fail_cancel(*args, **kwargs):
+        raise RuntimeError("cancel failed")
+
+    def record_completion(value):
+        completion_inputs.append(value)
+        return value + 1
+
+    monkeypatch.setattr(dask_client, "cancel", fail_cancel)
+
+    result = sliding_window_pipeline(
+        [1],
+        simple_no_args,
+        dask_client,
+        sliding_window_size=1,
+        completion_function=record_completion,
+    )
+
+    assert result == [3]
+    assert completion_inputs == [2]
+
+
 def test_discarded_result_is_released_while_pipeline_runs(dask_client):
     second_task_started = ddist.Event()
     release_second_task = ddist.Event()
