@@ -7,13 +7,24 @@ bounded station batches.  It is not a universal EarthScope data API.
 The example contains no credentials or notebook output.  Authentication must
 come from the EarthScope SDK at runtime.  Do not print, save, commit, or place
 short-lived credentials in Dask task arguments.  Register one refreshable
-client per worker instead:
+client per worker instead.  The SDK returns a refreshable boto3 session, so
+the worker plugin delegates credential refresh to the SDK and requests the
+current `s3-miniseed-v2` role:
 
 ```python
 from scripts.earthscope_s3_example.worker import EarthScopeS3Worker
 
 dask_client.register_plugin(EarthScopeS3Worker())
 ```
+
+The input is intentionally limited to the AWS Open Data Program bucket,
+`earthscope-geophysical-data`, for networks AK, II, IU, N4, PB, TA, UU, and
+UW.  In particular, this is the correct current bucket for the 2014 TA data
+that motivated the example.  Other networks use a separately authorized
+EarthScope Repository access point and network-scoped credentials; adapt the
+example only after following the
+[EarthScope direct-S3 guide](https://docs.earthscope.org/sdk/s3-direct-access-tutorial)
+for its current bucket, region, and credential rules.
 
 For serial indexing, obtain an authenticated session at runtime and pass it to
 `fetch_s3_client(session=...)`.  Use `index_days_for_year(year)` when building
@@ -88,6 +99,6 @@ untrusted pickle data.  The first yielded object is the header and the
 remaining objects are waveform records.
 
 The automated tests use fake MongoDB and S3 implementations.  They do not
-validate EarthScope authorization, the live object-lambda endpoint, real CSS
+validate EarthScope authorization, the live repository endpoint, real CSS
 tables, GeoLab filesystem limits, or production multipart throughput.  Run a
 small measured day before a yearly import.

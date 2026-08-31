@@ -22,7 +22,7 @@ from mspasspy.workflow import sliding_window_pipeline
 
 from .worker import fetch_s3_client
 
-EARTHSCOPE_BUCKET = "earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3"
+EARTHSCOPE_BUCKET = "earthscope-geophysical-data"
 RECORD_STREAM_MAGIC = b"MSPASS_EARTHSCOPE_STATION_BATCH_V1\n"
 IMMUTABLE_METADATA = {
     "delta",

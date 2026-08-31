@@ -1,11 +1,6 @@
 """Worker-local EarthScope S3 client support for the example workflow."""
 
-from datetime import datetime, timedelta, timezone
-
-from boto3 import Session
 from botocore.config import Config
-from botocore.credentials import RefreshableCredentials
-from botocore.session import get_session
 from dask.distributed import WorkerPlugin, get_worker
 
 S3_CONFIG = Config(
@@ -35,48 +30,23 @@ def fetch_s3_client(session=None, worker_data_key="earthscope_s3_client"):
         ) from error
 
 
-def _fresh_earthscope_credentials():
-    """Fetch short-lived credentials at runtime without serializing them."""
+def create_earthscope_s3_client(role="s3-miniseed-v2"):
+    """Create an S3 client from the SDK's refreshable boto3 session."""
     from earthscope_sdk import EarthScopeClient
 
-    session = EarthScopeClient().user.get_boto3_session()
-    credentials = session.get_credentials()
-    frozen = credentials.get_frozen_credentials()
-    expiry = getattr(credentials, "_expiry_time", None)
-    if isinstance(expiry, datetime):
-        expiry_string = expiry.astimezone(timezone.utc).isoformat()
-    elif isinstance(expiry, str):
-        expiry_string = expiry
-    else:
-        expiry_string = (datetime.now(timezone.utc) + timedelta(minutes=55)).isoformat()
-    return {
-        "access_key": frozen.access_key,
-        "secret_key": frozen.secret_key,
-        "token": frozen.token,
-        "expiry_time": expiry_string,
-    }
-
-
-def create_earthscope_s3_client():
-    """Create a worker client whose EarthScope credentials refresh in place."""
-    credentials = RefreshableCredentials.create_from_metadata(
-        metadata=_fresh_earthscope_credentials(),
-        refresh_using=_fresh_earthscope_credentials,
-        method="sts-assume-role",
-    )
-    botocore_session = get_session()
-    botocore_session._credentials = credentials
-    return Session(botocore_session=botocore_session).client("s3", config=S3_CONFIG)
+    session = EarthScopeClient().user.get_boto3_session(role=role)
+    return session.client("s3", config=S3_CONFIG)
 
 
 class EarthScopeS3Worker(WorkerPlugin):
     """Install one refreshable S3 client in each Dask worker."""
 
-    def __init__(self, key="earthscope_s3_client"):
+    def __init__(self, key="earthscope_s3_client", role="s3-miniseed-v2"):
         self.key = key
+        self.role = role
 
     def setup(self, worker):
-        worker.data[self.key] = create_earthscope_s3_client()
+        worker.data[self.key] = create_earthscope_s3_client(role=self.role)
 
     def teardown(self, worker):
         client = worker.data.pop(self.key, None)
