@@ -180,7 +180,7 @@ public:
   LoggingEnsemble(const mspass::utility::Metadata &md,
                   const mspass::utility::ErrorLogger &elogin,
                   const size_t ndata)
-      : Ensemble<T>(md, ndata), elog(elogin) {};
+      : Ensemble<T>(md, ndata), elog(elogin), ensemble_is_live(false) {};
   /*! Standard copy constructor.   */
   LoggingEnsemble(const LoggingEnsemble<T> &parent)
       : Ensemble<T>(parent), elog(parent.elog) {
@@ -266,6 +266,7 @@ template <typename T> bool LoggingEnsemble<T>::validate() {
     if (dptr->live())
       return true;
   }
+  this->kill();
   return false;
 }
 

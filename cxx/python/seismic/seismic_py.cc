@@ -41,6 +41,24 @@ using namespace mspass::utility;
 using namespace mspass::seismic;
 using mspass::algorithms::TimeWindow;
 
+static py::buffer_info validate_pickle_sample_array(
+    const py::handle value, const char *data_type) {
+  const string prefix = string("Invalid ") + data_type + " pickle state: ";
+  if (!py::isinstance<py::array>(value))
+    throw py::value_error(prefix + "sample data must be a NumPy array");
+
+  const py::array samples = py::reinterpret_borrow<py::array>(value);
+  if (samples.ndim() != 1)
+    throw py::value_error(prefix +
+                          "sample array must be one-dimensional");
+  if (!samples.dtype().equal(py::dtype::of<double>()))
+    throw py::value_error(prefix + "sample array must have dtype float64");
+  if (!(samples.flags() & py::array::c_style) &&
+      !(samples.flags() & py::array::f_style))
+    throw py::value_error(prefix + "sample array must be contiguous");
+  return samples.request();
+}
+
 /* Trampoline class for BasicTimeSeries */
 class PyBasicTimeSeries : public BasicTimeSeries
 {
@@ -484,11 +502,11 @@ PYBIND11_MODULE(seismic, m) {
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<tmatrix;
-        //This creates a numpy array alias from the vector container
-        //without a move or copy of the data
+        // Without a base object, pybind11 copies the matrix data into an
+        // owning NumPy array.
         size_t u_size = self.u.rows()*self.u.columns();
         if(u_size==0){
-          py::array_t<double, py::array::f_style> darr(u_size,NULL);
+          py::array_t<double, py::array::f_style> darr(u_size,nullptr);
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
             cardinal, orthogonal,sstm.str(),
             u_size, darr);
@@ -500,6 +518,8 @@ PYBIND11_MODULE(seismic, m) {
         }
       },
       [](py::tuple t) {
+        if(t.size()!=8)
+          throw py::value_error("Invalid Seismogram pickle state");
         pybind11::object sbuf=t[0];
         Metadata md=restore_serialized_metadata_py(sbuf);
         stringstream ssbts(t[1].cast<std::string>());
@@ -517,15 +537,18 @@ PYBIND11_MODULE(seismic, m) {
         dmatrix tmatrix;
         artm>>tmatrix;
         size_t u_size = t[6].cast<size_t>();
-        py::array_t<double, py::array::f_style> darr;
-        darr=t[7].cast<py::array_t<double, py::array::f_style>>();
-        py::buffer_info info = darr.request();
+        py::buffer_info info = validate_pickle_sample_array(t[7], "Seismogram");
+        if((u_size%3)!=0 || static_cast<size_t>(info.size)!=u_size ||
+           (u_size/3)!=bts.npts())
+          throw py::value_error(
+            "Invalid Seismogram pickle state: inconsistent sample array size");
         if(u_size==0) {
           dmatrix u;
           return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
         } else {
           dmatrix u(3, u_size/3);
-          memcpy(u.get_address(0,0), info.ptr, sizeof(double) * u_size);
+          const double *sample_data = static_cast<const double *>(info.ptr);
+          memcpy(u.get_address(0,0), sample_data, sizeof(double) * u_size);
           return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
         }
      }
@@ -579,7 +602,8 @@ PYBIND11_MODULE(seismic, m) {
         bts.set_tref(TimeReferenceType::UTC);
         ProcessingHistory emptyph;
         vector<double> sbuf(npts);
-        memcpy(&sbuf[0], info.ptr, npts*sizeof(double));
+        if(npts>0)
+          memcpy(sbuf.data(), info.ptr, npts*sizeof(double));
         auto v = new TimeSeries(bts,md,emptyph,sbuf);
         return v;
       }))
@@ -611,12 +635,14 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sscorets;
           boost::archive::text_oarchive arcorets(sscorets);
           arcorets<<dynamic_cast<const ProcessingHistory&>(self);
-          //This creates a numpy array alias from the vector container
-          //without a move or copy of the data
-          py::array_t<double, py::array::f_style> darr(self.s.size(),&(self.s[0]));
+          // Without a base object, pybind11 copies the vector data into an
+          // owning NumPy array.
+          py::array_t<double, py::array::f_style> darr(self.s.size(),self.s.data());
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
         },
         [](py::tuple t) {
+         if(t.size()!=4)
+           throw py::value_error("Invalid TimeSeries pickle state");
          pybind11::object sbuf=t[0];
          Metadata md=restore_serialized_metadata_py(sbuf);
          stringstream ssbts(t[1].cast<std::string>());
@@ -630,12 +656,16 @@ PYBIND11_MODULE(seismic, m) {
          // There might be a faster way to do this than a copy like
          //this but for now this, like Seismogram, is make it work before you
          //make it fast
-         py::array_t<double, py::array::f_style> darr;
-         darr=t[3].cast<py::array_t<double, py::array::f_style>>();
-         py::buffer_info info = darr.request();
+         py::buffer_info info = validate_pickle_sample_array(t[3], "TimeSeries");
+         if(static_cast<size_t>(info.size)!=bts.npts())
+           throw py::value_error(
+             "Invalid TimeSeries pickle state: inconsistent sample array size");
          std::vector<double> d;
-         d.resize(info.shape[0]);
-         memcpy(d.data(), info.ptr, sizeof(double) * d.size());
+         d.resize(static_cast<size_t>(info.size));
+         if(!d.empty()) {
+           const double *sample_data = static_cast<const double *>(info.ptr);
+           memcpy(d.data(), sample_data, sizeof(double) * d.size());
+         }
          return TimeSeries(bts,md,corets,d);;
        }
      ))
@@ -792,6 +822,8 @@ PYBIND11_MODULE(seismic, m) {
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
+        if(t.size()!=4)
+          throw py::value_error("Invalid SeismogramEnsemble pickle state");
         pybind11::gil_scoped_acquire acquire;
         try{
           pybind11::object sbuf=t[0];
@@ -875,6 +907,8 @@ PYBIND11_MODULE(seismic, m) {
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
+        if(t.size()!=4)
+          throw py::value_error("Invalid TimeSeriesEnsemble pickle state");
         pybind11::gil_scoped_acquire acquire;
         try{
           pybind11::object sbuf=t[0];
@@ -978,17 +1012,20 @@ PYBIND11_MODULE(seismic, m) {
           pybind11::object sbuf;
           sbuf=serialize_metadata_py(dynamic_cast<const Metadata&>(self));
           py::array_t<double, py::array::f_style> darr(self.spectrum.size(),
-                              &(self.spectrum[0]));
+                              self.spectrum.data());
           stringstream ss_elog;
           boost::archive::text_oarchive ar(ss_elog);
           ar << self.elog;
-          pybind11::tuple r_tuple = py::make_tuple(sbuf,self.df(),self.f0(),self.spectrum_type,
-              ss_elog.str(),darr,self.dt(),self.timeseries_npts());
+          pybind11::tuple r_tuple = py::make_tuple(
+              sbuf,self.df(),self.f0(),self.spectrum_type,ss_elog.str(),darr,
+              self.dt(),self.timeseries_npts(),self.live());
           pybind11::gil_scoped_release release;
           return r_tuple;
         },
         [](py::tuple t)
         {
+          if(t.size()!=8 && t.size()!=9)
+            throw py::value_error("Invalid PowerSpectrum pickle state");
           pybind11::gil_scoped_acquire acquire;
           /* Deserialize Metadata*/
           pybind11::object sbuf=t[0];
@@ -1000,16 +1037,20 @@ PYBIND11_MODULE(seismic, m) {
           boost::archive::text_iarchive ar(ss_elog);
           ErrorLogger elog;
           ar >> elog;
-          py::array_t<double, py::array::f_style> darr;
-          darr=t[5].cast<py::array_t<double, py::array::f_style>>();
-          py::buffer_info info = darr.request();
+          py::buffer_info info =
+              validate_pickle_sample_array(t[5], "PowerSpectrum");
           std::vector<double> d;
-          d.resize(info.shape[0]);
-          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
+          d.resize(static_cast<size_t>(info.size));
+          if(!d.empty()) {
+            const double *sample_data = static_cast<const double *>(info.ptr);
+            memcpy(d.data(), sample_data, sizeof(double) * d.size());
+          }
           double dt=t[6].cast<double>();
-          double parent_npts=t[7].cast<double>();
+          int parent_npts=t[7].cast<int>();
           PowerSpectrum restored(md,d,df,spectrum_type,f0,dt,parent_npts);
           restored.elog=elog;
+          if(t.size()==9 && !t[8].cast<bool>())
+            restored.kill();
           pybind11::gil_scoped_release release;
           return restored;
         }
