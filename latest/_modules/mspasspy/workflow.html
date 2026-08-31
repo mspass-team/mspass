@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
+    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev105+g244a733a2 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=6d326756"></script>
+    <script src="../../_static/documentation_options.js?v=f5bc4fed"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev104" />
+  <meta name="docsearch:version" content="2.4.4.dev105" />
   </head>
   
   
@@ -481,6 +481,27 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dask.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ddist</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_execute_pipeline_task</span><span class="p">(</span>
+    <span class="n">data_item</span><span class="p">,</span>
+    <span class="n">processing_function</span><span class="p">,</span>
+    <span class="n">pfunc_args</span><span class="p">,</span>
+    <span class="n">pfunc_kwargs</span><span class="p">,</span>
+    <span class="n">completion_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cfunc_args</span><span class="o">=</span><span class="p">(),</span>
+    <span class="n">cfunc_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">discard_result</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Execute pipeline stages that must not exchange their intermediate."""</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">processing_function</span><span class="p">(</span><span class="n">data_item</span><span class="p">,</span> <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">completion_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cfunc_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfunc_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">discard_result</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
 <div class="viewcode-block" id="sliding_window_pipeline">
 <a class="viewcode-back" href="../../python_api/mspasspy.workflow.html#mspasspy.workflow.sliding_window_pipeline">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sliding_window_pipeline</span><span class="p">(</span>
@@ -500,6 +521,7 @@
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">progress_report_interval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
     <span class="n">retain_results</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">completion_on_worker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run a processing function and optional completion function on an</span>
@@ -560,9 +582,11 @@
 <span class="sd">    may not be running on the same node.  See the MsPASS User Manual for</span>
 <span class="sd">    more guidance on this issue.</span>
 
-<span class="sd">    The other element of this function is the optional "completion_function"</span>
-<span class="sd">    argument.  That function is run on the output of every instance of</span>
-<span class="sd">    the function returned by workers.  When defined, its output replaces</span>
+<span class="sd">    The other element of this function is the optional ``completion_function``</span>
+<span class="sd">    argument.  By default that function is run in the driver on the output of</span>
+<span class="sd">    every instance of the function returned by workers.  Set</span>
+<span class="sd">    ``completion_on_worker=True`` to compose the processing and completion</span>
+<span class="sd">    functions into one worker task.  When defined, its output replaces</span>
 <span class="sd">    that of the processing function in the returned list.  Without a</span>
 <span class="sd">    completion function, processing results are returned directly.  Either</span>
 <span class="sd">    list has the same size as `dlist` and follows Future completion order,</span>
@@ -636,6 +660,17 @@
 <span class="sd">    :param completion_function:   if defined the result returned by each submit</span>
 <span class="sd">       will be processed with this function.   When defined the function</span>
 <span class="sd">       output will be the single output of this function.</span>
+<span class="sd">    :param completion_on_worker: boolean controlling where</span>
+<span class="sd">       ``completion_function`` runs.  The default is False, which gathers each</span>
+<span class="sd">       processing result and runs completion serially in the driver.  Set True</span>
+<span class="sd">       to run processing and completion in the same worker task, avoiding</span>
+<span class="sd">       serialization and transfer of the intermediate processing result.  This</span>
+<span class="sd">       also allows completions to run concurrently, and requires the completion</span>
+<span class="sd">       function and its arguments to be serializable and worker-safe.  When</span>
+<span class="sd">       ``retain_results=False`` and no accumulator is supplied, the completion</span>
+<span class="sd">       return value is discarded in the worker as well.  Configure database and</span>
+<span class="sd">       object-store access on workers rather than passing live clients or</span>
+<span class="sd">       credentials as completion arguments.</span>
 <span class="sd">    :param accumulator: optional accumulator function applied to the</span>
 <span class="sd">       output of the completion function.   In most cases the large list</span>
 <span class="sd">       returned by this function with or without a completion function is</span>
@@ -678,9 +713,11 @@
 <span class="sd">       processing/completion side effects but not their return values.  In</span>
 <span class="sd">       that mode this function returns None.  This argument has no effect when</span>
 <span class="sd">       an accumulator is supplied because only the accumulated value is</span>
-<span class="sd">       retained.  It controls retention only:  processing results are still</span>
-<span class="sd">       gathered to the driver so task failures propagate, even when no</span>
-<span class="sd">       completion function is defined.</span>
+<span class="sd">       retained.  With no completion function, the processing return value is</span>
+<span class="sd">       discarded in the worker instead of being gathered.  With the default</span>
+<span class="sd">       driver-side completion, the processing result must still be gathered.</span>
+<span class="sd">       Set ``completion_on_worker=True`` to avoid that transfer.  Task failures</span>
+<span class="sd">       propagate in all modes.</span>
 
 <span class="sd">    :return:   When the completion_function is not defined (default), return</span>
 <span class="sd">       a list of processing results.  With a completion function and no</span>
@@ -720,6 +757,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"progress_report_interval must be a positive integer"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retain_results</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"retain_results must be a boolean"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion_on_worker</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"completion_on_worker must be a boolean"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pfunc_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># this and the comparable logic with kwargs is needed or a type error will be thrown when we use it</span>
         <span class="c1"># this is how python accepts a null args</span>
@@ -730,6 +769,7 @@
                 <span class="n">alg</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">pfunc_args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pfunc_args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pfunc_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pfunc_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">else</span><span class="p">:</span>
@@ -738,8 +778,11 @@
                 <span class="n">alg</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">pfunc_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pfunc_kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">completion_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">run_completion_function</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">completion_on_worker</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"completion_on_worker requires a completion_function"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"accumulator requires a completion_function"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -758,6 +801,7 @@
                     <span class="n">alg</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">cfunc_args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cfunc_args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cfunc_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cfunc_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
@@ -766,6 +810,7 @@
                     <span class="n">alg</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">cfunc_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">accumulator</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">:  Illegal value for accumulator argument</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alg</span><span class="p">)</span>
@@ -842,15 +887,39 @@
     <span class="n">outstanding</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">completed_futures</span> <span class="o">=</span> <span class="n">ddist</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">dask_client</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
 
+    <span class="n">run_completion_in_driver</span> <span class="o">=</span> <span class="n">run_completion_function</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">completion_on_worker</span>
+    <span class="n">run_combined_worker_task</span> <span class="o">=</span> <span class="n">completion_on_worker</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">run_completion_function</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">retain_results</span>
+    <span class="p">)</span>
+    <span class="n">discard_worker_result</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">retain_results</span> <span class="ow">and</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">run_combined_worker_task</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_item</span><span class="p">(</span><span class="n">data_item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">run_combined_worker_task</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">_execute_pipeline_task</span><span class="p">,</span>
+                <span class="n">data_item</span><span class="p">,</span>
+                <span class="n">processing_function</span><span class="p">,</span>
+                <span class="n">pfunc_args</span><span class="p">,</span>
+                <span class="n">pfunc_kwargs</span><span class="p">,</span>
+                <span class="n">completion_function</span> <span class="k">if</span> <span class="n">completion_on_worker</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">cfunc_args</span> <span class="k">if</span> <span class="n">completion_on_worker</span> <span class="k">else</span> <span class="p">(),</span>
+                <span class="n">cfunc_kwargs</span> <span class="k">if</span> <span class="n">completion_on_worker</span> <span class="k">else</span> <span class="p">{},</span>
+                <span class="n">discard_worker_result</span><span class="p">,</span>
+                <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="n">processing_function</span><span class="p">,</span>
+            <span class="n">data_item</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span>
+            <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">while</span> <span class="n">next_item</span> <span class="o">&lt;</span> <span class="n">swsize</span><span class="p">:</span>
-            <span class="n">future</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-                <span class="n">processing_function</span><span class="p">,</span>
-                <span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">],</span>
-                <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span>
-                <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">submit_item</span><span class="p">(</span><span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">])</span>
             <span class="n">outstanding</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
             <span class="n">completed_futures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
             <span class="n">next_item</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -858,15 +927,21 @@
         <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">completed_futures</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">run_completion_function</span><span class="p">:</span>
+                <span class="c1"># Request release of the remote result before running a</span>
+                <span class="c1"># potentially slow driver-side completion.  The local result</span>
+                <span class="c1"># remains valid until the finally block below.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># Releasing remote memory is best-effort and must not</span>
+                    <span class="c1"># prevent the completion side effect from running.</span>
+                    <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">run_completion_in_driver</span><span class="p">:</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="n">completion_function</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">cfunc_args</span><span class="p">,</span> <span class="o">**</span><span class="n">cfunc_kwargs</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">retain_results</span><span class="p">:</span>
-                            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
-                            <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
-                        <span class="p">)</span>
+                <span class="k">if</span> <span class="n">accumulator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">accumulated_output</span> <span class="o">=</span> <span class="n">accumulator</span><span class="p">(</span>
+                        <span class="n">accumulated_output</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="o">*</span><span class="n">a_args</span><span class="p">,</span> <span class="o">**</span><span class="n">a_kwargs</span>
+                    <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">retain_results</span><span class="p">:</span>
                     <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
             <span class="k">finally</span><span class="p">:</span>
@@ -874,9 +949,6 @@
                 <span class="c1"># Future or gathering and deserializing its result.</span>
                 <span class="k">del</span> <span class="n">result</span>
 
-            <span class="c1"># Release scheduler/client references as soon as each result has</span>
-            <span class="c1"># been handled.</span>
-            <span class="n">dask_client</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
             <span class="n">outstanding</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
             <span class="n">number_handled</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="p">(</span>
@@ -885,13 +957,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Handled </span><span class="si">{</span><span class="n">number_handled</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2"> items"</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">next_item</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">:</span>
-                <span class="n">future</span> <span class="o">=</span> <span class="n">dask_client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-                    <span class="n">processing_function</span><span class="p">,</span>
-                    <span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">],</span>
-                    <span class="o">*</span><span class="n">pfunc_args</span><span class="p">,</span>
-                    <span class="n">pure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">pfunc_kwargs</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">submit_item</span><span class="p">(</span><span class="n">data_items</span><span class="p">[</span><span class="n">next_item</span><span class="p">])</span>
                 <span class="n">outstanding</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
                 <span class="n">completed_futures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
                 <span class="n">next_item</span> <span class="o">+=</span> <span class="mi">1</span>

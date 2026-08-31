@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
+    <title>mspasspy.workflow &#8212; MsPASS 2.4.4.dev105+g244a733a2 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6d326756"></script>
+    <script src="../_static/documentation_options.js?v=f5bc4fed"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.util" href="mspasspy.util.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev104" />
+  <meta name="docsearch:version" content="2.4.4.dev105" />
   </head>
   
   
@@ -482,7 +482,7 @@
 <span id="mspasspy-workflow"></span><h1>mspasspy.workflow<a class="headerlink" href="#module-mspasspy.workflow" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.workflow.sliding_window_pipeline">
-<span class="sig-prename descclassname"><span class="pre">mspasspy.workflow.</span></span><span class="sig-name descname"><span class="pre">sliding_window_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processing_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding_window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_per_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completion_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_report_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/workflow.html#sliding_window_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.workflow.sliding_window_pipeline" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mspasspy.workflow.</span></span><span class="sig-name descname"><span class="pre">sliding_window_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processing_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding_window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_per_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completion_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfunc_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_report_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completion_on_worker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/workflow.html#sliding_window_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.workflow.sliding_window_pipeline" title="Link to this definition">#</a></dt>
 <dd><p>Run a processing function and optional completion function on an
 interable input using the sliding window of Futures algorithm.</p>
 <p>Embarrassingly parallel workflows can often be reduced to a single
@@ -537,9 +537,11 @@ memory size on the worker node available to workers.  That is, memory
 not needed by the operating system and other MsPASS systems that may or
 may not be running on the same node.  See the MsPASS User Manual for
 more guidance on this issue.</p>
-<p>The other element of this function is the optional “completion_function”
-argument.  That function is run on the output of every instance of
-the function returned by workers.  When defined, its output replaces
+<p>The other element of this function is the optional <code class="docutils literal notranslate"><span class="pre">completion_function</span></code>
+argument.  By default that function is run in the driver on the output of
+every instance of the function returned by workers.  Set
+<code class="docutils literal notranslate"><span class="pre">completion_on_worker=True</span></code> to compose the processing and completion
+functions into one worker task.  When defined, its output replaces
 that of the processing function in the returned list.  Without a
 completion function, processing results are returned directly.  Either
 list has the same size as <cite>dlist</cite> and follows Future completion order,
@@ -614,6 +616,17 @@ ignored after validation if the sliding window size is set manually.</p></li>
 When defined each return will be passed to this function.</em>) – if defined the result returned by each submit
 will be processed with this function.   When defined the function
 output will be the single output of this function.</p></li>
+<li><p><strong>completion_on_worker</strong> – boolean controlling where
+<code class="docutils literal notranslate"><span class="pre">completion_function</span></code> runs.  The default is False, which gathers each
+processing result and runs completion serially in the driver.  Set True
+to run processing and completion in the same worker task, avoiding
+serialization and transfer of the intermediate processing result.  This
+also allows completions to run concurrently, and requires the completion
+function and its arguments to be serializable and worker-safe.  When
+<code class="docutils literal notranslate"><span class="pre">retain_results=False</span></code> and no accumulator is supplied, the completion
+return value is discarded in the worker as well.  Configure database and
+object-store access on workers rather than passing live clients or
+credentials as completion arguments.</p></li>
 <li><p><strong>accumulator</strong> – optional accumulator function applied to the
 output of the completion function.   In most cases the large list
 returned by this function with or without a completion function is
@@ -653,9 +666,11 @@ compatibility.  Set False for sink-style workflows that need the
 processing/completion side effects but not their return values.  In
 that mode this function returns None.  This argument has no effect when
 an accumulator is supplied because only the accumulated value is
-retained.  It controls retention only:  processing results are still
-gathered to the driver so task failures propagate, even when no
-completion function is defined.</p></li>
+retained.  With no completion function, the processing return value is
+discarded in the worker instead of being gathered.  With the default
+driver-side completion, the processing result must still be gathered.
+Set <code class="docutils literal notranslate"><span class="pre">completion_on_worker=True</span></code> to avoid that transfer.  Task failures
+propagate in all modes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

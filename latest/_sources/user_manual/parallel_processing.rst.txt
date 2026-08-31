@@ -623,7 +623,49 @@ The comparable code using `sliding_window_pipeline` is:
   data_out = sliding_window_pipeline(querylist,
                           process_ensemble,
                           dask_client,
-                          db.name)
+                          pfunc_args=[db.name])
+
+Worker-side sink completion
+---------------------------
+The default completion function runs serially in the driver.  That is useful
+when completion needs driver-local state, but it requires every processing
+result to be serialized and gathered first.  For a result as large as a day
+ensemble, that transfer and the simultaneous worker and driver copies can be
+the dominant memory cost.
+
+Use ``completion_on_worker=True`` when completion can run safely on workers.
+The processing and completion functions are then one Dask task, so the
+intermediate result never crosses the worker-to-driver boundary.  A sink-style
+workflow should also set ``retain_results=False`` so the completion return
+value is discarded before transport.  The save call below is schematic; a
+production sink should use a deterministic object key or an upsert so retrying
+the task does not duplicate data:
+
+.. code:: python
+
+  def save_ensemble(ensemble, dbname):
+      db = fetch_dbhandle(dbname)
+      db.save_data(ensemble, return_data=False)
+
+  sliding_window_pipeline(
+      querylist,
+      process_ensemble,
+      dask_client,
+      pfunc_args=[db.name],
+      completion_function=save_ensemble,
+      cfunc_args=[db.name],
+      completion_on_worker=True,
+      retain_results=False,
+      sliding_window_size=1,
+  )
+
+Worker completions may run concurrently and may run again if a worker is lost,
+so their side effects should be idempotent.  Completion functions and arguments
+must be serializable; use worker plugins or worker-side handle lookup for
+database and object-store access rather than passing live clients or secrets.
+This mode removes the driver transfer, but each combined task must still fit in
+one worker's memory.  Increase ``sliding_window_size`` only after measuring the
+per-task peak.
 
 HPC deployment
 --------------

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Parallel Processing &#8212; MsPASS 2.4.4.dev104+gf0731a256 documentation</title>
+    <title>Parallel Processing &#8212; MsPASS 2.4.4.dev105+g244a733a2 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6d326756"></script>
+    <script src="../_static/documentation_options.js?v=f5bc4fed"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="adapting_algorithms.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev104" />
+  <meta name="docsearch:version" content="2.4.4.dev105" />
   </head>
   
   
@@ -1057,9 +1057,48 @@ source_id values found in input.</p>
 <span class="n">data_out</span> <span class="o">=</span> <span class="n">sliding_window_pipeline</span><span class="p">(</span><span class="n">querylist</span><span class="p">,</span>
                         <span class="n">process_ensemble</span><span class="p">,</span>
                         <span class="n">dask_client</span><span class="p">,</span>
-                        <span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">pfunc_args</span><span class="o">=</span><span class="p">[</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
 </pre></div>
 </div>
+</section>
+<section id="worker-side-sink-completion">
+<h3>Worker-side sink completion<a class="headerlink" href="#worker-side-sink-completion" title="Link to this heading">#</a></h3>
+<p>The default completion function runs serially in the driver.  That is useful
+when completion needs driver-local state, but it requires every processing
+result to be serialized and gathered first.  For a result as large as a day
+ensemble, that transfer and the simultaneous worker and driver copies can be
+the dominant memory cost.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">completion_on_worker=True</span></code> when completion can run safely on workers.
+The processing and completion functions are then one Dask task, so the
+intermediate result never crosses the worker-to-driver boundary.  A sink-style
+workflow should also set <code class="docutils literal notranslate"><span class="pre">retain_results=False</span></code> so the completion return
+value is discarded before transport.  The save call below is schematic; a
+production sink should use a deterministic object key or an upsert so retrying
+the task does not duplicate data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_ensemble</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">dbname</span><span class="p">):</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">sliding_window_pipeline</span><span class="p">(</span>
+    <span class="n">querylist</span><span class="p">,</span>
+    <span class="n">process_ensemble</span><span class="p">,</span>
+    <span class="n">dask_client</span><span class="p">,</span>
+    <span class="n">pfunc_args</span><span class="o">=</span><span class="p">[</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+    <span class="n">completion_function</span><span class="o">=</span><span class="n">save_ensemble</span><span class="p">,</span>
+    <span class="n">cfunc_args</span><span class="o">=</span><span class="p">[</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+    <span class="n">completion_on_worker</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">retain_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">sliding_window_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Worker completions may run concurrently and may run again if a worker is lost,
+so their side effects should be idempotent.  Completion functions and arguments
+must be serializable; use worker plugins or worker-side handle lookup for
+database and object-store access rather than passing live clients or secrets.
+This mode removes the driver transfer, but each combined task must still fit in
+one worker’s memory.  Increase <code class="docutils literal notranslate"><span class="pre">sliding_window_size</span></code> only after measuring the
+per-task peak.</p>
 </section>
 <section id="hpc-deployment">
 <h3>HPC deployment<a class="headerlink" href="#hpc-deployment" title="Link to this heading">#</a></h3>
@@ -1151,6 +1190,7 @@ method described by the current deployment guide.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples:</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#atomic-data-example">Atomic Data Example</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ensemble-example">Ensemble Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#worker-side-sink-completion">Worker-side sink completion</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hpc-deployment">HPC deployment</a></li>
 </ul>
 </li>
