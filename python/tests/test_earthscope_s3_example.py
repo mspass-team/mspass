@@ -134,6 +134,7 @@ def _holding(net, sta, year, jday, key):
 
 
 def test_paginated_index_is_complete_deduplicated_and_deterministic():
+    assert workflow.EARTHSCOPE_BUCKET == "earthscope-geophysical-data"
     prefix = "miniseed/TA/2014/001/"
     first = [{"Key": f"{prefix}S{i}.TA.2014.001"} for i in range(1000)]
     second = [
