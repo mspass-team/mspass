@@ -1,5 +1,7 @@
 import pymongo
 
+from mspasspy.db._dask_serialization import reject_dask_serialization
+
 
 class Collection(pymongo.database.Collection):
     """
@@ -15,6 +17,7 @@ class Collection(pymongo.database.Collection):
         super(Collection, self).__init__(*args, **kwargs)
 
     def __getstate__(self):
+        reject_dask_serialization(self)
         ret = self.__dict__.copy()
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
 

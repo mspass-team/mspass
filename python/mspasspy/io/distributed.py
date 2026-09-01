@@ -16,7 +16,7 @@ from mspasspy.db.normalize import BasicMatcher
 from mspasspy.db.normalize import normalize as normalize_function
 from mspasspy.util.Undertaker import Undertaker
 from mspasspy.db.client import DBClient
-from mspasspy.util.db_utils import fetch_dbhandle
+from mspasspy.util.db_utils import fetch_dbhandle, _WorkerDatabaseReference
 
 
 from mspasspy.ccore.utility import (
@@ -94,6 +94,31 @@ def read_ensemble_parallel(
     if kill_me:
         ensemble.kill()
     return ensemble
+
+
+def read_atomic_parallel(
+    document,
+    dbname_or_handle,
+    collection="wf_TimeSeries",
+    normalize=None,
+    load_history=False,
+    exclude_keys=None,
+    data_tag=None,
+    aws_access_key_id=None,
+    aws_secret_access_key=None,
+):
+    """Read one atomic datum using the worker-owned database client."""
+    db = fetch_dbhandle(dbname_or_handle)
+    return db.read_data(
+        document,
+        collection=collection,
+        normalize=normalize,
+        load_history=load_history,
+        exclude_keys=exclude_keys,
+        data_tag=data_tag,
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+    )
 
 
 def _validate_sort_clause(sort_clause):
@@ -669,14 +694,14 @@ def read_distributed_data(
             )
 
         else:
-            # Dask path: extract dbname to avoid serializing Database object
-            # fetch_dbhandle in read_ensemble_parallel will get DBClient from worker plugin
-            dbname = db.name if isinstance(db, Database) else db
+            db_reference = (
+                _WorkerDatabaseReference(db) if isinstance(db, Database) else db
+            )
             # note same maintenance issue as with parallelize above
             plist = dask.bag.from_sequence(data, npartitions=npartitions)
             plist = plist.map(
                 read_ensemble_parallel,
-                dbname,  # Pass dbname string for Dask
+                db_reference,
                 collection=collection,
                 mode=mode,
                 normalize=normalize,
@@ -774,8 +799,10 @@ def read_distributed_data(
                 )
             )
         else:
+            db_reference = _WorkerDatabaseReference(db)
             plist = plist.map(
-                db.read_data,
+                read_atomic_parallel,
+                db_reference,
                 collection=collection,
                 normalize=normalize,
                 load_history=load_history,
@@ -927,6 +954,21 @@ def _partitioned_save_wfdoc(
         wfids = dbcol.insert_many(docarray).inserted_ids
 
     return wfids
+
+
+def _save_sample_data_parallel(datum, dbname_or_handle, **kwargs):
+    """Save sample data through the worker-owned database client."""
+    return fetch_dbhandle(dbname_or_handle)._save_sample_data(datum, **kwargs)
+
+
+def _handle_dead_data_parallel(
+    datum, dbname_or_handle, cremate=False, save_history=False
+):
+    """Run Undertaker operations through the worker-owned database client."""
+    undertaker = Undertaker(fetch_dbhandle(dbname_or_handle))
+    if cremate:
+        return undertaker.cremate(datum)
+    return undertaker.bury(datum, save_history=save_history)
 
 
 class pyspark_mappartition_interface:
@@ -1094,6 +1136,10 @@ def _save_ensemble_wfdocs(
     Default is None, but normal use should set it as an appropriate string
     defining what this dataset is.  D
     """
+    db = fetch_dbhandle(db)
+    if undertaker is None:
+        undertaker = Undertaker(db)
+
     if cremate:
         ensemble_data = undertaker.cremate(ensemble_data)
     else:
@@ -1212,6 +1258,7 @@ def _atomic_extract_wf_document(
     dead data are not store in a wf collection.
     """
 
+    db = fetch_dbhandle(db)
     if undertaker:
         stedronsky = undertaker
     else:
@@ -1365,7 +1412,10 @@ def write_distributed_data(
        mybag = read_distributed_data(db,collection='wf_TimeSeries')
        mybag = mybag.map(detrend)   # example
        # intermediate save
-       mybag = mybag.map(db.save_data,collection="wf_TimeSeries")
+       def save_intermediate(d, dbname):
+           worker_db = fetch_dbhandle(dbname)
+           return worker_db.save_data(d, collection="wf_TimeSeries")
+       mybag = mybag.map(save_intermediate, db.name)
        # more processing - trivial example
        mybag = mybag.map(filter,'lowpass',freq=1.0)
        # termination with this function
@@ -1678,11 +1728,13 @@ def write_distributed_data(
             )
             data = data.collect()
     else:
+        db_reference = _WorkerDatabaseReference(db)
         if data_are_atomic:
             # See comment at top of spark section  - this code is exactly
             # the same by in the dask dialect
             data = data.map(
-                db._save_sample_data,
+                _save_sample_data_parallel,
+                db_reference,
                 storage_mode=storage_mode,
                 dir=None,
                 dfile=None,
@@ -1691,7 +1743,7 @@ def write_distributed_data(
             )
             data = data.map(
                 _atomic_extract_wf_document,
-                db,
+                db_reference,
                 save_schema,
                 exclude_keys,
                 mode,
@@ -1700,11 +1752,14 @@ def write_distributed_data(
                 save_history=save_history,
                 post_history=post_history,
                 data_tag=data_tag,
-                undertaker=stedronsky,
+                undertaker=None,
                 cremate=cremate,
             )
             data = data.map_partitions(
-                _partitioned_save_wfdoc, db, collection=collection
+                _partitioned_save_wfdoc,
+                None,
+                collection=collection,
+                dbname=db_reference,
             )
             # necessary here or the map_partition function will fail
             # because it will receive a DAG structure instead of a list
@@ -1722,12 +1777,23 @@ def write_distributed_data(
             # cause some overhead if the number of bodies is large.
             # in both cases the ensemble has the bodies removed by the undertaker
             if cremate:
-                data = data.map(stedronsky.cremate)
+                data = data.map(
+                    _handle_dead_data_parallel,
+                    db_reference,
+                    cremate=True,
+                    save_history=save_history,
+                )
             else:
-                data = data.map(stedronsky.bury, save_history=save_history)
+                data = data.map(
+                    _handle_dead_data_parallel,
+                    db_reference,
+                    cremate=False,
+                    save_history=save_history,
+                )
             # important comment about this next line in the spark section
             data = data.map(
-                db._save_sample_data,
+                _save_sample_data_parallel,
+                db_reference,
                 storage_mode=storage_mode,
                 dir=None,
                 dfile=None,
@@ -1736,11 +1802,11 @@ def write_distributed_data(
             )
             data = data.map(
                 _save_ensemble_wfdocs,
-                db,
+                db_reference,
                 save_schema,
                 exclude_keys,
                 mode,
-                stedronsky,
+                None,
                 normalizing_collections,
                 cremate=cremate,
                 post_elog=post_elog,

@@ -9,6 +9,7 @@ from mspasspy.ccore.seismic import (
     SeismogramEnsemble,
 )
 from mspasspy.db.database import Database
+from mspasspy.db._dask_serialization import is_dask_serializing
 from mspasspy.util.decorators import mspass_func_wrapper
 
 from bson import ObjectId
@@ -326,6 +327,25 @@ class DatabaseMatcher(BasicMatcher):
         self.require_unique_match = require_unique_match
         self.prepend_collection_name = prepend_collection_name
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        if is_dask_serializing():
+            dbhandle = state.pop("dbhandle", None)
+            if dbhandle is not None:
+                state["_mspass_db_name"] = dbhandle.database.name
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    def _get_dbhandle(self):
+        if not hasattr(self, "dbhandle"):
+            from mspasspy.util.db_utils import fetch_dbhandle
+
+            database = fetch_dbhandle(self._mspass_db_name)
+            self.dbhandle = database[self.collection]
+        return self.dbhandle
+
     @abstractmethod
     def query_generator(self, mspass_object) -> dict:
         """
@@ -384,13 +404,14 @@ class DatabaseMatcher(BasicMatcher):
             message = "query_generator method failed to generate a valid query - required attributes are probably missing"
             elog.log_error(message, ErrorSeverity.Invalid)
             return [None, elog]
-        number_hits = self.dbhandle.count_documents(query)
+        dbhandle = self._get_dbhandle()
+        number_hits = dbhandle.count_documents(query)
         if number_hits <= 0:
             elog = PyErrorLogger()
             message = "query = " + str(query) + " yielded no documents"
             elog.log_error(message, ErrorSeverity.Complaint)
             return [None, elog]
-        cursor = self.dbhandle.find(query)
+        cursor = dbhandle.find(query)
         elog = PyErrorLogger()
         metadata_list = []
         try:
