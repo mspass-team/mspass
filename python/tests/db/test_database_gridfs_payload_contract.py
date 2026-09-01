@@ -11,8 +11,8 @@ from bson import ObjectId
 
 import mspasspy.ccore.seismic as seismic_binding
 import mspasspy.db.database as database_module
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
-from mspasspy.ccore.utility import AtomicType, ErrorSeverity
+from mspasspy.ccore.seismic import DoubleVector, Seismogram, TimeSeries
+from mspasspy.ccore.utility import AtomicType, ErrorSeverity, dmatrix
 from mspasspy.db.database import Database
 
 NPTS = 3
@@ -21,11 +21,17 @@ NPTS = 3
 class _TrackingBytesIO(io.BytesIO):
     def __init__(self, payload):
         super().__init__(payload)
+        self.length = len(payload)
         self.read_sizes = []
+        self.close_calls = 0
 
     def read(self, size=-1):
         self.read_sizes.append(size)
         return super().read(size)
+
+    def close(self):
+        self.close_calls += 1
+        super().close()
 
 
 def _datum_with_sentinel_samples(atomic_type):
@@ -87,7 +93,8 @@ def _assert_metadata_and_history_unchanged(datum, snapshot):
 def _assert_read_is_bounded(payload_reader, expected_nbytes):
     assert payload_reader.read_sizes
     assert all(size >= 0 for size in payload_reader.read_sizes)
-    assert sum(payload_reader.read_sizes) <= expected_nbytes + 1
+    assert sum(payload_reader.read_sizes) == expected_nbytes
+    assert max(payload_reader.read_sizes) <= database_module._GRIDFS_IO_CHUNK_BYTES
 
 
 def _read_payload(monkeypatch, datum, payload):
@@ -142,6 +149,7 @@ def test_exact_gridfs_payload_loads_all_samples(monkeypatch, atomic_type):
     payload_reader = _read_payload(monkeypatch, datum, payload)
 
     _assert_read_is_bounded(payload_reader, len(payload))
+    assert payload_reader.close_calls == 1
     assert datum.live
     assert datum.npts == NPTS
     assert datum.elog.size() == 0
@@ -178,7 +186,8 @@ def test_invalid_gridfs_payload_is_atomic_dead_and_logged(
 
     payload_reader = _read_payload(monkeypatch, datum, payload)
 
-    _assert_read_is_bounded(payload_reader, len(exact_payload))
+    assert payload_reader.read_sizes == []
+    assert payload_reader.close_calls == 1
     assert datum.dead()
     assert datum.npts == NPTS
     assert np.array_equal(np.asarray(datum.data), original_samples)
@@ -192,3 +201,108 @@ def test_invalid_gridfs_payload_is_atomic_dead_and_logged(
     assert len(errors) == 1
     assert errors[0].badness == ErrorSeverity.Invalid
     assert "Size mismatch in sample data" in errors[0].message
+
+
+@pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))
+def test_zero_length_gridfs_payload_preserves_empty_dead_datum(
+    monkeypatch, atomic_type
+):
+    datum = atomic_type()
+    datum.npts = 0
+    datum.set_live()
+
+    payload_reader = _read_payload(monkeypatch, datum, b"")
+
+    assert payload_reader.read_sizes == []
+    assert payload_reader.close_calls == 1
+    assert datum.dead()
+    assert datum.npts == 0
+    assert datum.elog.size() == 0
+
+
+@pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))
+def test_native_sample_reader_preserves_layout_for_unaligned_reads(atomic_type):
+    datum = _datum_with_sentinel_samples(atomic_type)
+    values, expected = _exact_payload(atomic_type)
+    if atomic_type is TimeSeries:
+        datum.data = DoubleVector(values)
+    else:
+        datum.data = dmatrix(values.reshape(3, NPTS))
+    reader = database_module._NativeSampleReader(datum.data)
+    payload = bytearray()
+    request_sizes = (1, 3, 7, 13)
+    request_index = 0
+    while True:
+        chunk = reader.read(request_sizes[request_index % len(request_sizes)])
+        if not chunk:
+            break
+        payload.extend(chunk)
+        request_index += 1
+
+    assert bytes(payload) == expected
+
+
+@pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))
+def test_gridfs_save_streams_from_native_reader(monkeypatch, atomic_type):
+    datum = _datum_with_sentinel_samples(atomic_type)
+    values, expected = _exact_payload(atomic_type)
+    if atomic_type is TimeSeries:
+        datum.data = DoubleVector(values)
+    else:
+        datum.data = dmatrix(values.reshape(3, NPTS))
+    gridfs_id = ObjectId()
+    captured = {}
+
+    class FakeGridFS:
+        def put(self, source, **kwargs):
+            captured["source"] = source
+            captured["kwargs"] = kwargs
+            payload = bytearray()
+            while True:
+                chunk = source.read(11)
+                if not chunk:
+                    break
+                payload.extend(chunk)
+            captured["payload"] = bytes(payload)
+            return kwargs.get("_id", gridfs_id)
+
+    monkeypatch.setattr(database_module.gridfs, "GridFS", lambda database: FakeGridFS())
+
+    result = Database._save_sample_data_to_gridfs(object(), datum, gridfs_id=gridfs_id)
+
+    assert result is datum
+    assert isinstance(captured["source"], database_module._NativeSampleReader)
+    assert captured["kwargs"] == {"_id": gridfs_id}
+    assert captured["payload"] == expected
+    assert datum["gridfs_id"] == gridfs_id
+    assert datum["storage_mode"] == "gridfs"
+
+
+def test_gridfs_stream_failure_removes_partial_blob_and_preserves_error(monkeypatch):
+    datum = _datum_with_sentinel_samples(TimeSeries)
+    write_error = RuntimeError("injected streaming failure")
+    deleted_ids = []
+    written_id = None
+
+    class FailingGridFS:
+        def put(self, source, **kwargs):
+            nonlocal written_id
+            written_id = kwargs["_id"]
+            assert source.read(8)
+            raise write_error
+
+        def delete(self, gridfs_id):
+            deleted_ids.append(gridfs_id)
+            raise RuntimeError("injected cleanup failure")
+
+    monkeypatch.setattr(
+        database_module.gridfs, "GridFS", lambda database: FailingGridFS()
+    )
+
+    with pytest.raises(RuntimeError) as raised:
+        Database._save_sample_data_to_gridfs(object(), datum)
+
+    assert raised.value is write_error
+    assert deleted_ids == [written_id]
+    assert "gridfs_id" not in datum
+    assert "storage_mode" not in datum

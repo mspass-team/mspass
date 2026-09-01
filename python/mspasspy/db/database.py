@@ -7,7 +7,6 @@ import tempfile
 from time import monotonic
 import urllib.error
 import urllib.request
-from array import array
 from contextlib import contextmanager
 import pandas as pd
 
@@ -73,6 +72,98 @@ from mspasspy.db.serialization import (
 from mspasspy.util.converter import Textfile2Dataframe
 
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
+_GRIDFS_IO_CHUNK_BYTES = 1024 * 1024
+
+
+class _NativeSampleReader(io.RawIOBase):
+    """Expose native waveform samples as the existing row-major byte stream."""
+
+    def __init__(self, data):
+        super().__init__()
+        self._samples = np.asarray(data)
+        if self._samples.ndim not in (1, 2):
+            raise ValueError("waveform sample data must be one- or two-dimensional")
+        self._sample_count = self._samples.size
+        self._byte_offset = 0
+
+    def readable(self):
+        return True
+
+    def _sample_value(self, index):
+        if self._samples.ndim == 1:
+            return self._samples[index]
+        columns = self._samples.shape[1]
+        return self._samples[index // columns, index % columns]
+
+    def _copy_samples(self, destination, start_sample, count):
+        if self._samples.ndim == 1:
+            destination[:count] = self._samples[start_sample : start_sample + count]
+            return
+        columns = self._samples.shape[1]
+        copied = 0
+        while copied < count:
+            index = start_sample + copied
+            row, column = divmod(index, columns)
+            segment_size = min(count - copied, columns - column)
+            destination[copied : copied + segment_size] = self._samples[
+                row, column : column + segment_size
+            ]
+            copied += segment_size
+
+    def readinto(self, buffer):
+        destination = memoryview(buffer).cast("B")
+        remaining = self._sample_count * 8 - self._byte_offset
+        byte_count = min(len(destination), remaining)
+        if byte_count <= 0:
+            return 0
+
+        written = 0
+        sample_byte_offset = self._byte_offset % 8
+        if sample_byte_offset:
+            sample = np.float64(self._sample_value(self._byte_offset // 8)).tobytes()
+            segment_size = min(byte_count, 8 - sample_byte_offset)
+            destination[:segment_size] = sample[
+                sample_byte_offset : sample_byte_offset + segment_size
+            ]
+            written += segment_size
+
+        full_sample_count = (byte_count - written) // 8
+        if full_sample_count:
+            start_sample = (self._byte_offset + written) // 8
+            output = np.frombuffer(
+                destination,
+                dtype=np.float64,
+                count=full_sample_count,
+                offset=written,
+            )
+            self._copy_samples(output, start_sample, full_sample_count)
+            written += full_sample_count * 8
+
+        if written < byte_count:
+            sample_index = (self._byte_offset + written) // 8
+            sample = np.float64(self._sample_value(sample_index)).tobytes()
+            segment_size = byte_count - written
+            destination[written:byte_count] = sample[:segment_size]
+
+        self._byte_offset += byte_count
+        return byte_count
+
+
+def _store_sample_chunk(destination, start_sample, values):
+    """Copy flat row-major sample values into a native vector or matrix view."""
+    if destination.ndim == 1:
+        destination[start_sample : start_sample + len(values)] = values
+        return
+    columns = destination.shape[1]
+    copied = 0
+    while copied < len(values):
+        index = start_sample + copied
+        row, column = divmod(index, columns)
+        segment_size = min(len(values) - copied, columns - column)
+        destination[row, column : column + segment_size] = values[
+            copied : copied + segment_size
+        ]
+        copied += segment_size
 
 
 @contextmanager
@@ -4943,23 +5034,10 @@ class Database(pymongo.database.Database):
         """
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
-        if isinstance(mspass_object, (TimeSeries, Seismogram)):
-            if not mspass_object.is_defined("npts"):
-                message = (
-                    "Required key npts is not defined in the document for this datum"
-                )
-                mspass_object.elog.log_error(
-                    "Database._read_data_from_gridfs", message, ErrorSeverity.Invalid
-                )
-                mspass_object.kill()
-                return
-            else:
-                if mspass_object.npts != mspass_object["npts"]:
-                    message = "Database._read_data_from_gridfs: "
-                    message += "Metadata value for npts is {} but datum attribute npts is {}\n".format(
-                        mspass_object["npts"], mspass_object.npts
-                    )
-                    message += "Illegal inconsistency; sample data were not loaded"
+        try:
+            if isinstance(mspass_object, (TimeSeries, Seismogram)):
+                if not mspass_object.is_defined("npts"):
+                    message = "Required key npts is not defined in the document for this datum"
                     mspass_object.elog.log_error(
                         "Database._read_data_from_gridfs",
                         message,
@@ -4967,43 +5045,72 @@ class Database(pymongo.database.Database):
                     )
                     mspass_object.kill()
                     return
-            npts = mspass_object.npts
-        if isinstance(mspass_object, TimeSeries):
-            sample_count = npts
-        elif isinstance(mspass_object, Seismogram):
-            sample_count = 3 * npts
-        else:
-            message = "Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram\n"
-            message += "Actual type=" + str(type(mspass_object))
-            raise TypeError(message)
-        expected_nbytes = sample_count * 8
-        payload = fh.read(expected_nbytes + 1)
-        if len(payload) != expected_nbytes:
-            message = "Size mismatch in sample data.\n"
-            message += "Read {} bytes from gridfs but expected exactly {} for {} samples".format(
-                len(payload), expected_nbytes, sample_count
-            )
-            mspass_object.elog.log_error(
-                "Database._read_data_from_gridfs",
-                message,
-                ErrorSeverity.Invalid,
-            )
-            mspass_object.kill()
-            return
-        if isinstance(mspass_object, TimeSeries):
-            float_array = array("d")
-            float_array.frombytes(payload)
-            mspass_object.data = DoubleVector(float_array)
-        else:
-            np_arr = np.frombuffer(payload)
-            # v1 did a transpose on write that this reversed - unnecessary
-            # np_arr = np_arr.reshape(npts, 3).transpose()
-            np_arr = np_arr.reshape(3, npts)
-            mspass_object.data = dmatrix(np_arr)
-        if mspass_object.npts > 0:
-            mspass_object.set_live()
-        else:
-            mspass_object.kill()
+                else:
+                    if mspass_object.npts != mspass_object["npts"]:
+                        message = "Database._read_data_from_gridfs: "
+                        message += "Metadata value for npts is {} but datum attribute npts is {}\n".format(
+                            mspass_object["npts"], mspass_object.npts
+                        )
+                        message += "Illegal inconsistency; sample data were not loaded"
+                        mspass_object.elog.log_error(
+                            "Database._read_data_from_gridfs",
+                            message,
+                            ErrorSeverity.Invalid,
+                        )
+                        mspass_object.kill()
+                        return
+                npts = mspass_object.npts
+            if isinstance(mspass_object, TimeSeries):
+                sample_count = npts
+            elif isinstance(mspass_object, Seismogram):
+                sample_count = 3 * npts
+            else:
+                message = "Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram\n"
+                message += "Actual type=" + str(type(mspass_object))
+                raise TypeError(message)
+            expected_nbytes = sample_count * 8
+            if fh.length != expected_nbytes:
+                message = "Size mismatch in sample data.\n"
+                message += "GridFS object contains {} bytes but expected exactly {} for {} samples".format(
+                    fh.length, expected_nbytes, sample_count
+                )
+                mspass_object.elog.log_error(
+                    "Database._read_data_from_gridfs", message, ErrorSeverity.Invalid
+                )
+                mspass_object.kill()
+                return
+            destination = np.asarray(mspass_object.data)
+            byte_offset = 0
+            while byte_offset < expected_nbytes:
+                request_size = min(
+                    _GRIDFS_IO_CHUNK_BYTES, expected_nbytes - byte_offset
+                )
+                payload = fh.read(request_size)
+                if len(payload) != request_size:
+                    message = "Size mismatch in sample data.\n"
+                    message += (
+                        "Read {} bytes from gridfs at offset {} but expected {}".format(
+                            len(payload), byte_offset, request_size
+                        )
+                    )
+                    mspass_object.elog.log_error(
+                        "Database._read_data_from_gridfs",
+                        message,
+                        ErrorSeverity.Invalid,
+                    )
+                    mspass_object.kill()
+                    return
+                values = np.frombuffer(payload, dtype=np.float64)
+                _store_sample_chunk(destination, byte_offset // 8, values)
+                byte_offset += request_size
+                del values
+                del payload
+            if mspass_object.npts > 0:
+                mspass_object.set_live()
+            else:
+                mspass_object.kill()
+        finally:
+            fh.close()
 
     @staticmethod
     def _read_data_from_s3_continuous(
@@ -7142,12 +7249,17 @@ class Database(pymongo.database.Database):
         gfsh = gridfs.GridFS(self)
 
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
-            # verdion 2 had a transpose here that seemed unncessary
-            ub = bytes(np.array(mspass_object.data))
+            sample_reader = _NativeSampleReader(mspass_object.data)
             if gridfs_id is None:
-                gridfs_id = gfsh.put(ub)
-            else:
-                gridfs_id = gfsh.put(ub, _id=gridfs_id)
+                gridfs_id = ObjectId()
+            try:
+                gridfs_id = gfsh.put(sample_reader, _id=gridfs_id)
+            except BaseException:
+                try:
+                    gfsh.delete(gridfs_id)
+                except BaseException:
+                    pass
+                raise
             mspass_object["gridfs_id"] = gridfs_id
             mspass_object["storage_mode"] = "gridfs"
         elif isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
