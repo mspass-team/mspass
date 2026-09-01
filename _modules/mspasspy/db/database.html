@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev107+g8122be647 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev109+gb4a033073 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=fc7a4855"></script>
+    <script src="../../../_static/documentation_options.js?v=e2371b34"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev107" />
+  <meta name="docsearch:version" content="2.4.4.dev109" />
   </head>
   
   
@@ -483,7 +483,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">monotonic</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.error</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">array</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -549,6 +548,117 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Textfile2Dataframe</span>
 
 <span class="n">_CURSOR_SESSION_REFRESH_INTERVAL_SECONDS</span> <span class="o">=</span> <span class="mf">300.0</span>
+<span class="n">_GRIDFS_IO_CHUNK_BYTES</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_NativeSampleReader</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">RawIOBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Expose native waveform samples as the existing row-major byte stream."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"waveform sample data must be one- or two-dimensional"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sample_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="n">index</span> <span class="o">//</span> <span class="n">columns</span><span class="p">,</span> <span class="n">index</span> <span class="o">%</span> <span class="n">columns</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">start_sample</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">destination</span><span class="p">[:</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span><span class="n">start_sample</span> <span class="p">:</span> <span class="n">start_sample</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
+            <span class="k">return</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">copied</span> <span class="o">&lt;</span> <span class="n">count</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">start_sample</span> <span class="o">+</span> <span class="n">copied</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
+            <span class="n">segment_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">count</span> <span class="o">-</span> <span class="n">copied</span><span class="p">,</span> <span class="n">columns</span> <span class="o">-</span> <span class="n">column</span><span class="p">)</span>
+            <span class="n">destination</span><span class="p">[</span><span class="n">copied</span> <span class="p">:</span> <span class="n">copied</span> <span class="o">+</span> <span class="n">segment_size</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">[</span>
+                <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="p">:</span> <span class="n">column</span> <span class="o">+</span> <span class="n">segment_size</span>
+            <span class="p">]</span>
+            <span class="n">copied</span> <span class="o">+=</span> <span class="n">segment_size</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readinto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="s2">"B"</span><span class="p">)</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_count</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">destination</span><span class="p">),</span> <span class="n">remaining</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">byte_count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">written</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sample_byte_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">%</span> <span class="mi">8</span>
+        <span class="k">if</span> <span class="n">sample_byte_offset</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sample_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">//</span> <span class="mi">8</span><span class="p">))</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+            <span class="n">segment_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">byte_count</span><span class="p">,</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">sample_byte_offset</span><span class="p">)</span>
+            <span class="n">destination</span><span class="p">[:</span><span class="n">segment_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span>
+                <span class="n">sample_byte_offset</span> <span class="p">:</span> <span class="n">sample_byte_offset</span> <span class="o">+</span> <span class="n">segment_size</span>
+            <span class="p">]</span>
+            <span class="n">written</span> <span class="o">+=</span> <span class="n">segment_size</span>
+
+        <span class="n">full_sample_count</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte_count</span> <span class="o">-</span> <span class="n">written</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="k">if</span> <span class="n">full_sample_count</span><span class="p">:</span>
+            <span class="n">start_sample</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">+</span> <span class="n">written</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span>
+                <span class="n">destination</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                <span class="n">count</span><span class="o">=</span><span class="n">full_sample_count</span><span class="p">,</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">written</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_samples</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">start_sample</span><span class="p">,</span> <span class="n">full_sample_count</span><span class="p">)</span>
+            <span class="n">written</span> <span class="o">+=</span> <span class="n">full_sample_count</span> <span class="o">*</span> <span class="mi">8</span>
+
+        <span class="k">if</span> <span class="n">written</span> <span class="o">&lt;</span> <span class="n">byte_count</span><span class="p">:</span>
+            <span class="n">sample_index</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">+</span> <span class="n">written</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sample_value</span><span class="p">(</span><span class="n">sample_index</span><span class="p">))</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+            <span class="n">segment_size</span> <span class="o">=</span> <span class="n">byte_count</span> <span class="o">-</span> <span class="n">written</span>
+            <span class="n">destination</span><span class="p">[</span><span class="n">written</span><span class="p">:</span><span class="n">byte_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[:</span><span class="n">segment_size</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_byte_offset</span> <span class="o">+=</span> <span class="n">byte_count</span>
+        <span class="k">return</span> <span class="n">byte_count</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_store_sample_chunk</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">start_sample</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Copy flat row-major sample values into a native vector or matrix view."""</span>
+    <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">destination</span><span class="p">[</span><span class="n">start_sample</span> <span class="p">:</span> <span class="n">start_sample</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="k">return</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="n">destination</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">copied</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">copied</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">start_sample</span> <span class="o">+</span> <span class="n">copied</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
+        <span class="n">segment_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="n">copied</span><span class="p">,</span> <span class="n">columns</span> <span class="o">-</span> <span class="n">column</span><span class="p">)</span>
+        <span class="n">destination</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span> <span class="p">:</span> <span class="n">column</span> <span class="o">+</span> <span class="n">segment_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span>
+            <span class="n">copied</span> <span class="p">:</span> <span class="n">copied</span> <span class="o">+</span> <span class="n">segment_size</span>
+        <span class="p">]</span>
+        <span class="n">copied</span> <span class="o">+=</span> <span class="n">segment_size</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_managed_response_stream</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Close an SDK/HTTP stream without taking ownership of its client.</span>
+
+<span class="sd">    A cleanup failure propagates after a successful body, but it is suppressed</span>
+<span class="sd">    when the body is already raising so the original exception is preserved.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">stream</span>
+    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">raise</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
 <span class="nd">@contextmanager</span>
@@ -5465,23 +5575,10 @@
 <span class="sd">        """</span>
         <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">fh</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"npts"</span><span class="p">):</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="s2">"Required key npts is not defined in the document for this datum"</span>
-                <span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                    <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
-                <span class="p">)</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]:</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Database._read_data_from_gridfs: "</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Metadata value for npts is </span><span class="si">{}</span><span class="s2"> but datum attribute npts is </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">],</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
-                    <span class="p">)</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal inconsistency; sample data were not loaded"</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s2">"npts"</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Required key npts is not defined in the document for this datum"</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
                         <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span>
                         <span class="n">message</span><span class="p">,</span>
@@ -5489,43 +5586,72 @@
                     <span class="p">)</span>
                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                     <span class="k">return</span>
-            <span class="n">npts</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">sample_count</span> <span class="o">=</span> <span class="n">npts</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
-            <span class="n">sample_count</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">npts</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Actual type="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">expected_nbytes</span> <span class="o">=</span> <span class="n">sample_count</span> <span class="o">*</span> <span class="mi">8</span>
-        <span class="n">payload</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">expected_nbytes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected_nbytes</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">"Size mismatch in sample data.</span><span class="se">\n</span><span class="s2">"</span>
-            <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Read </span><span class="si">{}</span><span class="s2"> bytes from gridfs but expected exactly </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2"> samples"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span> <span class="n">expected_nbytes</span><span class="p">,</span> <span class="n">sample_count</span>
-            <span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span>
-                <span class="n">message</span><span class="p">,</span>
-                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-            <span class="n">float_array</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="s2">"d"</span><span class="p">)</span>
-            <span class="n">float_array</span><span class="o">.</span><span class="n">frombytes</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">DoubleVector</span><span class="p">(</span><span class="n">float_array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
-            <span class="c1"># v1 did a transpose on write that this reversed - unnecessary</span>
-            <span class="c1"># np_arr = np_arr.reshape(npts, 3).transpose()</span>
-            <span class="n">np_arr</span> <span class="o">=</span> <span class="n">np_arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">dmatrix</span><span class="p">(</span><span class="n">np_arr</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">!=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="s2">"Database._read_data_from_gridfs: "</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Metadata value for npts is </span><span class="si">{}</span><span class="s2"> but datum attribute npts is </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">],</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
+                        <span class="p">)</span>
+                        <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Illegal inconsistency; sample data were not loaded"</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                            <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span>
+                            <span class="n">message</span><span class="p">,</span>
+                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                        <span class="k">return</span>
+                <span class="n">npts</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+                <span class="n">sample_count</span> <span class="o">=</span> <span class="n">npts</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+                <span class="n">sample_count</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">npts</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"Database._read_data_from_gridfs:  arg0 must be a TimeSeries or Seismogram</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Actual type="</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">expected_nbytes</span> <span class="o">=</span> <span class="n">sample_count</span> <span class="o">*</span> <span class="mi">8</span>
+            <span class="k">if</span> <span class="n">fh</span><span class="o">.</span><span class="n">length</span> <span class="o">!=</span> <span class="n">expected_nbytes</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s2">"Size mismatch in sample data.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="s2">"GridFS object contains </span><span class="si">{}</span><span class="s2"> bytes but expected exactly </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2"> samples"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">fh</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">expected_nbytes</span><span class="p">,</span> <span class="n">sample_count</span>
+                <span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                    <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+                <span class="p">)</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="k">return</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">byte_offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">byte_offset</span> <span class="o">&lt;</span> <span class="n">expected_nbytes</span><span class="p">:</span>
+                <span class="n">request_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="n">_GRIDFS_IO_CHUNK_BYTES</span><span class="p">,</span> <span class="n">expected_nbytes</span> <span class="o">-</span> <span class="n">byte_offset</span>
+                <span class="p">)</span>
+                <span class="n">payload</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">request_size</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="o">!=</span> <span class="n">request_size</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Size mismatch in sample data.</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="s2">"Read </span><span class="si">{}</span><span class="s2"> bytes from gridfs at offset </span><span class="si">{}</span><span class="s2"> but expected </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span> <span class="n">byte_offset</span><span class="p">,</span> <span class="n">request_size</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="s2">"Database._read_data_from_gridfs"</span><span class="p">,</span>
+                        <span class="n">message</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="k">return</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">_store_sample_chunk</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">byte_offset</span> <span class="o">//</span> <span class="mi">8</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+                <span class="n">byte_offset</span> <span class="o">+=</span> <span class="n">request_size</span>
+                <span class="k">del</span> <span class="n">values</span>
+                <span class="k">del</span> <span class="n">payload</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_data_from_s3_continuous</span><span class="p">(</span>
@@ -5574,9 +5700,8 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
-                <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()),</span> <span class="nb">format</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="s2">"format"</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">])</span> <span class="k">as</span> <span class="n">body</span><span class="p">:</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()),</span> <span class="nb">format</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="s2">"format"</span><span class="p">])</span>
             <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
                 <span class="c1"># st is a "stream" but it only has one member here because we are</span>
@@ -5697,11 +5822,8 @@
             <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">descriptor</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">output</span><span class="p">:</span>
                 <span class="n">descriptor</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-                <span class="n">body</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span>
-                <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">])</span> <span class="k">as</span> <span class="n">body</span><span class="p">:</span>
                     <span class="n">payload</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                <span class="k">finally</span><span class="p">:</span>
-                    <span class="n">body</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">fsync</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
@@ -5867,12 +5989,13 @@
 <span class="sd">        :type format: :class:`str`</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-            <span class="n">flh</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">payload</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="c1"># Catch HTTP errors.</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">"Error while downloading: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">url</span><span class="p">,</span> <span class="s2">"Fatal"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
+        <span class="n">flh</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
         <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">flh</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="c1"># st is a "stream" but it only has one member here because we are</span>
@@ -7697,12 +7820,17 @@
         <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="c1"># verdion 2 had a transpose here that seemed unncessary</span>
-            <span class="n">ub</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">sample_reader</span> <span class="o">=</span> <span class="n">_NativeSampleReader</span><span class="p">(</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">gridfs_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ub</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">ObjectId</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">sample_reader</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="n">gridfs_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">raise</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"gridfs_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s2">"storage_mode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"gridfs"</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
@@ -7957,7 +8085,8 @@
             <span class="n">Payload</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">response_payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">"Payload"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">"Payload"</span><span class="p">])</span> <span class="k">as</span> <span class="n">payload</span><span class="p">:</span>
+            <span class="n">response_payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
         <span class="n">ret_type</span> <span class="o">=</span> <span class="n">response_payload</span><span class="p">[</span><span class="s2">"ret_type"</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="p">(</span>
@@ -7973,7 +8102,8 @@
                     <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">ret_bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">ret_key</span><span class="p">)</span>
-                <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+                <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">])</span> <span class="k">as</span> <span class="n">body</span><span class="p">:</span>
+                    <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
                 <span class="k">return</span> <span class="n">st</span>
 
             <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -8055,9 +8185,10 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">s3_client</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="n">BUCKET_NAME</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">KEY</span><span class="p">)</span>
-            <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="n">stringio_obj</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">stringio_obj</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">_managed_response_stream</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s2">"Body"</span><span class="p">])</span> <span class="k">as</span> <span class="n">body</span><span class="p">:</span>
+                <span class="n">mseed_content</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">stringio_obj</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">mseed_content</span><span class="p">)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">stringio_obj</span><span class="p">)</span>
             <span class="c1"># there could be more than 1 trace object in the stream, merge the traces</span>
             <span class="n">st</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span>
 
