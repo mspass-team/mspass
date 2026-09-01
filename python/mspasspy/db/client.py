@@ -2,6 +2,7 @@ import pymongo
 from pymongo import uri_parser
 from typing import Any
 from mspasspy.db.database import Database
+from mspasspy.db._dask_serialization import reject_dask_serialization
 
 
 class DBClient(pymongo.MongoClient):
@@ -79,6 +80,7 @@ class DBClient(pymongo.MongoClient):
         Pickle only connection parameters, not the active MongoClient internals.
         This prevents thread lock serialization issues.
         """
+        reject_dask_serialization(self)
         return {
             "host": self._mspass_db_host,
             "args": getattr(self, "_mspass_connection_args", ()),

@@ -69,6 +69,7 @@ from mspasspy.db.serialization import (
     inventory_subset,
     merge_inventories,
 )
+from mspasspy.db._dask_serialization import reject_dask_serialization
 from mspasspy.util.converter import Textfile2Dataframe
 
 _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
@@ -301,6 +302,7 @@ class Database(pymongo.database.Database):
         self.stedronsky = Undertaker(self)
 
     def __getstate__(self):
+        reject_dask_serialization(self)
         ret = self.__dict__.copy()
         ret["_BaseObject__codec_options"] = self.codec_options.__repr__()
 

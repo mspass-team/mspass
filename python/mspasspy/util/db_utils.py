@@ -11,6 +11,21 @@ from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
 
 
+class _WorkerDatabaseReference:
+    """Keep a local Database handle but serialize only its name."""
+
+    def __init__(self, database):
+        self.name = database.name
+        self._local_database = database
+
+    def __getstate__(self):
+        return {"name": self.name}
+
+    def __setstate__(self, state):
+        self.name = state["name"]
+        self._local_database = None
+
+
 def fetch_dbhandle(dbname_or_handle):
     """
     Fetch a Database handle from dbname_or_handle.
@@ -27,6 +42,11 @@ def fetch_dbhandle(dbname_or_handle):
     :raises: ValueError if dbname_or_handle is neither a string nor a Database instance,
         or if called with a string outside of a Dask worker context.
     """
+
+    if isinstance(dbname_or_handle, _WorkerDatabaseReference):
+        if dbname_or_handle._local_database is not None:
+            return dbname_or_handle._local_database
+        dbname_or_handle = dbname_or_handle.name
 
     if isinstance(dbname_or_handle, str):
         try:
@@ -93,6 +113,10 @@ class MongoDBWorker(WorkerPlugin):
 
     def setup(self, worker):
         """Called when worker starts - create DBClient for this worker."""
+        if self.dbclient_key in worker.data:
+            previous_client = worker.data[self.dbclient_key]
+            del worker.data[self.dbclient_key]
+            previous_client.close()
         if self.connection_url is None:
             dbclient = DBClient()
         else:
@@ -101,6 +125,7 @@ class MongoDBWorker(WorkerPlugin):
 
     def teardown(self, worker):
         """Called when worker shuts down - cleanup if needed."""
-        dbclient = worker.data.get(self.dbclient_key)
-        if dbclient:
+        if self.dbclient_key in worker.data:
+            dbclient = worker.data[self.dbclient_key]
+            del worker.data[self.dbclient_key]
             dbclient.close()
