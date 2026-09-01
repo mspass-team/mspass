@@ -76,6 +76,25 @@ _CURSOR_SESSION_REFRESH_INTERVAL_SECONDS = 300.0
 
 
 @contextmanager
+def _managed_response_stream(stream):
+    """Close an SDK/HTTP stream without taking ownership of its client.
+
+    A cleanup failure propagates after a successful body, but it is suppressed
+    when the body is already raising so the original exception is preserved.
+    """
+    try:
+        yield stream
+    except BaseException:
+        try:
+            stream.close()
+        except BaseException:
+            pass
+        raise
+    else:
+        stream.close()
+
+
+@contextmanager
 def _managed_collection_cursor(collection, query, no_cursor_timeout=False):
     """Yield a cursor that is closed reliably after a collection scan.
 
@@ -5033,9 +5052,8 @@ class Database(pymongo.database.Database):
 
         try:
             obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
-            st = obspy.read(
-                io.BytesIO(obj["Body"].read()), format=mspass_object["format"]
-            )
+            with _managed_response_stream(obj["Body"]) as body:
+                st = obspy.read(io.BytesIO(body.read()), format=mspass_object["format"])
             st.merge()
             if isinstance(mspass_object, TimeSeries):
                 # st is a "stream" but it only has one member here because we are
@@ -5156,11 +5174,8 @@ class Database(pymongo.database.Database):
             with os.fdopen(descriptor, "wb") as output:
                 descriptor = None
                 obj = s3_client.get_object(Bucket=bucket, Key=key)
-                body = obj["Body"]
-                try:
+                with _managed_response_stream(obj["Body"]) as body:
                     payload = body.read()
-                finally:
-                    body.close()
                 output.write(payload)
                 output.flush()
                 os.fsync(output.fileno())
@@ -5326,12 +5341,13 @@ class Database(pymongo.database.Database):
         :type format: :class:`str`
         """
         try:
-            response = urllib.request.urlopen(url)
-            flh = io.BytesIO(response.read())
+            with _managed_response_stream(urllib.request.urlopen(url)) as response:
+                payload = response.read()
         # Catch HTTP errors.
         except Exception as e:
             raise MsPASSError("Error while downloading: %s" % url, "Fatal") from e
 
+        flh = io.BytesIO(payload)
         st = obspy.read(flh, format=format)
         if isinstance(mspass_object, TimeSeries):
             # st is a "stream" but it only has one member here because we are
@@ -7386,7 +7402,8 @@ class Database(pymongo.database.Database):
             Payload=json.dumps(event),
         )
 
-        response_payload = json.loads(response["Payload"].read())
+        with _managed_response_stream(response["Payload"]) as payload:
+            response_payload = json.loads(payload.read())
         ret_type = response_payload["ret_type"]
 
         if (
@@ -7402,7 +7419,8 @@ class Database(pymongo.database.Database):
                     aws_secret_access_key=aws_secret_access_key,
                 )
                 obj = s3_client.get_object(Bucket=ret_bucket, Key=ret_key)
-                st = obspy.read(io.BytesIO(obj["Body"].read()))
+                with _managed_response_stream(obj["Body"]) as body:
+                    st = obspy.read(io.BytesIO(body.read()))
                 return st
 
             except botocore.exceptions.ClientError as e:
@@ -7482,9 +7500,10 @@ class Database(pymongo.database.Database):
 
         try:
             obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
-            mseed_content = obj["Body"].read()
-            stringio_obj = io.BytesIO(mseed_content)
-            st = obspy.read(stringio_obj)
+            with _managed_response_stream(obj["Body"]) as body:
+                mseed_content = body.read()
+                stringio_obj = io.BytesIO(mseed_content)
+                st = obspy.read(stringio_obj)
             # there could be more than 1 trace object in the stream, merge the traces
             st.merge()
 
