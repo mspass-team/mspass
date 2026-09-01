@@ -3,7 +3,6 @@ import os
 import resource
 import subprocess
 import sys
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -95,18 +94,15 @@ def _run_probe(operation, atomic_name):
 @pytest.mark.parametrize("atomic_name", ("TimeSeries", "Seismogram"))
 def test_large_gridfs_conversion_has_bounded_rss(operation, atomic_name):
     environment = os.environ.copy()
-    source_root = str(Path(__file__).resolve().parents[2])
-    environment["PYTHONPATH"] = (
-        source_root + os.pathsep + environment.get("PYTHONPATH", "")
-    )
     completed = subprocess.run(
         [sys.executable, __file__, "--probe", operation, atomic_name],
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
         env=environment,
         timeout=60,
     )
+    assert completed.returncode == 0, completed.stderr
     measurement = json.loads(completed.stdout.strip().splitlines()[-1])
 
     assert measurement["payload_bytes"] >= PAYLOAD_BYTES - 24
