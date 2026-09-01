@@ -812,11 +812,14 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog;
           boost::archive::text_oarchive arelog(sselog);
           arelog << self.elog;
-          pybind11::module pickle = pybind11::module::import("pickle");
-          pybind11::object dumps = pickle.attr("dumps");
-          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
+          /* The default copy policy is intentional.  A pickle state can
+          outlive this call or the source vector can be resized after a user
+          calls __getstate__ directly.  References into self.member would be
+          invalidated by vector reallocation. */
+          py::list members(pybind11::cast(self.member));
           bool is_live=self.live();
-          pybind11::tuple r_tuple = py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+          pybind11::tuple r_tuple = py::make_tuple(
+            sbuf, sselog.str(), is_live, members);
           pybind11::gil_scoped_release release;
           return r_tuple;
         }catch(...){pybind11::gil_scoped_release release;throw;};
@@ -832,18 +835,31 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog(t[1].cast<std::string>());
           boost::archive::text_iarchive arelog(sselog);;
           arelog>>elog;
-          pybind11::module pickle = pybind11::module::import("pickle");
-          pybind11::object loads = pickle.attr("loads");
-          /* This algorithm is a horrible memory pig because it has to
-          hold both a copy of the monster list of strings of pickled
-          data members and the reconstituted C++ data objects (ensemble
-          members).  Need to see if we can find a way to handle that
-          in a more memory efficient way.
-          wangyinz: The new implementation below should be better. */
-          py::list dlist = loads(t[3]);
-          LoggingEnsemble<Seismogram> result(md, elog, 0);
-          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("SeismogramVector")(dlist);
-          result.member = member_py.cast<vector<Seismogram>>();
+          py::object member_state=t[3];
+          py::list dlist;
+          if(py::isinstance<py::bytes>(member_state)) {
+            pybind11::module pickle = pybind11::module::import("pickle");
+            member_state = pickle.attr("loads")(member_state);
+          }
+          if(!py::isinstance<py::list>(member_state))
+            throw py::value_error(
+              "Invalid SeismogramEnsemble pickle state: members must be a list or legacy bytes");
+          dlist=py::reinterpret_borrow<py::list>(member_state);
+          for(const auto item : dlist) {
+            if(!py::isinstance<Seismogram>(item))
+              throw py::value_error(
+                "Invalid SeismogramEnsemble pickle state: invalid member type");
+          }
+          LoggingEnsemble<Seismogram> result(md, elog, dlist.size());
+          for(py::ssize_t i=0; i<dlist.size(); ++i) {
+            const Seismogram& member=dlist[i].cast<const Seismogram&>();
+            result.member.push_back(member);
+            /* Python's unpickler passes a private, disposable state list.
+            Consume it incrementally so reconstructed members do not remain
+            live beside the growing final vector.  A caller invoking
+            __setstate__ directly must likewise treat that list as consumed. */
+            dlist[i]=py::none();
+          }
           bool is_live = t[2].cast<bool>();
           if(is_live)
             result.set_live();
@@ -897,11 +913,14 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog;
           boost::archive::text_oarchive arelog(sselog);
           arelog << self.elog;
-          pybind11::module pickle = pybind11::module::import("pickle");
-          pybind11::object dumps = pickle.attr("dumps");
-          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
+          /* The default copy policy is intentional.  A pickle state can
+          outlive this call or the source vector can be resized after a user
+          calls __getstate__ directly.  References into self.member would be
+          invalidated by vector reallocation. */
+          py::list members(pybind11::cast(self.member));
           bool is_live = self.live();
-          pybind11::tuple r_tuple = py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+          pybind11::tuple r_tuple = py::make_tuple(
+            sbuf, sselog.str(), is_live, members);
           pybind11::gil_scoped_release release;
           return r_tuple;
         }catch(...){pybind11::gil_scoped_release release;throw;};
@@ -917,18 +936,31 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog(t[1].cast<std::string>());
           boost::archive::text_iarchive arelog(sselog);;
           arelog>>elog;
-          pybind11::module pickle = pybind11::module::import("pickle");
-          pybind11::object loads = pickle.attr("loads");
-          /* This algorithm is a horrible memory pig because it has to
-          hold both a copy of the monster list of strings of pickled
-          data members and the reconstituted C++ data objects (ensemble
-          members).  Need to see if we can find a way to handle that
-          in a more memory efficient way.
-          wangyinz: The new implementation below should be better. */
-          py::list dlist = loads(t[3]);
-          LoggingEnsemble<TimeSeries> result(md, elog, 0);
-          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("TimeSeriesVector")(dlist);
-          result.member = member_py.cast<vector<TimeSeries>>();
+          py::object member_state=t[3];
+          py::list dlist;
+          if(py::isinstance<py::bytes>(member_state)) {
+            pybind11::module pickle = pybind11::module::import("pickle");
+            member_state = pickle.attr("loads")(member_state);
+          }
+          if(!py::isinstance<py::list>(member_state))
+            throw py::value_error(
+              "Invalid TimeSeriesEnsemble pickle state: members must be a list or legacy bytes");
+          dlist=py::reinterpret_borrow<py::list>(member_state);
+          for(const auto item : dlist) {
+            if(!py::isinstance<TimeSeries>(item))
+              throw py::value_error(
+                "Invalid TimeSeriesEnsemble pickle state: invalid member type");
+          }
+          LoggingEnsemble<TimeSeries> result(md, elog, dlist.size());
+          for(py::ssize_t i=0; i<dlist.size(); ++i) {
+            const TimeSeries& member=dlist[i].cast<const TimeSeries&>();
+            result.member.push_back(member);
+            /* Python's unpickler passes a private, disposable state list.
+            Consume it incrementally so reconstructed members do not remain
+            live beside the growing final vector.  A caller invoking
+            __setstate__ directly must likewise treat that list as consumed. */
+            dlist[i]=py::none();
+          }
           bool is_live = t[2].cast<bool>();
           if(is_live)
             result.set_live();
