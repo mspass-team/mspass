@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev108+g3bfb2593e documentation</title>
+    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=1e98a46b"></script>
+    <script src="../_static/documentation_options.js?v=9129cfb6"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev108" />
+  <meta name="docsearch:version" content="2.4.4.dev110" />
   </head>
   
   
@@ -549,6 +549,12 @@ the function per partition by mapPartitions.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mspasspy.io.distributed.read_atomic_parallel">
+<span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_atomic_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dbname_or_handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_atomic_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_atomic_parallel" title="Link to this definition">#</a></dt>
+<dd><p>Read one atomic datum using the worker-owned database client.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mspasspy.io.distributed.read_distributed_data">
 <span class="sig-prename descclassname"><span class="pre">mspasspy.io.distributed.</span></span><span class="sig-name descname"><span class="pre">read_distributed_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scratchfile=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection='wf_TimeSeries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode='promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler='dask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npartitions=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spark_context=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_clause=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_merge_function=&lt;function</span> <span class="pre">post2metadata&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_to_merge=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/io/distributed.html#read_distributed_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.io.distributed.read_distributed_data" title="Link to this definition">#</a></dt>
 <dd><p>Parallel data reader for seismic data objects.</p>
@@ -1014,7 +1020,10 @@ of a chain of map-reduce operators.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mybag</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s1">'wf_TimeSeries'</span><span class="p">)</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">detrend</span><span class="p">)</span>   <span class="c1"># example</span>
 <span class="c1"># intermediate save</span>
-<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_intermediate</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">dbname</span><span class="p">):</span>
+    <span class="n">worker_db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">worker_db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">)</span>
+<span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">save_intermediate</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <span class="c1"># more processing - trivial example</span>
 <span class="n">mybag</span> <span class="o">=</span> <span class="n">mybag</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span><span class="s1">'lowpass'</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="c1"># termination with this function</span>
@@ -1223,6 +1232,7 @@ uses the default Dask scheduler.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.pyspark_mappartition_interface.partitioned_save_wfdoc"><code class="docutils literal notranslate"><span class="pre">pyspark_mappartition_interface.partitioned_save_wfdoc()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_atomic_parallel"><code class="docutils literal notranslate"><span class="pre">read_atomic_parallel()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_distributed_data"><code class="docutils literal notranslate"><span class="pre">read_distributed_data()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_ensemble_parallel"><code class="docutils literal notranslate"><span class="pre">read_ensemble_parallel()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.io.distributed.read_to_dataframe"><code class="docutils literal notranslate"><span class="pre">read_to_dataframe()</span></code></a></li>

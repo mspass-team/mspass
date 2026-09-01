@@ -260,6 +260,19 @@ custom processing function that has a database handle as an
 argument you need to deal with this issue.  The following
 skeleton example illustrates how to handle that situation:
 
+``DBClient``, ``Database``, and ``Collection`` instances must not be passed to
+Dask tasks, whether directly or indirectly through a closure, partial, bound
+method, or callable object.  MsPASS rejects that serialization before the task
+runs because unpickling the handle would create a client outside the worker
+plugin's lifecycle.  Pass the database name instead, as shown below.  The
+``MongoDBWorker`` plugin owns the one client stored on each worker, closes it
+during worker teardown, and creates one replacement when a worker restarts.
+
+Ordinary explicit Python pickle and the Spark compatibility path are separate
+from this Dask contract.  An explicitly unpickled client is owned by the code
+that unpickled it and must be closed by that code.  It must not then be embedded
+in a Dask task.
+
 .. code-block:: python
 
    from mspasspy.util.db_utils import fetch_dbhandle
@@ -284,7 +297,7 @@ The key point here is that with that construct ``myfunction`` can
 be run as a Dask task using a map operation or the Futures interface
 (see :ref:`parallel_processing`).   The essential thing to do is to send the
 function only the database name and then use ``fetch_dbhandle`` inside
-the function to create the database handle to the database the name references.
+the function to obtain a database handle backed by the plugin-owned client.
 
 .. note::
 

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev108+g3bfb2593e documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=1e98a46b"></script>
+    <script src="../../../_static/documentation_options.js?v=9129cfb6"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev108" />
+  <meta name="docsearch:version" content="2.4.4.dev110" />
   </head>
   
   
@@ -492,7 +492,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.normalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span> <span class="k">as</span> <span class="n">normalize_function</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.Undertaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">Undertaker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.db.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBClient</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.util.db_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_dbhandle</span><span class="p">,</span> <span class="n">_WorkerDatabaseReference</span>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -572,6 +572,34 @@
     <span class="k">if</span> <span class="n">kill_me</span><span class="p">:</span>
         <span class="n">ensemble</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ensemble</span></div>
+
+
+
+<div class="viewcode-block" id="read_atomic_parallel">
+<a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.read_atomic_parallel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_atomic_parallel</span><span class="p">(</span>
+    <span class="n">document</span><span class="p">,</span>
+    <span class="n">dbname_or_handle</span><span class="p">,</span>
+    <span class="n">collection</span><span class="o">=</span><span class="s2">"wf_TimeSeries"</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Read one atomic datum using the worker-owned database client."""</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
+        <span class="n">document</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
+        <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
+        <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+        <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+        <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">aws_access_key_id</span><span class="p">,</span>
+        <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1153,14 +1181,14 @@
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Dask path: extract dbname to avoid serializing Database object</span>
-            <span class="c1"># fetch_dbhandle in read_ensemble_parallel will get DBClient from worker plugin</span>
-            <span class="n">dbname</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span> <span class="k">else</span> <span class="n">db</span>
+            <span class="n">db_reference</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_WorkerDatabaseReference</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">Database</span><span class="p">)</span> <span class="k">else</span> <span class="n">db</span>
+            <span class="p">)</span>
             <span class="c1"># note same maintenance issue as with parallelize above</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">bag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">npartitions</span><span class="o">=</span><span class="n">npartitions</span><span class="p">)</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">read_ensemble_parallel</span><span class="p">,</span>
-                <span class="n">dbname</span><span class="p">,</span>  <span class="c1"># Pass dbname string for Dask</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
                 <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
                 <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
@@ -1258,8 +1286,10 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">db_reference</span> <span class="o">=</span> <span class="n">_WorkerDatabaseReference</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
             <span class="n">plist</span> <span class="o">=</span> <span class="n">plist</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">,</span>
+                <span class="n">read_atomic_parallel</span><span class="p">,</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
                 <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span>
                 <span class="n">load_history</span><span class="o">=</span><span class="n">load_history</span><span class="p">,</span>
@@ -1412,6 +1442,21 @@
         <span class="n">wfids</span> <span class="o">=</span> <span class="n">dbcol</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">docarray</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_ids</span>
 
     <span class="k">return</span> <span class="n">wfids</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_sample_data_parallel</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">dbname_or_handle</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Save sample data through the worker-owned database client."""</span>
+    <span class="k">return</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_dead_data_parallel</span><span class="p">(</span>
+    <span class="n">datum</span><span class="p">,</span> <span class="n">dbname_or_handle</span><span class="p">,</span> <span class="n">cremate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Run Undertaker operations through the worker-owned database client."""</span>
+    <span class="n">undertaker</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">undertaker</span><span class="o">.</span><span class="n">cremate</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">undertaker</span><span class="o">.</span><span class="n">bury</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="pyspark_mappartition_interface">
@@ -1588,6 +1633,10 @@
 <span class="sd">    Default is None, but normal use should set it as an appropriate string</span>
 <span class="sd">    defining what this dataset is.  D</span>
 <span class="sd">    """</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">undertaker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">undertaker</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
         <span class="n">ensemble_data</span> <span class="o">=</span> <span class="n">undertaker</span><span class="o">.</span><span class="n">cremate</span><span class="p">(</span><span class="n">ensemble_data</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1706,6 +1755,7 @@
 <span class="sd">    dead data are not store in a wf collection.</span>
 <span class="sd">    """</span>
 
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">undertaker</span><span class="p">:</span>
         <span class="n">stedronsky</span> <span class="o">=</span> <span class="n">undertaker</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1861,7 +1911,10 @@
 <span class="sd">       mybag = read_distributed_data(db,collection='wf_TimeSeries')</span>
 <span class="sd">       mybag = mybag.map(detrend)   # example</span>
 <span class="sd">       # intermediate save</span>
-<span class="sd">       mybag = mybag.map(db.save_data,collection="wf_TimeSeries")</span>
+<span class="sd">       def save_intermediate(d, dbname):</span>
+<span class="sd">           worker_db = fetch_dbhandle(dbname)</span>
+<span class="sd">           return worker_db.save_data(d, collection="wf_TimeSeries")</span>
+<span class="sd">       mybag = mybag.map(save_intermediate, db.name)</span>
 <span class="sd">       # more processing - trivial example</span>
 <span class="sd">       mybag = mybag.map(filter,'lowpass',freq=1.0)</span>
 <span class="sd">       # termination with this function</span>
@@ -2174,11 +2227,13 @@
             <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="n">db_reference</span> <span class="o">=</span> <span class="n">_WorkerDatabaseReference</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data_are_atomic</span><span class="p">:</span>
             <span class="c1"># See comment at top of spark section  - this code is exactly</span>
             <span class="c1"># the same by in the dask dialect</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">,</span>
+                <span class="n">_save_sample_data_parallel</span><span class="p">,</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
                 <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2187,7 +2242,7 @@
             <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">_atomic_extract_wf_document</span><span class="p">,</span>
-                <span class="n">db</span><span class="p">,</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">save_schema</span><span class="p">,</span>
                 <span class="n">exclude_keys</span><span class="p">,</span>
                 <span class="n">mode</span><span class="p">,</span>
@@ -2196,11 +2251,14 @@
                 <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
                 <span class="n">post_history</span><span class="o">=</span><span class="n">post_history</span><span class="p">,</span>
                 <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
-                <span class="n">undertaker</span><span class="o">=</span><span class="n">stedronsky</span><span class="p">,</span>
+                <span class="n">undertaker</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">cremate</span><span class="o">=</span><span class="n">cremate</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map_partitions</span><span class="p">(</span>
-                <span class="n">_partitioned_save_wfdoc</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span>
+                <span class="n">_partitioned_save_wfdoc</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+                <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                <span class="n">dbname</span><span class="o">=</span><span class="n">db_reference</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># necessary here or the map_partition function will fail</span>
             <span class="c1"># because it will receive a DAG structure instead of a list</span>
@@ -2218,12 +2276,23 @@
             <span class="c1"># cause some overhead if the number of bodies is large.</span>
             <span class="c1"># in both cases the ensemble has the bodies removed by the undertaker</span>
             <span class="k">if</span> <span class="n">cremate</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">cremate</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">_handle_dead_data_parallel</span><span class="p">,</span>
+                    <span class="n">db_reference</span><span class="p">,</span>
+                    <span class="n">cremate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">stedronsky</span><span class="o">.</span><span class="n">bury</span><span class="p">,</span> <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">_handle_dead_data_parallel</span><span class="p">,</span>
+                    <span class="n">db_reference</span><span class="p">,</span>
+                    <span class="n">cremate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="c1"># important comment about this next line in the spark section</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="n">db</span><span class="o">.</span><span class="n">_save_sample_data</span><span class="p">,</span>
+                <span class="n">_save_sample_data_parallel</span><span class="p">,</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">storage_mode</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
                 <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2232,11 +2301,11 @@
             <span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">_save_ensemble_wfdocs</span><span class="p">,</span>
-                <span class="n">db</span><span class="p">,</span>
+                <span class="n">db_reference</span><span class="p">,</span>
                 <span class="n">save_schema</span><span class="p">,</span>
                 <span class="n">exclude_keys</span><span class="p">,</span>
                 <span class="n">mode</span><span class="p">,</span>
-                <span class="n">stedronsky</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
                 <span class="n">normalizing_collections</span><span class="p">,</span>
                 <span class="n">cremate</span><span class="o">=</span><span class="n">cremate</span><span class="p">,</span>
                 <span class="n">post_elog</span><span class="o">=</span><span class="n">post_elog</span><span class="p">,</span>
