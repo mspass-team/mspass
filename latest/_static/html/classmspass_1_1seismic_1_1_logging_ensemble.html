@@ -74,7 +74,7 @@ MathJax.Hub.Config({
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">MsPASS C++ API
-   &#160;<span id="projectnumber">2.4.4.dev105+g244a733a2</span>
+   &#160;<span id="projectnumber">2.4.4.dev106+g5e9a51614</span>
    </div>
    <div id="projectbrief">Defines the C++ API for MsPASS</div>
   </td>
@@ -520,7 +520,7 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 </div><div class="memdoc">
 <p>Construct from all pieces.</p>
 <p>This constructor was added for the python interface. It is a helpful construct for the pickle interface. It is unlikely to be of interest in a C++ application. Calls reserve only for member vector but but does not insert data - detail of the pickle implementation </p>
-<div class="fragment"><div class="line"><span class="lineno">  183</span>      : Ensemble&lt;T&gt;(<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>) {};</div>
+<div class="fragment"><div class="line"><span class="lineno">  183</span>      : Ensemble&lt;T&gt;(<a class="code hl_variable" href="classmspass_1_1utility_1_1_metadata.html#a8be7decfdbefb7aa8c3d9e977ac26f0b">md</a>, <a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">ndata</a>), <a class="code hl_variable" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a805180a6091e44e3ccb1e53c8576ea5a">elog</a>(<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">elogin</a>), ensemble_is_live(<span class="keyword">false</span>) {};</div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_af2b1cac0f295d9ab5fb240b8b5e12539"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">mspass::utility::Metadata::get</a></div><div class="ttdeci">T get(const std::string key) const</div><div class="ttdef"><b>Definition</b> Metadata.h:477</div></div>
 </div><!-- fragment -->
 </div>
@@ -835,8 +835,10 @@ template&lt;<a class="el" href="classmspass_1_1utility_1_1_metadata.html#af2b1ca
 <div class="line"><span class="lineno">  266</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classmspass_1_1utility_1_1_metadata.html#af2b1cac0f295d9ab5fb240b8b5e12539">dptr</a>-&gt;live())</div>
 <div class="line"><span class="lineno">  267</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><span class="lineno">  268</span>  }</div>
-<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  270</span>}</div>
+<div class="line"><span class="lineno">  269</span>  this-&gt;<a class="code hl_function" href="classmspass_1_1seismic_1_1_logging_ensemble.html#a41768cde10b3097bf91e69014d90a3c5">kill</a>();</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  271</span>}</div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_logging_ensemble_html_a41768cde10b3097bf91e69014d90a3c5"><div class="ttname"><a href="classmspass_1_1seismic_1_1_logging_ensemble.html#a41768cde10b3097bf91e69014d90a3c5">mspass::seismic::LoggingEnsemble::kill</a></div><div class="ttdeci">void kill()</div><div class="ttdef"><b>Definition</b> Ensemble.h:195</div></div>
 </div><!-- fragment -->
 </div>
 </div>
