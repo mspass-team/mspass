@@ -10,6 +10,7 @@ from mspasspy.ccore.seismic import (
     _CoreSeismogram,
     _CoreTimeSeries,
     DataGap,
+    DoubleVector,
     PowerSpectrum,
     Seismogram,
     SeismogramEnsemble,
@@ -102,6 +103,13 @@ def make_constant_data_seis(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
         for k in range(3):
             d.data[k, i] = val
     return d
+
+
+def restore_pickle_state(data_type, state):
+    """Invoke a native pickle loader on a newly allocated instance."""
+    restored = data_type.__new__(data_type)
+    restored.__setstate__(state)
+    return restored
 
 
 def setup_function(function):
@@ -1142,6 +1150,184 @@ def test_Ensemble(Ensemble):
         assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
 
 
+@pytest.mark.parametrize("protocol", [4, 5])
+def test_empty_atomic_pickle_round_trip(protocol):
+    ts = TimeSeries()
+    ts["pickle_test"] = "empty"
+    ts_copy = pickle.loads(pickle.dumps(ts, protocol=protocol))
+    assert ts_copy.npts == 0
+    assert len(ts_copy.data) == 0
+    assert ts_copy.dead()
+    assert ts_copy["pickle_test"] == "empty"
+
+    seis = Seismogram()
+    seis["pickle_test"] = "empty"
+    seis_copy = pickle.loads(pickle.dumps(seis, protocol=protocol))
+    assert seis_copy.npts == 0
+    assert seis_copy.data.size == 0
+    assert seis_copy.dead()
+    assert seis_copy["pickle_test"] == "empty"
+
+    spectrum = PowerSpectrum()
+    spectrum["pickle_test"] = "empty"
+    spectrum_copy = pickle.loads(pickle.dumps(spectrum, protocol=protocol))
+    assert spectrum_copy.nf() == 0
+    assert spectrum_copy.dead()
+    assert spectrum_copy["pickle_test"] == "empty"
+
+
+def test_empty_TimeSeries_numpy_constructor():
+    ts = TimeSeries({"delta": 0.1, "starttime": 0.0}, np.array([], dtype=np.float64))
+    assert ts.npts == 0
+    assert len(ts.data) == 0
+
+
+@pytest.mark.parametrize("protocol", [4, 5])
+@pytest.mark.parametrize(
+    "ensemble_type,member_type",
+    [
+        (TimeSeriesEnsemble, TimeSeries),
+        (SeismogramEnsemble, Seismogram),
+    ],
+)
+def test_empty_and_killed_ensemble_member_pickle_round_trip(
+    protocol, ensemble_type, member_type
+):
+    empty_ensemble = ensemble_type()
+    empty_copy = pickle.loads(pickle.dumps(empty_ensemble, protocol=protocol))
+    assert len(empty_copy.member) == 0
+    assert empty_copy.dead()
+
+    ensemble = ensemble_type()
+    ensemble["pickle_test"] = "members"
+    ensemble.member.append(member_type())
+    killed = member_type(2)
+    killed.set_live()
+    killed.kill()
+    ensemble.member.append(killed)
+
+    restored = pickle.loads(pickle.dumps(ensemble, protocol=protocol))
+    assert len(restored.member) == 2
+    assert restored.member[0].npts == 0
+    assert restored.member[0].dead()
+    assert restored.member[1].npts == 2
+    assert restored.member[1].dead()
+    assert restored.dead()
+    assert restored["pickle_test"] == "members"
+
+
+@pytest.mark.parametrize(
+    "ensemble_type,member_type",
+    [
+        (TimeSeriesEnsemble, TimeSeries),
+        (SeismogramEnsemble, Seismogram),
+    ],
+)
+def test_LoggingEnsemble_validate_and_pickle_kill_all_dead_members(
+    ensemble_type, member_type
+):
+    ensemble = ensemble_type()
+    member = member_type(2)
+    member.set_live()
+    ensemble.member.append(member)
+    assert ensemble.set_live()
+    ensemble.member[0].kill()
+    assert ensemble.live
+    assert not ensemble.validate()
+    assert ensemble.dead()
+
+    inconsistent = ensemble_type()
+    member = member_type(2)
+    member.set_live()
+    inconsistent.member.append(member)
+    assert inconsistent.set_live()
+    inconsistent.member[0].kill()
+    assert inconsistent.live
+
+    restored = pickle.loads(pickle.dumps(inconsistent, protocol=5))
+    assert restored.member[0].dead()
+    assert restored.dead()
+
+
+@pytest.mark.parametrize(
+    "data_type,minimum_state_size",
+    [
+        (TimeSeries, 4),
+        (Seismogram, 8),
+        (TimeSeriesEnsemble, 4),
+        (SeismogramEnsemble, 4),
+        (PowerSpectrum, 8),
+    ],
+)
+def test_native_pickle_rejects_invalid_state_lengths(data_type, minimum_state_size):
+    state = data_type().__getstate__()
+    for invalid_state in (state[: minimum_state_size - 1], state + (None,)):
+        with pytest.raises(
+            ValueError, match=f"Invalid {data_type.__name__} pickle state"
+        ):
+            restore_pickle_state(data_type, invalid_state)
+
+
+@pytest.mark.parametrize(
+    "data_type,array_index",
+    [(TimeSeries, 3), (PowerSpectrum, 5)],
+)
+def test_native_pickle_rejects_non_vector_sample_array(data_type, array_index):
+    state = list(data_type().__getstate__())
+    state[array_index] = np.asfortranarray(np.zeros((2, 2)))
+    with pytest.raises(ValueError, match="sample array must be one-dimensional"):
+        restore_pickle_state(data_type, tuple(state))
+
+
+@pytest.mark.parametrize(
+    "data_type,array_index",
+    [(TimeSeries, 3), (Seismogram, 7), (PowerSpectrum, 5)],
+)
+@pytest.mark.parametrize(
+    "invalid_samples,error",
+    [
+        ([1.0], "sample data must be a NumPy array"),
+        (np.zeros((2, 2), dtype=np.float64, order="C"), "one-dimensional"),
+        (np.zeros(4, dtype=np.float32), "dtype float64"),
+        (np.arange(8, dtype=np.float64)[::2], "contiguous"),
+    ],
+)
+def test_native_pickle_rejects_invalid_sample_array(
+    data_type, array_index, invalid_samples, error
+):
+    state = list(data_type().__getstate__())
+    state[array_index] = invalid_samples
+    with pytest.raises(ValueError, match=error):
+        restore_pickle_state(data_type, tuple(state))
+
+
+def test_Seismogram_pickle_rejects_invalid_sample_array_shape():
+    state = list(Seismogram(2).__getstate__())
+
+    non_vector = list(state)
+    non_vector[7] = np.asfortranarray(np.zeros((3, 2)))
+    with pytest.raises(ValueError, match="sample array must be one-dimensional"):
+        restore_pickle_state(Seismogram, tuple(non_vector))
+
+    wrong_size = list(state)
+    wrong_size[7] = np.zeros(3)
+    with pytest.raises(ValueError, match="inconsistent sample array size"):
+        restore_pickle_state(Seismogram, tuple(wrong_size))
+
+    non_multiple_of_three = list(state)
+    non_multiple_of_three[6] = 4
+    non_multiple_of_three[7] = np.zeros(4)
+    with pytest.raises(ValueError, match="inconsistent sample array size"):
+        restore_pickle_state(Seismogram, tuple(non_multiple_of_three))
+
+
+def test_TimeSeries_pickle_rejects_inconsistent_sample_array_size():
+    state = list(TimeSeries(2).__getstate__())
+    state[3] = np.zeros(3)
+    with pytest.raises(ValueError, match="inconsistent sample array size"):
+        restore_pickle_state(TimeSeries, tuple(state))
+
+
 def test_operators():
     d = _CoreTimeSeries(10)
     d1 = make_constant_data_ts(d, nsamp=10)
@@ -1863,6 +2049,49 @@ def test_MsPASSError():
         tm[2, 2] = 1.0
         d.transform(tm)
         d.rotate_to_standard()
+
+
+def make_test_power_spectrum():
+    return PowerSpectrum(
+        Metadata({"pickle_test": "spectrum"}),
+        DoubleVector([1.0, 4.0, 9.0]),
+        0.25,
+        "pickle-test",
+        0.0,
+        0.1,
+        20,
+    )
+
+
+@pytest.mark.parametrize("protocol", [4, 5])
+@pytest.mark.parametrize("lifecycle", ["live", "killed", "default-empty"])
+def test_PowerSpectrum_pickle_preserves_lifecycle_state(protocol, lifecycle):
+    if lifecycle == "default-empty":
+        spectrum = PowerSpectrum()
+    else:
+        spectrum = make_test_power_spectrum()
+        if lifecycle == "killed":
+            spectrum.kill()
+
+    restored = pickle.loads(pickle.dumps(spectrum, protocol=protocol))
+    assert restored.live() == spectrum.live()
+    assert restored.dead() == spectrum.dead()
+    assert restored.nf() == spectrum.nf()
+    assert list(restored.spectrum) == list(spectrum.spectrum)
+    assert restored.timeseries_npts() == spectrum.timeseries_npts()
+
+
+def test_PowerSpectrum_pickle_loads_eight_field_legacy_state_as_live():
+    spectrum = make_test_power_spectrum()
+    spectrum.kill()
+    state = spectrum.__getstate__()
+    assert len(state) == 9
+    assert state[8] is False
+
+    restored = restore_pickle_state(PowerSpectrum, state[:8])
+    assert restored.live()
+    assert restored.timeseries_npts() == spectrum.timeseries_npts()
+    assert list(restored.spectrum) == list(spectrum.spectrum)
 
 
 def test_PowerSpectrum():
