@@ -84,8 +84,12 @@ Database:
           constraint: normal
         storage_mode:
           type: string
-          concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+          concept: The storage mode of the saved data ('file', 'url', 'gridfs', or 'object_store')
           constraint: required
+        object_store:
+          type: dict
+          concept: Provider-specific location of sample data in an object store.
+          constraint: optional
         format:
           type: string
           concept: The file format of the saved data (e.g., 'MSEED', 'SAC', ...).
@@ -516,6 +520,9 @@ Metadata:
       storage_mode:
         collection: wf_TimeSeries
         readonly: false
+      object_store:
+        collection: wf_TimeSeries
+        readonly: false
       gridfs_id:
         collection: wf_TimeSeries
         readonly: false
@@ -634,6 +641,9 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       storage_mode:
+        collection: wf_Seismogram
+        readonly: false
+      object_store:
         collection: wf_Seismogram
         readonly: false
       gridfs_id:

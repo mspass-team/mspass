@@ -55,11 +55,19 @@ Database:
           constraint: normal
         storage_mode:
           type: string
-          concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+          concept: The storage mode of the saved data ('file', 'url', 'gridfs', or 'object_store')
           constraint: required
+        object_store:
+          type: dict
+          concept: Provider-specific object-store location and encoding metadata
+          constraint: optional
         format:
           type: string
           concept: The file format of the saved data (e.g., 'MSEED', 'SAC', ...).
+          constraint: optional
+        nbytes:
+          type: int
+          concept: Number of bytes occupied by the serialized sample data
           constraint: optional
         dir:
           type: string
@@ -269,6 +277,18 @@ Metadata:
       calib:
         collection: wf_TimeSeries
         readonly: false
+      storage_mode:
+        collection: wf_TimeSeries
+        readonly: false
+      object_store:
+        collection: wf_TimeSeries
+        readonly: false
+      format:
+        collection: wf_TimeSeries
+        readonly: false
+      nbytes:
+        collection: wf_TimeSeries
+        readonly: false
       net:
         collection: wf_TimeSeries
         readonly: false
@@ -306,6 +326,18 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       calib:
+        collection: wf_Seismogram
+        readonly: false
+      storage_mode:
+        collection: wf_Seismogram
+        readonly: false
+      object_store:
+        collection: wf_Seismogram
+        readonly: false
+      format:
+        collection: wf_Seismogram
+        readonly: false
+      nbytes:
         collection: wf_Seismogram
         readonly: false
       tmatrix:

@@ -196,3 +196,24 @@ def test_url_read_error_is_preserved_when_close_also_fails(monkeypatch):
 
     assert raised.value.__cause__ is read_error
     assert response.close_calls == 1
+
+
+def test_object_store_read_error_is_preserved_when_close_also_fails():
+    read_error = OSError("read failed")
+    body = FakeBody(read_error=read_error, close_error=RuntimeError("close failed"))
+    client = FakeS3Client(body)
+
+    with pytest.raises(MsPASSError) as raised:
+        Database._read_data_from_object_store(
+            {},
+            {
+                "provider": "s3",
+                "bucket": "bucket",
+                "object_name": "waveform.bin",
+                "encoding": "float64-le-v1",
+            },
+            client,
+        )
+
+    assert raised.value.__cause__ is read_error
+    assert body.close_calls == 1
