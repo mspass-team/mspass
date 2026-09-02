@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
+    <title>CRUD Operations in MsPASS &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=9129cfb6"></script>
+    <script src="../_static/documentation_options.js?v=095fb8b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Using MongoDB with MsPASS" href="mongodb_and_mspass.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev110" />
+  <meta name="docsearch:version" content="2.4.4.dev111" />
   </head>
   
   
@@ -551,6 +551,121 @@ the return is a dictionary containing <code class="code docutils literal notrans
 requested by <code class="code docutils literal notranslate"><span class="pre">return_list</span></code> (which defaults to <code class="code docutils literal notranslate"><span class="pre">[&quot;_id&quot;]</span></code>).
 Set <code class="code docutils literal notranslate"><span class="pre">return_data=True</span></code> when an
 intermediate save needs the updated data object returned to the workflow.</p>
+<p>GridFS saves, including
+<code class="code docutils literal notranslate"><span class="pre">write_distributed_data(...,</span> <span class="pre">storage_mode=&quot;gridfs&quot;)</span></code>, use a durable
+<code class="code docutils literal notranslate"><span class="pre">gridfs_staging</span></code> record containing
+preallocated waveform, GridFS, history, and elog ids before sample bytes
+are written.  A network or write-concern result that cannot prove whether
+a write committed leaves that stage and the caller’s recovery ids intact.
+After stopping GridFS writers and waiting for outstanding MongoDB requests,
+call <code class="code docutils literal notranslate"><span class="pre">db.reconcile_gridfs_staging()</span></code>.  Its default mode repairs
+committed auxiliary links and reports unresolved stages without deleting
+samples; <code class="code docutils literal notranslate"><span class="pre">delete_uncommitted=True</span></code> also removes unreferenced files,
+partial chunks, auxiliary documents, and stages.  Lifecycle reads use the
+primary with majority read concern and writes use majority acknowledgement
+even if the caller’s Database handle requests weaker options.  The
+shared-reference scan and
+GridFS delete are not one MongoDB transaction.  If <code class="code docutils literal notranslate"><span class="pre">gridfs_id</span></code>
+values are intentionally shared or edited manually, writers capable of
+creating those references must also remain quiescent during replacement,
+<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code>, and reconciliation.  Reference scans cover every
+schema-defined waveform collection plus the staged/requested collection;
+they cannot discover a manually created reference in an unrelated custom
+collection that is absent from the active database schema.
+During known-failure compensation, a caller’s original storage Metadata
+is restored as soon as staged samples are confirmed deleted.  If later
+auxiliary or staging-record cleanup fails, the durable stage remains for
+reconciliation; the caller is not left pointing at the deleted samples.</p>
+<p>Sample data can instead be stored in an S3-compatible object store by
+supplying an authenticated boto3 client and an explicit destination:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+
+<span class="n">s3_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">"s3"</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span>
+    <span class="n">d</span><span class="p">,</span>
+    <span class="n">storage_mode</span><span class="o">=</span><span class="s2">"object_store"</span><span class="p">,</span>
+    <span class="n">object_store</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"provider"</span><span class="p">:</span> <span class="s2">"s3"</span><span class="p">,</span>
+        <span class="s2">"bucket"</span><span class="p">:</span> <span class="s2">"earthscope-scratch"</span><span class="p">,</span>
+        <span class="s2">"key_prefix"</span><span class="p">:</span> <span class="s2">"auth0|user-id/waveforms"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">object_store_client</span><span class="o">=</span><span class="n">s3_client</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Each atomic datum is stored as an independent object.  Reading the saved
+waveform requires passing a compatible client to
+<code class="code docutils literal notranslate"><span class="pre">db.read_data(...,</span> <span class="pre">object_store_client=s3_client)</span></code>.  Authentication
+and client lifetime are intentionally managed by the caller.  Native
+binary samples use the versioned <code class="code docutils literal notranslate"><span class="pre">float64-le-v1</span></code> encoding.  A
+TimeSeries payload is <code class="code docutils literal notranslate"><span class="pre">npts</span></code> contiguous IEEE 754 float64 values in
+little-endian byte order.  A Seismogram payload is three component-major
+rows of <code class="code docutils literal notranslate"><span class="pre">npts</span></code> contiguous values in C order.  Formatted writes use
+the selected ObsPy format.  Each upload is preceded by a durable MongoDB
+staging record containing the preallocated waveform, history, and elog
+ids plus the exact S3 location.  This lifecycle currently supports only
+unversioned S3 buckets; bucket version ids are not persisted or passed to
+deletion operations.  Lifecycle state is written with MongoDB majority
+write concern, and owner/reference decisions are read from the primary
+with majority read concern.  Thus irreversible cleanup decisions use only
+majority-committed state; these safety settings override weaker options on
+the caller’s Database handle.</p>
+<p>Once <code class="code docutils literal notranslate"><span class="pre">put_object</span></code> has been invoked, an exception cannot prove that
+the upload did not finish at the service.  MsPASS therefore retains the
+S3 location, staging record, preallocated waveform <code class="code docutils literal notranslate"><span class="pre">_id</span></code>, and new
+caller Metadata and raises an explicit fatal error.  It does not issue an
+immediate compensating delete.  The same rule applies to connection,
+topology, timeout, or write-concern failures after a staged MongoDB write
+has been attempted.  If an error is known to precede those uncertain
+operations, <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> removes the object and staged auxiliary
+documents and restores the caller’s original storage Metadata, including
+its original <code class="code docutils literal notranslate"><span class="pre">_id</span></code>, only after MongoDB confirms that no waveform
+document references the object.
+Once an unreferenced S3 object is confirmed deleted, the caller’s original
+storage Metadata is restored even if later auxiliary or staging-record
+cleanup fails.  The retained durable stage then records the remaining
+reconciliation work without making the caller point at a deleted object.</p>
+<p>On an uncertain result, the datum held by the caller is a recovery handle:
+its <code class="code docutils literal notranslate"><span class="pre">_id</span></code> is the preallocated waveform id recorded in staging, not
+the id of a previous waveform document.  History, elog, and deletion-claim
+pointers inherited from a previous owner are removed because they do not
+belong to the staged owner.  Do not reuse that in-memory datum directly
+after reconciliation.  If the staged owner committed, reload it by that
+<code class="code docutils literal notranslate"><span class="pre">_id</span></code>; if reconciliation removes the uncommitted save, discard the
+datum or restore it from an application-owned copy of its prior state.
+An abrupt process or host termination leaves the staging record available
+for reconciliation.  Stop concurrent object-store reference writers and
+wait for all outstanding S3 and MongoDB requests before every call to
+<code class="code docutils literal notranslate"><span class="pre">db.reconcile_object_store_staging(s3_client)</span></code>: even its default
+mode repairs committed auxiliary links and clears resolved staging
+records.  The default reports unresolved S3 URIs without deleting their
+samples.  Pass <code class="code docutils literal notranslate"><span class="pre">delete_uncommitted=True</span></code> to also delete uncommitted
+objects, any staged history/elog documents, and their staging records.
+Reconciliation treats
+<code class="code docutils literal notranslate"><span class="pre">provider</span></code>, <code class="code docutils literal notranslate"><span class="pre">bucket</span></code>, and <code class="code docutils literal notranslate"><span class="pre">object_name</span></code> as the canonical
+S3 object identity.  It first queries the exact staged waveform id and
+collection, including alternate collections not present in the database
+schema, then checks every schema-defined waveform collection for shared
+references.  For the exact intended owner, it validates the saved
+history/elog ids and repairs their reverse waveform links before clearing
+staging.  If only another waveform shares the S3 identity, it preserves
+the object while removing the failed owner’s staged auxiliary documents.
+Nonidentity fields such as <code class="code docutils literal notranslate"><span class="pre">encoding</span></code> or <code class="code docutils literal notranslate"><span class="pre">etag</span></code> do not affect
+that decision.
+Object-store ensemble members use this upload-and-commit sequence one at a
+time, bounding the uncommitted window to one member.
+<code class="code docutils literal notranslate"><span class="pre">update_data</span></code> does not replace samples for object-store data; save a
+new datum with <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> instead.  <code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> requires
+the caller-owned <code class="code docutils literal notranslate"><span class="pre">object_store_client</span></code> for object-store data and
+retains the waveform document if the external object cannot be deleted.
+If another waveform document references the same canonical S3 identity,
+only the requested waveform and auxiliary documents are removed; the
+shared S3 object is retained.  The MongoDB shared-reference query and S3
+deletion cannot be one atomic operation.  If identities are intentionally
+shared or can be edited manually, all writers capable of creating or
+changing object-store references must remain quiescent for the duration of
+<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code>.  Concurrent creation of a new shared reference is not
+protected by this API.</p>
 <p>When <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> is passed an ensemble, it writes each live member
 as an atomic datum.  Ensemble Metadata are copied to each member before
 the member is saved.  A common pattern for miniseed data is to bundle
@@ -822,6 +937,50 @@ updates Metadata, the error log, history, and sample data for an atomic
 <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code>.  ProcessingHistory and error-log
 records should be managed through these APIs rather than edited directly with
 PyMongo.</p>
+<p>For waveform documents backed by GridFS or an object store,
+<code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code> reads the owner from the MongoDB primary and
+deliberately excludes lifecycle-owned sample and history/elog pointers from
+its update payload.  A real change to <code class="code docutils literal notranslate"><span class="pre">storage_mode</span></code>, <code class="code docutils literal notranslate"><span class="pre">gridfs_id</span></code>,
+an object-store canonical identity, or an auxiliary-document id is rejected.
+Adding nonidentity object-store Metadata such as <code class="code docutils literal notranslate"><span class="pre">etag</span></code> is allowed only
+while a compare-and-swap still matches the same provider, bucket, and object
+name.  Existing file- and URL-backed Metadata repair behavior is unchanged.
+Use <code class="code docutils literal notranslate"><span class="pre">save_data</span></code>, <code class="code docutils literal notranslate"><span class="pre">update_data</span></code>, or <code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> for storage
+transitions so staging and compensation remain consistent.  Direct PyMongo
+edits bypass this protection and must be treated as an offline repair: stop
+all related writers and reconcile durable stages before resuming normal CRUD
+operations.  For backward compatibility, <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code> can still
+upsert when its primary read finds no waveform.  Once that read finds an
+existing waveform, however, the operation is fixed as non-upserting so a
+concurrent deletion cannot recreate a metadata-only document.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">update_data</span></code> requires an existing waveform <code class="code docutils literal notranslate"><span class="pre">_id</span></code>.  It reads the
+persisted sample location from the MongoDB primary before performing any
+write, writes replacement GridFS samples with majority write concern, and
+commits the new pointer with a primary/majority compare-and-swap against the
+complete old location.  Only a confirmed commit permits deletion of the old
+GridFS object.  If the GridFS write or pointer commit has an uncertain network
+or write-concern result, both the old and staged objects plus the durable stage
+are retained.  Wait for outstanding MongoDB writes to finish, run
+<code class="code docutils literal notranslate"><span class="pre">reconcile_gridfs_staging</span></code>, and reload the waveform by <code class="code docutils literal notranslate"><span class="pre">_id</span></code> from
+the primary; the in-memory datum is only a recovery handle during that
+interval.  A file or URL source is converted to an explicit
+<code class="code docutils literal notranslate"><span class="pre">storage_mode=&quot;gridfs&quot;</span></code> based on the persisted source location, not on
+mutable caller Metadata.
+If a prior save committed its waveform but could not remove its staging
+record, a later <code class="code docutils literal notranslate"><span class="pre">update_data</span></code> or <code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> first repairs its
+auxiliary links, finishes any safe old-GridFS cleanup, and removes that exact
+committed stage.  A conflicting or unreadable stage stops the new operation
+and must be reconciled before the waveform location can change again.
+The selected Metadata schema must be able to persist writable
+<code class="code docutils literal notranslate"><span class="pre">storage_mode</span></code> and <code class="code docutils literal notranslate"><span class="pre">gridfs_id</span></code> fields, and those fields cannot be
+listed in <code class="code docutils literal notranslate"><span class="pre">exclude_keys</span></code>.  The same preflight applies to direct updates,
+serial overwrite, and distributed GridFS saves before any sample write.  A
+live zero-length datum is never allowed to replace an existing GridFS object;
+the old waveform and samples remain unchanged.
+For new saves, metadata-validation failures and live zero-length data follow
+the normal <code class="code docutils literal notranslate"><span class="pre">cremate</span></code> contract: <code class="code docutils literal notranslate"><span class="pre">cremate=True</span></code> discards them
+without creating cemetery documents, including atomic and ensemble members
+saved through <code class="code docutils literal notranslate"><span class="pre">write_distributed_data</span></code>.</p>
 <p>As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
@@ -885,15 +1044,17 @@ method of the Database class:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span>
                 <span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">object_store_client</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>As with the read methods, <code class="code docutils literal notranslate"><span class="pre">object_id</span></code> is the ObjectId of the waveform
 document that references the data to be deleted.  <code class="code docutils literal notranslate"><span class="pre">object_type</span></code> must be
 either <code class="code docutils literal notranslate"><span class="pre">&quot;TimeSeries&quot;</span></code> or <code class="code docutils literal notranslate"><span class="pre">&quot;Seismogram&quot;</span></code> and selects the
-corresponding default waveform collection.  Set <code class="code docutils literal notranslate"><span class="pre">collection</span></code> to a
-schema-defined waveform collection of that type to delete from an explicit
-collection instead.
+corresponding default waveform collection.  Set <code class="code docutils literal notranslate"><span class="pre">collection</span></code> to an
+explicit waveform collection instead.  Schema-defined collections are checked
+against <code class="code docutils literal notranslate"><span class="pre">object_type</span></code>; a literal alternate collection accepted by
+<code class="code docutils literal notranslate"><span class="pre">save_data</span></code> can also be deleted even when absent from the active database
+schema, with <code class="code docutils literal notranslate"><span class="pre">object_type</span></code> supplying its atomic waveform type.
 Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
@@ -902,7 +1063,17 @@ in the elog and history collections.  On the other hand, setting either
 true will result in a loss of information that might be needed to address
 problems during processing.  Both default to true to perform a complete
 delete and avoid orphaned records.  Set either false only when intentionally
-retaining those records and prepared to manage the broken waveform reference.</p>
+retaining those records and prepared to manage the broken waveform reference.
+Before deleting any requested auxiliary record, <code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> places a
+durable internal claim on the waveform document.  Supported metadata and
+sample writers cannot commit while that claim exists.  The waveform and claim
+are retained if a later sample deletion fails, and a subsequent
+<code class="code docutils literal notranslate"><span class="pre">delete_data</span></code> call resumes the idempotent cleanup.  The claim is removed
+only with the final waveform deletion and is never copied into a newly saved
+waveform.  Claim, auxiliary cleanup, reference checks, and final parent
+deletion use primary reads with majority read concern and majority writes for
+every storage mode, including file and URL data, even when the caller’s
+Database handle requests weaker options.</p>
 <p>The main complexity in this method is behind the boolean argument with the name
 <code class="code docutils literal notranslate"><span class="pre">remove_unreferenced_files</span></code>.  First, recognize this argument is completely
 ignored if the waveform data being referenced is stored internally in

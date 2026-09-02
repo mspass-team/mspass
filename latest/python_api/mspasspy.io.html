@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
+    <title>mspasspy.io &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=9129cfb6"></script>
+    <script src="../_static/documentation_options.js?v=095fb8b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev110" />
+  <meta name="docsearch:version" content="2.4.4.dev111" />
   </head>
   
   
@@ -969,12 +969,13 @@ so writing is a parallelized per worker.  Note the function
 also abstracts how the data are written with different
 things done depending on the “storage_mode” attribute
 that can optionally be defined for each atomic object.</p></li>
-<li><p>After the sample data are saved we use a MongoDB
-“update_many” operator with the “many” defined by the
-partition size.  That reduces database transaction delays
-by 1/object_per_partition.  For ensembles the partitioning
-is natural with bulk writes controlled by the number of
-ensemble members.</p></li>
+<li><p>File-backed output keeps the partitioned bulk-document writer
+to reduce database transaction delays.  GridFS output instead
+saves each atomic datum through <code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.save_data()</span></code> so a
+durable staging record exists before its sample bytes and its
+waveform document are written.  This gives up GridFS bulk inserts
+in exchange for crash-safe reconciliation; workers still process
+different data in parallel.</p></li>
 </ol>
 </div></blockquote>
 <p>The function also handles data marked dead in a standardized way
@@ -1073,7 +1074,9 @@ being the default.  See the User’s manual for more details on
 the concepts and how to use this option.</p></li>
 <li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be either “gridfs” or “file.  When set to
 “gridfs” the waveform data are stored internally and managed by
-MongoDB.  If set to “file” the data will be stored in a file system.
+MongoDB using the same durable staging lifecycle as
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Database.save_data()</span></code>.  If set to “file” the data will be stored
+in a file system.
 File names are derived from attributes with the tags “dir” and
 “dfile” in the standard way.   Any datum for which dir or dfile
 aren’t defined will default to the behaviour of the Database

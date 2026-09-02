@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=9129cfb6"></script>
+    <script src="../_static/documentation_options.js?v=095fb8b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev110" />
+  <meta name="docsearch:version" content="2.4.4.dev111" />
   </head>
   
   
@@ -833,7 +833,7 @@ document in a timeseries collection expires.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.delete_data">
-<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unreferenced_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">delete_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unreferenced_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_store_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_data" title="Link to this definition">#</a></dt>
 <dd><p>Delete method for handling mspass data objects (TimeSeries and Seismograms).</p>
 <p>Delete is one of the basic operations any database system should
 support (the last letter of the acronymn CRUD is delete).  Deletion is
@@ -845,7 +845,14 @@ and when given the object id defining a document in one of the wf
 collections, it will delete the wf document entry and manage the
 waveform data.  If the data are stored in gridfs the deletion of
 the waveform data will be immediate.  If the data are stored in
-disk files the file will be deleted when there are no more references
+object store the independent object is deleted through the caller-owned
+client when no other waveform document references the same canonical
+identity.  That MongoDB reference check and the external deletion are
+not atomic.  Callers that intentionally share or manually edit object-
+store identities must keep all reference writers quiescent until this
+method returns.  Concurrent creation of a new shared reference is not
+protected.  If the data are stored in disk files the file will be deleted
+when there are no more references
 in any schema-defined waveform collection for the exact combination
 of dir and dfile associated with an atomic deletion.  Requested
 history and error-log cleanup precedes sample deletion, and the
@@ -866,7 +873,13 @@ commands to delete waveform files.</p>
 <li><p><strong>clear_history</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the processing history of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 <li><p><strong>clear_elog</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the elog entries of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
 <li><p><strong>collection</strong> – explicit waveform collection containing the object. If
-omitted, use the default collection for <code class="docutils literal notranslate"><span class="pre">object_type</span></code>.</p></li>
+omitted, use the default collection for <code class="docutils literal notranslate"><span class="pre">object_type</span></code>.  Literal
+alternate collections accepted by <a class="reference internal" href="#mspasspy.db.database.Database.save_data" title="mspasspy.db.database.Database.save_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_data()</span></code></a> are supported
+even when absent from DatabaseSchema; in that case <code class="docutils literal notranslate"><span class="pre">object_type</span></code>
+supplies the atomic waveform type.</p></li>
+<li><p><strong>object_store_client</strong> – boto3-compatible S3 client required to delete
+data whose persisted <code class="docutils literal notranslate"><span class="pre">storage_mode</span></code> is <code class="docutils literal notranslate"><span class="pre">object_store</span></code>.  Client
+construction, credentials, and lifetime remain caller-owned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1369,7 +1382,7 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.read_data">
-<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_doc_or_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_doc_or_cursor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">define_as_raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_interpolation_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_access_key_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aws_secret_access_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_store_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Link to this definition">#</a></dt>
 <dd><p>Top-level MsPASS reader for seismic waveform data objects.</p>
 <p>Most MsPASS processing scripts use this method directly
 or indirectly via the parallel version called
@@ -1434,6 +1447,11 @@ This mode is volatile and currently not recommended due to the very
 slow and unreliable response to FDSN data queries.  It is likely,
 however, to become a major component with FDSN services moving to
 cloud systems.</p></li>
+<li><p><cite>object_store</cite> reads an object managed by a cloud object store.  The
+waveform document must contain an <code class="docutils literal notranslate"><span class="pre">object_store</span></code> subdocument with
+<code class="docutils literal notranslate"><span class="pre">provider</span></code>, <code class="docutils literal notranslate"><span class="pre">bucket</span></code>, and <code class="docutils literal notranslate"><span class="pre">object_name</span></code> fields.  Currently the
+only supported provider is <code class="docutils literal notranslate"><span class="pre">s3</span></code> and a boto3-compatible client must
+be supplied with <code class="docutils literal notranslate"><span class="pre">object_store_client</span></code>.</p></li>
 <li><p>This reader has prototype support for reading SCEC data stored on
 AWS s3.   The two valid values for defining those “storage_mode”s
 are “s3_continuous” and “s3_event”, which map to two different
@@ -1677,6 +1695,9 @@ for details, but this argument controls how “overlaps”, as opposed
 to gaps, are handled by merge.  See the function documentation
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.merge.html">Stream.merge</a>
 for details.</p></li>
+<li><p><strong>object_store_client</strong> – boto3-compatible S3 client used only for
+data whose <code class="docutils literal notranslate"><span class="pre">storage_mode</span></code> is <code class="docutils literal notranslate"><span class="pre">object_store</span></code>.  Authentication and
+client lifetime remain the caller’s responsibility.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1749,6 +1770,52 @@ query parameters</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.reconcile_gridfs_staging">
+<span class="sig-name descname"><span class="pre">reconcile_gridfs_staging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delete_uncommitted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.reconcile_gridfs_staging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.reconcile_gridfs_staging" title="Link to this definition">#</a></dt>
+<dd><p>Resolve durable GridFS save and replacement staging records.</p>
+<p>Call this method only after GridFS writers and their outstanding
+MongoDB requests are quiescent.  The default repairs committed
+auxiliary links and removes resolved stages, but only reports
+uncommitted records.  <code class="docutils literal notranslate"><span class="pre">delete_uncommitted=True</span></code> also removes their
+preallocated GridFS files/chunks and staged auxiliary documents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.db.database.Database.reconcile_object_store_staging">
+<span class="sig-name descname"><span class="pre">reconcile_object_store_staging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_store_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_uncommitted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.reconcile_object_store_staging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.reconcile_object_store_staging" title="Link to this definition">#</a></dt>
+<dd><p>Report or remove durable object-store staging records.</p>
+<p>A staging record containing preallocated waveform, history, and elog
+ids is written before each S3 upload and removed only after the
+corresponding waveform document and auxiliary links have been
+committed.  A
+record whose intended owner has the same canonical S3 identity
+(provider, bucket, and object name) is committed, including owners in
+alternate collections not present in <code class="docutils literal notranslate"><span class="pre">DatabaseSchema</span></code>.  If that
+exact owner is absent, every schema-defined waveform collection is
+checked for a shared reference.  Reconciliation removes only the
+stale staging record for committed objects and never their samples.
+It repairs the intended owner’s auxiliary reverse links before
+clearing staging.  If only another waveform shares the identity, its
+samples are preserved while the failed owner’s staged auxiliary
+documents are removed.  Other records are reported as uncommitted by
+default.</p>
+<p>Call this method only after every object-store reference writer is
+quiescent and every outstanding S3 and MongoDB request has completed.
+Even the default mode repairs auxiliary links and removes resolved
+staging records.  MongoDB and S3 cannot provide a cross-system
+transaction, so an active or in-flight writer could otherwise change
+ownership between the reference check and cleanup.  This lifecycle
+supports unversioned S3 buckets only because version ids are not
+persisted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a dictionary containing deterministic URI lists named
+<code class="docutils literal notranslate"><span class="pre">committed</span></code>, <code class="docutils literal notranslate"><span class="pre">uncommitted</span></code>, <code class="docutils literal notranslate"><span class="pre">deleted</span></code>, and <code class="docutils literal notranslate"><span class="pre">failures</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.save_catalog">
 <span class="sig-name descname"><span class="pre">save_catalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_catalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_catalog" title="Link to this definition">#</a></dt>
 <dd><p>Save the contents of an obspy Catalog object to MongoDB
@@ -1773,7 +1840,7 @@ When false (default) it does it’s work silently.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.save_data">
-<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['_id']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cremate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['_id']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'promiscuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gridfs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cremate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'save_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_store</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_store_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_post_elog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_post_history</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Link to this definition">#</a></dt>
 <dd><p>Standard method to save all seismic data objects to be managed by
 MongoDB.</p>
 <p>This method provides a unified interface for saving all seismic
@@ -1802,8 +1869,9 @@ complicated, however, by the fact that “write/save” is itself
 an abstraction that even in FORTRAN days hid a lot of complexity.
 A call to this function supports multiple save mechanisms we
 define through the <cite>storage_mode</cite> keyword. At present
-“storage_mode” can be only one of two options:  “file” and
-“gridfs”.  Note this class has prototype code for reading data
+“storage_mode” can be “file”, “gridfs”, or “object_store”.
+<code class="docutils literal notranslate"><span class="pre">object_store</span></code> currently supports S3 through a caller-supplied
+boto3-compatible client.  Note this class has prototype code for reading data
 in AWS s3 cloud storage that is not yet part of this interface.
 The API, however, was designed to allow adding one or more
 “storage_mode” options that allow other mechanisms to save
@@ -1977,8 +2045,8 @@ for the two collections contain the same name-value pairs but
 we split them because action required by an abortion is
 very different from a normal kill.   See the User Manual
 section on “CRUD Operations” for information on this topic.</p></li>
-<li><p>Object-level history is not saved unless the argument
-“save_history” is set True (default is False).   When enabled
+<li><p>Object-level history is saved by default.  Set the argument
+“save_history” False to disable it.  When enabled
 the history data (if defined) is saved to a collection called
 “history”.   The document saved, like elog, has the ObjectId of
 the wf document with which it is associated.  Be aware that there
@@ -2058,11 +2126,13 @@ specification in the schema for the type of object being constructed.
 Options are [‘promiscuous’,’cautious’,’pedantic’] with ‘promiscuous’
 being the default.  See the User’s manual for more details on
 the concepts and how to use this option.</p></li>
-<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Current must be either “gridfs” or “file.  When set to
+<li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Must be “gridfs”, “file”, or “object_store”.  When set to
 “gridfs” the waveform data are stored internally and managed by
 MongoDB.  If set to “file” the data will be stored in a file system
 with the dir and dfile arguments defining a file name.   The
-default is “gridfs”.  See above for more details.</p></li>
+default is “gridfs”.  <code class="docutils literal notranslate"><span class="pre">object_store</span></code> writes each atomic datum to
+an independent object at the destination given by <code class="docutils literal notranslate"><span class="pre">object_store</span></code>.
+See above for more details.</p></li>
 <li><p><strong>dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file directory for storage.  This argument is ignored if
 storage_mode is set to “gridfs”.  When storage_mode is “file” it
 sets the directory in a file system where the data should be saved.
@@ -2112,6 +2182,18 @@ the confusion it would cause.   This is most useful for light, stable
 preprocessing with a set of map operators to regularize a data
 set before more extensive processing.  It can only be used when
 storage_mode is set to gridfs.</p></li>
+<li><p><strong>object_store</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – destination description required when
+<code class="docutils literal notranslate"><span class="pre">storage_mode=&quot;object_store&quot;</span></code>.  It must be a dictionary containing
+<code class="docutils literal notranslate"><span class="pre">provider=&quot;s3&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">bucket</span></code>.  The optional <code class="docutils literal notranslate"><span class="pre">key_prefix</span></code> is
+prepended to the unique object name generated for each atomic datum.
+Only unversioned buckets are supported by the current lifecycle.</p></li>
+<li><p><strong>object_store_client</strong> – boto3-compatible S3 client used to write
+object-store sample data.  Authentication and client lifetime remain
+the caller’s responsibility.  After <code class="docutils literal notranslate"><span class="pre">put_object</span></code> is invoked, any
+exception is treated as an uncertain upload result.  Uncertain S3 or
+MongoDB writes retain the samples, durable staging record,
+preallocated waveform <code class="docutils literal notranslate"><span class="pre">_id</span></code>, and new caller metadata for later
+reconciliation instead of being compensated in process.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Metadata can often become contaminated with
 attributes that are no longer needed or a mismatch with the data.
 A type example is the bundle algorithm takes three TimeSeries
@@ -2539,7 +2621,13 @@ a new GridFS object.  The waveform document is then changed from the
 expected old id to the new id with one conditional update.  Only
 after that reference is durable is the old GridFS object deleted.
 Consequently, a put or reference-update failure leaves the old
-waveform readable instead of destroying its only sample copy.</p>
+waveform readable instead of destroying its only sample copy.
+The persisted location is read from the primary and both the staged
+GridFS write and pointer compare-and-swap use majority write concern.
+If either write returns an uncertain result, both old and staged
+sample objects and a durable staging record are retained.  After
+outstanding writes complete, call <code class="docutils literal notranslate"><span class="pre">reconcile_gridfs_staging</span></code> and
+reload the waveform by <code class="docutils literal notranslate"><span class="pre">_id</span></code> from the primary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2626,7 +2714,7 @@ schema.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database.update_metadata">
-<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_metadata'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_metadata" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mspass_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cautious'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalizing_collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['channel',</span> <span class="pre">'site',</span> <span class="pre">'source']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Database.update_metadata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_lifecycle_managed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.update_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database.update_metadata" title="Link to this definition">#</a></dt>
 <dd><p>Use this method if you want to save the output of a processing algorithm
 whose output is only posted to metadata.   That can be something as
 simple as a little python function that does some calculations on other
@@ -2659,6 +2747,9 @@ of <code class="docutils literal notranslate"><span class="pre">{&quot;READONLYE
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to update.</p></li>
+<li><p><strong>upsert</strong> – preserve the historical metadata-only behavior when
+True.  Internal full-data updates set this False so a concurrent
+deletion cannot recreate a waveform without sample pointers.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to exclude from being updated.</p></li>
 <li><p><strong>force_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to force
 to be updated.   Normally this method will only update attributes
@@ -6392,6 +6483,8 @@ the method considers valid.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.read_ensemble_data"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.read_ensemble_data_group"><code class="docutils literal notranslate"><span class="pre">Database.read_ensemble_data_group()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.read_inventory"><code class="docutils literal notranslate"><span class="pre">Database.read_inventory()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.reconcile_gridfs_staging"><code class="docutils literal notranslate"><span class="pre">Database.reconcile_gridfs_staging()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.reconcile_object_store_staging"><code class="docutils literal notranslate"><span class="pre">Database.reconcile_object_store_staging()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.save_catalog"><code class="docutils literal notranslate"><span class="pre">Database.save_catalog()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.save_data"><code class="docutils literal notranslate"><span class="pre">Database.save_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.db.database.Database.save_dataframe"><code class="docutils literal notranslate"><span class="pre">Database.save_dataframe()</span></code></a></li>

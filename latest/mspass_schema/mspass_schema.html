@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>MsPASS Schema &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
+    <title>MsPASS Schema &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=9129cfb6"></script>
+    <script src="../_static/documentation_options.js?v=095fb8b0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,7 @@
     <link rel="prev" title="mspass::seismic::Seismogram" href="../cxx_api/mspass.seismic.Seismogram.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev110" />
+  <meta name="docsearch:version" content="2.4.4.dev111" />
   </head>
   
   
@@ -605,86 +605,93 @@ include operational collections such as <code class="docutils literal notranslat
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
-<tr class="row-even"><td><p>format</p></td>
+<tr class="row-even"><td><p>object_store</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Provider-specific location of sample data in an object store.</p></td>
+</tr>
+<tr class="row-odd"><td><p>format</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
 </tr>
-<tr class="row-odd"><td><p>dir</p></td>
+<tr class="row-even"><td><p>dir</p></td>
 <td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Directory path to an external file (always used with dfile)</p></td>
 </tr>
-<tr class="row-even"><td><p>dfile</p></td>
+<tr class="row-odd"><td><p>dfile</p></td>
 <td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>External data file name.</p></td>
 </tr>
-<tr class="row-odd"><td><p>foff</p></td>
+<tr class="row-even"><td><p>foff</p></td>
 <td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
 <td><p>int</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
 </tr>
-<tr class="row-even"><td><p>url</p></td>
+<tr class="row-odd"><td><p>url</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Url to external data file.</p></td>
 </tr>
-<tr class="row-odd"><td><p>gridfs_id</p></td>
+<tr class="row-even"><td><p>gridfs_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>source_id</p></td>
+<tr class="row-odd"><td><p>source_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_id</p></td>
+<tr class="row-even"><td><p>site_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
-<tr class="row-even"><td><p>history_object_id</p></td>
+<tr class="row-odd"><td><p>history_object_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>history_object</p></td>
 <td><p>ObjectId of this document - standard MongoDB attribute</p></td>
 </tr>
-<tr class="row-odd"><td><p>elog_id</p></td>
+<tr class="row-even"><td><p>elog_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>elog</p></td>
 <td><p>ObjectID used to define an unique entry in elog collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>data_tag</p></td>
+<tr class="row-odd"><td><p>data_tag</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
 </tr>
-<tr class="row-odd"><td><p>channel_id</p></td>
+<tr class="row-even"><td><p>channel_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
@@ -799,107 +806,114 @@ include operational collections such as <code class="docutils literal notranslat
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
-<tr class="row-even"><td><p>format</p></td>
+<tr class="row-even"><td><p>object_store</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Provider-specific location of sample data in an object store.</p></td>
+</tr>
+<tr class="row-odd"><td><p>format</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
 </tr>
-<tr class="row-odd"><td><p>dir</p></td>
+<tr class="row-even"><td><p>dir</p></td>
 <td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Directory path to an external file (always used with dfile)</p></td>
 </tr>
-<tr class="row-even"><td><p>dfile</p></td>
+<tr class="row-odd"><td><p>dfile</p></td>
 <td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>External data file name.</p></td>
 </tr>
-<tr class="row-odd"><td><p>foff</p></td>
+<tr class="row-even"><td><p>foff</p></td>
 <td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
 <td><p>int</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
 </tr>
-<tr class="row-even"><td><p>url</p></td>
+<tr class="row-odd"><td><p>url</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Url to external data file.</p></td>
 </tr>
-<tr class="row-odd"><td><p>gridfs_id</p></td>
+<tr class="row-even"><td><p>gridfs_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>source_id</p></td>
+<tr class="row-odd"><td><p>source_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_id</p></td>
+<tr class="row-even"><td><p>site_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>site</p></td>
 <td><p>Linking id to site collection</p></td>
 </tr>
-<tr class="row-even"><td><p>history_object_id</p></td>
+<tr class="row-odd"><td><p>history_object_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>history_object</p></td>
 <td><p>ObjectId of this document - standard MongoDB attribute</p></td>
 </tr>
-<tr class="row-odd"><td><p>elog_id</p></td>
+<tr class="row-even"><td><p>elog_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>elog</p></td>
 <td><p>ObjectID used to define an unique entry in elog collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>data_tag</p></td>
+<tr class="row-odd"><td><p>data_tag</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
 </tr>
-<tr class="row-odd"><td><p>tmatrix</p></td>
+<tr class="row-even"><td><p>tmatrix</p></td>
 <td></td>
 <td><p>list</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Three-component data’s transformation matrix</p></td>
 </tr>
-<tr class="row-even"><td><p>cardinal</p></td>
+<tr class="row-odd"><td><p>cardinal</p></td>
 <td></td>
 <td><p>boolean</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.</p></td>
 </tr>
-<tr class="row-odd"><td><p>orthogonal</p></td>
+<tr class="row-even"><td><p>orthogonal</p></td>
 <td></td>
 <td><p>boolean</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
 </tr>
-<tr class="row-even"><td><p>channel_id_list</p></td>
+<tr class="row-odd"><td><p>channel_id_list</p></td>
 <td></td>
 <td><p>list</p></td>
 <td><p>optional</p></td>
@@ -1014,121 +1028,128 @@ include operational collections such as <code class="docutils literal notranslat
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
-<tr class="row-even"><td><p>format</p></td>
+<tr class="row-even"><td><p>object_store</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Provider-specific location of sample data in an object store.</p></td>
+</tr>
+<tr class="row-odd"><td><p>format</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The file format of the saved data (e.g., ‘MSEED’, ‘SAC’, …).</p></td>
 </tr>
-<tr class="row-odd"><td><p>dir</p></td>
+<tr class="row-even"><td><p>dir</p></td>
 <td><p>file.dir : wfdisc.dir : wfprocess.dir</p></td>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Directory path to an external file (always used with dfile)</p></td>
 </tr>
-<tr class="row-even"><td><p>dfile</p></td>
+<tr class="row-odd"><td><p>dfile</p></td>
 <td><p>file.dfile : wfdisc.dfile : wfprocess.dfile</p></td>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>External data file name.</p></td>
 </tr>
-<tr class="row-odd"><td><p>foff</p></td>
+<tr class="row-even"><td><p>foff</p></td>
 <td><p>file.foff : wfdisc.foff : wfprocess.foff</p></td>
 <td><p>int</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Offset in bytes from beginning of a file to first data sample.</p></td>
 </tr>
-<tr class="row-even"><td><p>url</p></td>
+<tr class="row-odd"><td><p>url</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Url to external data file.</p></td>
 </tr>
-<tr class="row-odd"><td><p>gridfs_id</p></td>
+<tr class="row-even"><td><p>gridfs_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>The _id of data file in the fs.files collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>source_id</p></td>
+<tr class="row-odd"><td><p>source_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_id</p></td>
+<tr class="row-even"><td><p>site_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
-<tr class="row-even"><td><p>history_object_id</p></td>
+<tr class="row-odd"><td><p>history_object_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>history_object</p></td>
 <td><p>ObjectId of this document - standard MongoDB attribute</p></td>
 </tr>
-<tr class="row-odd"><td><p>elog_id</p></td>
+<tr class="row-even"><td><p>elog_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>elog</p></td>
 <td><p>ObjectID used to define an unique entry in elog collection.</p></td>
 </tr>
-<tr class="row-even"><td><p>data_tag</p></td>
+<tr class="row-odd"><td><p>data_tag</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Used as a tag for data at a particular stage of processing. Used in save_data.</p></td>
 </tr>
-<tr class="row-odd"><td><p>last_packet_time</p></td>
+<tr class="row-even"><td><p>last_packet_time</p></td>
 <td></td>
 <td><p>double</p></td>
 <td><p>normal</p></td>
 <td></td>
 <td><p>Time tag on the last packet of a contiguous block of miniseed packets</p></td>
 </tr>
-<tr class="row-even"><td><p>net</p></td>
+<tr class="row-odd"><td><p>net</p></td>
 <td><p>channel.net : network : site.net : site_net : wfdisc.net</p></td>
 <td><p>string</p></td>
 <td><p>normal</p></td>
 <td><p>site</p></td>
 <td><p>network code (net component of SEED net:sta:chan)</p></td>
 </tr>
-<tr class="row-odd"><td><p>sta</p></td>
+<tr class="row-even"><td><p>sta</p></td>
 <td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
 <td><p>string</p></td>
 <td><p>normal</p></td>
 <td><p>site</p></td>
 <td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
 </tr>
-<tr class="row-even"><td><p>loc</p></td>
+<tr class="row-odd"><td><p>loc</p></td>
 <td><p>channel.loc : location : site.loc</p></td>
 <td><p>string</p></td>
 <td><p>normal</p></td>
 <td><p>channel</p></td>
 <td><p>location code assigned to an instrument (loc component of SEED net:sta:chan)</p></td>
 </tr>
-<tr class="row-odd"><td><p>chan</p></td>
+<tr class="row-even"><td><p>chan</p></td>
 <td><p>KCMPNM : channel : channel.chan : wfdisc.chan</p></td>
 <td><p>string</p></td>
 <td><p>normal</p></td>
 <td><p>channel</p></td>
 <td><p>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code</p></td>
 </tr>
-<tr class="row-even"><td><p>channel_id</p></td>
+<tr class="row-odd"><td><p>channel_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
@@ -2073,161 +2094,168 @@ case sensitive.  In UTF-8 alphabetical order capitals appear before lower case.)
 <td></td>
 <td><p>Number of data samples</p></td>
 </tr>
-<tr class="row-even"><td><p>orthogonal</p></td>
+<tr class="row-even"><td><p>object_store</p></td>
+<td></td>
+<td><p>dict</p></td>
+<td><p>optional</p></td>
+<td></td>
+<td><p>Provider-specific location of sample data in an object store.</p></td>
+</tr>
+<tr class="row-odd"><td><p>orthogonal</p></td>
 <td></td>
 <td><p>boolean</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion).</p></td>
 </tr>
-<tr class="row-odd"><td><p>phase</p></td>
+<tr class="row-even"><td><p>phase</p></td>
 <td></td>
 <td><p>string</p></td>
 <td></td>
 <td></td>
 <td><p>Phase name assigned by an analyst to a pick</p></td>
 </tr>
-<tr class="row-even"><td><p>sampling_rate</p></td>
+<tr class="row-odd"><td><p>sampling_rate</p></td>
 <td></td>
 <td><p>double</p></td>
 <td><p>optional</p></td>
 <td></td>
 <td><p>Data sampling frequency in Hz=1/s</p></td>
 </tr>
-<tr class="row-odd"><td><p>seaz</p></td>
+<tr class="row-even"><td><p>seaz</p></td>
 <td><p>BAZ</p></td>
 <td><p>double</p></td>
 <td></td>
 <td></td>
 <td><p>Station to event azimuth</p></td>
 </tr>
-<tr class="row-even"><td><p>site_elev</p></td>
+<tr class="row-odd"><td><p>site_elev</p></td>
 <td><p>STEL : site.elev : stel</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_endtime</p></td>
+<tr class="row-even"><td><p>site_endtime</p></td>
 <td><p>site.endtime</p></td>
 <td><p>double</p></td>
 <td><p>normal</p></td>
 <td></td>
 <td><p>Time of seismic station/instrument ends recording</p></td>
 </tr>
-<tr class="row-even"><td><p>site_id</p></td>
+<tr class="row-odd"><td><p>site_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>site</p></td>
 <td><p>ObjectId used to define a particular instrument/seismic station</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_lat</p></td>
+<tr class="row-even"><td><p>site_lat</p></td>
 <td><p>STLA : site.lat</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>latitude of a seismic station/instrument in degrees</p></td>
 </tr>
-<tr class="row-even"><td><p>site_lon</p></td>
+<tr class="row-odd"><td><p>site_lon</p></td>
 <td><p>STLO : site.lon : stlo</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>longitude of a seismic station/instrument in degrees</p></td>
 </tr>
-<tr class="row-odd"><td><p>site_starttime</p></td>
+<tr class="row-even"><td><p>site_starttime</p></td>
 <td><p>site.starttime</p></td>
 <td><p>double</p></td>
 <td><p>normal</p></td>
 <td></td>
 <td><p>Time of seismic station/instrument starts recording</p></td>
 </tr>
-<tr class="row-even"><td><p>source_depth</p></td>
+<tr class="row-odd"><td><p>source_depth</p></td>
 <td><p>EVDP : origin.depth : source.depth</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Depth (in km) of the hypocenter of seismic source</p></td>
 </tr>
-<tr class="row-odd"><td><p>source_id</p></td>
+<tr class="row-even"><td><p>source_id</p></td>
 <td></td>
 <td><p>ObjectId</p></td>
 <td><p>xref_key</p></td>
 <td><p>source</p></td>
 <td><p>ObjectId used to define a particular seismic source</p></td>
 </tr>
-<tr class="row-even"><td><p>source_lat</p></td>
+<tr class="row-odd"><td><p>source_lat</p></td>
 <td><p>EVLA : origin.lat : source.lat</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Latitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
-<tr class="row-odd"><td><p>source_lon</p></td>
+<tr class="row-even"><td><p>source_lon</p></td>
 <td><p>EVLO : origin.lon : source.lon</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Longitude (in degrees) of the hypocenter of seismic source</p></td>
 </tr>
-<tr class="row-even"><td><p>source_magnitude</p></td>
+<tr class="row-odd"><td><p>source_magnitude</p></td>
 <td><p>MAG</p></td>
 <td><p>double</p></td>
 <td><p>normal</p></td>
 <td></td>
 <td><p>Generic magnitude attribute</p></td>
 </tr>
-<tr class="row-odd"><td><p>source_time</p></td>
+<tr class="row-even"><td><p>source_time</p></td>
 <td><p>origin.time : source.time</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Origin time of the hypocenter of seismic source (epoch time)</p></td>
 </tr>
-<tr class="row-even"><td><p>sta</p></td>
+<tr class="row-odd"><td><p>sta</p></td>
 <td><p>KSTNM : channel.sta : site.sta : station : wfdisc.sta</p></td>
 <td><p>string</p></td>
 <td><p>normal</p></td>
 <td></td>
 <td><p>station code assigned to a spot on Earth (sta component of SEED net:sta:chan)</p></td>
 </tr>
-<tr class="row-odd"><td><p>starttime</p></td>
+<tr class="row-even"><td><p>starttime</p></td>
 <td><p>t0 : time</p></td>
 <td><p>double</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Time of first sample of data (epoch time or relative to some other time mark)</p></td>
 </tr>
-<tr class="row-even"><td><p>storage_mode</p></td>
+<tr class="row-odd"><td><p>storage_mode</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
-<tr class="row-odd"><td><p>time_standard</p></td>
+<tr class="row-even"><td><p>time_standard</p></td>
 <td></td>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Defines time standard for meaning of t0 (default should be UTC)</p></td>
 </tr>
-<tr class="row-even"><td><p>tmatrix</p></td>
+<tr class="row-odd"><td><p>tmatrix</p></td>
 <td></td>
 <td><p>list</p></td>
 <td><p>required</p></td>
 <td></td>
 <td><p>Three-component data’s transformation matrix</p></td>
 </tr>
-<tr class="row-odd"><td><p>units</p></td>
+<tr class="row-even"><td><p>units</p></td>
 <td><p>IDEP : idep</p></td>
 <td><p>string</p></td>
 <td></td>
 <td></td>
 <td><p>Physical units of sample data (nm/s is normal assumed default)</p></td>
 </tr>
-<tr class="row-even"><td><p>utc_convertible</p></td>
+<tr class="row-odd"><td><p>utc_convertible</p></td>
 <td></td>
 <td><p>boolean</p></td>
 <td><p>required</p></td>
@@ -2909,7 +2937,7 @@ three-component seismic data objects.</p>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
 <tr class="row-even"><td><p>gridfs_id</p></td>
 <td></td>
@@ -2984,7 +3012,7 @@ three-component seismic data objects.</p>
 <td><p>string</p></td>
 <td><p>required</p></td>
 <td></td>
-<td><p>The storage mode of the saved data (‘file’, ‘url’ or ‘gridfs’)</p></td>
+<td><p>The storage mode of the saved data (‘file’, ‘url’, ‘gridfs’, or ‘object_store’)</p></td>
 </tr>
 </tbody>
 </table>

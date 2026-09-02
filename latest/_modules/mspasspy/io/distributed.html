@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev110+ge77706a49 documentation</title>
+    <title>mspasspy.io.distributed &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=9129cfb6"></script>
+    <script src="../../../_static/documentation_options.js?v=095fb8b0"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev110" />
+  <meta name="docsearch:version" content="2.4.4.dev111" />
   </head>
   
   
@@ -497,6 +497,12 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.utility</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ErrorLogger</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mspasspy.ccore.seismic</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Seismogram</span><span class="p">,</span>
+    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+    <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -1810,6 +1816,47 @@
     <span class="k">return</span> <span class="n">doc</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_distributed_gridfs_item</span><span class="p">(</span>
+    <span class="n">item</span><span class="p">,</span>
+    <span class="n">dbname_or_handle</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">,</span>
+    <span class="n">exclude_keys</span><span class="p">,</span>
+    <span class="n">collection</span><span class="p">,</span>
+    <span class="n">data_tag</span><span class="p">,</span>
+    <span class="n">post_elog</span><span class="p">,</span>
+    <span class="n">save_history</span><span class="p">,</span>
+    <span class="n">post_history</span><span class="p">,</span>
+    <span class="n">cremate</span><span class="p">,</span>
+    <span class="n">normalizing_collections</span><span class="p">,</span>
+    <span class="n">alg_name</span><span class="p">,</span>
+    <span class="n">alg_id</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Save one distributed item through Database's durable GridFS saga."""</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">fetch_dbhandle</span><span class="p">(</span><span class="n">dbname_or_handle</span><span class="p">)</span>
+    <span class="n">saved</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span>
+        <span class="n">item</span><span class="p">,</span>
+        <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">storage_mode</span><span class="o">=</span><span class="s2">"gridfs"</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span>
+        <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+        <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span>
+        <span class="n">cremate</span><span class="o">=</span><span class="n">cremate</span><span class="p">,</span>
+        <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
+        <span class="n">normalizing_collections</span><span class="o">=</span><span class="n">normalizing_collections</span><span class="p">,</span>
+        <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
+        <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span>
+        <span class="n">_post_elog</span><span class="o">=</span><span class="n">post_elog</span><span class="p">,</span>
+        <span class="n">_post_history</span><span class="o">=</span><span class="n">post_history</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">saved</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">saved</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="k">if</span> <span class="n">saved</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">saved</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">saved</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">datum</span><span class="p">[</span><span class="s2">"_id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">saved</span><span class="o">.</span><span class="n">member</span> <span class="k">if</span> <span class="n">datum</span><span class="o">.</span><span class="n">live</span> <span class="ow">and</span> <span class="s2">"_id"</span> <span class="ow">in</span> <span class="n">datum</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="write_distributed_data">
 <a class="viewcode-back" href="../../../python_api/mspasspy.io.html#mspasspy.io.distributed.write_distributed_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_distributed_data</span><span class="p">(</span>
@@ -1853,12 +1900,13 @@
 <span class="sd">             also abstracts how the data are written with different</span>
 <span class="sd">             things done depending on the "storage_mode" attribute</span>
 <span class="sd">             that can optionally be defined for each atomic object.</span>
-<span class="sd">        2.   After the sample data are saved we use a MongoDB</span>
-<span class="sd">             "update_many" operator with the "many" defined by the</span>
-<span class="sd">             partition size.  That reduces database transaction delays</span>
-<span class="sd">             by 1/object_per_partition.  For ensembles the partitioning</span>
-<span class="sd">             is natural with bulk writes controlled by the number of</span>
-<span class="sd">             ensemble members.</span>
+<span class="sd">        2.   File-backed output keeps the partitioned bulk-document writer</span>
+<span class="sd">             to reduce database transaction delays.  GridFS output instead</span>
+<span class="sd">             saves each atomic datum through :meth:`Database.save_data` so a</span>
+<span class="sd">             durable staging record exists before its sample bytes and its</span>
+<span class="sd">             waveform document are written.  This gives up GridFS bulk inserts</span>
+<span class="sd">             in exchange for crash-safe reconciliation; workers still process</span>
+<span class="sd">             different data in parallel.</span>
 
 <span class="sd">    The function also handles data marked dead in a standardized way</span>
 <span class="sd">    though the use of the :class:`mspasspy.util.Undertaker` now</span>
@@ -1967,7 +2015,9 @@
 
 <span class="sd">    :param storage_mode: Must be either "gridfs" or "file.  When set to</span>
 <span class="sd">        "gridfs" the waveform data are stored internally and managed by</span>
-<span class="sd">        MongoDB.  If set to "file" the data will be stored in a file system.</span>
+<span class="sd">        MongoDB using the same durable staging lifecycle as</span>
+<span class="sd">        :meth:`Database.save_data`.  If set to "file" the data will be stored</span>
+<span class="sd">        in a file system.</span>
 <span class="sd">        File names are derived from attributes with the tags "dir" and</span>
 <span class="sd">        "dfile" in the standard way.   Any datum for which dir or dfile</span>
 <span class="sd">        aren't defined will default to the behaviour of the Database</span>
@@ -2142,6 +2192,33 @@
         <span class="p">)</span>
         <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Currently must be either wf_TimeSeries, wf_Seismogram, or default that implies wf_TimeSeries"</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"gridfs"</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">_validate_gridfs_schema</span><span class="p">(</span><span class="n">save_schema</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">)</span>
+        <span class="n">db_reference</span> <span class="o">=</span> <span class="n">db</span> <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span> <span class="k">else</span> <span class="n">_WorkerDatabaseReference</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+        <span class="n">save_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"dbname_or_handle"</span><span class="p">:</span> <span class="n">db_reference</span><span class="p">,</span>
+            <span class="s2">"mode"</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+            <span class="s2">"exclude_keys"</span><span class="p">:</span> <span class="n">exclude_keys</span><span class="p">,</span>
+            <span class="s2">"collection"</span><span class="p">:</span> <span class="n">collection</span><span class="p">,</span>
+            <span class="s2">"data_tag"</span><span class="p">:</span> <span class="n">data_tag</span><span class="p">,</span>
+            <span class="s2">"post_elog"</span><span class="p">:</span> <span class="n">post_elog</span><span class="p">,</span>
+            <span class="s2">"save_history"</span><span class="p">:</span> <span class="n">save_history</span><span class="p">,</span>
+            <span class="s2">"post_history"</span><span class="p">:</span> <span class="n">post_history</span><span class="p">,</span>
+            <span class="s2">"cremate"</span><span class="p">:</span> <span class="n">cremate</span><span class="p">,</span>
+            <span class="s2">"normalizing_collections"</span><span class="p">:</span> <span class="n">normalizing_collections</span><span class="p">,</span>
+            <span class="s2">"alg_name"</span><span class="p">:</span> <span class="n">alg_name</span><span class="p">,</span>
+            <span class="s2">"alg_id"</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">_save_distributed_gridfs_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_save_distributed_gridfs_item</span><span class="p">,</span> <span class="o">**</span><span class="n">save_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dask_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">scheduler</span><span class="o">=</span><span class="n">dask_client</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
 
     <span class="n">stedronsky</span> <span class="o">=</span> <span class="n">Undertaker</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">scheduler</span> <span class="o">==</span> <span class="s2">"spark"</span><span class="p">:</span>
