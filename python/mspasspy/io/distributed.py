@@ -1321,7 +1321,7 @@ def _atomic_extract_wf_document(
 
 def _save_distributed_gridfs_item(
     item,
-    db,
+    dbname_or_handle,
     mode,
     exclude_keys,
     collection,
@@ -1335,6 +1335,7 @@ def _save_distributed_gridfs_item(
     alg_id,
 ):
     """Save one distributed item through Database's durable GridFS saga."""
+    db = fetch_dbhandle(dbname_or_handle)
     saved = db.save_data(
         item,
         return_data=True,
@@ -1695,8 +1696,9 @@ def write_distributed_data(
 
     if storage_mode == "gridfs":
         db._validate_gridfs_schema(save_schema, mode, exclude_keys=exclude_keys)
+        db_reference = db if scheduler == "spark" else _WorkerDatabaseReference(db)
         save_kwargs = {
-            "db": db,
+            "dbname_or_handle": db_reference,
             "mode": mode,
             "exclude_keys": exclude_keys,
             "collection": collection,

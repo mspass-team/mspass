@@ -7368,11 +7368,8 @@ class Database(pymongo.database.Database):
 
         try:
             response = object_store_client.get_object(Bucket=bucket, Key=object_name)
-            body = response["Body"]
-            try:
+            with _managed_response_stream(response["Body"]) as body:
                 payload = body.read()
-            finally:
-                body.close()
         except (
             botocore.exceptions.BotoCoreError,
             botocore.exceptions.ClientError,
