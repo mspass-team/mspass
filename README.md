@@ -135,8 +135,23 @@ Before opening a pull request:
 2. Run relevant tests locally when possible.
 3. Keep documentation in sync with user-facing behavior changes.
 
-CI checks Python, test, and documentation-notebook formatting with Black
-25.1.0.  Run the same read-only check from the repository root with:
+CI automatically formats Python, tests, and documentation notebooks with
+Black 25.1.0. For a PR from a branch in this repository, it creates or updates
+one formatting-only PR into that source branch, using
+`black-formatting/pr-<original PR number>`. Merge that fix to apply the changes;
+the original PR's CI then reruns. Formatting PRs do not create further formatting
+PRs, and obsolete fixes and their branches are cleaned up when the source PR is
+formatted or closed. A stale run cannot publish after its source PR has moved.
+
+The required `black-format` check stays red until the generated changes are
+applied to the actual source commit. Every run that finds changes also uploads
+a `black-format.patch` artifact; download it and run `git apply black-format.patch`
+on the source branch if preferred. Fork PRs use this patch because the repository
+token cannot write to contributors' forks. GitHub may require a maintainer to
+select **Approve workflows to run** on a bot-created formatting PR; no extra
+personal access token is required.
+
+Run the matching read-only check locally from the repository root with:
 
 ```bash
 python -m pip install 'black[jupyter]==25.1.0'
