@@ -10418,19 +10418,19 @@ class Database(pymongo.database.Database):
                     "Database._load_enemble_file", message, ErrorSeverity.Invalid
                 )
 
-        # Sort foff_list by file byte offset.  
+        # Sort foff_list by file byte offset.
         # Default for list sort is to use component 0 and sort in ascending
         # order which is what we want.
-        # That is done for efficiency as reading a file sequentially is almost always 
+        # That is done for efficiency as reading a file sequentially is almost always
         # faster than jumping around because fread is buffered io
         foff_list.sort()
         # pybind11 maps an array of int values to used as
-        # input to the fread function below.  That usage, however, is a bit weird 
-        # and potentially confusing.   The index required is the slot in the member array 
+        # input to the fread function below.  That usage, however, is a bit weird
+        # and potentially confusing.   The index required is the slot in the member array
         # to insert the array of sample data when fread is called.   It is NOT
-        # the foff (file byte offset) for the reader.   That works here only 
+        # the foff (file byte offset) for the reader.   That works here only
         # because the above builds a skeleton of the emsemble members with the arrays
-        # already allocated in memory.  That allows the C++ reader to call fread 
+        # already allocated in memory.  That allows the C++ reader to call fread
         # to push bytes in file into the member sample arrays
         index = []
         for x in foff_list:
