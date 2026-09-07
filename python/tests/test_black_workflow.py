@@ -244,7 +244,7 @@ def test_workflow_formats_real_files_and_emits_applicable_patch(
         check=True,
         timeout=10,
     )
-    # Model merging the fix into the contributor's branch and running again.  
+    # Model merging the fix into the contributor's branch and running again.
     # Exercise the action's literal pathspecs, including a tree with no notebooks.
     paths = next(
         step["with"]["add-paths"].splitlines()
