@@ -120,7 +120,7 @@ def test_black_workflow_generates_bounded_source_branch_fixes():
     assert fix["with"]["add-paths"].splitlines() == [
         "python/mspasspy",
         "python/tests",
-        "docs/**/*.ipynb",
+        "docs",
     ]
 
     report = next(
@@ -188,7 +188,10 @@ new AsyncFunction('github', 'context', 'core', script)(github, context, core);
     assert json.loads(result.stdout) is expected
 
 
-def test_workflow_formats_real_python_and_notebook_and_emits_applicable_patch(tmp_path):
+@pytest.mark.parametrize("with_notebook", [True, False])
+def test_workflow_formats_real_files_and_emits_applicable_patch(
+    tmp_path, with_notebook
+):
     black = shutil.which("black")
     if not black:
         pytest.skip("Black is installed by the black-format workflow")
@@ -209,7 +212,9 @@ def test_workflow_formats_real_python_and_notebook_and_emits_applicable_patch(tm
     source.write_text(original)
     (tests / "sample.py").write_text("assert 1==1\n")
     notebook = notebooks / "example notebook.ipynb"
-    _write_notebook(notebook, "result=  [1,2,3]\n")
+    if with_notebook:
+        _write_notebook(notebook, "result=  [1,2,3]\n")
+    (tmp_path / "docs" / "README.md").write_text("Documentation\n")
     subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True, timeout=10)
     subprocess.run(["git", "add", "."], cwd=tmp_path, check=True, timeout=10)
 
@@ -228,9 +233,10 @@ def test_workflow_formats_real_python_and_notebook_and_emits_applicable_patch(tm
     assert "changed=true" in output.read_text()
     assert ast.dump(ast.parse(source.read_text())) == ast.dump(ast.parse(original))
     assert "# Explain the file byte offset.\n" in source.read_text()
-    assert "result = [1, 2, 3]" in "".join(
-        json.loads(notebook.read_text())["cells"][0]["source"]
-    )
+    if with_notebook:
+        assert "result = [1, 2, 3]" in "".join(
+            json.loads(notebook.read_text())["cells"][0]["source"]
+        )
     patch = runner_temp / "black-format.patch"
     subprocess.run(
         ["git", "apply", "--reverse", "--check", str(patch)],
@@ -239,9 +245,13 @@ def test_workflow_formats_real_python_and_notebook_and_emits_applicable_patch(tm
         timeout=10,
     )
     # Model merging the fix into the contributor's branch and running again.  
-    subprocess.run(
-        ["git", "add", "python", "docs"], cwd=tmp_path, check=True, timeout=10
+    # Exercise the action's literal pathspecs, including a tree with no notebooks.
+    paths = next(
+        step["with"]["add-paths"].splitlines()
+        for step in _load_workflow()["jobs"]["black-format"]["steps"]
+        if step.get("id") == "fix"
     )
+    subprocess.run(["git", "add", "--", *paths], cwd=tmp_path, check=True, timeout=10)
     output.write_text("")
     _run_workflow_script(script, tmp_path, environment)
     assert output.read_text().strip() == "changed=false"

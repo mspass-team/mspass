@@ -84,7 +84,7 @@ jobs:
           add-paths: |
             python/mspasspy
             python/tests
-            docs/**/*.ipynb
+            docs
           title: 'Apply Black formatting to PR #${{ github.event.pull_request.number }}'
           commit-message: 'Apply Black 25.1.0 formatting'
           body: |
