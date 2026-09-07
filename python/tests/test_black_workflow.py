@@ -1,7 +1,9 @@
+import ast
 import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 
 import pytest
@@ -59,23 +61,42 @@ def _write_notebook(path, source):
     )
 
 
-def test_black_workflow_is_pinned_read_only_and_stably_named():
+def _run_workflow_script(script, cwd, environment):
+    with subprocess.Popen(
+        ["bash", "-e", "-o", "pipefail", "-c", script],
+        cwd=cwd,
+        env=environment,
+        start_new_session=True,
+    ) as process:
+        try:
+            returncode = process.wait(timeout=30)
+        finally:
+            # Black uses workers when it receives multiple input files.
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait()
+    assert returncode == 0
+
+
+def test_black_workflow_generates_bounded_source_branch_fixes():
     workflow = _load_workflow()
     assert workflow["permissions"] == {"contents": "read"}
-    assert set(workflow["jobs"]) == {"black-format"}
+    assert set(workflow["on"]) == {"pull_request"}
+    assert "closed" in workflow["on"]["pull_request"]["types"]
+    assert workflow["concurrency"]["group"] == (
+        "black-format-${{ github.event.pull_request.number }}"
+    )
+    assert workflow["concurrency"]["cancel-in-progress"] is False
 
     job = workflow["jobs"]["black-format"]
     assert job["name"] == "black-format"
-    assert job["runs-on"] == "ubuntu-latest"
-    assert "permissions" not in job
+    assert job["permissions"] == {"contents": "write", "pull-requests": "write"}
     assert all("continue-on-error" not in step for step in job["steps"])
-    assert [step.get("uses", step.get("name")) for step in job["steps"]] == [
-        "actions/checkout@v4",
-        "actions/setup-python@v5",
-        "Install pinned Black",
-        "Verify the formatting policy",
-        "Check formatting without modifying files",
-    ]
+    checkout = job["steps"][0]["with"]
+    assert checkout["ref"] == "${{ github.event.pull_request.head.sha }}"
+    assert checkout["persist-credentials"] is False
 
     install = next(
         step for step in job["steps"] if step.get("name") == "Install pinned Black"
@@ -83,22 +104,34 @@ def test_black_workflow_is_pinned_read_only_and_stably_named():
     assert (
         install["run"] == "python -m pip install 'black[jupyter]==25.1.0' pytest pyyaml"
     )
-    policy = next(
-        step
-        for step in job["steps"]
-        if step.get("name") == "Verify the formatting policy"
+    source = next(step for step in job["steps"] if step.get("id") == "source")
+    assert "head.repo.full_name == github.repository" in source["if"]
+    assert "!startsWith(github.event.pull_request.head.ref, 'black-formatting/')" in (
+        source["if"]
     )
-    assert policy["run"] == "pytest -q python/tests/test_black_workflow.py"
-    check = next(
-        step
-        for step in job["steps"]
-        if step.get("name") == "Check formatting without modifying files"
+    fix = next(step for step in job["steps"] if step.get("id") == "fix")
+    assert fix["if"] == "steps.source.outputs.current == 'true'"
+    assert fix["with"]["base"] == "${{ github.event.pull_request.head.ref }}"
+    assert fix["with"]["branch"] == (
+        "black-formatting/pr-${{ github.event.pull_request.number }}"
     )
-    assert check["shell"] == "bash"
-    assert check["run"] == CHECK_SCRIPT
-    assert "push" not in workflow["on"]
-    assert all(
-        "create-pull-request" not in str(step.get("uses", "")) for step in job["steps"]
+    assert fix["with"]["delete-branch"] is True
+    assert "branch-suffix" not in fix["with"]
+    assert fix["with"]["add-paths"].splitlines() == [
+        "python/mspasspy",
+        "python/tests",
+        "docs/**/*.ipynb",
+    ]
+
+    report = next(
+        step for step in job["steps"] if step.get("name") == "Report formatting changes"
+    )
+    assert report["if"] == "steps.format.outputs.changed == 'true'"
+    assert "exit 1" in report["run"]
+    cleanup = workflow["jobs"]["cleanup"]
+    assert "github.event.action == 'closed'" in cleanup["if"]
+    assert "!startsWith(github.event.pull_request.head.ref, 'black-formatting/')" in (
+        cleanup["if"]
     )
 
 
@@ -107,6 +140,112 @@ def test_readme_documents_the_exact_check_and_format_commands():
     assert "python -m pip install 'black[jupyter]==25.1.0'" in readme
     assert CHECK_SCRIPT in readme
     assert FORMAT_SCRIPT in readme
+
+
+@pytest.mark.parametrize(
+    "state,sha,branch,repo,expected",
+    [
+        ("open", "expected", "feature", "owner/repo", True),
+        ("open", "new-commit", "feature", "owner/repo", False),
+        ("closed", "expected", "feature", "owner/repo", False),
+        ("open", "expected", "renamed", "owner/repo", False),
+        ("open", "expected", "feature", "fork/repo", False),
+    ],
+)
+def test_publishing_rechecks_source_pr_before_writing(
+    state, sha, branch, repo, expected
+):
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is provided by the GitHub Actions runner")
+    script = next(
+        step["with"]["script"]
+        for step in _load_workflow()["jobs"]["black-format"]["steps"]
+        if step.get("id") == "source"
+    )
+    current = {
+        "state": state,
+        "head": {"sha": sha, "ref": branch, "repo": {"full_name": repo}},
+    }
+    harness = """
+const [script, current] = process.argv.slice(1);
+const context = {
+  repo: {owner: 'owner', repo: 'repo'}, issue: {number: 1033},
+  payload: {pull_request: {head: {sha: 'expected', ref: 'feature'}}}
+};
+const github = {rest: {pulls: {get: async () => ({data: JSON.parse(current)})}}};
+const core = {setOutput: (name, value) => process.stdout.write(JSON.stringify(value))};
+const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
+new AsyncFunction('github', 'context', 'core', script)(github, context, core);
+"""
+    result = subprocess.run(
+        [node, "-e", harness, script, json.dumps(current)],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=10,
+    )
+    assert json.loads(result.stdout) is expected
+
+
+def test_workflow_formats_real_python_and_notebook_and_emits_applicable_patch(tmp_path):
+    black = shutil.which("black")
+    if not black:
+        pytest.skip("Black is installed by the black-format workflow")
+    version = subprocess.run(
+        [black, "--version"], capture_output=True, text=True, check=True, timeout=10
+    )
+    if "25.1.0" not in version.stdout:
+        pytest.skip("integration contract requires the workflow's Black 25.1.0")
+
+    package = tmp_path / "python" / "mspasspy"
+    tests = tmp_path / "python" / "tests"
+    notebooks = tmp_path / "docs" / "guide with spaces"
+    for directory in (package, tests, notebooks):
+        directory.mkdir(parents=True)
+    source = package / "sample.py"
+    # Reproduce #1033: useful comments have trailing spaces, but no code change.
+    original = "# Explain the file byte offset.  \nresult=  [1,2,3]\n"
+    source.write_text(original)
+    (tests / "sample.py").write_text("assert 1==1\n")
+    notebook = notebooks / "example notebook.ipynb"
+    _write_notebook(notebook, "result=  [1,2,3]\n")
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True, timeout=10)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True, timeout=10)
+
+    runner_temp = tmp_path / "runner"
+    runner_temp.mkdir()
+    output = runner_temp / "output"
+    environment = dict(
+        os.environ, RUNNER_TEMP=str(runner_temp), GITHUB_OUTPUT=str(output)
+    )
+    script = next(
+        step["run"]
+        for step in _load_workflow()["jobs"]["black-format"]["steps"]
+        if step.get("id") == "format"
+    )
+    _run_workflow_script(script, tmp_path, environment)
+    assert "changed=true" in output.read_text()
+    assert ast.dump(ast.parse(source.read_text())) == ast.dump(ast.parse(original))
+    assert "# Explain the file byte offset.\n" in source.read_text()
+    assert "result = [1, 2, 3]" in "".join(
+        json.loads(notebook.read_text())["cells"][0]["source"]
+    )
+    patch = runner_temp / "black-format.patch"
+    subprocess.run(
+        ["git", "apply", "--reverse", "--check", str(patch)],
+        cwd=tmp_path,
+        check=True,
+        timeout=10,
+    )
+    # Model merging the fix into the contributor's branch and running again.  
+    subprocess.run(
+        ["git", "add", "python", "docs"], cwd=tmp_path, check=True, timeout=10
+    )
+    output.write_text("")
+    _run_workflow_script(script, tmp_path, environment)
+    assert output.read_text().strip() == "changed=false"
+    assert patch.read_bytes() == b""
 
 
 def test_read_only_check_rejects_python_and_notebook_without_mutation(tmp_path):

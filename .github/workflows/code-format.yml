@@ -2,16 +2,31 @@ name: Black formatting
 
 "on":
   pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  group: black-format-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
   black-format:
+    if: github.event.action != 'closed'
     name: black-format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Format the contributor's commit, not GitHub's synthetic merge.
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -20,9 +35,116 @@ jobs:
         run: python -m pip install 'black[jupyter]==25.1.0' pytest pyyaml
       - name: Verify the formatting policy
         run: pytest -q python/tests/test_black_workflow.py
-      - name: Check formatting without modifying files
+      - name: Apply formatting and save a patch
+        id: format
         shell: bash
         run: |
           shopt -s globstar nullglob
           notebooks=(docs/**/*.ipynb)
-          black --workers 1 --check --diff python/mspasspy python/tests "${notebooks[@]}"
+          black --workers 1 python/mspasspy python/tests "${notebooks[@]}"
+          git diff --binary -- python/mspasspy python/tests docs > "$RUNNER_TEMP/black-format.patch"
+          if test -s "$RUNNER_TEMP/black-format.patch"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload formatting patch
+        if: steps.format.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: black-format-pr-${{ github.event.pull_request.number }}
+          path: ${{ runner.temp }}/black-format.patch
+          retention-days: 14
+      - name: Check source PR before publishing
+        if: >-
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          !startsWith(github.event.pull_request.head.ref, 'black-formatting/')
+        id: source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {data: pr} = await github.rest.pulls.get({
+              ...context.repo, pull_number: context.issue.number
+            });
+            core.setOutput('current', pr.state === 'open' &&
+              pr.head.sha === context.payload.pull_request.head.sha &&
+              pr.head.ref === context.payload.pull_request.head.ref &&
+              pr.head.repo.full_name === context.repo.owner + '/' + context.repo.repo);
+      - name: Create or update the formatting PR
+        # Also run when clean: the action closes obsolete fixes and deletes
+        # their branches after a formatting PR is merged into the source PR.
+        if: steps.source.outputs.current == 'true'
+        id: fix
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          token: ${{ github.token }}
+          base: ${{ github.event.pull_request.head.ref }}
+          branch: black-formatting/pr-${{ github.event.pull_request.number }}
+          delete-branch: true
+          add-paths: |
+            python/mspasspy
+            python/tests
+            docs/**/*.ipynb
+          title: 'Apply Black formatting to PR #${{ github.event.pull_request.number }}'
+          commit-message: 'Apply Black 25.1.0 formatting'
+          body: |
+            Black 25.1.0 generated these formatting-only changes for #${{ github.event.pull_request.number }}.
+            Merge this PR into the contributor's branch to apply the fix. The original PR's CI will then rerun.
+
+            This PR is updated in place; it does not create further formatting PRs.
+            GitHub may require a maintainer to select **Approve workflows to run** for a bot-created PR.
+            The original run also provides a `black-format.patch` artifact that can be applied with `git apply`.
+      - name: Report formatting changes
+        if: steps.format.outputs.changed == 'true'
+        env:
+          FIX_URL: ${{ steps.fix.outputs.pull-request-url }}
+        run: |
+          if test -n "$FIX_URL"; then
+            echo "Formatting fix: $FIX_URL" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Download the black-format.patch artifact and apply it with git apply.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo 'This commit needs formatting. Apply the generated fix, then CI will rerun.' >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
+  cleanup:
+    if: >-
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !startsWith(github.event.pull_request.head.ref, 'black-formatting/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Close the source PR's formatting PR and remove its branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const {data: source} = await github.rest.pulls.get({
+              ...context.repo, pull_number: context.issue.number
+            });
+            if (source.state !== 'closed') return;
+            const branch = `black-formatting/pr-${context.issue.number}`;
+            const fixes = await github.paginate(github.rest.pulls.list, {
+              ...context.repo, state: 'all',
+              head: `${context.repo.owner}:${branch}`,
+              base: context.payload.pull_request.head.ref
+            });
+            for (const fix of fixes) {
+              if (fix.head.ref !== branch || fix.user.login !== 'github-actions[bot]') continue;
+              if (fix.state === 'open') {
+                await github.rest.pulls.update({
+                  ...context.repo, pull_number: fix.number, state: 'closed'
+                });
+              }
+            }
+            if (fixes.some(fix => fix.head.ref === branch && fix.user.login === 'github-actions[bot]')) {
+              try {
+                await github.rest.git.deleteRef({...context.repo, ref: `heads/${branch}`});
+              } catch (error) {
+                if (error.status !== 404 &&
+                    !(error.status === 422 && error.message.includes('Reference does not exist'))) throw error;
+              }
+            }
