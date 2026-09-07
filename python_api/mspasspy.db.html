@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev111+g0f3b5ac88 documentation</title>
+    <title>mspasspy.db &#8212; MsPASS 2.4.4.dev112+gecfaa789d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=095fb8b0"></script>
+    <script src="../_static/documentation_options.js?v=994f7a3e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.client" href="mspasspy.client.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev111" />
+  <meta name="docsearch:version" content="2.4.4.dev112" />
   </head>
   
   
@@ -485,7 +485,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.client.DBClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.client.</span></span><span class="sig-name descname"><span class="pre">DBClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.client.DBClient" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a></p>
 <p>A client-side top-level handle into MongoDB.</p>
 <p>MongoDB uses the client server model for transactions.   An instance
 of this class must be created in any MsPASS job using the MongoDB
@@ -518,7 +518,7 @@ default database is used.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.ConfigurationError" title="(in PyMongo v4.17.0)"><strong>pymongo.errors.ConfigurationError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">name</span></code> is omitted and
+<dd class="field-even"><p><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.ConfigurationError" title="(in PyMongo v4.18.0)"><strong>pymongo.errors.ConfigurationError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">name</span></code> is omitted and
 no default database is configured.</p>
 </dd>
 </dl>
@@ -547,7 +547,7 @@ with a default database name.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.ConfigurationError" title="(in PyMongo v4.17.0)"><strong>pymongo.errors.ConfigurationError</strong></a> – if no default database name
+<dd class="field-even"><p><a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.ConfigurationError" title="(in PyMongo v4.18.0)"><strong>pymongo.errors.ConfigurationError</strong></a> – if no default database name
 is available.</p>
 </dd>
 </dl>
@@ -561,7 +561,7 @@ is available.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.collection.Collection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.collection.</span></span><span class="sig-name descname"><span class="pre">Collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/collection.html#Collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.collection.Collection" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html#pymongo.collection.Collection" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collection.html#pymongo.collection.Collection" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a></p>
 <p>A modified Mongo collection class.</p>
 <p>The native collection class of Mongo does not have __setstate__ and
 __getstate__ defined, which prevents it from being serialized. We add
@@ -585,19 +585,19 @@ around by the scheduler and worker.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>codec_options</strong> – An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.collection.Collection" title="mspasspy.db.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>
 is used.</p></li>
 <li><p><strong>read_preference</strong> – The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
-<a class="reference internal" href="#mspasspy.db.collection.Collection" title="mspasspy.db.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.17.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
+<a class="reference internal" href="#mspasspy.db.collection.Collection" title="mspasspy.db.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.18.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
 for options.</p></li>
 <li><p><strong>write_concern</strong> – An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.collection.Collection" title="mspasspy.db.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>
 is used.</p></li>
 <li><p><strong>read_concern</strong> – An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.collection.Collection" title="mspasspy.db.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>
 is used.</p></li>
 </ul>
@@ -613,7 +613,7 @@ is used.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.db.database.Database">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.db.database.</span></span><span class="sig-name descname"><span class="pre">Database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md_schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a></p>
 <p>MsPASS core database handle.  All MongoDB database operation in MsPASS
 should normally utilize this object.  This object is a subclass of the
 Database class of pymongo.  It extends the class in several ways
@@ -766,7 +766,7 @@ both the cursor and session when processing ends.  Default is
 database.
 Normally collection creation is automatic. This method should
 only be used to specify options on
-creation. <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.CollectionInvalid" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionInvalid</span></code></a> will be
+creation. <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.CollectionInvalid" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CollectionInvalid</span></code></a> will be
 raised if the collection already exists.   Useful mainly for advanced users tuning
 a polished workflow.</p>
 <blockquote>
@@ -776,7 +776,7 @@ a polished workflow.</p>
 </dd>
 <dt class="field-even">param codec_options<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
@@ -787,23 +787,23 @@ used.</p>
 </dd>
 <dt class="field-even">param write_concern<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
 <dt class="field-odd">param read_concern<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
 <dt class="field-even">param collation<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collation.html#pymongo.collation.Collation" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>.</p>
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/collation.html#pymongo.collation.Collation" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>.</p>
 </dd>
 <dt class="field-odd">param session<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(optional): a
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p>
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/client_session.html#pymongo.client_session.ClientSession" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p>
 </dd>
 <dt class="field-even">param check_exists<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): if <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default), check
@@ -903,25 +903,25 @@ a polished workflow.</p>
 </dd>
 <dt class="field-even">param codec_options<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.codec_options.CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.codec_options.CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
 <dt class="field-odd">param read_preference<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(optional): The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
-<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.17.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo.read_preferences</span></code></a>
+<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v4.18.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo.read_preferences</span></code></a>
 for options.</p>
 </dd>
 <dt class="field-even">param write_concern<span class="colon">:</span></dt>
 <dd class="field-even"><p>(optional): An instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.write_concern.WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.write_concern.WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
 <dt class="field-odd">param read_concern<span class="colon">:</span></dt>
 <dd class="field-odd"><p>An (optional) instance of
-<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.read_concern.ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v4.18.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.read_concern.ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> is
 used.</p>
 </dd>
