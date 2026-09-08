@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev112+gecfaa789d documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev113+gc53d735d5 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=994f7a3e"></script>
+    <script src="../../../_static/documentation_options.js?v=3f71e553"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev112" />
+  <meta name="docsearch:version" content="2.4.4.dev113" />
   </head>
   
   
@@ -11004,20 +11004,24 @@
                     <span class="s2">"Database._load_enemble_file"</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
                 <span class="p">)</span>
 
-        <span class="c1"># default for list sort is to use component 0 and sort in ascending</span>
-        <span class="c1"># order.  That is waht we want for read efficiency</span>
+        <span class="c1"># Sort foff_list by file byte offset.</span>
+        <span class="c1"># Default for list sort is to use component 0 and sort in ascending</span>
+        <span class="c1"># order which is what we want.</span>
+        <span class="c1"># That is done for efficiency as reading a file sequentially is almost always</span>
+        <span class="c1"># faster than jumping around because fread is buffered io</span>
         <span class="n">foff_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="c1"># I think pybind11 maps a list of int values to used as</span>
-        <span class="c1"># input to the fread function below requiring an</span>
-        <span class="c1"># input of an std::vector&lt;long int&gt; container.  In C++ a vector</span>
-        <span class="c1"># and list are different concepts but I think that is what pybind11 does</span>
+        <span class="c1"># pybind11 maps an array of int values to used as</span>
+        <span class="c1"># input to the fread function below.  That usage, however, is a bit weird</span>
+        <span class="c1"># and potentially confusing.   The index required is the slot in the member array</span>
+        <span class="c1"># to insert the array of sample data when fread is called.   It is NOT</span>
+        <span class="c1"># the foff (file byte offset) for the reader.   That works here only</span>
+        <span class="c1"># because the above builds a skeleton of the emsemble members with the arrays</span>
+        <span class="c1"># already allocated in memory.  That allows the C++ reader to call fread</span>
+        <span class="c1"># to push bytes in file into the member sample arrays</span>
         <span class="n">index</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">foff_list</span><span class="p">:</span>
             <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
-        <span class="c1"># note _fread_from_file extracs foff from each member using index</span>
-        <span class="c1"># to (potentially) skip around in the container</span>
-        <span class="c1"># it never throws an exception but can return a negative</span>
+        <span class="c1"># Note this C++ function never throws an exception but can return a negative</span>
         <span class="c1"># number used to signal file open error</span>
         <span class="n">count</span> <span class="o">=</span> <span class="n">_fread_from_file</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
