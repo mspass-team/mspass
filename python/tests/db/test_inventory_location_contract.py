@@ -11,7 +11,7 @@ from pymongo.errors import ServerSelectionTimeoutError
 from mspasspy.ccore.utility import ErrorSeverity, MsPASSError
 from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
-from mspasspy.db.serialization import decode_channel, decode_inventory
+from mspasspy.db.serialization import decode_channel
 
 
 @pytest.fixture
@@ -144,14 +144,7 @@ def test_save_inventory_groups_channels_only_under_their_own_location(database):
         assert document["edepth"] == depth
         assert document["starttime"] == UTCDateTime(start).timestamp
         assert document["endtime"] == UTCDateTime(end).timestamp
-        restored = decode_inventory(document["serialized_inventory"])
-        restored_channels = restored.networks[0].stations[0].channels
-        assert {channel.location_code for channel in restored_channels} == {location}
-        assert {channel.code for channel in restored_channels} == {
-            channel.code
-            for channel in source_channels
-            if channel.location_code == location
-        }
+        assert "serialized_inventory" not in document
 
     channels = list(database.channel.find({"net": "XX", "sta": "TEST"}))
     assert len(channels) == 3
