@@ -226,18 +226,13 @@ def test_inventory_response_public_round_trip(mongo_database):
     assert counts[1] == 3
 
     for document in mongo_database.site.find({}):
-        payload = document["serialized_inventory"]
-        assert payload[TYPE_KEY] == "Inventory"
-        _assert_no_binary_payload(payload)
-        BSON.encode({"payload": payload})
+        assert "serialized_inventory" not in document
     for document in mongo_database.channel.find({}):
         payload = document["serialized_channel_data"]
         assert payload[TYPE_KEY] == "Response"
         _assert_no_binary_payload(payload)
         BSON.encode({"payload": payload})
 
-    restored = mongo_database.read_inventory(net="TA", sta="035A")
-    assert restored == source
     time = 1263254500.0
     for channel in ("BHE", "BHN", "BHZ"):
         assert mongo_database.get_response("TA", "035A", channel, "", time) == (

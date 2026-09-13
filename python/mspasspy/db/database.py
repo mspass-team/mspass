@@ -65,10 +65,8 @@ from mspasspy.db.serialization import (
     decode_inventory,
     decode_processing_history,
     decode_response,
-    encode_inventory,
     encode_processing_history,
     encode_response,
-    inventory_subset,
     merge_inventories,
 )
 from mspasspy.db._dask_serialization import reject_dask_serialization
@@ -7693,9 +7691,6 @@ class Database(pymongo.database.Database):
                         rec["edepth"] = next(iter(location_depths))
                     rec["starttime"] = loc_stime.timestamp
                     rec["endtime"] = loc_etime.timestamp
-                    rec["serialized_inventory"] = encode_inventory(
-                        inventory_subset(inv, x, station, loc_channels)
-                    )
                     if self._site_is_not_in_db(rec):
                         result = dbcol.insert_one(rec)
                         # Note this sets site_id to an ObjectId for the insertion
@@ -7741,7 +7736,6 @@ class Database(pymongo.database.Database):
                     for chan in loc_channels:
                         chanrec = copy.deepcopy(rec)
                         chanrec.pop("_id", None)
-                        chanrec.pop("serialized_inventory", None)
                         chanrec["chan"] = chan.code
                         # the Dip attribute in a stationxml file
                         # is like strike-dip and relative to horizontal
