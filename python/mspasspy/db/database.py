@@ -7413,14 +7413,14 @@ class Database(pymongo.database.Database):
             mspass_object.kill()
 
     @staticmethod
-    def _extract_locdata(chanlist)->dict:
+    def _extract_locdata(chanlist) -> dict:
         """
         Group the channels of an ObsPy Station by location code.
 
         Channel metadata remain attached to each Channel object so callers
         can preserve channel-specific coordinates and validity intervals.
-        Returns a dictionary keyed by loc code with a list of channel codes 
-        defined for that loc code.  
+        Returns a dictionary keyed by loc code with a list of channel codes
+        defined for that loc code.
         """
         alllocs = {}
         for chan in chanlist:
@@ -7771,7 +7771,7 @@ class Database(pymongo.database.Database):
                         chanrec["starttime"] = st.timestamp
                         chanrec["endtime"] = et.timestamp
                         chanrec["sampling_rate"] = chan.sample_rate
-                        chanrec["delta"] = 1.0/chan.sample_rate
+                        chanrec["delta"] = 1.0 / chan.sample_rate
                         if chan.sensor.description is not None:
                             chanrec["sensor_description"] = chan.sensor.description
                         if chan.sensor.model is not None:
