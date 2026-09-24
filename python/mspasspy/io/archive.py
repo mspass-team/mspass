@@ -28,6 +28,7 @@ from bson import json_util
 from pymongo.collection import Collection
 from pathlib import Path
 import os
+from itertools import islice
 from mspasspy.ccore.utility import MsPASSError,ErrorSeverity,Metadata
 from mspasspy.ccore.io import _fwrite_to_file, _fread_from_file
 from mspasspy.ccore.seismic import (TimeSeriesEnsemble,
@@ -37,18 +38,173 @@ from mspasspy.ccore.seismic import (TimeSeriesEnsemble,
                                     )
 from mspasspy.util.seismic import number_live
 
+def block_cursor(cursor, block_size):
+    """
+    Used in archive_gridfs_data when handling a large collection of 
+    gridfs objects.   There block_size is used to control size of 
+    ensembles loaded into member before saving groups as files.   
+    block_size should consider memory constraints.
+    
+    Note this is a modification of code suggested by Gemini.
+    
+    :param cursor:  normal cursor returned by find
+    :param block_size:   size of each chunk returned (last will be truncated)
+    
+    Returns a list of cursors defining each block. 
+    """
+    while True:
+        chunk = list(islice(cursor, block_size))
+        if not chunk:
+            break
+        yield chunk
+    
 def archive_gridfs_data(db_collection,
-                        doclist,
-                        gridfs_output_path=None,
+                        query=None,
+                        sort=None,
+                        output_directory=None,
+                        output_file_base="gridfs_archive",
+                        objects_per_file=10000,
+                        overwrite=True,
+                        verbose=False,
                         )->int:
     """
-    Write all gridfs data linked to data in doclist to output file.  
-    If gridfs_output_path is None (default) write to a file with an
-    ObjectId string name in the current directory as the base name.
-    Default file extension is defined by `sample_data_extension`.
+    Write gridfs data to archive files. 
+    
+    MsPASS allows storage of sample data for seismic objects to MongoDB's 
+    so called gridfs system.   Archiving data in gridfs is requires the 
+    data be extracted from MongoDB storage and save to conventional 
+    data files.   
+    
+    It is best to think of two ways to utilize this function:
+        1.   If the data to be archived has a natural grouping into 
+             ensemble objects call this function in a loop over the 
+             ensembles. 
+        2.   If not, the function assumes it is handling a large list of 
+             atomic data stored in gridfs.  
+    For 1 the user should make sure the file names this function wil 
+    generate make sense.  For the second you need only specify a base 
+    file name and the writer will automatically append a numeric 
+    string for the sequence of files it generates (see below).
+    In all cases the sample data are written to files suffix ".dat" 
+    and a file of the same base name with suffix ".json" holds 
+    the related metadata for data in the ".dat" file.  
+    
+    :param db_collection: MongoDB Collection object defining Metadata for 
+       seismic data objects that are to be writen to archive file(s).   
+       Normally either db.wf_TimeSeries or db.wf_Seismogram.   Not is the 
+       object not the name string defining the collection to use.
+    :param query:  optional query to define what data is to be written 
+       to archive files.   This query is always appended ($and operator)
+       to base query of {"storage_mode" : "gridfs"} since the purpose of this
+       function is to save gridfs data to external files.  When used to 
+       save data naturally grouped into ensembles this query would 
+       defined a query to obtain one ensemble to be laoded and saved. 
+       (e.g. query={"source_id" : sid} for a single common source gather 
+       defined by content of the symbol sid).  Default is None which is taken 
+       to mean save all data stored in gridfs. 
+    :type query:  python dictionary assumed to defined a valid MongDB find query.
+    :param sort:  optional pymongo sort clause.   Default is None which means 
+       is taken to mean do not sort.  If sort is defined the value is passed directly 
+       to the cursor sort method (return of find method).   The syntax for 
+       sort is a bit weird so be careful.  If you get it wrong MongoDB will 
+       throw an exception.
+    :param output_file_base:  base name to write files created by this 
+       function.   When only one file is needed the sample data file 
+       will be f"{object_file_base}.dat" and the metadata file will be 
+       f"{object_file_base}.json".   When multiple files are created 
+       the file names get a sequence number n={1,2, ..., N_files}.  \
+       For each n the sample files are called 
+       and the associated metadata files are called f"{output_file_base}_{n}.json".
+    :type output_file_base:  str
+    :param output_directory: directory to use to write the files.  The 
+       function does not test if the given path allows writes so it will 
+       throw an exception if the the path is write protected.  If a directory
+       by that name does not exist it will be created.  
+    :type output_directory:  path like object which usually means an str 
+       defining a directory name or a Path object defining a directory.
+    :param objects_per_file: block size limit for files created.  This is an 
+       important parameter if the number of seismic data objects stored in 
+       gridfs is large or the ensembles being handled are potentially large.  
+       The function works by constructing ensembles in memory.  If the number
+       of documents returned when the query argument is a applied 
+       (all gridfs data by default) exceeds objects_per_file, the data 
+       will be blocked into ensembles no larger than this value.   Each 
+       block is written to the same base name but with a sequence number 
+       as described for the "output_file_base" argument.   This argument is 
+       essential for writing out atomic data stored in gridfs 
+       (default with no query) to avoid memory overflow.  For atomic saves 
+       estimate the nominal size of each object and change this value 
+       if necessary to fit for the ensembles it creates to fit in 
+       available memory. 
+    :param overwrite:  if true files (default) output files will silently 
+       overwrite any existing files with the same name.  If False it will 
+       throw an exception if an file already exists.  It will do that, 
+       however, only when it hits a problem so it is possible to abort 
+       in the middle of a large save.  Be careful of your naming 
+       conventions to avoid such issues.  
+    :param verbose:  when true prints a few informational lines.  When 
+       False (default) it works silently.
+    :return: number of pairs of files written.  Pairs because each ensemble 
+       it saves a ".dat" and a ".json" file.
     
     """
-    pass
+    alg = "archive_gridfs_data"
+    # note storage_mode must be gridfs for a mspass wf document to
+    # put data in gridfs.  Current code base has file as default if 
+    # storage_mode is no set.  Hence we always have that in the query
+    if query is None:
+        # in this case we fetch all
+        wfquery = {"storage_mode" : "gridfs"}
+    else:
+        if not isinstance(query,dict):
+            message = f'query argument must be a python dictionary defining a MongoDB query\n'
+            message += f'Received {query} which is of type {type(query)}'
+            raise MsPASSError(alg,message,ErrorSeverity.Fatal)
+        # this and clause is normally assumed but this shouldl allow more 
+        # complex queries
+        wfquery = {"$and": [query, {"storage_mode" : "gridfs"}] }
+    ndata = db_collection.count_documents(wfquery)
+    if ndata==0:
+        print(f"WARNING({alg}):  {wfquery} yields no documents.  Doing nothing")
+        return 0
+    nfiles = int(ndata/objects_per_file)+1
+    if nfiles>1 and verbose:
+        print(f"WARNING({alg}):   Number of data being handle is large")
+        print("Number of atomic data to save=",ndata)
+        print("Will save to ",nfiles," files with _n appended to names")
+    # now make sure we have directory to write results to
+    if output_directory is None:
+        outdir = Path.cwd()
+    else:
+        # will work if output_directory is a string or Path and throw and 
+        # exception otherwise
+        outdir = Path(output_directory)
+        # just let this throw an exception here if it isn't writable
+        outdir.mkdir(parents=True, exist_ok=True)
+    if verbose:
+        print("Writing data files to directory ",outdir)
+    if sort is None:
+        cursor = db_collection.find(wfquery)
+    else:
+        cursor = db_collection.find(wfquery).sort(sort)
+    # when nfiles is one the blocking will work normally
+    # Only distinction is file naming
+    count = 1
+    for block in block_cursor(cursor,objects_per_file):
+        ens = db_collection.read_data(block,collection=db_collection.name)
+        if nfiles==1:
+            basepath = outdir / output_file_base
+        else:
+            ofb = f"{output_file_base}_{count}"
+            basepath = outdir / ofb
+        if verbose:
+            message = f"Writing sample data to file {basepath}.dat and metadata to file {basepath}.json"
+            print(message)
+        nsaved = save_to_archive_files(ens,basepath,overwrite=overwrite)
+        if verbose:
+            print("Saved ",nsaved," data objects to pair of files with base name=",basepath)
+        count += 1
+    return count - 1
 def save_to_archive_files(ens,
                          base_pathname,
                          datatype="f8",
@@ -61,7 +217,7 @@ def save_to_archive_files(ens,
     argument.  
     
     The MsPASS archive feature save seismic data objects as pairs of 
-    two cloely related files.   (1) a file containing the sample data 
+    two closely related files.   (1) a file containing the sample data 
     with (possibly) duplicate Metadata in a format, and (2) a json 
     format file contains the contents of Metadata container from all 
     data stored in the sample data file.   The json file always 
@@ -87,7 +243,7 @@ def save_to_archive_files(ens,
     save for your records/publication.   It dogmaticaly ONLY accepts 
     ensemble objects for writing.   That enforces at least some level 
     for rationality in handling large data sets on modern clusters.  
-    As is well know with current large disk arrays used on all clusters 
+    As is well know, with current large disk arrays used on all clusters 
     large numbers of files can overwhelm disk array metadata servers.
     Hence, for a file archive things like a million sac files are very 
     bad news   This function assumes the user understands that issue 
@@ -102,8 +258,8 @@ def save_to_archive_files(ens,
     operation :py:method:`Database.save_data`.  That is, the database 
     save normally saves a record of killed data to the "cemetery" 
     collection.   This function takes the view that bodies do not 
-    belong in the archive.  As are result it always silently discards any 
-    dead members of the ensemble it is handling.   It also does that 
+    belong in the archive.  As a result it always silently discards any 
+    dead members of the ensemble it is handling.   It also does that with
     prejudice meaning that when dead data are present the live data are 
     copied to a new container before being saved and the original is 
     vaporized (del ens is run on the input object).  
@@ -161,8 +317,9 @@ def save_to_archive_files(ens,
        create a new workflow to concatenate a set of SAC files together 
        and create a json file comparable to the this function generates
        to define the Metadata those SAC files contain.  That example, 
-       would require a modification of the reader not this writer to 
-       be useful.  
+       would require a modification of the reader but not this writer to 
+       be functional.  That is a job for someone with lots of SAC files 
+       they need to input into MsPASS.
     :type datatype:  str (currently can only be default of "f8" or the 
        functionw will throw an exception)
     :param data_file_suffix:  suffix (also commonly called file extension) to 
@@ -306,7 +463,12 @@ def read_from_archive_file(filepath,
             # as the same value.  The format may evolve and render that 
             # assumption invalid
             atomic_data_type = doc["atomic_data_type"]
-            datatype = doc["datatype"]
+            if "datatype" in doc:
+                datatype = doc["datatype"]
+            else:
+                # this is used as a signal to post a warning after ensemble 
+                # container is created.   Otherwise would post that message here
+                datatype = "undefined"
         # let ths throw an exception if this is missing as we have to have it
         # we don't need to use fofflist but load it anyway as it is small
         fofflist.append(doc['foff'])
@@ -329,6 +491,11 @@ def read_from_archive_file(filepath,
         # throw an exception instead of returning a dead ensemble as this 
         # error should not happen and if it does somethign is really wrong
         raise ValueError(message)
+    if datatype == "undefined":
+        message = 'json file containing metadata is missing datatype attribute\n'
+        message += 'Defaulting to f8.  Make sure the data are valid'
+        ens.elog.log_error(alg,message,ErrorSeverity.Complaint)
+        datatype = "f8"
     # this is a variation of the algorithm in Database._load_ensemble_file
     # Did not use that directly as this function does not need access to 
     # a Database object and there are some minor variations in concept
@@ -369,37 +536,76 @@ def read_from_archive_file(filepath,
                                str(dfile_path.parent),
                                dfile_path.name,
                                reading_index)
-    if number_live(ens)>0:
+    if wfcount>0 and number_live(ens)>0:
         ens.set_live()
     return ens
 def create_archive_index(db_collection,
                          query=None,
-                         parallel=False,
                          json_file_suffix=".json",
                          )->int:
     """
-    Builds index of json files with the file names derived from 
-    common values of dir/dfile.   Data stored in gridfs are 
-    dropped unless a valid path is defined for :code:`gridfs_output_path`. 
-    When that is defined sample data and ALL data stored in gridfs are 
-    written to a SINGLE FILE defined by that path name.  
+    Creates a set of json files for all data with storage_mode=="file".
+
+    The default "binary" format used to save sample data to files 
+    has an existing index in the wf_TimeSeries or wf_Seismogram collections. 
+    What this function does is build a json index file for every unique 
+    file name it fins in the database collection defined by arg0.   
+    The optional query can be used to limit what files are handled.  
+    This function is the most efficient way to create an archive of a 
+    set of processed waveform data.   To be most effective a workflow 
+    should be designed to put files of waveform data you want to archive 
+    in a separate directory chain.   Directories with some data indexed 
+    and others not would challenging to write efficiently to any archival 
+    system I am aware of.  
     
-    return number of index files written
+    This function should only be run serial.  Experience has shown it is 
+    lightening fast to run and unless you have something stupid like millions 
+    of single channel waveform files the baggage of parallel processing is 
+    not necessary.  The function error handling pretty much assumes you 
+    are running this function interactively, but error handlers will work 
+    fine on a batch system as well.  What I mean by that is that 
+    common usage errors will throw an exception rather than catch problems 
+    and try to continue like MsPASS processing functions.  
+    
+    :param db_collection:   MongoDB waveform collection with sample data 
+       files index with the attributes "dir", "dfile", and "foff".   
+       Any data stored with gridfs in this collection will be silently ignored.
+    :type db_collection:  must be a MongoDB Collection object.   For standard
+       MsPASS use should only be either db.wf_TimeSeries or db.wf_Seismogram
+       where "db" is a Database object.   Note be aware pymongo treats the 
+       constructs like `db.wf_TimeSeries` as the same thing as 
+       `db["wf_TimeSeries"]`.  
+    :param query:   query to apply to db_collection to select subset of 
+       data to handle.   A typical example would be `query={"data_tag" : "final"}`
+       to select only data saved with a particular data tag.   That would 
+       most commonly be the finished product of a processing sequence 
+       but could be some intermediate step where you want to move data 
+       between systems.   
+    :type query:  python dictionary defining a valid pymongo query.
+    :param json_file_suffix:  file suffix to use on json files to hold 
+       wf document metadata.   Default is ".json".   That means if you 
+       have a sample data called something like "event_42.dat" indexed 
+       by db_collection a file called "event_42.json" will be created 
+       containing the documents for all seismic objects with sample 
+       data contained in that file.   
+    :type json_file_suffix:  str (default ".json").  changing this is not 
+       recommended but if you do be very sure you include the leading ".".
+    
+    :return: number of files written (type int)
     """
     alg="create_archive_index"
     if not isinstance(db_collection, Collection):
         raise ValueError(f"{alg}:  arg0 must be a pymongo Collection object")
     dirlist=db_collection.distinct("dir")
     if len(dirlist)==0:
-        print(f"{alg} (WARNING):  this collection={db_collection} has no documents with the dir attriute set")
+        message = f'{alg} (WARNING):  this collection={db_collection} has no documents with the dir attriute set\n'
         n = db_collection.count_documents({}) 
-        print(f"This collection has {n} documents")
+        message += f'This collection has {n} documents'
         if n==0:
-            print("Did you use an invalid collection name?")
+            message += 'Did you use an invalid collection name?'
         else:
-            print("Is all your data stored on gridfs?")
-        print("Function has no work to do and will exit immediately")
-        return 0
+            message += "collection given has data but probably only uses gridfs storage"
+        raise MsPASSError(alg,message,ErrorSeverity.Fatal)
     if query is not None:
         if not isinstance(query,dict):
             raise ValueError(f"{alg}:  query argument must be a python dictionary")
@@ -452,47 +658,41 @@ def create_archive_index(db_collection,
             raise MsPASSError(alg,message,ErrorSeverity.Fatal)
         for p in abspathset:
             pathlist.append(p)
-    # we now how a unique list of path names for this data set
-    # serial version is a loop over this list
-    # parallel uses bag maps
-    if parallel:
-        # TODO:   write this after debugging serial version
-        pass
-    else:
-        for p in pathlist:
-            # deconstruct the path to generate a query to retrieve all documents 
-            # linked to each unique file 
-            thisdir = p.parent
-            thisdfile = p.name
-            # we can be confident this won't throw an error now because 
-            # of the loop above to get unique path names
-            abspath = Path(p)
-            basename = p.stem
-            absdir = p.parent
-            # make sure we have write permission in this directory
-            if not os.access(absdir, os.W_OK):
-                message = f'You do not appear to have write permission in directory={absdir}\n'
-                message += "Correct that and try again"
-                raise PermissionError(message)
-            jsonfile = Path(absdir,basename).with_suffix(json_file_suffix)
-            # storage_mode qualifier shouldn't really be necessary but avoids 
-            # a conceivable database problem.   One that should only happen with 
-            # a workflow using mspass doing something wrong
-            wfquery = {"dir" : str(thisdir), "dfile" : thisdfile,"storage_mode" : "file"}
-            doclist = list(db_collection.find(wfquery))
-            for i in range(len(doclist)):
-                # this function encapsulates changes needed to make the 
-                # json documents clean.  We use a test for tmatrix 
-                # define how to set the atomic_data_type argument to the 
-                # function
-                if "tmatrix" in doc:
-                    doclist[i] = update_document_for_json_output(doclist[i],
-                                            atomic_data_type="Seismogram")
-                else:
-                    # note this assumes TimeSeries is default for atomic_data_type
-                    doclist[i] = update_document_for_json_output(doclist[i])
-            with open(jsonfile,"w",encoding="utf-8") as fp:
-                fp.write(json_util.dumps(doclist))
+
+    for p in pathlist:
+        # deconstruct the path to generate a query to retrieve all documents 
+        # linked to each unique file 
+        thisdir = p.parent
+        thisdfile = p.name
+        # we can be confident this won't throw an error now because 
+        # of the loop above to get unique path names
+        abspath = Path(p)
+        basename = p.stem
+        absdir = p.parent
+        # make sure we have write permission in this directory
+        if not os.access(absdir, os.W_OK):
+            message = f'You do not appear to have write permission in directory={absdir}\n'
+            message += "Correct that and try again"
+            raise PermissionError(message)
+        jsonfile = Path(absdir,basename).with_suffix(json_file_suffix)
+        # storage_mode qualifier shouldn't really be necessary but avoids 
+        # a conceivable database problem.   One that should only happen with 
+        # a workflow using mspass doing something wrong
+        wfquery = {"dir" : str(thisdir), "dfile" : thisdfile,"storage_mode" : "file"}
+        doclist = list(db_collection.find(wfquery))
+        for i in range(len(doclist)):
+            # this function encapsulates changes needed to make the 
+            # json documents clean.  We use a test for tmatrix 
+            # define how to set the atomic_data_type argument to the 
+            # function
+            if "tmatrix" in doc:
+                doclist[i] = update_document_for_json_output(doclist[i],
+                                        atomic_data_type="Seismogram")
+            else:
+                # note this assumes TimeSeries is default for atomic_data_type
+                doclist[i] = update_document_for_json_output(doclist[i])
+        with open(jsonfile,"w",encoding="utf-8") as fp:
+            fp.write(json_util.dumps(doclist))
     return len(pathlist)
 def update_document_for_json_output(doc,
                                     strip_id=True,
