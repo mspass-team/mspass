@@ -166,15 +166,17 @@ def archive_gridfs_data(
                 f"query argument must be a python dictionary defining a MongoDB query\n"
             )
             message += f"Received {query} which is of type {type(query)}"
-            raise MsPASSError(alg, message, ErrorSeverity.Fatal)
+            raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Fatal)
         # this and clause is normally assumed but this shouldl allow more
         # complex queries
         wfquery = {"$and": [query, {"storage_mode": "gridfs"}]}
+    if not isinstance(objects_per_file, int) or objects_per_file <= 0:
+        raise ValueError("objects_per_file must be a positive integer")
     ndata = db_collection.count_documents(wfquery)
     if ndata == 0:
         print(f"WARNING({alg}):  {wfquery} yields no documents.  Doing nothing")
         return 0
-    nfiles = int(ndata / objects_per_file) + 1
+    nfiles = (ndata + objects_per_file - 1) // objects_per_file
     if nfiles > 1 and verbose:
         print(f"WARNING({alg}):   Number of data being handle is large")
         print("Number of atomic data to save=", ndata)
@@ -197,8 +199,21 @@ def archive_gridfs_data(
     # when nfiles is one the blocking will work normally
     # Only distinction is file naming
     count = 1
+    written = 0
     for block in block_cursor(cursor, objects_per_file):
-        ens = db_collection.read_data(block, collection=db_collection.name)
+        members = [
+            db_collection.database.read_data(doc, collection=db_collection.name)
+            for doc in block
+        ]
+        ens = (
+            SeismogramEnsemble()
+            if isinstance(members[0], Seismogram)
+            else TimeSeriesEnsemble()
+        )
+        for member in members:
+            ens.member.append(member)
+        if any(member.live for member in ens.member):
+            ens.set_live()
         if nfiles == 1:
             basepath = outdir / output_file_base
         else:
@@ -215,8 +230,9 @@ def archive_gridfs_data(
                 " data objects to pair of files with base name=",
                 basepath,
             )
+        written += nsaved > 0
         count += 1
-    return count - 1
+    return written
 
 
 def save_to_archive_files(
@@ -275,9 +291,7 @@ def save_to_archive_files(
      collection.   This function takes the view that bodies do not
      belong in the archive.  As a result it always silently discards any
      dead members of the ensemble it is handling.   It also does that with
-     prejudice meaning that when dead data are present the live data are
-     copied to a new container before being saved and the original is
-     vaporized (del ens is run on the input object).
+     live members copied to a new container when dead members are present.
 
      The function normally is careful to avod overwriting existing data.
      It more-or-less assumes the model is that it is give a target
@@ -398,10 +412,10 @@ def save_to_archive_files(
             raise TypeError(
                 f"{alg}:  arg0 must be a TimeSeriesEnsemble or SeismogramEnsemble"
             )
-        del ens
     else:
         cleaned_ens = ens
 
+    cleaned_ens.set_live()
     abspath = base_pathname.resolve()
     outdir = abspath.parent
     dfile = base_pathname.with_suffix(data_file_suffix)
@@ -416,15 +430,23 @@ def save_to_archive_files(
             raise FileExistsError(message)
     # We have to save the sample data first as we need the list of foff
     # values to write to the json file.
+    # The native writer appends; reset the archive before an overwrite.
+    if overwrite and dfile.exists():
+        dfile.unlink()
     fofflist = _fwrite_to_file(cleaned_ens, str(outdir), dfile.name)
     # intentionally do not enforce a schema on documents that will
     # define the json file
     doclist = list()
-    for d in ens.member:
+    for d in cleaned_ens.member:
         # pybind11 code sets the metadata symbol to refernce the Metadata
         # container.   d is an atomic datum here
         doc = dict(Metadata(d))
-        doc = update_document_for_json_output(doc)
+        doc = update_document_for_json_output(
+            doc,
+            atomic_data_type=(
+                "Seismogram" if isinstance(d, Seismogram) else "TimeSeries"
+            ),
+        )
         doclist.append(doc)
     # add the foff values to each document.   This works because we can
     # be sure any dead data have been cremated.
@@ -458,17 +480,15 @@ def read_from_archive_file(
     if not jsonfile_path.is_file():
         message = f"{alg}:  data file={jsonfile_path} does not exist"
         raise FileExistsError(message)
-    # this form assumes json written without an indent
-    # each document is then one line
     with open(jsonfile_path, "r", encoding="utf-8") as f:
-        for line in f:
-            # strip is needed to make this more robust
-            # it drops extra lines and make is tolerant of newline variations
-            if line.strip():
-                doclist = json_util.loads(line)
-            else:
-                message = f"{alg}:  json file={jsonfile_path} exists but has no valid json data"
-                raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        content = f.read()
+    if not content.strip():
+        raise ValueError(f"{alg}: json file has no valid json data")
+    doclist = json_util.loads(content)
+    if not isinstance(doclist, list) or not doclist:
+        raise ValueError(f"{alg}: json must contain a nonempty list of documents")
+    if any(doc.get("datatype", "f8") != "f8" for doc in doclist):
+        raise ValueError(f"{alg}: only datatype f8 is supported")
     # these attributes should be cleared if they are present
     keys_to_clear = ["_id", "dir", "dfile"]
     # clear junk and get two required keys to proceed
@@ -617,109 +637,57 @@ def create_archive_index(
     alg = "create_archive_index"
     if not isinstance(db_collection, Collection):
         raise ValueError(f"{alg}:  arg0 must be a pymongo Collection object")
-    dirlist = db_collection.distinct("dir")
-    if len(dirlist) == 0:
-        message = f"{alg} (WARNING):  this collection={db_collection} has no documents with the dir attriute set\n"
-        n = db_collection.count_documents({})
-        message += f"This collection has {n} documents"
-        if n == 0:
-            message += "Did you use an invalid collection name?"
-        else:
-            message += "collection given has data but probably only uses gridfs storage"
-        raise MsPASSError(alg, message, ErrorSeverity.Fatal)
-    if query is not None:
-        if not isinstance(query, dict):
-            raise ValueError(f"{alg}:  query argument must be a python dictionary")
-        wfquery = query
-    else:
-        wfquery = dict()
-    # This function is only useful for data already saved to files
-    wfquery["storage_mode"] = "file"
-    # we create a (potentiall) large list of path naes for all
-    # valid dir and dfile combinations and store them in this list
-    pathlist = list()
-    for dir in dirlist:
-        wfquery["dir"] = dir
-        # there are usually many documents for each dir/dfile value
-        # use this set container to find unique paths
-        pathset = set()
-        abspathset = set()
-        cursor = db_collection.find(wfquery)
-        for doc in cursor:
-            thisdir = doc["dir"]
-            thisfile = doc["dfile"]
-            thispath = Path(thisdir) / thisfile
-            # assure this is a fully qualified path name
-            # essential here as string comparisons can fail if the
-            # dir has "./x" and "x" entries for relative paths
-            try:
-                abspath = thispath.resolve(strict=True)
-                abspathset.add(abspath)
-                pathset.add(thispath)
-            except FileNotFoundError:
-                print(
-                    f"{alg} (WARNING):  found document defined path={thispath} that does not exist"
-                )
-                print("Data linked to that path will not be indexed")
-
-            except RuntimeError:
-                # This is needed to avoid circular links - rare problem
-                message = f"path.resolve detected a symlink loop for path={thispath}\n"
-                message += "You have some inappropriate links in the fle system holding these data\n"
-                message += "Cannot continue"
-                raise MsPASSError(alg, message, ErrorSeverity.Fatal)
-            except OSError as e:
-                message = f"{alg}:  path.resolve threw OSError={e}\n"
-                message += "Something is very wrong you need to repair on your system"
-                raise MsPASSError(alg, message, ErrorSeverity.Fatal)
-        # Use ths simple test to make sure there isn't an inconsistency
-        # in absolute paths and those derived from dir with resolve
-        # be pedantic about this and exit if it they aren't consistent
-        if len(pathset) != len(abspathset):
-            message = f"absolute and relative path names associated with dir={dir} are not consistent\n"
-            message += "That should not happen.   Check database integrity"
-            raise MsPASSError(alg, message, ErrorSeverity.Fatal)
-        for p in abspathset:
-            pathlist.append(p)
-
-    for p in pathlist:
-        # deconstruct the path to generate a query to retrieve all documents
-        # linked to each unique file
-        thisdir = p.parent
-        thisdfile = p.name
-        # we can be confident this won't throw an error now because
-        # of the loop above to get unique path names
-        abspath = Path(p)
-        basename = p.stem
-        absdir = p.parent
-        # make sure we have write permission in this directory
-        if not os.access(absdir, os.W_OK):
-            message = (
-                f"You do not appear to have write permission in directory={absdir}\n"
+    if query is not None and not isinstance(query, dict):
+        raise ValueError(f"{alg}:  query argument must be a python dictionary")
+    # Preserve arbitrary selection clauses, including storage_mode and dir.
+    wfquery = (
+        {"$and": [query, {"storage_mode": "file"}]}
+        if query
+        else {"storage_mode": "file"}
+    )
+    if not db_collection.distinct("dir"):
+        raise MsPASSError(
+            f"{alg}: collection has no documents with the dir attribute set",
+            ErrorSeverity.Fatal,
+        )
+    aliases_by_path = {}
+    for doc in db_collection.find(wfquery):
+        path = Path(doc["dir"]) / doc["dfile"]
+        try:
+            resolved = path.resolve(strict=True)
+        except FileNotFoundError:
+            print(
+                f"{alg} (WARNING):  found document defined path={path} that does not exist"
             )
-            message += "Correct that and try again"
-            raise PermissionError(message)
-        jsonfile = Path(absdir, basename).with_suffix(json_file_suffix)
-        # storage_mode qualifier shouldn't really be necessary but avoids
-        # a conceivable database problem.   One that should only happen with
-        # a workflow using mspass doing something wrong
-        wfquery = {"dir": str(thisdir), "dfile": thisdfile, "storage_mode": "file"}
-        doclist = list(db_collection.find(wfquery))
-        for i in range(len(doclist)):
-            # this function encapsulates changes needed to make the
-            # json documents clean.  We use a test for tmatrix
-            # define how to set the atomic_data_type argument to the
-            # function
-            if "tmatrix" in doc:
-                doclist[i] = update_document_for_json_output(
-                    doclist[i], atomic_data_type="Seismogram"
-                )
-            else:
-                # note this assumes TimeSeries is default for atomic_data_type
-                doclist[i] = update_document_for_json_output(doclist[i])
-        with open(jsonfile, "w", encoding="utf-8") as fp:
+            continue
+        aliases_by_path.setdefault(resolved, set()).add((doc["dir"], doc["dfile"]))
+    for path, aliases in aliases_by_path.items():
+        filequery = {
+            "$and": [
+                wfquery,
+                {
+                    "$or": [
+                        {"dir": directory, "dfile": filename}
+                        for directory, filename in aliases
+                    ]
+                },
+            ]
+        }
+        documents = db_collection.find(filequery)
+        if not os.access(path.parent, os.W_OK):
+            raise PermissionError(
+                f"You do not appear to have write permission in directory={path.parent}"
+            )
+        doclist = [
+            update_document_for_json_output(
+                dict(doc),
+                atomic_data_type="Seismogram" if "tmatrix" in doc else "TimeSeries",
+            )
+            for doc in documents
+        ]
+        with open(path.with_suffix(json_file_suffix), "w", encoding="utf-8") as fp:
             fp.write(json_util.dumps(doclist))
-    return len(pathlist)
+    return len(aliases_by_path)
 
 
 def update_document_for_json_output(
@@ -757,7 +725,7 @@ def update_document_for_json_output(
                 f"{alg}:  Archiver currently only support binary raw format storage\n"
             )
             message += "Restructure your data set or extend this function"
-            raise MsPASSError(alg, message, ErrorSeverity.Fatal)
+            raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Fatal)
     else:
         # format undefined in MsPASS implies binary f8
         doc["datatype"] = "f8"
