@@ -22,9 +22,6 @@ from earthscope_sdk import EarthScopeClient
 from dask.distributed import WorkerPlugin, get_worker
 
 
-# this decorator is necessary to avoid the cost of instantiating a
-# client on serial tasks every time it is called
-@lru_cache(maxsize=1)
 def fetch_s3_client(
     parallel=True, session=None, session_config=None, worker_data_key="geolab_s3client"
 ):
@@ -47,10 +44,9 @@ def fetch_s3_client(
     Case 2:  parallel==False
     Set the parallel argument False if you are using this function in
     a serial task.  If you are running serial and you do not set parallel
-    False function will throw a KeyError exception.  For efficiency
-    this function is pushed to a global cache using the `functools.lru_cache`
-    decorator.   That improves performance as otherwise every time the function
-    is called a new client would have to instantiated from a Session object.
+    False the function will raise a ValueError exception.  For efficiency
+    serial client creation is cached using `functools.lru_cache`.  Otherwise
+    every call would instantiate a new client from a Session object.
     Not as bad as starting from nothing but not zero either.   The cache
     approach makes subsequent access times tiny.
 
@@ -78,8 +74,8 @@ def fetch_s3_client(
        with different default key values.
 
        1.  GeoLabS3Worker uses the key "geolab_s3client" by default.
-       2.  AnonymousS3Worker uses the key "anonymous_s3client" by default
-       3.  StockS3Worker uses the key "stock_s3client" as default.
+       2.  AnonymousS3Client uses the key "anonymous_s3client" by default
+       3.  StockS3Client uses the key "stock_s3client" as default.
 
        Those keys, however, are not frozen.   When any of the worker plugins
        are instatiated you can set the value for that key with the
@@ -106,25 +102,31 @@ def fetch_s3_client(
             message += "Register S3Worker before submitting tasks to the dask cluster"
             raise ValueError(message) from e
     else:
-        if session is None:
-            # This should work as this would be the use for a stock AWS
-            # login.   There the credentials are supposed to be cached so this
-            # should work unless proven othewise
-            session = boto3.Session()
-        if session_config is None:
-            # default config frozen for now
-            # may need a more flexible way to do this than hard code this
-            s3_client = session.client(
-                "s3",
-                config=Config(
-                    request_checksum_calculation="when_required",
-                    response_checksum_validation="when_required",
-                ),
-            )
-        else:
-            s3_client = session.client("s3", config=session_config)
+        s3_client = _serial_s3_client(session, session_config)
 
     return s3_client
+
+
+def _create_s3_client(session=None, session_config=None):
+    if session is None:
+        session = boto3.Session()
+    if session_config is None:
+        session_config = Config(
+            request_checksum_calculation="when_required",
+            response_checksum_validation="when_required",
+        )
+    return session.client("s3", config=session_config)
+
+
+@lru_cache(maxsize=1)
+def _serial_s3_client(session=None, session_config=None):
+    return _create_s3_client(session, session_config)
+
+
+# Keep the public cache controls while caching only serial clients.  Worker
+# lookups must reflect the current worker and its current plugin registration.
+fetch_s3_client.cache_clear = _serial_s3_client.cache_clear
+fetch_s3_client.cache_info = _serial_s3_client.cache_info
 
 
 class GeoLabS3Worker(WorkerPlugin):
@@ -183,22 +185,15 @@ class GeoLabS3Worker(WorkerPlugin):
             esclient = EarthScopeClient()
             cleanup.callback(esclient.close)
             session = esclient.user.get_boto3_session()
-            # use parallel=False because this method is executed on each
-            # worker and to that python instance it is a serial thing
-            # confusing though as this always done in a parallel context
-            s3_client = fetch_s3_client(parallel=False, session=session)
-            # this is a callback to ExitStack which means it is executed only when the
-            # with block exits
+            # Plugin clients have their own lifetime; never reuse a serial
+            # cached client that another owner may already have closed.
+            s3_client = _create_s3_client(session=session)
+            # Retain cleanup after successful registration, or release resources
+            # immediately if setup fails.
             cleanup.callback(s3_client.close)
-            # Gemini suggests we should use the construct commented out for reason here.
-            # A client is a worker resource, not task data: keeping it in
-            # worker.data could ask Dask to pickle/spill its credentials.
-            # self.s3_client = s3_client
-            # Testing showed that did work running in isolation on GeoLab but I (glp) don't think
-            # what gemini suggests would work if multiple worker clients were defined
-            # this use makes this consistent with other instances of the WorkerPlugin for
-            # using s3
+            # Publish under the configurable key, retaining ownership for teardown.
             worker.data[self.worker_key] = s3_client
+            self.s3_client = s3_client
             self._cleanup = cleanup.pop_all()
 
     def teardown(self, worker):
@@ -207,12 +202,12 @@ class GeoLabS3Worker(WorkerPlugin):
         called when the class goes out of scope.   It is essential in this case to
         avoid a resource leak as it properly closes the clients connections to s3.
         """
-        s3_client = worker.data.get(self.worker_key)
-        s3_client.close()
-        cleanup = getattr(self, "_cleanup", None)
+        if worker.data.get(self.worker_key) is self.s3_client:
+            worker.data.pop(self.worker_key, None)
+        cleanup = self._cleanup
+        self._cleanup = None
+        self.s3_client = None
         if cleanup is not None:
-            self._cleanup = None
-            # self.s3_client = None
             cleanup.close()
 
 
@@ -245,17 +240,27 @@ class AnonymousS3Client(WorkerPlugin):
     def __init__(self, key="anonymous_s3client", region="us-east-2"):
         self.worker_key = key
         self.region = region
+        self.s3_client = None
 
     def setup(self, worker):
         s3_client = boto3.client(
             "s3", region_name=self.region, config=Config(signature_version=UNSIGNED)
         )
 
-        worker.data[self.worker_key] = s3_client
+        try:
+            worker.data[self.worker_key] = s3_client
+        except Exception:
+            s3_client.close()
+            raise
+        self.s3_client = s3_client
 
     def teardown(self, worker):
-        s3_client = worker.data.get(self.worker_key)
-        s3_client.close()
+        s3_client = self.s3_client
+        self.s3_client = None
+        if s3_client is not None:
+            if worker.data.get(self.worker_key) is s3_client:
+                worker.data.pop(self.worker_key, None)
+            s3_client.close()
 
 
 class StockS3Client(WorkerPlugin):
@@ -288,6 +293,7 @@ class StockS3Client(WorkerPlugin):
     def __init__(self, key="stock_s3client", region="us-east-2"):
         self.worker_key = key
         self.region = region
+        self.s3_client = None
 
     def setup(self, worker):
         # this simple construct assumes credentials are set using
@@ -298,8 +304,17 @@ class StockS3Client(WorkerPlugin):
             region_name=self.region,
         )
 
-        worker.data[self.worker_key] = s3_client
+        try:
+            worker.data[self.worker_key] = s3_client
+        except Exception:
+            s3_client.close()
+            raise
+        self.s3_client = s3_client
 
     def teardown(self, worker):
-        s3_client = worker.data.get(self.worker_key)
-        s3_client.close()
+        s3_client = self.s3_client
+        self.s3_client = None
+        if s3_client is not None:
+            if worker.data.get(self.worker_key) is s3_client:
+                worker.data.pop(self.worker_key, None)
+            s3_client.close()
