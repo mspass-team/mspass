@@ -7771,13 +7771,19 @@ class Database(pymongo.database.Database):
                         chanrec["starttime"] = st.timestamp
                         chanrec["endtime"] = et.timestamp
                         chanrec["sampling_rate"] = chan.sample_rate
-                        chanrec["delta"] = 1.0 / chan.sample_rate
-                        if chan.sensor.description is not None:
-                            chanrec["sensor_description"] = chan.sensor.description
-                        if chan.sensor.model is not None:
-                            chanrec["sensor_model"] = chan.sensor.model
-                        if chan.sensor.manufactuer is not None:
-                            chanrec["sensor_manufacturer"] = chan.sensor.manufacturer
+                        # StationXML permits unknown or zero sampling rates.
+                        # Neither has a defined reciprocal sample interval.
+                        if chan.sample_rate is not None and chan.sample_rate > 0.0:
+                            chanrec["delta"] = 1.0 / chan.sample_rate
+                        if chan.sensor is not None:
+                            if chan.sensor.description is not None:
+                                chanrec["sensor_description"] = chan.sensor.description
+                            if chan.sensor.model is not None:
+                                chanrec["sensor_model"] = chan.sensor.model
+                            if chan.sensor.manufacturer is not None:
+                                chanrec["sensor_manufacturer"] = (
+                                    chan.sensor.manufacturer
+                                )
                         n_chan_processed += 1
                         if self._channel_is_not_in_db(chanrec):
                             chanrec["serialized_channel_data"] = encode_response(
