@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev113+gc53d735d5 documentation</title>
+    <title>mspasspy.db.database &#8212; MsPASS 2.4.4.dev114+gf4c3cfaca documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=3f71e553"></script>
+    <script src="../../../_static/documentation_options.js?v=ec806102"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev113" />
+  <meta name="docsearch:version" content="2.4.4.dev114" />
   </head>
   
   
@@ -7960,12 +7960,14 @@
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_locdata</span><span class="p">(</span><span class="n">chanlist</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_locdata</span><span class="p">(</span><span class="n">chanlist</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Group the channels of an ObsPy Station by location code.</span>
 
 <span class="sd">        Channel metadata remain attached to each Channel object so callers</span>
 <span class="sd">        can preserve channel-specific coordinates and validity intervals.</span>
+<span class="sd">        Returns a dictionary keyed by loc code with a list of channel codes</span>
+<span class="sd">        defined for that loc code.</span>
 <span class="sd">        """</span>
         <span class="n">alllocs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">chanlist</span><span class="p">:</span>
@@ -8317,6 +8319,20 @@
                         <span class="n">et</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
                         <span class="n">chanrec</span><span class="p">[</span><span class="s2">"starttime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">timestamp</span>
                         <span class="n">chanrec</span><span class="p">[</span><span class="s2">"endtime"</span><span class="p">]</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">timestamp</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s2">"sampling_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">sample_rate</span>
+                        <span class="c1"># StationXML permits unknown or zero sampling rates.</span>
+                        <span class="c1"># Neither has a defined reciprocal sample interval.</span>
+                        <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">sample_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">chan</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                            <span class="n">chanrec</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">chan</span><span class="o">.</span><span class="n">sample_rate</span>
+                        <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">chanrec</span><span class="p">[</span><span class="s2">"sensor_description"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">description</span>
+                            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">chanrec</span><span class="p">[</span><span class="s2">"sensor_model"</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">model</span>
+                            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">manufacturer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">chanrec</span><span class="p">[</span><span class="s2">"sensor_manufacturer"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">chan</span><span class="o">.</span><span class="n">sensor</span><span class="o">.</span><span class="n">manufacturer</span>
+                                <span class="p">)</span>
                         <span class="n">n_chan_processed</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_is_not_in_db</span><span class="p">(</span><span class="n">chanrec</span><span class="p">):</span>
                             <span class="n">chanrec</span><span class="p">[</span><span class="s2">"serialized_channel_data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">encode_response</span><span class="p">(</span>
