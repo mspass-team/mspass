@@ -7,7 +7,7 @@ import pytest
 from botocore.config import Config
 from botocore import UNSIGNED
 
-import mspasspy.io.s3_worker_plugin as s3
+import mspasspy.io.s3client as s3
 
 
 @pytest.fixture(autouse=True)
