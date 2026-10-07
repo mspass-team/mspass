@@ -15,7 +15,11 @@ struct ArithmeticOverlap {
   std::size_t rhs_begin;
   std::size_t count;
 };
-
+/* This is the fractional error allowed for a slipperly clock to differ from 
+ a nominal sample rate.  This fixed constant may need to be adjusted.  It is a guess
+ by glp from experience with older gsn data that had this issue.
+*/
+const double dt_fractional_error_tolerance(0.001); 
 inline ArithmeticOverlap arithmetic_overlap(const BasicTimeSeries &lhs,
                                             const BasicTimeSeries &rhs,
                                             const char *caller) {
@@ -30,7 +34,7 @@ inline ArithmeticOverlap arithmetic_overlap(const BasicTimeSeries &lhs,
   const double lhs_dt = lhs.dt();
   const double rhs_dt = rhs.dt();
   const double dt_tolerance =
-      1.0e-6 * std::max(std::abs(lhs_dt), std::abs(rhs_dt));
+      dt_fractional_error_tolerance * std::max(std::abs(lhs_dt), std::abs(rhs_dt));
   if (!std::isfinite(lhs_dt) || !std::isfinite(rhs_dt) ||
       !(std::abs(lhs_dt - rhs_dt) <= dt_tolerance)) {
     std::ostringstream message;
@@ -41,7 +45,7 @@ inline ArithmeticOverlap arithmetic_overlap(const BasicTimeSeries &lhs,
 
   const double offset_samples = (rhs.t0() - lhs.t0()) / lhs_dt;
   const double rounded_offset = std::round(offset_samples);
-  if (!(std::abs(offset_samples - rounded_offset) <= 1.0e-6)) {
+  if (!(std::abs(offset_samples - rounded_offset) <= 0.5)) {
     std::ostringstream message;
     message << caller << ": start times are not aligned to the sample grid: "
             << "offset=" << offset_samples << " samples";
