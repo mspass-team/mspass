@@ -144,8 +144,10 @@ This method is complicated by the need to sync the changed value with
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to add to this.
-  \exception MsPASSError if lhs and rhs have incompatible time standards,
-  sample intervals, or start-time grids.
+  The overlap boundaries are rounded to nearby sample indices, then samples
+  are paired consecutively.  This approximate operation does not resample
+  either signal; differences in sample interval or start-time grid are accepted.
+  \exception MsPASSError if lhs and rhs have incompatible time standards.
   **/
   CoreTimeSeries &operator+=(const CoreTimeSeries &d);
   /*! Addition operator.
@@ -172,8 +174,10 @@ This method is complicated by the need to sync the changed value with
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to subract from this.
-  \exception MsPASSError if lhs and rhs have incompatible time standards,
-  sample intervals, or start-time grids.
+  The overlap boundaries are rounded to nearby sample indices, then samples
+  are paired consecutively.  This approximate operation does not resample
+  either signal; differences in sample interval or start-time grid are accepted.
+  \exception MsPASSError if lhs and rhs have incompatible time standards.
   **/
   CoreTimeSeries &operator-=(const CoreTimeSeries &d);
   /*! Subtraction operator.

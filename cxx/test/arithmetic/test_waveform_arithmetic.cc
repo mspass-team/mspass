@@ -1,19 +1,13 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
-#include "mspass/utility/MsPASSError.h"
-#include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <iostream>
-#include <limits>
 #include <string>
 #include <vector>
 
 using mspass::seismic::Seismogram;
 using mspass::seismic::TimeReferenceType;
 using mspass::seismic::TimeSeries;
-using mspass::utility::ErrorSeverity;
-using mspass::utility::MsPASSError;
 
 namespace {
 int failure_count{0};
@@ -149,80 +143,48 @@ void verify_valid(const bool add, const double rhs_t0, const double rhs_dt,
     }
   }
 
+  const auto rhs_before = snapshot(rhs);
   combine(lhs, rhs, add);
   check_state(lhs, snapshot(expected), context);
+  check_state(rhs, rhs_before, context + " rhs");
 }
 
 template <class Waveform>
-void verify_rejected(const bool add, const double rhs_t0, const double rhs_dt,
-                     const std::string &context, const double lhs_dt = 1.0) {
-  Waveform lhs = make_waveform<Waveform>(5, 0.0, lhs_dt, 100.0);
-  Waveform rhs = make_waveform<Waveform>(4, rhs_t0, rhs_dt, 10.0);
-  rhs.elog.log_error("rhs", "must not merge on rejection",
-                     ErrorSeverity::Complaint);
+void verify_no_overlap(const bool add, const double rhs_t0,
+                       const std::string &context) {
+  Waveform lhs = make_waveform<Waveform>(3, 0.0, 1.0, 100.0);
+  const Waveform rhs = make_waveform<Waveform>(2, rhs_t0, 1.0, 10.0);
   const auto before = snapshot(lhs);
-  bool threw_invalid{false};
-  try {
-    combine(lhs, rhs, add);
-  } catch (const MsPASSError &error) {
-    threw_invalid = error.severity() == ErrorSeverity::Invalid;
-  }
-  check(threw_invalid, context + ": did not throw MsPASSError Invalid");
-  check_state(lhs, before, context + " rejection atomicity");
+  const auto rhs_before = snapshot(rhs);
+  combine(lhs, rhs, add);
+  check_state(lhs, before, context);
+  check_state(rhs, rhs_before, context + " rhs");
 }
 
 template <class Waveform>
 void run_suite(const bool add, const std::string &type_name) {
-  const std::string operation = add ? "+=" : "-=";
-  const std::string prefix = type_name + " " + operation;
-
-  verify_valid<Waveform>(add, 0.0, 1.0, 0, prefix + " equal grid");
-  verify_valid<Waveform>(add, 2.0, 1.0, 2, prefix + " positive offset");
-  verify_valid<Waveform>(add, -2.0, 1.0, -2, prefix + " negative offset");
-  verify_valid<Waveform>(add, 5.0, 1.0, 5, prefix + " positive no overlap");
-  verify_valid<Waveform>(add, -4.0, 1.0, -4, prefix + " negative no overlap");
-
-  constexpr double tolerance = 1.0e-6;
-  const double positive_offset_at_tolerance = 1.0 + tolerance;
-  const double positive_offset_beyond = std::nextafter(
-      positive_offset_at_tolerance, std::numeric_limits<double>::infinity());
-  const double negative_offset_at_tolerance = -1.0 - tolerance;
-  const double negative_offset_beyond = std::nextafter(
-      negative_offset_at_tolerance, -std::numeric_limits<double>::infinity());
-  check(std::abs(positive_offset_at_tolerance -
-                 std::round(positive_offset_at_tolerance)) <= tolerance,
-        "positive offset boundary fixture is invalid");
-  check(std::abs(positive_offset_beyond - std::round(positive_offset_beyond)) >
-            tolerance,
-        "positive offset rejection fixture is invalid");
-  check(std::abs(negative_offset_at_tolerance -
-                 std::round(negative_offset_at_tolerance)) <= tolerance,
-        "negative offset boundary fixture is invalid");
-  check(std::abs(negative_offset_beyond - std::round(negative_offset_beyond)) >
-            tolerance,
-        "negative offset rejection fixture is invalid");
-  verify_valid<Waveform>(add, positive_offset_at_tolerance, 1.0, 1,
-                         prefix + " positive offset at tolerance");
-  verify_valid<Waveform>(add, negative_offset_at_tolerance, 1.0, -1,
-                         prefix + " negative offset at tolerance");
-  verify_rejected<Waveform>(add, positive_offset_beyond, 1.0,
-                            prefix + " positive offset beyond tolerance");
-  verify_rejected<Waveform>(add, negative_offset_beyond, 1.0,
-                            prefix + " negative offset beyond tolerance");
-
-  constexpr double lhs_dt = 1.0e6;
-  constexpr double dt_at_tolerance = lhs_dt - 1.0;
-  const double dt_beyond = std::nextafter(dt_at_tolerance, 0.0);
-  check(std::abs(lhs_dt - dt_at_tolerance) ==
-            tolerance * std::max(std::abs(lhs_dt), std::abs(dt_at_tolerance)),
-        "dt boundary fixture is invalid");
-  check(std::abs(lhs_dt - dt_beyond) >
-            tolerance * std::max(std::abs(lhs_dt), std::abs(dt_beyond)),
-        "dt rejection fixture is invalid");
-  verify_valid<Waveform>(add, 0.0, dt_at_tolerance, 0,
-                         prefix + " dt at relative tolerance", lhs_dt);
-  verify_rejected<Waveform>(add, 0.0, dt_beyond,
-                            prefix + " dt beyond relative tolerance", lhs_dt);
+  const std::string prefix = type_name + (add ? " += " : " -= ");
+  verify_valid<Waveform>(add, 0.0, 1.0, 0, prefix + "equal grid");
+  verify_valid<Waveform>(add, 2.0, 1.0, 2, prefix + "positive offset");
+  verify_valid<Waveform>(add, -2.0, 1.0, -2, prefix + "negative offset");
+  verify_valid<Waveform>(add, 5.0, 1.0, 5, prefix + "positive no overlap");
+  verify_valid<Waveform>(add, -4.0, 1.0, -4, prefix + "negative no overlap");
+  verify_valid<Waveform>(add, -0.0347376, 1.0, 0,
+                         prefix + "fractional negative offset");
+  verify_valid<Waveform>(add, 0.49, 1.0, 0,
+                         prefix + "fractional positive offset");
+  verify_valid<Waveform>(add, -0.49, 1.0, 0,
+                         prefix + "opposite fractional offset");
+  verify_valid<Waveform>(add, 0.5, 1.0, 1, prefix + "positive half sample");
+  verify_valid<Waveform>(add, -0.5, 1.0, -1, prefix + "negative half sample");
+  verify_valid<Waveform>(add, 0.51, 1.0, 1, prefix + "positive past half");
+  verify_valid<Waveform>(add, -0.51, 1.0, -1, prefix + "negative past half");
+  verify_no_overlap<Waveform>(add, 2.1, prefix + "actual no overlap");
+  verify_no_overlap<Waveform>(add, -1.1, prefix + "opposite actual no overlap");
+  verify_valid<Waveform>(add, 0.0, 0.02500124, 0,
+                         prefix + "slippery rhs dt", 0.025);
+  verify_valid<Waveform>(add, 0.0, 0.025, 0,
+                         prefix + "slippery lhs dt", 0.02500124);
 }
 } // namespace
 

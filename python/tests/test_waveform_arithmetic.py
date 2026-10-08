@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 import pytest
 
@@ -17,7 +15,7 @@ def _make_waveform(waveform_type, sample_count, t0, dt, base):
     if waveform_type is TimeSeries:
         for sample in range(sample_count):
             waveform.data[sample] = base + sample
-    else:
+    elif sample_count:
         for component in range(3):
             waveform.data[component, :] = (
                 base + 10.0 * component + np.arange(sample_count)
@@ -69,71 +67,80 @@ def _verify_valid(waveform_type, operation, rhs_t0, rhs_dt, offset, lhs_dt=1.0):
             else:
                 expected["data"][:, lhs_index] += sign * rhs.data[:, rhs_index]
 
+    rhs_before = _snapshot(rhs)
     _combine(lhs, rhs, operation)
     _assert_state(lhs, expected)
+    _assert_state(rhs, rhs_before)
 
 
-def _verify_rejected(waveform_type, operation, rhs_t0, rhs_dt, lhs_dt=1.0):
-    lhs = _make_waveform(waveform_type, 5, 0.0, lhs_dt, 100.0)
-    rhs = _make_waveform(waveform_type, 4, rhs_t0, rhs_dt, 10.0)
-    rhs.elog.log_error("rhs", "must not merge on rejection", ErrorSeverity.Complaint)
+@pytest.mark.parametrize("waveform_type", [TimeSeries, Seismogram])
+@pytest.mark.parametrize("operation", ["add", "subtract"])
+def test_waveform_arithmetic_overlap(waveform_type, operation):
+    cases = [
+        (0.0, 1.0, 0, 1.0),
+        (2.0, 1.0, 2, 1.0),
+        (-2.0, 1.0, -2, 1.0),
+        (5.0, 1.0, 5, 1.0),
+        (-4.0, 1.0, -4, 1.0),
+        (-0.0347376, 1.0, 0, 1.0),
+        (0.49, 1.0, 0, 1.0),
+        (-0.49, 1.0, 0, 1.0),
+        (0.5, 1.0, 1, 1.0),
+        (-0.5, 1.0, -1, 1.0),
+        (0.51, 1.0, 1, 1.0),
+        (-0.51, 1.0, -1, 1.0),
+        (0.0, 0.02500124, 0, 0.025),
+        (0.0, 0.025, 0, 0.02500124),
+    ]
+    for rhs_t0, rhs_dt, offset, lhs_dt in cases:
+        _verify_valid(waveform_type, operation, rhs_t0, rhs_dt, offset, lhs_dt)
+
+
+@pytest.mark.parametrize("waveform_type", [TimeSeries, Seismogram])
+@pytest.mark.parametrize("operation", ["add", "subtract"])
+@pytest.mark.parametrize("rhs_t0", [2.1, -1.1])
+def test_waveform_arithmetic_actual_no_overlap(waveform_type, operation, rhs_t0):
+    lhs = _make_waveform(waveform_type, 3, 0.0, 1.0, 100.0)
+    rhs = _make_waveform(waveform_type, 2, rhs_t0, 1.0, 10.0)
+    expected = _snapshot(lhs)
+    rhs_before = _snapshot(rhs)
+    _combine(lhs, rhs, operation)
+    _assert_state(lhs, expected)
+    _assert_state(rhs, rhs_before)
+
+
+@pytest.mark.parametrize("waveform_type", [TimeSeries, Seismogram])
+@pytest.mark.parametrize("operation", ["add", "subtract"])
+def test_waveform_arithmetic_legacy_guards(waveform_type, operation):
+    lhs = _make_waveform(waveform_type, 3, 0.0, 1.0, 100.0)
+    rhs = _make_waveform(waveform_type, 2, 0.0, 1.0, 10.0)
     before = _snapshot(lhs)
+    rhs.kill()
+    _combine(lhs, rhs, operation)
+    _assert_state(lhs, before)
 
-    with pytest.raises(MsPASSError) as exc_info:
+    rhs.set_live()
+    rhs.tref = TimeReferenceType.UTC
+    with pytest.raises(MsPASSError) as error:
         _combine(lhs, rhs, operation)
+    assert error.value.severity == ErrorSeverity.Invalid
+    _assert_state(lhs, before)
 
-    assert exc_info.value.severity == ErrorSeverity.Invalid
+    empty = _make_waveform(waveform_type, 0, 0.0, 1.0, 10.0)
+    _combine(lhs, empty, operation)
     _assert_state(lhs, before)
 
 
 @pytest.mark.parametrize("waveform_type", [TimeSeries, Seismogram])
 @pytest.mark.parametrize("operation", ["add", "subtract"])
-def test_waveform_arithmetic_grid_contract(waveform_type, operation):
-    valid_cases = [
-        (0.0, 1.0, 0),
-        (2.0, 1.0, 2),
-        (-2.0, 1.0, -2),
-        (5.0, 1.0, 5),
-        (-4.0, 1.0, -4),
-    ]
-
-    tolerance = 1.0e-6
-    positive_offset_at_tolerance = 1.0 + tolerance
-    negative_offset_at_tolerance = -1.0 - tolerance
-    assert (
-        abs(positive_offset_at_tolerance - round(positive_offset_at_tolerance))
-        <= tolerance
-    )
-    assert (
-        abs(negative_offset_at_tolerance - round(negative_offset_at_tolerance))
-        <= tolerance
-    )
-    valid_cases.extend(
-        [
-            (positive_offset_at_tolerance, 1.0, 1),
-            (negative_offset_at_tolerance, 1.0, -1),
-        ]
-    )
-
-    for rhs_t0, rhs_dt, offset in valid_cases:
-        _verify_valid(waveform_type, operation, rhs_t0, rhs_dt, offset)
-
-    lhs_dt = 1.0e6
-    dt_at_tolerance = lhs_dt - 1.0
-    dt_beyond = math.nextafter(dt_at_tolerance, 0.0)
-    assert abs(lhs_dt - dt_at_tolerance) == tolerance * max(
-        abs(lhs_dt), abs(dt_at_tolerance)
-    )
-    assert abs(lhs_dt - dt_beyond) > tolerance * max(abs(lhs_dt), abs(dt_beyond))
-    _verify_valid(waveform_type, operation, 0.0, dt_at_tolerance, 0, lhs_dt=lhs_dt)
-
-    positive_offset_beyond = math.nextafter(positive_offset_at_tolerance, math.inf)
-    negative_offset_beyond = math.nextafter(negative_offset_at_tolerance, -math.inf)
-    assert abs(positive_offset_beyond - round(positive_offset_beyond)) > tolerance
-    assert abs(negative_offset_beyond - round(negative_offset_beyond)) > tolerance
-    for rhs_t0, rhs_dt in [
-        (positive_offset_beyond, 1.0),
-        (negative_offset_beyond, 1.0),
-    ]:
-        _verify_rejected(waveform_type, operation, rhs_t0, rhs_dt)
-    _verify_rejected(waveform_type, operation, 0.0, dt_beyond, lhs_dt=lhs_dt)
+def test_waveform_arithmetic_rhs_longer_than_lhs(waveform_type, operation):
+    lhs = _make_waveform(waveform_type, 3, 0.0, 1.0, 100.0)
+    rhs = _make_waveform(waveform_type, 6, -1.0, 1.0, 10.0)
+    expected = _snapshot(lhs)
+    sign = 1.0 if operation == "add" else -1.0
+    if waveform_type is TimeSeries:
+        expected["data"] += sign * np.array(rhs.data[1:4])
+    else:
+        expected["data"] += sign * np.array(rhs.data[:, 1:4])
+    _combine(lhs, rhs, operation)
+    _assert_state(lhs, expected)

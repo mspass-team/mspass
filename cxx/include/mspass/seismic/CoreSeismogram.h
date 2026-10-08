@@ -223,8 +223,10 @@ public:
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to add to this.
-  \exception MsPASSError if lhs and rhs have incompatible time standards,
-  sample intervals, or start-time grids.
+  The overlap boundaries are rounded to nearby sample indices, then samples
+  are paired consecutively.  This approximate operation does not resample
+  either signal; differences in sample interval or start-time grid are accepted.
+  \exception MsPASSError if lhs and rhs have incompatible time standards.
   **/
   CoreSeismogram &operator+=(const CoreSeismogram &d);
   /*! Addition operator.
@@ -250,8 +252,10 @@ public:
   the ends of the rhs are inside the range of the lhs.
 
   \param d is other signal to subract from this.
-  \exception MsPASSError if lhs and rhs have incompatible time standards,
-  sample intervals, or start-time grids.
+  The overlap boundaries are rounded to nearby sample indices, then samples
+  are paired consecutively.  This approximate operation does not resample
+  either signal; differences in sample interval or start-time grid are accepted.
+  \exception MsPASSError if lhs and rhs have incompatible time standards.
   **/
   CoreSeismogram &operator-=(const CoreSeismogram &d);
   /*! Subtraction operator.
