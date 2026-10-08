@@ -21,6 +21,7 @@ from mspasspy.ccore.seismic import (
     TimeSeries,
     TimeSeriesEnsemble,
     DoubleVector,
+    TimeReferenceType,
 )
 from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.ccore.algorithms.amplitudes import MADAmplitude
@@ -31,6 +32,7 @@ from obspy.taup import TauPyModel
 
 from mspasspy.algorithms.MCXcorStacking import (
     align_and_stack,
+    beam_align,
     _coda_duration,
     dbxcor_weights,
     extract_initial_beam_estimate,
@@ -40,7 +42,6 @@ from mspasspy.algorithms.MCXcorStacking import (
     _set_phases,
     regularize_sampling,
     ensemble_time_range,
-    _snap_start_time_to_grid,
 )
 
 
@@ -392,25 +393,34 @@ def test_align_and_stack():
     validate_lags(eo, lag_in_samples)
 
 
-def test_mcxcor_nearest_grid_alignment_preserves_samples():
-    reference = TimeSeries(8)
-    reference.dt = 0.05
-    reference.t0 = -1.0
-    reference.set_live()
-
+def test_beam_align_preserves_fractional_start_time(monkeypatch):
+    beam = TimeSeries(8)
+    beam.dt = 0.05
+    beam.t0 = 0.0
+    beam.set_live()
     datum = TimeSeries(6)
-    datum.dt = reference.dt
-    datum.t0 = reference.t0 + 2.49 * reference.dt
+    datum.dt = 0.05
+    datum.t0 = 1000.124
+    datum.tref = TimeReferenceType.UTC
     datum.set_live()
+    datum.ator(1000.0)
     datum.data = DoubleVector(np.arange(datum.npts, dtype=float))
     samples_before = np.array(datum.data, copy=True)
+    ensemble = TimeSeriesEnsemble()
+    ensemble.member.append(datum)
+    lag = 0.0347376
+    monkeypatch.setattr(
+        "mspasspy.algorithms.MCXcorStacking._xcor_shift", lambda *_: lag
+    )
 
-    _snap_start_time_to_grid(datum, reference)
+    beam_align(ensemble, beam)
 
-    assert datum.t0 == reference.time(2)
-    assert datum.dt == reference.dt
-    assert datum.npts == len(samples_before)
-    np.testing.assert_array_equal(datum.data, samples_before)
+    aligned = ensemble.member[0]
+    assert aligned.t0 == pytest.approx(0.124 - lag)
+    assert aligned.t0 != beam.time(beam.sample_number(aligned.t0))
+    assert aligned.dt == datum.dt
+    assert aligned.npts == datum.npts
+    np.testing.assert_array_equal(aligned.data, samples_before)
 
 
 def test_align_and_stack_error_handlers():
