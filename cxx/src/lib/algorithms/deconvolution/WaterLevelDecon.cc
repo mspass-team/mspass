@@ -113,14 +113,16 @@ void WaterLevelDecon::process() {
     if (bamp < b_rms * wlv) {
       /* Use 64 bit epsilon as the floor for defining a pure zero */
       if (bamp / b_rms < DBL_EPSILON) {
+        // A spectral null has no defined phase.  Choose a positive real
+        // floor (zero imaginary part) to preserve conjugate symmetry.
         *b_fft.ptr(i) = b_rms * wlv;
-        *(b_fft.ptr(i) + 1) = b_rms * wlv;
+        *(b_fft.ptr(i) + 1) = 0.0;
       } else {
-        // real part
-        *b_fft.ptr(i) = (*b_fft.ptr(i) / abs(b_fft[i])) * b_rms * wlv;
-        // imag part
-        *(b_fft.ptr(i) + 1) =
-            (*(b_fft.ptr(i) + 1) / abs(b_fft[i])) * b_rms * wlv;
+        // Scale both parts using the ORIGINAL magnitude.  Recomputing abs
+        // after changing the real part distorts the phase of the wavelet.
+        const double scale = (b_rms * wlv) / bamp;
+        *b_fft.ptr(i) *= scale;
+        *(b_fft.ptr(i) + 1) *= scale;
       }
       ++nunderwater;
     }
