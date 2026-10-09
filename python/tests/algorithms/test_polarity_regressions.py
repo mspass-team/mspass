@@ -34,8 +34,10 @@ def _free_surface_observations(vp, vs, p):
         k_r, k_z = k
         e_r, e_z = e
         return np.array(
-            [mu * (k_z * e_r + k_r * e_z),
-             lam * (k_r * e_r + k_z * e_z) + 2.0 * mu * k_z * e_z]
+            [
+                mu * (k_z * e_r + k_r * e_z),
+                lam * (k_r * e_r + k_z * e_z) + 2.0 * mu * k_z * e_z,
+            ]
         )
 
     reflected = [
@@ -93,9 +95,7 @@ def test_free_surface_separates_independently_generated_modes(
     data, slow = _seismogram_with_modes(vp, vs, p, azimuth_deg)
     data.free_surface_transformation(slow, vp, vs)
     assert data.live
-    actual = np.array(
-        [[data.data[i, j] for j in range(3)] for i in range(3)]
-    )
+    actual = np.array([[data.data[i, j] for j in range(3)] for i in range(3)])
     # Columns were generated as pure SH, SV, and P, with unit incidence.
     np.testing.assert_allclose(actual, np.eye(3), rtol=0.0, atol=3e-10)
 
@@ -105,7 +105,7 @@ def test_free_surface_separates_independently_generated_modes(
     [
         (5.0, 3.0, 1.0 / 5.0),  # P critical angle: qP=0, singular.
         (5.0, 3.0, 1.0 / 3.0),  # Beyond P critical and S critical.
-        (0.0, 3.0, 0.05),       # Invalid surface speed.
+        (0.0, 3.0, 0.05),  # Invalid surface speed.
         (5.0, 0.0, 0.05),
         (np.nan, 3.0, 0.05),
         (5.0, 3.0, np.nan),
@@ -118,9 +118,7 @@ def test_free_surface_rejects_invalid_inputs_without_mutating_data(vp, vs, p):
     for i in range(3):
         for j in range(3):
             seis.data[i, j] = 1.0 + 3 * i + j
-    original = np.array(
-        [[seis.data[i, j] for j in range(3)] for i in range(3)]
-    )
+    original = np.array([[seis.data[i, j] for j in range(3)] for i in range(3)])
     slow = SlownessVector(p, 0.0)
     with pytest.raises(MsPASSError):
         seis.free_surface_transformation(slow, vp, vs)
@@ -179,6 +177,4 @@ def test_water_level_preserves_nonzero_phase_and_zero_bin_symmetry(second_sample
         # (floor + i*floor) branch gave only half the correct real DC gain.
         assert W[0] == 0.0
         inverse = np.asarray(op.inverse_wavelet().data, dtype=float)
-        np.testing.assert_allclose(
-            np.sum(inverse), 1.0 / floor, rtol=1e-9, atol=1e-10
-        )
+        np.testing.assert_allclose(np.sum(inverse), 1.0 / floor, rtol=1e-9, atol=1e-10)
