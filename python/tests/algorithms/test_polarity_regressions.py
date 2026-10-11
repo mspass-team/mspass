@@ -13,7 +13,7 @@ Svenningsen & Jacobsen (2004), doi:10.1029/2004GL021413, eq. (1)
 import numpy as np
 import pytest
 
-from mspasspy.ccore.algorithms.deconvolution import WaterLevelDecon
+from mspasspy.ccore.algorithms.deconvolution import DoubleVector, WaterLevelDecon
 from mspasspy.ccore.seismic import Seismogram, SlownessVector
 from mspasspy.ccore.utility import Metadata, MsPASSError
 
@@ -148,7 +148,7 @@ def test_water_level_preserves_nonzero_phase_and_zero_bin_symmetry(second_sample
     wavelet[1] = second_sample
 
     op = WaterLevelDecon(md)
-    op.load(wavelet.tolist(), wavelet.tolist())
+    op.load(DoubleVector(wavelet.tolist()), DoubleVector(wavelet.tolist()))
     op.process()
     observed = np.asarray(op.actual_output().data, dtype=float)
 
