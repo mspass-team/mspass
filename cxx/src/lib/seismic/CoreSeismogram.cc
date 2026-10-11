@@ -4,6 +4,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
 #include <boost/any.hpp>
+#include <cmath>
 #include <float.h>
 #include <math.h>
 #include <pybind11/numpy.h>
@@ -712,24 +713,22 @@ void CoreSeismogram::free_surface_transformation(SlownessVector uvec, double a0,
     return; // do nothing in these situations
   double a02, b02, pslow, p2;
   double qa, qb, vpz, vpr, vsr, vsz;
+  // Validate before rotating so invalid parameters cannot mutate the datum.
+  if (!std::isfinite(a0) || !std::isfinite(b0) || a0 <= 0.0 ||
+      b0 <= 0.0 || !std::isfinite(uvec.ux) || !std::isfinite(uvec.uy))
+    throw MsPASSError(
+        "CoreSeismogram::free_surface_transformation: surface velocities "
+        "must be finite and positive and slowness components finite",
+        ErrorSeverity::Invalid);
   pslow = uvec.mag();
-  // silently do nothing if magnitude of the slowness vector is 0
-  // (vertical incidence)
-  if (pslow < DBL_EPSILON)
-    return;
-  // Can't handle evanescent waves with this operator
-  double vapparent = 1.0 / pslow;
-  if (vapparent < a0 || vapparent < b0) {
+  // The vertical wavenumbers vanish at critical incidence.  Equality must
+  // also be rejected to avoid division by zero in vpz or vsr.
+  if (!std::isfinite(pslow) || pslow * a0 >= 1.0 ||
+      pslow * b0 >= 1.0) {
     stringstream ss;
-    ss << "CoreSeismogram::free_surface_transformation method:  illegal input"
-       << endl
-       << "Apparent velocity defined by input slowness vector=" << vapparent
-       << endl
-       << "Smaller than specified surface P velocity=" << a0
-       << " or S velocity=" << b0 << endl
-       << "That implies evanescent waves that violate the assumption of this "
-          "operator"
-       << endl;
+    ss << "CoreSeismogram::free_surface_transformation: critical or "
+          "evanescent incidence (horizontal slowness="
+       << pslow << ", vp=" << a0 << ", vs=" << b0 << ")";
     throw MsPASSError(ss.str(), ErrorSeverity::Invalid);
   }
 
@@ -737,7 +736,15 @@ void CoreSeismogram::free_surface_transformation(SlownessVector uvec, double a0,
   SphericalCoordinate scor;
   // rotation angle is - azimuth to put x2 (north in standard coord)
   // in radial direction
-  scor.phi = atan2(uvec.uy, uvec.ux);
+  // Normal incidence has no preferred horizontal direction.  Honor the
+  // optional zero-slowness propagation azimuth stored by SlownessVector;
+  // the P, SV and SH free-surface amplitude corrections still apply.
+  scor.phi = (pslow == 0.0) ? (M_PI_2 - uvec.azimuth())
+                            : atan2(uvec.uy, uvec.ux);
+  if (!std::isfinite(scor.phi))
+    throw MsPASSError(
+        "CoreSeismogram::free_surface_transformation: invalid azimuth",
+        ErrorSeverity::Invalid);
   scor.theta = 0.0;
   scor.radius = 1.0;
   // after this transformation x1=transverse horizontal
@@ -766,9 +773,9 @@ void CoreSeismogram::free_surface_transformation(SlownessVector uvec, double a0,
   fstran[0][2] = 0.0;
   fstran[1][0] = 0.0;
   fstran[1][1] = vsr;
-  fstran[1][2] = vpr;
+  fstran[1][2] = -vsz;
   fstran[2][0] = 0.0;
-  fstran[2][1] = -vsz;
+  fstran[2][1] = vpr;
   fstran[2][2] = -vpz;
   this->transform(fstran);
 
