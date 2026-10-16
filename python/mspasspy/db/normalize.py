@@ -909,6 +909,10 @@ class DataFrameCacheMatcher(BasicMatcher):
     Concrete subclasses can also retain columns used only for matching
     through the cache_columns constructor argument.  Those columns are not
     included in Metadata returned by find or find_one.
+    The optional query is passed to MongoDB when building the cache,
+    reducing database transfer and memory use before matching begins.
+    DataFrame inputs are already materialized and ignore this MongoDB query;
+    subset them before construction when a smaller cache is needed.
     There is also an optional parameter, custom_null_values, that is a
     python dictionary defining values in a field that should be treated
     as a definition of a Null for that field.  The constuctor converts
@@ -937,11 +941,17 @@ class DataFrameCacheMatcher(BasicMatcher):
         prepend_collection_name=False,
         custom_null_values=None,
         cache_columns=None,
+        query=None,
     ):
         """
         Constructor for this intermediate class.  It should not be
         used except by subclasses as this intermediate class
         is not concrete.
+
+        :param query: MongoDB filter passed to collection.find when loading
+            a database-backed cache.  Ignored for DataFrame sources, which
+            should be subset before construction when filtering is needed.
+        :type query: dict or None
         """
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
@@ -996,7 +1006,9 @@ class DataFrameCacheMatcher(BasicMatcher):
         df = (
             db_or_df
             if isinstance(db_or_df, (type_pdd, type_ddd))
-            else pd.DataFrame(list(db_or_df[self.collection].find({})))
+            else pd.DataFrame(
+                list(db_or_df[self.collection].find({} if query is None else query))
+            )
         )
         self._load_dataframe_cache(df)
 
@@ -2091,6 +2103,9 @@ class EqualityMatcher(DataFrameCacheMatcher):
     applied sequentially to reduce the size of internal DataFrame
     cache in stages.  If the DataFrame is large it may improve performance
     if the most unique key in a series appears first.
+    Matching scans the cached rows for each datum.  Use query with database
+    input (or subset a DataFrame before construction) to reduce the cache
+    size; query is evaluated once during construction, not on each match.
 
     A special feature of the implementation is that we allow
     what is best thought of as reverse aliasing for the keys to
@@ -2207,6 +2222,7 @@ class EqualityMatcher(DataFrameCacheMatcher):
             prepend_collection_name=prepend_collection_name,
             custom_null_values=custom_null_values,
             cache_columns=list(match_keys.values()),
+            query=query,
         )
         self.match_keys = match_keys
         for key in match_keys:

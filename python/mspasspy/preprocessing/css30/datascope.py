@@ -542,10 +542,11 @@ class DatascopeDatabase:
             attribute_list.append([temp[0], temp[5]])
         return attribute_list
 
-    def CSS30Catalog2df(self) -> pd.DataFrame:
+    def CSS30Catalog2df(self, preferred_only=False) -> pd.DataFrame:
         """
-        Forms the standard catalog view of CSS3.0 sans the orid==prefor
-        condition to return a DataFrame formed by using
+        Forms the standard catalog view of CSS3.0, optionally restricting
+        origins to each event's preferred origin (orid==prefor).
+        Returns a DataFrame formed by using
         the DatascopeDatabase join method in sequence to produce::
 
             event->origin->assoc->arrival
@@ -565,7 +566,13 @@ class DatascopeDatabase:
         define the problem.  Exceptions could come from methods of
         this class called by the function or pandas.
 
-        :return:  Pandad DataFrame with the standard css3.0 catalog view.
+        :param preferred_only: When True, retain only arrivals associated
+            with the preferred origin of their event.  The default False
+            preserves all origins and their arrivals.  Events with no
+            matching preferred origin contribute no rows when True.
+        :type preferred_only: bool
+
+        :return:  Pandas DataFrame with the standard css3.0 catalog view.
             Attribute names are css3.0 names.
 
         """
@@ -574,6 +581,10 @@ class DatascopeDatabase:
         df = self.join(df, "origin", join_keys=["evid"])
         df = self.join(df, "assoc", join_keys=["orid"])
         df = self.join(df, "arrival", join_keys=["arid"])
+        if preferred_only:
+            # Filter after the right joins so unmatched arrivals cannot
+            # reintroduce rows outside the preferred-origin view.
+            df = df.loc[df["orid"].eq(df["prefor"])].copy()
 
         return df
 
