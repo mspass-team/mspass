@@ -26,7 +26,8 @@ class MTPowerSpectrumEngine:
 
     :param winsize:   Number of samples expected for data window.  Note this
         argument defines the size of the eigentapers so it defines the size of
-        input time series the object expect to process.
+        input time series the object initially expects to process.  apply adapts
+        the operator and recomputes its tapers when the input length changes.
 
     :param tbp:  multitaper time-bandwidth product
 
@@ -35,8 +36,9 @@ class MTPowerSpectrumEngine:
 
     :param nfft:  optional size of the fft work arrays to use.  nfft should be
         greater than or equal winsize.  When greater zero padding is used in the
-        usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft<winsize
-        a diagnostic message will be printed and nfft will be set equal to winsize.
+        usual way.  Default is 0, which lets MTSpec choose the FFT size for each input
+        length.  An explicit size is retained across length changes while it
+        is large enough; otherwise MTSpec chooses a suitable size automatically.
 
     :param iadapt:  integer argument passed to Prieto's MTspec that sets the
         eigentaper weighting scheme.  See Prieto's MTspect class documentation
@@ -56,14 +58,21 @@ class MTPowerSpectrumEngine:
         self.number_tapers = number_tapers  # kspec in multitaper
         self.vn = None  # constructor for MTSpec will set this when passed None
         self.nfft = nfft
+        self._requested_nfft = nfft
         self.idapt = iadapt
         self.lamb = None  # constructor for MTSpec set this
         self.MTSpec_instance = None
 
     def apply(self, d, dt=1.0):
         """
-        needs to support vector input or a TimeSeries - returns a PowerSpectrum
-        Cannot use mspass decorator because it supports raw data vectors
+        Estimate a PowerSpectrum from a TimeSeries or one-dimensional vector.
+
+        A changed input length resizes the operator and recomputes its tapers.
+        An explicit FFT size is retained when large enough; otherwise MTSpec
+        chooses the FFT size automatically.  Failed construction preserves the
+        previous operator state.  Empty inputs are invalid.
+
+        Cannot use mspass decorator because it supports raw data vectors.
         """
         if isinstance(d, TimeSeries):
             input_length = d.npts
@@ -80,11 +89,16 @@ class MTPowerSpectrumEngine:
                 "MTPowerSpectrumEngine.apply: arg0 must be a TimeSeries, "
                 "DoubleVector, or one-dimensional numpy array"
             )
-        if input_length != self.winsize:
-            raise ValueError(
-                "MTPowerSpectrumEngine.apply: input length={} does not match "
-                "winsize={}".format(input_length, self.winsize)
-            )
+        if input_length == 0:
+            raise ValueError("MTPowerSpectrumEngine.apply: input must not be empty")
+        resized = input_length != self.winsize
+        # Tapers and eigenvalues are specific to a window length.  Do not
+        # replace the cached state until MTSpec has constructed successfully.
+        vn = None if resized else self.vn
+        lamb = None if resized else self.lamb
+        nfft = self._requested_nfft if resized else self.nfft
+        if nfft < input_length:
+            nfft = 0
 
         # All inputs end up filling a numpy array passed to MTSpec below
         if isinstance(d, TimeSeries):
@@ -108,20 +122,19 @@ class MTPowerSpectrumEngine:
             # a future maintenance issue
             md["npts"] = len(d)
             md["delta"] = dt
-        self.MTSpec_instance = MTSpec(
+        instance = MTSpec(
             y,
             nw=self.tbp,
             kspec=self.number_tapers,
             dt=dt,
-            nfft=self.nfft,
+            nfft=nfft,
             iadapt=self.idapt,
-            vn=self.vn,
-            lamb=self.lamb,
+            vn=vn,
+            lamb=lamb,
         )
-        # Set these so they will be automatically reused on a
-        # successive call.   May need to trap size mismatch above
-        # if these were previously set - this needs some testing
-        #  REMOVE ME WHEN VERIFIED
+        self.MTSpec_instance = instance
+        self.winsize = input_length
+        # Reuse the length-specific tapers on subsequent equal-length calls.
         self.vn = self.MTSpec_instance.vn
         self.lamb = self.MTSpec_instance.lamb
         self.nfft = self.MTSpec_instance.nfft
