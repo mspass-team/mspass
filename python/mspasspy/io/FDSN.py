@@ -8,17 +8,20 @@ now store much or all of their data.
 
 @author: pavlis
 """
-import os
+
 import io
 import yaml
 import obspy
 import pandas as pd
-from pathlib import Path
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 from contextlib import closing
 from string import Formatter
+import boto3
+from botocore import UNSIGNED
+from botocore.config import Config
 from botocore.exceptions import ClientError
+from earthscope_sdk import EarthScopeClient
 
 from mspasspy.ccore.utility import MsPASSError,ErrorLogger,ErrorSeverity,Metadata 
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
@@ -26,59 +29,12 @@ from mspasspy.util.seismic import has_live_data
 from mspasspy.db.normalize import DataFrameCacheMatcher
 from mspasspy.db.database import Database
 from mspasspy.util.converter import Trace2TimeSeries, Stream2TimeSeriesEnsemble
-
-def mspass_yaml_file_reader(yaml_data_file):
-    """
-    Load yaml file using a standard mspass path search strategy.
-    
-    The standard search path for the mspass package is:
-        1.  package_base/data/yaml wwhere package_base is the directory 
-            where mspass is installed.
-        2.  if MSPASS_HOME is defined as an environment variable if searchs 
-            in $MSPASS_HOME/data/yaml
-        3.  Current directory
-    
-    Returns image of yaml file in whtever structure it implies. 
-    """
-    alg = "mspass_yaml_file_reader"
-    if isinstance(yaml_data_file,Path):
-        yaml_data_path = yaml_data_file
-    elif isinstance(yaml_data_file,str):
-        yaml_data_path = Path(yaml_data_file)
-    else:
-        message = f'{alg}:  yaml_data_file (arg0) is unsupported type={type(yaml_data_file)}\n'
-        message += "Must be either a pathlib.Path object or a string defining a filename or path"
-        raise ValueError(message)
-    yaml_data_path = yaml_data_path.resolve()
-    if yaml_data_path.is_file() and os.access(yaml_data_path,os.R_OK):
-        ymlpath = yaml_data_path
-    else:
-        if "MSPASS_HOME" in os.environ:
-            ymlpath = Path(os.environ["MSPASS_HOME"]).resolve()
-            ymlpath = ymlpath / "data/yaml"
-            # theoretically this works the same if yaml_data_file is an str or Path
-            ymlpath = ymlpath / yaml_data_file
-            # fallback to default if that file isn't found
-            if not ( ymlpath.is_file() and os.access(ymlpath,os.R_OK) ):
-                package_data_directory = Path(__file__).resolve().parent.parent / "data/yaml"
-                ymlpath = package_data_directory / yaml_data_file
-                if not ( ymlpath.is_file() and os.access(ymlpath,os.R_OK) ):
-                    message = f'{alg}:  fallback methods to find file={yaml_data_path} all failed\n'
-                    message += f'Searched current directory-> $MSPASS_HOME/data/yaml/{yaml_data_file} -> {ymlpath} without success'
-                    raise FileNotFoundError(message)
-    try:
-        with open(ymlpath,"r") as fh:
-            ymldata = yaml.safe_load(fh)
-        return ymldata
-    except yaml.YAMLError as e:
-        message = f'{alg}:  Failure parsing yaml file={ymldata}.  Error message from yaml.save_load:\n'
-        message += str(e)
-        raise MsPASSError(message, ErrorSeverity.Invalid)
-    except Exception as e:
-        message = f'{alg}:  Something threw this unexpected exception:\n'
-        message += str(e)
-        raise RuntimeError(message)
-
+#from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
+# temporary for testing - this didn't exist in io when I first pulled this branch
+# remove me and uncomment above for final use
+from s3client import GeoLabS3Worker, AnonymousS3Worker
+# for testing - will be installed eventually
+from stock import datafile
 
 class ChannelPreferences:
     """
@@ -223,7 +179,7 @@ class ChannelPreferences:
             throw a MsPASSErorr exception.
     """
     def __init__(self,
-                 yaml_file_path=None,
+                 yaml_file_name=None,
                  ):
         """
         Class constructor.
@@ -232,9 +188,11 @@ class ChannelPreferences:
         a yaml file with a special structure.  See example in the class 
         docstring.
         """
-        if yaml_file_path is None:
-            yaml_file_path = "ChannelPreferences.yaml"
-        self.cp = mspass_yaml_file_reader(yaml_file_path)
+        if yaml_file_name is None:
+            yaml_file_name = "ChannelPreferences.yaml"
+        ymlpath = datafile(yaml_file_name)
+        with open(ymlpath,"r") as fh:
+            self.cp = yaml.safe_load(fh)
         self._regularize_yaml_data()
         self._build_cross_references()
 
@@ -730,6 +688,24 @@ class PayloadFormat(Enum):
     stationxml = auto()
     quakeml = auto()
     
+class DataAccess(Enum):
+    """
+    Used to define types of access setups for using AWS S3.
+    
+    Currently there are two established ways to setup a cloud 
+    connection to seismic data archives.  There may be more so this 
+    provides a standardized interface to add new methods if and when 
+    they are needed.
+    
+    open_aws_s3 - as the name implies says a provider setup exists for 
+      open data access via AWS S3 storage. 
+    earthscope_aws_s3 - Earthscope currently provides data on AWS S3 \
+      that are not open and require earthscope login credentials.  This 
+      value means that is the expected access method. 
+    """
+    open_aws_s3 = auto()
+    earthscope_aws_s3 = auto()
+    
 class BasicProvider(ABC):
     """
     Abstract base class defining API for a cloud data provider.
@@ -820,26 +796,15 @@ class S3SeismicProvider(BasicProvider):
         # Construct from a dictionary (doc).  Note this doesn't use factor method
         p = S3SeismicProvider(doc,"NCEDC")
     """
-    #@singledispatchmethod
-        # def __init__(self, source, *args, **kwargs):
-        #     """
-        #     Constructor skeleton tagged by the decorator.   Actual 
-        #     calls are rerouted to __init__.register methods defined below.
-        #     This will be entered only if the user enters an invalid combination 
-        #     of arguments to the constructor.   Hence, this is only a one 
-        #     line function with a raise command.
-        #     """
-        #     message = "S3SeismicProvider constructor:  invalid combination of arguments\n"
-        #     message += "arg0 must be one of Database object, Path object or str pointing to a yaml file, or a python dictionary\n"
-        #     message += "arg1 is always the provider name"
-        #     raise TypeError(message)
     def __init__(self, config_dict: dict, provider: str = "Earthscope"):
         self._from_dict(config_dict, provider)
 
     @classmethod
     def from_file(cls, filename: str = "S3SeismicProvider.yaml", provider: str = "Earthscope"):
-        doc = mspass_yaml_file_reader(filename)
-        return cls(doc, provider=provider)
+        ymlpath = datafile(filename)
+        with open(ymlpath,"r") as fh:
+            ymldata = yaml.safe_load(fh)
+        return cls(ymldata,provider=provider)
     @classmethod
     def from_database(cls, 
                       db: Database, 
@@ -852,43 +817,6 @@ class S3SeismicProvider(BasicProvider):
             message = f"S3SeismicProvider constructor:  collection={collection} has no documents for provider={provider}"
             raise ValueError(message)
         return cls(doc, provider=provider)
-    # @__init__.register
-    # def _from_yaml_file(self, filename: Path, provider: str):
-    #     """
-    #     Construct from a yaml file defined by Path object required as 
-    #     arg0 and the name of the provider used as the top level key 
-    #     in the yaml file.  Use of the decorator makes this constructor 
-    #     strongly typed.  i.e. errors in type for arg0 or arg1 will 
-    #     lead to an exception.  
-    #     """
-    #     with open(filename,"r") as fh:
-    #         doc = yaml.safe_load(fh)
-    #     self._from_dict(doc,provider)
-    # @__init__.register
-    # def _from_string_path(self, filename: str = "S3SeismicProvider.yaml", provider: str = "Earthscope"):
-    #     p = Path(filename)
-    #     self._from_yaml_file(p, provider)
-    # #@__init__.register
-    # #def _from_yaml_default(self,provider_name: str):
-    # #    doc = mspass_yaml_file_reader("S3SeismicProvider.yaml")
-    # #    self._from_dict(doc,provider_name)
-    # @__init__.register
-    # def _from_database(self, 
-    #                    db: Database,
-    #                    provider: str,
-    #                    *,
-    #                    collection="S3Provider"):
-    #     """
-    #     """
-    #     query = {"provider" : provider}
-    #     doc = db[collection].find_one(query)
-    #     if doc is None:
-    #         message = f"S3SeismicProvider constructor:  collection={collection} has no documents for provider={provider}"
-    #         raise ValueError(message)
-    #     else:
-    #         # in this case doc will only contain one key==provider_name but 
-    #         # _from_dict will handle that cleanly
-    #         self._from_dict(doc,provider)
     def _from_dict(self, doc: dict, key: str):
         """
         this one does the actual work - all other are wrappers
@@ -986,6 +914,133 @@ class S3SeismicProvider(BasicProvider):
         file or other ways this is constructed.
         """
         return self._fetch_subdoc_data("object_name_format", net, "object_format")
+    
+    def access(self,net)->DataAccess:
+        """
+        Standardize asking the type of data access require for a network net.
+        
+        Curently there are two distinct ways to access FDSN data on the 
+        cloud:  open data portals and through Earthscope.  The former 
+        has fewer complexities and the later quite a few related to 
+        data access credentials.   This method is mostly used internally 
+        for defining access dependencies in code blocks, but it can be 
+        useful to end users.   The return is a class that is a child of enum 
+        to allow cleaner limits on the allowed values.   
+        """
+        if 'access' in self.nets[net]:
+            access = self.nets[net]['access']
+        else:
+            # let earhscope be the default
+            access = 'earthscope-sdk'
+            print(f"S3SeismicProvider.access:  Warning, {self.provider} access value is not defined for network code={net} ")
+            print("Using default='earthscope'")
+        match access:
+            # insist on qualifiers in case other open data portals come 
+            # into existence.  Note the weird python anomaly of needing the 
+            # | symbol instead of the wordy "or".  Needed because or evaluates
+            # to a boolean
+            case "open_s3" | "open_aws_s3":
+                return DataAccess.open_aws_s3
+            case "earthscope-sdk":
+                return DataAccess.earthscope_aws_s3
+            case _:
+                message = f"S3SeismicProvider.access:  illegal value provided for access={access} for net code {net}.  Fix configuration in yaml file or Database"
+                raise ValueError(message)
+
+    def s3client(self,net):
+        """
+        Return an s3 client for accessing data for this network for serial workflows.
+        
+        This method should be used to instantiate an isntance of and s3 
+        client set up appropriately to access data for the network defined
+        by the net argument.  The client produces is NOT stored in this 
+        object but should be held in the memory space of a driver script 
+        or instantiated on dask workers for a parallel job.  Call this 
+        method before calling any of the methods that require an s3 client. 
+        
+        :param net:  net code of the network the client should be set up 
+        to access.
+        """
+        # this key-value pair is not hidden behind a method.  
+        # is_open could beused the access is intended to be ore open 
+        # ended to add flixibility.   
+        access = self.access(net)
+        match access:
+            case DataAccess.open_aws_s3:
+                region=self.region(net)
+                session = boto3.Session(region_name=region)
+                s3client = session.client("s3",config=Config(signature_version=UNSIGNED))
+            case DataAccess.earthscope_aws_s3:
+                esclient = EarthScopeClient()
+                creds = esclient.user.get_aws_credentials()
+                session = boto3.Session(
+                    aws_access_key_id=creds.aws_access_key_id,
+                    aws_secret_access_key=creds.aws_secret_access_key.get_secret_value(),
+                    aws_session_token=creds.aws_session_token.get_secret_value(),
+                    region_name = self.region(net)
+                )
+                
+            case _:
+                message = f'S3SeismicProvider.s3client:  access velue = {access} not supported\n'
+                message += 'Must be one of:  open, earthscope-sdk'
+                raise ValueError(message)
+        return s3client
+                
+    def initialize_dask_workers(self, client, net):
+        """
+        Set up a dask cluster to run parallel s3 access for netcode defined by net.
+        
+        Setting up s3 clients on a dask cluster is a very different thing than 
+        for a serial python script.   For efficiency it is essential workers
+        creata a memory resident s3 client they use for interacting with 
+        AWS S3.   We do that here and elsewere in MsPASS using a dask 
+        WorkerPlugin implementation.   The ones used here are defined 
+        in the mspass module mspasspy.io.s3client.   This method simplifies 
+        setting that up for a given network by using required details 
+        defined in the objects self attributes.   When running parallel 
+        jobs the way this should be used is a variant of the following:
+            
+        ..code-block:: python
+        
+          # instantiate an instance of this object - change myconfiguration.yaml as appropriate
+          provider = S3SeismicProvider('mmyconfiguration.yaml')
+          for net in provider.networks():
+              provider.initialize_dask_workers(net)
+              
+        For single net code providers like SCEDC the loop is not necessary
+        and a more rational approach is to only run this method for net 
+        codes your workflow actually requires.   
+        
+        :param client:  client to that defines the dask cluster to use.
+        :type client:  Can be either a mspasspy.client.Client 
+           (what we call a MsPASS client) or a dask.distributed.Client 
+           object (what we commonly call a dask client).  If anything else 
+           the method will throw a ValueError exception.
+        """
+        alg = "S3SeismicProvider.initialize_dask_workers"
+        if is_mspass_client(client):
+            dask_client = client.get_scheduler()
+        elif is_dask_client(client):
+            dask_client = client 
+        else:
+            message = f'{alg}:  client(arg0) must be either a mspass client or a dask client\n'
+            message = 'Received an object of type={type(client)}'
+            raise ValueError(message)
+        if net not in self.networks():
+            message = f'{alg}:  provider={self.provider} does not have data for net code={net}'
+            raise ValueError(message)
+        worker_key = f"S3client_{net}"
+        access = self.access(net)
+        match access:
+            # note default is not needed for this match block as we can't get 
+            # here without a valid access value being set via the access method
+            case DataAccess.open_aws_s3:
+                plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
+                dask_client.register_client(plugin)
+            case DataAccess.earthscope_aws_s3:
+                plugin = GeoLabS3Worker(key=worker_key,region=self.region(net))
+                dask_client.register_client(plugin)
+                
     def leaf_content(self,s3client,doc,server_data_key="server_data",)->list:
         """
         Return the s3 equivalent of ls of a directory.
@@ -1544,8 +1599,28 @@ def is_s3_client(obj: object) -> bool:
             return False
     return True
         
-    
-    
+def is_dask_client(obj) -> bool:
+    """
+    Fast way to check if an obj is a dask client without needing to 
+    import the monster dask.distributed module.  
+    """
+    # Check class name and module path without requiring dask to be pre-imported
+    return (
+        type(obj).__name__ == "Client"
+        and type(obj).__module__ == "dask.distributed.client"
+    )
+def is_mspass_client(obj) -> bool:
+    """
+    Returns True if obj is an instance of mspasspy.client.Client without importing mspasspy.
+    Use similar to is_dask_client
+    """
+    cls = getattr(obj, "__class__", None)
+    if cls is None:
+        return False
+    return (
+        cls.__name__ == "Client"
+        and cls.__module__ == "mspasspy.client"
+    )
     
         
         
