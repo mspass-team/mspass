@@ -273,3 +273,27 @@ def test_atomic_aspect_controls_rendered_data_scale(plotter_type, style, kind):
     origin, xunit, yunit = axes.transData.transform([(0, 0), (1, 0), (0, 1)])
     ratio = np.linalg.norm(yunit - origin) / np.linalg.norm(xunit - origin)
     assert ratio == pytest.approx(0.375)
+
+
+@pytest.mark.parametrize("style", ("wt", "wtva", "wtvaimg"))
+def test_asymmetric_section_normalization_keeps_dead_slot_at_baseline(style):
+    ensemble = TimeSeriesEnsemble()
+    live = make_trace()
+    values = np.array([-1.0, -2.0, -3.0, -4.0, -5.0])
+    for i, value in enumerate(values):
+        live.data[i] = value
+    ensemble.member.append(live)
+    ensemble.member.append(TimeSeries())
+    ensemble.set_live()
+    plotter = graphics.SectionPlotter(normalize=True)
+    plotter.change_style(style)
+    figure = plotter.plot(ensemble)[0]
+    figure.canvas.draw()
+    axes = figure.axes[0]
+    # The dead column is zero on the input grid.  A global min/max mapping
+    # must not translate it into positive amplitude and a filled rectangle.
+    np.testing.assert_array_equal(axes.lines[1].get_xdata(), np.ones(5))
+    expected_live = (values - values.min()) / -values.min() - 0.5
+    np.testing.assert_allclose(axes.lines[0].get_xdata(), expected_live)
+    if style != "wt":
+        assert not axes.collections[1].get_paths()

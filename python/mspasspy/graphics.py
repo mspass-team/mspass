@@ -179,7 +179,9 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     dx = (x1 - x0) / ntraces
     plt.xlim(x0 - dx / 2.0, x1 + dx / 2.0)
     for i, trace in enumerate(section.transpose()):
-        if normalize and amp == 0.0:
+        # Zero columns represent blank/dead slots and must remain at their
+        # baseline even when asymmetric live data shifts the global midpoint.
+        if normalize and (amp == 0.0 or not numpy.any(trace)):
             tr = numpy.zeros_like(trace, dtype=numpy.float64)
         else:
             tr = (((trace - gmin) / amp) - toffset) * scale * dx
