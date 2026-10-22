@@ -72,14 +72,40 @@ def _validate_plot_style(caller, style, invalid_string_error=TypeError):
 
 
 def _validated_live_members(ensemble):
-    """Return live members after validating their sample intervals."""
-    live_members = [member for member in ensemble.member if member.live]
+    """Return live, nonempty members after validating sample intervals."""
+    live_members = [
+        member for member in ensemble.member if member.live and member.npts > 0
+    ]
     for member in live_members:
         if not numpy.isfinite(member.dt) or member.dt <= 0.0:
             raise ValueError(
                 "Every live ensemble member must have a finite, positive dt"
             )
     return live_members
+
+
+def _extract_plot_component(ensemble, component):
+    """Extract only live, nonempty 3C data; preserve blank trace slots."""
+    result = TimeSeriesEnsemble()
+    for member in ensemble.member:
+        result.member.append(
+            ExtractComponent(member, component)
+            if member.live and member.npts > 0
+            else TimeSeries()
+        )
+    result.set_live()
+    return result
+
+
+def _set_plot_aspect(plotter, aspect):
+    if aspect is not None and not isinstance(aspect, str):
+        if not numpy.isscalar(aspect) or not numpy.isfinite(aspect) or aspect <= 0:
+            raise ValueError(
+                "aspect must be None, 'auto', 'equal', or a positive number"
+            )
+    elif aspect not in (None, "auto", "equal"):
+        raise ValueError("aspect must be None, 'auto', 'equal', or a positive number")
+    plotter._aspect = aspect
 
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False):
@@ -135,6 +161,7 @@ def wtva_raw(section, t0, dt, ranges=None, scale=1.0, color="k", normalize=False
     if ntraces < 1:
         raise IndexError("Nothing to plot")
     t = _sample_coordinates(t0, dt, npts)
+    plt.gca().set_aspect("auto")
     amp = 1.0  # normalization factor
     gmin = 0.0  # global minimum
     toffset = 0.0  # offset in time to make 0 centered
@@ -214,11 +241,8 @@ def image_raw(
         ranges = (0, maxtraces - 1)
     x0, x1 = ranges
     extent = (x0 - 0.5, x1 + 0.5, t[-1], t[0])
-    if aspect is None:  # guarantee a rectangular picture
-        aspect = numpy.round((x1 - x0) / numpy.max(t))
-        if aspect <= 0.0:
-            aspect = 1.0
-        aspect -= aspect * 0.2
+    if aspect is None:
+        aspect = "auto"
     if vmin is None and vmax is None:
         scale = numpy.abs([section.max(), section.min()]).max()
         vmin = -scale
@@ -240,14 +264,15 @@ def tse2nparray(ens):
 
     The returned array has sample index on axis 0 and ensemble member index on
     axis 1.  Samples outside an individual member's live time span are filled
-    with zeros.
+    with zeros.  Dead and empty members retain blank columns and never
+    contribute to bounds, sampling, or native data reads.
 
     :param ens: ensemble of scalar traces to convert.
     :type ens: :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`
     :return: three-element list ``[t0, dt, data]`` containing the earliest
         start time, sample interval, and 2-D NumPy array.
     :rtype: list
-    :raises IndexError: if the ensemble or one of its members is empty.
+    :raises IndexError: if the ensemble has no live nonempty members.
     :raises ValueError: if a sample interval is invalid.
     :raises RuntimeError: if ensemble members have inconsistent sample rates.
         A ``RuntimeError`` is also raised when the sampled time span would
@@ -258,25 +283,14 @@ def tse2nparray(ens):
     nseis = len(ens.member)
     if nseis == 0:
         raise IndexError("cannot convert an empty ensemble")
-    tmax = 0.0
-    tmin = 0.0
-    dt = 0.0
-    for i in range(nseis):
-        _validate_plot_grid(ens.member[i].npts, ens.member[i].dt)
-        if i == 0:
-            tmin = ens.member[i].t0
-            tmax = ens.member[i].endtime()
-            dt = ens.member[i].dt
-        else:
-            tmin = min(tmin, ens.member[i].t0)
-            tmax = max(tmax, ens.member[i].endtime())
-            # check for irregular sample rates.  Test uses a fractional
-            # tolerance that is a frozen constant here
-            delta_dt = abs(dt - ens.member[i].dt)
-            if delta_dt / dt > 0.01:
-                raise RuntimeError(
-                    "tse2dmatrix:  Irregular sample rates - cannot convert"
-                )
+    live_members = _validated_live_members(ens)
+    if not live_members:
+        raise IndexError("cannot convert an ensemble without live nonempty members")
+    tmin = min(member.t0 for member in live_members)
+    tmax = max(member.endtime() for member in live_members)
+    dt = live_members[0].dt
+    if any(abs(dt - member.dt) / dt > 0.01 for member in live_members):
+        raise RuntimeError("tse2nparray: Irregular sample rates - cannot convert")
     # A naive user might pass an ensemble of data with absolute times
     # spanning years.  The calculation here uses a threshold on size
     # as a sanity check to avoid absurd malloc requests
@@ -287,16 +301,16 @@ def tse2nparray(ens):
     m = int(sample_span + 1)
     _validate_ensemble_matrix_rows(m)
     work = _allocate_plot_matrix(m, n)
-    # The algorithm used here is horribly inefficient if there are large
-    # differences in start and end times but this approach is safer
-    for j in range(n):
-        tjstart = ens.member[j].t0
-        tjend = ens.member[j].endtime()
-        for i in range(m):
-            t = tmin + i * dt
-            if (t >= tjstart) and (t <= tjend):
-                k = ens.member[j].sample_number(t)
-                work[i, j] = ens.member[j].data[k]
+    times = _sample_coordinates(tmin, dt, m)
+    for j, member in enumerate(ens.member):
+        if not member.live or member.npts <= 0:
+            continue
+        # Bound indices before indexing native data.  In particular, never
+        # read an empty/dead member's sample storage.
+        indices = numpy.floor((times - member.t0) / member.dt + 0.5).astype(numpy.intp)
+        valid = (times >= member.t0) & (times <= member.endtime())
+        valid &= (indices >= 0) & (indices < member.npts)
+        work[valid, j] = numpy.asarray(member.data)[indices[valid]]
     return [tmin, dt, work]
 
 
@@ -371,6 +385,9 @@ def wtvaplot(
     # windows.   this logic is potentially confusing.  the else
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
+    if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if d.dead() or not _validated_live_members(d):
+            return None
     figure_handles = []
     if isinstance(d, SeismogramEnsemble):
         # We always plot 3C data as 3 windows.  We extract each
@@ -379,7 +396,7 @@ def wtvaplot(
         title3c = title
         for i in range(3):
             plt.figure(i)
-            dcomp = ExtractComponent(d, i)
+            dcomp = _extract_plot_component(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
             try:
@@ -446,6 +463,9 @@ def imageplot(
     # windows.   this logic is potentially confusing.  the else
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
+    if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
+        if d.dead() or not _validated_live_members(d):
+            return None
     figure_handles = []
     if isinstance(d, SeismogramEnsemble):
         # We always plot 3C data as 3 windows.  We extract each
@@ -454,7 +474,7 @@ def imageplot(
         title3c = title
         for i in range(3):
             plt.figure(i)
-            dcomp = ExtractComponent(d, i)
+            dcomp = _extract_plot_component(d, i)
             if title != None:
                 title3c = "%s:%d" % (title, i)
             try:
@@ -521,7 +541,7 @@ class SectionPlotter:
     editor be created as children of this base class.
     """
 
-    def __init__(self, scale=1.0, normalize=False, title=None):
+    def __init__(self, scale=1.0, normalize=False, title=None, aspect=None):
         """
         The constructor initializes all the internal variables that define
         the possible behaviors of the plotting engine.  The constructor
@@ -532,6 +552,8 @@ class SectionPlotter:
         defined as private should be altered only indirectly through the
         change_style method.
 
+        :param aspect: Matplotlib data-y/data-x ratio for every style.
+          None fills the axes automatically; see :meth:`set_aspect`.
         :param scale:  Set the amount by which the data should be scaled
           before plotting.   Note the assumption is the data amplitude is
           of order 1.  Use normalize if that assumption is bad.
@@ -560,14 +582,27 @@ class SectionPlotter:
         self._color_background = True
         self._color_map = "seismic"
         # these are options to raw codes adapted from  fatiando a terra
-        # that are currently ignored.   Convert to args for __init__ if
-        # it proves useful to have them in the api
+        # retained low-level plotting options
         self._ranges = None
-        self._aspect = None
+        self.set_aspect(aspect)
         self._vmin = None
         self._vmax = None
         # use change_style to simply default style
         self.change_style("wtvaimg")
+
+    def set_aspect(self, aspect=None):
+        """Set the Matplotlib data-y/data-x scale ratio for every style.
+
+        A positive number specifies the displayed size of one y unit divided
+        by the size of one x unit.  ``"equal"`` means 1 and ``"auto"`` fills
+        the available axes.  ``None`` restores automatic style defaults.
+        SectionPlotter uses time on y and trace number on x; SeismicPlotter
+        reverses those axes.  For example, use ``0.01`` for a section spanning
+        hundreds of seconds, or ``100`` for the equivalent horizontal plot.
+        Set this before calling :meth:`plot`.  Direct assignments to the
+        legacy ``_aspect`` attribute are also honored.
+        """
+        _set_plot_aspect(self, aspect)
 
     def change_style(self, newstyle, fill_color="k", color_map="seismic"):
         """
@@ -657,6 +692,10 @@ class SectionPlotter:
         :param d: a ``TimeSeries``, ``Seismogram``, ``TimeSeriesEnsemble``, or
             ``SeismogramEnsemble``.
 
+        Dead/empty ensemble members retain blank columns and do not affect
+        bounds or sampling.  An ensemble marked dead or without any usable
+        members produces no figure and returns None.
+
         :Returns: an array of one or 3 (only for SeismogramEnsemble dat)
           matplotlib.pylot.gcf() plot handle(s).
         :rtype: The plot handle is what matplotlib.plt calls a gcf.  It
@@ -675,6 +714,9 @@ class SectionPlotter:
                 self._color_map,
                 self.title,
             )
+            if handle is not None and self._aspect is not None:
+                for figure in handle:
+                    figure.gca().set_aspect(self._aspect)
             return handle
         elif self.style == "img":
             handle = imageplot(
@@ -686,6 +728,9 @@ class SectionPlotter:
                 self._vmax,
                 self.title,
             )
+            if handle is not None and self._aspect is not None:
+                for figure in handle:
+                    figure.gca().set_aspect(self._aspect)
             return handle
         else:
             raise RuntimeError(
@@ -818,7 +863,9 @@ class SeismicPlotter(BasicSeismicPlotter):
     to the change_style method, should be done before calling plot.
     """
 
-    def __init__(self, scale=1.0, normalize=False, title=None, style="wtvaimg"):
+    def __init__(
+        self, scale=1.0, normalize=False, title=None, style="wtvaimg", aspect=None
+    ):
         """
         Constructor for this object.   It mostly sets defaults but
         has a few common optional parameters to set at construction
@@ -836,6 +883,8 @@ class SeismicPlotter(BasicSeismicPlotter):
           with a variant of this title string adding ":n" where n is
           the component number (0,1,2).
         :type title: string (default None makes no plot title)
+        :param aspect: Matplotlib data-y/data-x ratio for every style.
+          None retains automatic style defaults; see :meth:`set_aspect`.
         :param style:  plot style to one of the accepted style names.
           That is one of: ["wt","wtva","img","wtvaimg"]
         :type style:  string (one of list above or a TypeError exceptin
@@ -850,10 +899,9 @@ class SeismicPlotter(BasicSeismicPlotter):
         self._fill_color = "k"  # black in matplotlib
         self._color_map = "seismic"
         # these are options to raw codes adapted from  fatiando a terra
-        # that are currently ignored.   Convert to args for __init__ if
-        # it proves useful to have them in the api
+        # retained low-level plotting options
         self._ranges = None
-        self._aspect = None
+        self.set_aspect(aspect)
         self._vmin = None
         self._vmax = None
         # These are added for SeismicPlotter and not in SectionPlotter
@@ -889,6 +937,20 @@ class SeismicPlotter(BasicSeismicPlotter):
         this class.
         """
         return self.figure_handles
+
+    def set_aspect(self, aspect=None):
+        """Set the Matplotlib data-y/data-x scale ratio for every style.
+
+        A positive number specifies the displayed size of one y unit divided
+        by the size of one x unit.  ``"equal"`` means 1 and ``"auto"`` fills
+        the available axes.  ``None`` restores automatic style defaults.
+        SectionPlotter uses time on y and trace number on x; SeismicPlotter
+        reverses those axes.  For example, use ``0.01`` for a section spanning
+        hundreds of seconds, or ``100`` for the equivalent horizontal plot.
+        Set this before calling :meth:`plot`.  Direct assignments to the
+        legacy ``_aspect`` attribute are also honored.
+        """
+        _set_plot_aspect(self, aspect)
 
     def change_style(self, newstyle, fill_color="k", color_map="seismic"):
         """
@@ -967,6 +1029,10 @@ class SeismicPlotter(BasicSeismicPlotter):
         """
         Plot an MsPASS data object using the currently selected style.
 
+        Dead/empty ensemble members retain blank slots and do not affect
+        bounds or sampling.  An ensemble marked dead or without any usable
+        members produces no figure and returns None.
+
         :param d: data object or ensemble to plot.
         :return: ``None``; figures are created through matplotlib state.
         """
@@ -996,6 +1062,15 @@ class SeismicPlotter(BasicSeismicPlotter):
                 + self.style
                 + " is invalid\nThis should not happen"
             )
+
+        if self._aspect is not None:
+            figures = (
+                self.figure_handles
+                if isinstance(d, SeismogramEnsemble)
+                else [self.figure]
+            )
+            for figure in figures:
+                figure.gca().set_aspect(self._aspect)
 
     def _add_3C_titles(self):
         """
@@ -1077,6 +1152,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         # shading.  It assumes d is a TimeSeries.
 
         t = _sample_coordinates(d.t0, d.dt, d.npts)
+        plt.gca().set_aspect("auto")
         plt.xlim(t[0], t[-1])
         # We don't need a gain factor here - will be needed for an image overlay through
         plt.plot(t, d.data, "k")
@@ -1114,7 +1190,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         endtimes = []
         nlive = 0
         for i in range(ndata):
-            if d.member[i].live:
+            if d.member[i].live and d.member[i].npts > 0:
                 t0.append(d.member[i].t0)
                 endtimes.append(d.member[i].endtime())
                 nlive += 1
@@ -1141,6 +1217,7 @@ class SeismicPlotter(BasicSeismicPlotter):
 
     def _wtva_TimeSeriesEnsemble(self, d, fill):
         ndata, tmin, tmax = self._get_ensemble_size(d)
+        plt.gca().set_aspect("auto")
         plt.xlim(tmin, tmax)
         # This plotting engine always equally spaces traces horizontally so
         # unlike SectionPlotter we just compute the range as the number of
@@ -1149,7 +1226,7 @@ class SeismicPlotter(BasicSeismicPlotter):
         for i in range(ndata):
             # skip data marked dead - this will leave a hole in plot.  We could
             # plot a line but this is proably better unless proven otherwise
-            if d.member[i].dead():
+            if d.member[i].dead() or d.member[i].npts <= 0:
                 continue
             # Make a copy - fast method with numpy
             y = numpy.array(d.member[i].data)
@@ -1181,12 +1258,12 @@ class SeismicPlotter(BasicSeismicPlotter):
         # should return a list of 3 gcf handles
         figure_handles = []
         for k in range(3):
-            dcomp = ExtractComponent(d, k)
+            dcomp = _extract_plot_component(d, k)
             # figure_title='Component %d' % k
             # plt.figure(figure_title)
             plt.figure(k)
-            handle = self._wtva(dcomp, fill)
-            figure_handles.append(handle)
+            self._wtva(dcomp, fill)
+            figure_handles.append(plt.gcf())
         # plt.show()
         return figure_handles
 
@@ -1208,31 +1285,17 @@ class SeismicPlotter(BasicSeismicPlotter):
         nt = int((tmax - tmin) / dt) + 1
         # Guard the full matrix byte size before requesting the allocation.
         work = _allocate_plot_matrix(ndata, nt)
-        for i in range(ndata):
-            # skip data marked dead
-            if d.member[i].dead():
+        times = _sample_coordinates(tmin, dt, nt)
+        for i, member in enumerate(d.member):
+            if not member.live or member.npts <= 0:
                 continue
-            t0 = d.member[i].t0
-            endtime = d.member[i].endtime()
-            npts = d.member[i].npts
-            if self._plot_topdown:
-                iwork = ndata - i - 1
-            else:
-                iwork = i
-            if t0 == tmin:
-                t = tmin
-                j = 0
-            else:  # above logic guarantees < not possible so this is > block
-                t = t0
-                # often one less than needed but minimal inefficiency
-                j = int((t0 - tmin) / dt)
-            # tmax test shouldn't be necessary but small cost for safety
-            while t <= endtime and t <= tmax:
-                k = d.member[i].sample_number(t)
-                if k >= 0 and k < npts:
-                    work[iwork, j] = d.member[i].data[k]
-                t += dt
-                j += 1
+            iwork = ndata - i - 1 if self._plot_topdown else i
+            indices = numpy.floor((times - member.t0) / member.dt + 0.5).astype(
+                numpy.intp
+            )
+            valid = (times >= member.t0) & (times <= member.endtime())
+            valid &= (indices >= 0) & (indices < member.npts)
+            work[iwork, valid] = numpy.asarray(member.data)[indices[valid]]
         if self._aspect is None:  # guarantee a rectangular picture
             aspect = (tmax - tmin) / ndata
             # avoid long, skinny plots that would be the norm from
@@ -1270,10 +1333,10 @@ class SeismicPlotter(BasicSeismicPlotter):
         # should return a list of 3 gcf handles
         figure_handles = []
         for k in range(3):
-            dcomp = ExtractComponent(d, k)
+            dcomp = _extract_plot_component(d, k)
             plt.figure(k)
-            figure = self._imageplot(dcomp)
-            figure_handles.append(figure)
+            self._imageplot(dcomp)
+            figure_handles.append(plt.gcf())
         # plt.show()
         return figure_handles
 

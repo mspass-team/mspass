@@ -132,9 +132,10 @@ def test_ensemble_converter_rejects_invalid_sample_intervals(dt):
     ensemble = TimeSeriesEnsemble()
     member = TimeSeries(2)
     member.dt = dt
+    member.set_live()
     ensemble.member.append(member)
 
-    with pytest.raises(ValueError, match="finite and positive"):
+    with pytest.raises(ValueError, match="finite, positive dt"):
         graphics.tse2nparray(ensemble)
 
 
@@ -192,6 +193,7 @@ def test_ensemble_conversion_preserves_ten_million_row_sanity_limit(monkeypatch)
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
     rows = graphics._MAX_ENSEMBLE_MATRIX_ROWS + 1
     member = SimpleNamespace(
+        live=True,
         npts=2,
         dt=1.0,
         t0=0.0,
@@ -234,7 +236,7 @@ def test_ensemble_image_rejects_platform_size_overflow_before_allocation(monkeyp
     zeros = Mock()
     monkeypatch.setattr(graphics.numpy, "zeros", zeros)
     columns = np.iinfo(np.intp).max // (2 * np.dtype(np.float64).itemsize) + 1
-    member = SimpleNamespace(dt=1.0 / (columns - 1), live=True)
+    member = SimpleNamespace(dt=1.0 / (columns - 1), live=True, npts=2)
     ensemble = SimpleNamespace(member=[member, member])
     plotter = graphics.SeismicPlotter()
     monkeypatch.setattr(plotter, "_get_ensemble_size", lambda _: (2, 0.0, 1.0))
