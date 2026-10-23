@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev120+g7cf6bcc4d documentation</title>
+    <title>mspasspy.graphics &#8212; MsPASS 2.4.4.dev121+ga7db94e3c documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=72498e39"></script>
+    <script src="../_static/documentation_options.js?v=53fd6c2d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.global_history" href="mspasspy.global_history.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev120" />
+  <meta name="docsearch:version" content="2.4.4.dev121" />
   </head>
   
   
@@ -588,7 +588,7 @@ span or sample interval.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SectionPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SectionPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class was designed to plot data in a seismic reflection style
 display.  That means time is the y axis but runs in a reverse direction
@@ -663,23 +663,42 @@ attributes.</p>
 <dd class="field-odd"><p><strong>d</strong> – a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Seismogram</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>, or
 <code class="docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code>.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>an array of one or 3 (only for SeismogramEnsemble dat)
+</dl>
+<p>Dead/empty ensemble members retain blank columns and do not affect
+bounds or sampling.  An ensemble marked dead or without any usable
+members produces no figure and returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>an array of one or 3 (only for SeismogramEnsemble dat)
 matplotlib.pylot.gcf() plot handle(s).</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The plot handle is what matplotlib.plt calls a gcf.  It
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The plot handle is what matplotlib.plt calls a gcf.  It
 is the return of plt.gcf() and can be used to alter some properties
 of the figure.  See matplotlib documentation.</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.graphics.SectionPlotter.set_aspect">
+<span class="sig-name descname"><span class="pre">set_aspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.set_aspect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.set_aspect" title="Link to this definition">#</a></dt>
+<dd><p>Set the Matplotlib data-y/data-x scale ratio for every style.</p>
+<p>A positive number specifies the displayed size of one y unit divided
+by the size of one x unit.  <code class="docutils literal notranslate"><span class="pre">&quot;equal&quot;</span></code> means 1 and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> fills
+the available axes.  <code class="docutils literal notranslate"><span class="pre">None</span></code> restores automatic style defaults.
+SectionPlotter uses time on y and trace number on x; SeismicPlotter
+reverses those axes.  For example, use <code class="docutils literal notranslate"><span class="pre">0.01</span></code> for a section spanning
+hundreds of seconds, or <code class="docutils literal notranslate"><span class="pre">100</span></code> for the equivalent horizontal plot.
+Set this before calling <a class="reference internal" href="#mspasspy.graphics.SectionPlotter.plot" title="mspasspy.graphics.SectionPlotter.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>.  Direct assignments to the
+legacy <code class="docutils literal notranslate"><span class="pre">_aspect</span></code> attribute are also honored.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SeismicPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wtvaimg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mspasspy.graphics.</span></span><span class="sig-name descname"><span class="pre">SeismicPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wtvaimg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.graphics.BasicSeismicPlotter" title="mspasspy.graphics.BasicSeismicPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicSeismicPlotter</span></code></a></p>
 <p>SeismicPlotter is used to plot mspass data objects in the
 seismology convention with time as the x axis.  Use SectionPlotter
@@ -762,6 +781,9 @@ subclasses that need to manipulate the handle.</p>
 <dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.plot" title="Link to this definition">#</a></dt>
 <dd><p>Plot an MsPASS data object using the currently selected style.</p>
+<p>Dead/empty ensemble members retain blank slots and do not affect
+bounds or sampling.  An ensemble marked dead or without any usable
+members produces no figure and returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>d</strong> – data object or ensemble to plot.</p>
@@ -770,6 +792,20 @@ subclasses that need to manipulate the handle.</p>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>; figures are created through matplotlib state.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mspasspy.graphics.SeismicPlotter.set_aspect">
+<span class="sig-name descname"><span class="pre">set_aspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.set_aspect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.set_aspect" title="Link to this definition">#</a></dt>
+<dd><p>Set the Matplotlib data-y/data-x scale ratio for every style.</p>
+<p>A positive number specifies the displayed size of one y unit divided
+by the size of one x unit.  <code class="docutils literal notranslate"><span class="pre">&quot;equal&quot;</span></code> means 1 and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> fills
+the available axes.  <code class="docutils literal notranslate"><span class="pre">None</span></code> restores automatic style defaults.
+SectionPlotter uses time on y and trace number on x; SeismicPlotter
+reverses those axes.  For example, use <code class="docutils literal notranslate"><span class="pre">0.01</span></code> for a section spanning
+hundreds of seconds, or <code class="docutils literal notranslate"><span class="pre">100</span></code> for the equivalent horizontal plot.
+Set this before calling <a class="reference internal" href="#mspasspy.graphics.SeismicPlotter.plot" title="mspasspy.graphics.SeismicPlotter.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>.  Direct assignments to the
+legacy <code class="docutils literal notranslate"><span class="pre">_aspect</span></code> attribute are also honored.</p>
 </dd></dl>
 
 </dd></dl>
@@ -907,7 +943,8 @@ array of samples.</p>
 <dd><p>Convert a <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> to a regularly sampled matrix.</p>
 <p>The returned array has sample index on axis 0 and ensemble member index on
 axis 1.  Samples outside an individual member’s live time span are filled
-with zeros.</p>
+with zeros.  Dead and empty members retain blank columns and never
+contribute to bounds, sampling, or native data reads.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ens</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a>) – ensemble of scalar traces to convert.</p>
@@ -921,7 +958,7 @@ start time, sample interval, and 2-D NumPy array.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>IndexError</strong> – if the ensemble or one of its members is empty.</p></li>
+<li><p><strong>IndexError</strong> – if the ensemble has no live nonempty members.</p></li>
 <li><p><strong>ValueError</strong> – if a sample interval is invalid.</p></li>
 <li><p><strong>RuntimeError</strong> – if ensemble members have inconsistent sample rates.
 A <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> is also raised when the sampled time span would
@@ -1074,6 +1111,7 @@ fails.  Three-component ensembles return one figure per component.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SectionPlotter"><code class="docutils literal notranslate"><span class="pre">SectionPlotter</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SectionPlotter.change_style"><code class="docutils literal notranslate"><span class="pre">SectionPlotter.change_style()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SectionPlotter.plot"><code class="docutils literal notranslate"><span class="pre">SectionPlotter.plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SectionPlotter.set_aspect"><code class="docutils literal notranslate"><span class="pre">SectionPlotter.set_aspect()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SeismicPlotter"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1081,6 +1119,7 @@ fails.  Three-component ensembles return one figure per component.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SeismicPlotter.get_3Censemble_gcf"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.get_3Censemble_gcf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SeismicPlotter.get_plot_gcf"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.get_plot_gcf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SeismicPlotter.plot"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.SeismicPlotter.set_aspect"><code class="docutils literal notranslate"><span class="pre">SeismicPlotter.set_aspect()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mspasspy.graphics.image_raw"><code class="docutils literal notranslate"><span class="pre">image_raw()</span></code></a></li>
