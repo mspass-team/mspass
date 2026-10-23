@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev119+g2f810708d documentation</title>
+    <title>mspasspy.algorithms &#8212; MsPASS 2.4.4.dev120+g7cf6bcc4d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=d628c523"></script>
+    <script src="../_static/documentation_options.js?v=72498e39"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Python API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev119" />
+  <meta name="docsearch:version" content="2.4.4.dev120" />
   </head>
   
   
@@ -1902,14 +1902,16 @@ instance if something that invalidates the previous call has changed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>winsize</strong> – Number of samples expected for data window.  Note this
 argument defines the size of the eigentapers so it defines the size of
-input time series the object expect to process.</p></li>
+input time series the object initially expects to process.  apply adapts
+the operator and recomputes its tapers when the input length changes.</p></li>
 <li><p><strong>tbp</strong> – multitaper time-bandwidth product</p></li>
 <li><p><strong>number_tapers</strong> – number of tapers to use for estimators (See Prieto’s
 documentation for details)</p></li>
 <li><p><strong>nfft</strong> – optional size of the fft work arrays to use.  nfft should be
 greater than or equal winsize.  When greater zero padding is used in the
-usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft&lt;winsize
-a diagnostic message will be printed and nfft will be set equal to winsize.</p></li>
+usual way.  Default is 0, which lets MTSpec choose the FFT size for each input
+length.  An explicit size is retained across length changes while it
+is large enough; otherwise MTSpec chooses a suitable size automatically.</p></li>
 <li><p><strong>iadapt</strong> – integer argument passed to Prieto’s MTspec that sets the
 eigentaper weighting scheme.  See Prieto’s MTspect class documentation
 for options.  Default is 0 which enables the adaptive weighting scheme.</p></li>
@@ -1919,8 +1921,12 @@ for options.  Default is 0 which enables the adaptive weighting scheme.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/MTPowerSpectrumEngine.html#MTPowerSpectrumEngine.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply" title="Link to this definition">#</a></dt>
-<dd><p>needs to support vector input or a TimeSeries - returns a PowerSpectrum
-Cannot use mspass decorator because it supports raw data vectors</p>
+<dd><p>Estimate a PowerSpectrum from a TimeSeries or one-dimensional vector.</p>
+<p>A changed input length resizes the operator and recomputes its tapers.
+An explicit FFT size is retained when large enough; otherwise MTSpec
+chooses the FFT size automatically.  Failed construction preserves the
+previous operator state.  Empty inputs are invalid.</p>
+<p>Cannot use mspass decorator because it supports raw data vectors.</p>
 </dd></dl>
 
 <dl class="py method">

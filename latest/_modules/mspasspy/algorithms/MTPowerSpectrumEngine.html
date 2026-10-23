@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.algorithms.MTPowerSpectrumEngine &#8212; MsPASS 2.4.4.dev119+g2f810708d documentation</title>
+    <title>mspasspy.algorithms.MTPowerSpectrumEngine &#8212; MsPASS 2.4.4.dev120+g7cf6bcc4d documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=d628c523"></script>
+    <script src="../../../_static/documentation_options.js?v=72498e39"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev119" />
+  <meta name="docsearch:version" content="2.4.4.dev120" />
   </head>
   
   
@@ -504,7 +504,8 @@
 
 <span class="sd">    :param winsize:   Number of samples expected for data window.  Note this</span>
 <span class="sd">        argument defines the size of the eigentapers so it defines the size of</span>
-<span class="sd">        input time series the object expect to process.</span>
+<span class="sd">        input time series the object initially expects to process.  apply adapts</span>
+<span class="sd">        the operator and recomputes its tapers when the input length changes.</span>
 
 <span class="sd">    :param tbp:  multitaper time-bandwidth product</span>
 
@@ -513,8 +514,9 @@
 
 <span class="sd">    :param nfft:  optional size of the fft work arrays to use.  nfft should be</span>
 <span class="sd">        greater than or equal winsize.  When greater zero padding is used in the</span>
-<span class="sd">        usual way.  Default is 0 which sets nfft to 2*winsize.  If nfft&lt;winsize</span>
-<span class="sd">        a diagnostic message will be printed and nfft will be set equal to winsize.</span>
+<span class="sd">        usual way.  Default is 0, which lets MTSpec choose the FFT size for each input</span>
+<span class="sd">        length.  An explicit size is retained across length changes while it</span>
+<span class="sd">        is large enough; otherwise MTSpec chooses a suitable size automatically.</span>
 
 <span class="sd">    :param iadapt:  integer argument passed to Prieto's MTspec that sets the</span>
 <span class="sd">        eigentaper weighting scheme.  See Prieto's MTspect class documentation</span>
@@ -534,6 +536,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">number_tapers</span> <span class="o">=</span> <span class="n">number_tapers</span>  <span class="c1"># kspec in multitaper</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># constructor for MTSpec will set this when passed None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="n">nfft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requested_nfft</span> <span class="o">=</span> <span class="n">nfft</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idapt</span> <span class="o">=</span> <span class="n">iadapt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># constructor for MTSpec set this</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="kc">None</span>
@@ -542,8 +545,14 @@
 <a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.MTPowerSpectrumEngine.MTPowerSpectrumEngine.apply">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        needs to support vector input or a TimeSeries - returns a PowerSpectrum</span>
-<span class="sd">        Cannot use mspass decorator because it supports raw data vectors</span>
+<span class="sd">        Estimate a PowerSpectrum from a TimeSeries or one-dimensional vector.</span>
+
+<span class="sd">        A changed input length resizes the operator and recomputes its tapers.</span>
+<span class="sd">        An explicit FFT size is retained when large enough; otherwise MTSpec</span>
+<span class="sd">        chooses the FFT size automatically.  Failed construction preserves the</span>
+<span class="sd">        previous operator state.  Empty inputs are invalid.</span>
+
+<span class="sd">        Cannot use mspass decorator because it supports raw data vectors.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
             <span class="n">input_length</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">npts</span>
@@ -560,11 +569,16 @@
                 <span class="s2">"MTPowerSpectrumEngine.apply: arg0 must be a TimeSeries, "</span>
                 <span class="s2">"DoubleVector, or one-dimensional numpy array"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">input_length</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winsize</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"MTPowerSpectrumEngine.apply: input length=</span><span class="si">{}</span><span class="s2"> does not match "</span>
-                <span class="s2">"winsize=</span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">winsize</span><span class="p">)</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"MTPowerSpectrumEngine.apply: input must not be empty"</span><span class="p">)</span>
+        <span class="n">resized</span> <span class="o">=</span> <span class="n">input_length</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winsize</span>
+        <span class="c1"># Tapers and eigenvalues are specific to a window length.  Do not</span>
+        <span class="c1"># replace the cached state until MTSpec has constructed successfully.</span>
+        <span class="n">vn</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">resized</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">vn</span>
+        <span class="n">lamb</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">resized</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span>
+        <span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_nfft</span> <span class="k">if</span> <span class="n">resized</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span>
+        <span class="k">if</span> <span class="n">nfft</span> <span class="o">&lt;</span> <span class="n">input_length</span><span class="p">:</span>
+            <span class="n">nfft</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># All inputs end up filling a numpy array passed to MTSpec below</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
@@ -588,20 +602,19 @@
             <span class="c1"># a future maintenance issue</span>
             <span class="n">md</span><span class="p">[</span><span class="s2">"npts"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="n">md</span><span class="p">[</span><span class="s2">"delta"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="n">MTSpec</span><span class="p">(</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">MTSpec</span><span class="p">(</span>
             <span class="n">y</span><span class="p">,</span>
             <span class="n">nw</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tbp</span><span class="p">,</span>
             <span class="n">kspec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_tapers</span><span class="p">,</span>
             <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-            <span class="n">nfft</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nfft</span><span class="p">,</span>
+            <span class="n">nfft</span><span class="o">=</span><span class="n">nfft</span><span class="p">,</span>
             <span class="n">iadapt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">idapt</span><span class="p">,</span>
-            <span class="n">vn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">,</span>
-            <span class="n">lamb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lamb</span><span class="p">,</span>
+            <span class="n">vn</span><span class="o">=</span><span class="n">vn</span><span class="p">,</span>
+            <span class="n">lamb</span><span class="o">=</span><span class="n">lamb</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># Set these so they will be automatically reused on a</span>
-        <span class="c1"># successive call.   May need to trap size mismatch above</span>
-        <span class="c1"># if these were previously set - this needs some testing</span>
-        <span class="c1">#  REMOVE ME WHEN VERIFIED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span> <span class="o">=</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winsize</span> <span class="o">=</span> <span class="n">input_length</span>
+        <span class="c1"># Reuse the length-specific tapers on subsequent equal-length calls.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">vn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">lamb</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MTSpec_instance</span><span class="o">.</span><span class="n">nfft</span>
