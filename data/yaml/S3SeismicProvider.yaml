@@ -1,0 +1,105 @@
+
+# scratch layout for s3 network yaml file
+
+SCEDC:
+    CI:
+        region: us-west-2
+        bucket: scedc-pds
+        prefix: continuous_waveforms/
+        # note CI sets loc to "_" if it blank to yield things like CIPAS__BHZ___2020015.ms
+        # while a nonblank loc code is like this CIPAS__BHZ_00_2020015.ms
+        # this is a way to handle that generically
+        blank_loc_code_value: "_"
+        object_format: "{year}/{year}_{jday:03d}/{net}{sta}__{chan}_{loc}_{year}{jday:03d}.ms"
+        payload_structure: channel_day
+        data_format: miniseed
+        access:  open
+SCEDC_events:
+    CI:
+        region: us-west-2
+        bucket: scedc-pds
+        prefix: event_waveforms/
+        object_format: "{year}/{year}_{jday:03d}/{event_id}.ms"
+        payload_structure: source_gather
+        data_format: miniseed
+        access:  open
+NCEDC:
+    NC:
+        region: us-west-2 
+        bucket: ncedc-pds
+        prefix: continuous_waveforms/
+        blank_loc_code_value: ""
+        # this needs to be handled with a regular expression
+        # the ".?." part of this definition is for a "quality indicator" 
+        # which is seed thing.  An obvious legacy of local store but 
+        # we will need to deal with this in the parser.   Gemini 
+        # tells me valid values could be set using [DRQM] using shell wildcare
+        # structure.  Need to watch that when I codde this up
+        object_format: "{net}/{year}/{year}.{jday:03d}/{sta}.{net}.{chan}.{loc}.?.{year}.{jday:03d}"
+        payload_structure: channel_day
+        data_format: miniseed
+        access: open
+Earthscope:
+    AK:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    II:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    IU:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    N4:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    PB:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    TA:
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    UU:
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
+    UW: 
+        region: us-east-2
+        bucket: earthscope-geophysical-data
+        prefix: miniseed/
+        object_format: "{net}/{year}/{jday:03d}/{sta}.{net}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  open
