@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspasspy.preprocessing &#8212; MsPASS 2.4.4.dev118+gecfed17ee documentation</title>
+    <title>mspasspy.preprocessing &#8212; MsPASS 2.4.4.dev119+g2f810708d documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=1cad9c47"></script>
+    <script src="../_static/documentation_options.js?v=d628c523"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspasspy.io" href="mspasspy.io.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev118" />
+  <meta name="docsearch:version" content="2.4.4.dev119" />
   </head>
   
   
@@ -548,9 +548,10 @@ is defined, or the data directory installed with mspasspy otherwise.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">
-<span class="sig-name descname"><span class="pre">CSS30Catalog2df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.CSS30Catalog2df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="Link to this definition">#</a></dt>
-<dd><p>Forms the standard catalog view of CSS3.0 sans the orid==prefor
-condition to return a DataFrame formed by using
+<span class="sig-name descname"><span class="pre">CSS30Catalog2df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preferred_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/mspasspy/preprocessing/css30/datascope.html#DatascopeDatabase.CSS30Catalog2df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df" title="Link to this definition">#</a></dt>
+<dd><p>Forms the standard catalog view of CSS3.0, optionally restricting
+origins to each event’s preferred origin (orid==prefor).
+Returns a DataFrame formed by using
 the DatascopeDatabase join method in sequence to produce:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="o">-&gt;</span><span class="n">origin</span><span class="o">-&gt;</span><span class="n">assoc</span><span class="o">-&gt;</span><span class="n">arrival</span>
 </pre></div>
@@ -569,8 +570,14 @@ In the usual python way the posted exception stack should
 define the problem.  Exceptions could come from methods of
 this class called by the function or pandas.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Pandad DataFrame with the standard css3.0 catalog view.
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>preferred_only</strong> (<em>bool</em>) – When True, retain only arrivals associated
+with the preferred origin of their event.  The default False
+preserves all origins and their arrivals.  Events with no
+matching preferred origin contribute no rows when True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pandas DataFrame with the standard css3.0 catalog view.
 Attribute names are css3.0 names.</p>
 </dd>
 </dl>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.preprocessing.css30.datascope &#8212; MsPASS 2.4.4.dev118+gecfed17ee documentation</title>
+    <title>mspasspy.preprocessing.css30.datascope &#8212; MsPASS 2.4.4.dev119+g2f810708d documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=1cad9c47"></script>
+    <script src="../../../../_static/documentation_options.js?v=d628c523"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev118" />
+  <meta name="docsearch:version" content="2.4.4.dev119" />
   </head>
   
   
@@ -1037,10 +1037,11 @@
 
 <div class="viewcode-block" id="DatascopeDatabase.CSS30Catalog2df">
 <a class="viewcode-back" href="../../../../python_api/mspasspy.preprocessing.html#mspasspy.preprocessing.css30.datascope.DatascopeDatabase.CSS30Catalog2df">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">CSS30Catalog2df</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">CSS30Catalog2df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preferred_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Forms the standard catalog view of CSS3.0 sans the orid==prefor</span>
-<span class="sd">        condition to return a DataFrame formed by using</span>
+<span class="sd">        Forms the standard catalog view of CSS3.0, optionally restricting</span>
+<span class="sd">        origins to each event's preferred origin (orid==prefor).</span>
+<span class="sd">        Returns a DataFrame formed by using</span>
 <span class="sd">        the DatascopeDatabase join method in sequence to produce::</span>
 
 <span class="sd">            event-&gt;origin-&gt;assoc-&gt;arrival</span>
@@ -1060,7 +1061,13 @@
 <span class="sd">        define the problem.  Exceptions could come from methods of</span>
 <span class="sd">        this class called by the function or pandas.</span>
 
-<span class="sd">        :return:  Pandad DataFrame with the standard css3.0 catalog view.</span>
+<span class="sd">        :param preferred_only: When True, retain only arrivals associated</span>
+<span class="sd">            with the preferred origin of their event.  The default False</span>
+<span class="sd">            preserves all origins and their arrivals.  Events with no</span>
+<span class="sd">            matching preferred origin contribute no rows when True.</span>
+<span class="sd">        :type preferred_only: bool</span>
+
+<span class="sd">        :return:  Pandas DataFrame with the standard css3.0 catalog view.</span>
 <span class="sd">            Attribute names are css3.0 names.</span>
 
 <span class="sd">        """</span>
@@ -1069,6 +1076,10 @@
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">"origin"</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"evid"</span><span class="p">])</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">"assoc"</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"orid"</span><span class="p">])</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">"arrival"</span><span class="p">,</span> <span class="n">join_keys</span><span class="o">=</span><span class="p">[</span><span class="s2">"arid"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">preferred_only</span><span class="p">:</span>
+            <span class="c1"># Filter after the right joins so unmatched arrivals cannot</span>
+            <span class="c1"># reintroduce rows outside the preferred-origin view.</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">"orid"</span><span class="p">]</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"prefor"</span><span class="p">])]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">df</span></div>
 
