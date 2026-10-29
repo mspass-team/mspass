@@ -10,25 +10,36 @@ now store much or all of their data.
 """
 
 import io
+import re   # regular expression module
 import yaml
+import calendar
 import obspy
 import pandas as pd
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 from contextlib import closing
 from string import Formatter
+
+import parse
+
 import boto3
 from botocore import UNSIGNED
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from earthscope_sdk import EarthScopeClient
+from obspy import UTCDateTime
 
 from mspasspy.ccore.utility import MsPASSError,ErrorLogger,ErrorSeverity,Metadata 
-from mspasspy.ccore.seismic import TimeSeriesEnsemble
+from mspasspy.ccore.seismic import TimeSeriesEnsemble,TimeSeriesVector
 from mspasspy.util.seismic import has_live_data
 from mspasspy.db.normalize import DataFrameCacheMatcher
 from mspasspy.db.database import Database
 from mspasspy.util.converter import Trace2TimeSeries, Stream2TimeSeriesEnsemble
+from mspasspy.util.db_utils import fetch_dbhandle
+from mspasspy.util.seismic import print_metadata
+from mspasspy.io.s3client import fetch_s3_client
+from mspasspy.algorithms.window import merge, WindowData
+from mspasspy.algorithms.signals import detrend
 #from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
 # temporary for testing - this didn't exist in io when I first pulled this branch
 # remove me and uncomment above for final use
@@ -373,15 +384,11 @@ class ChannelPreferences:
                         seedchan,loc,srstr = cl.split()
                         if len(loc)==0 or loc in null_loc_strings:
                             loc = ""
-                        else:
-                            # this should be rare but is quite possible if data 
-                            # are entered by hand.  Currently all loc codes 
-                            # that are not null resolve to a int
-                            try:
-                                n = int(loc)
-                            except ValueError:
-                                error_message += f'Invalid specification for loc code = {loc} '
-                                error_message += f'in channel preference list for {net} {sta}\n'
+                        elif len(loc)!=2:
+                            error_message += f'Invalid specification for loc code = {loc} '
+                            error_message += f'in channel preference list for {net} {sta}\n'
+                            error_message += "FDSN standard requires loc code be exactly 2 characters"
+                            raise ValueError(error_message)
                         sr = float(srstr)
                         tuple_list.append(tuple([seedchan,loc,sr]))
                     # replace the list of strings with regularized tuples
@@ -705,7 +712,99 @@ class DataAccess(Enum):
     """
     open_aws_s3 = auto()
     earthscope_aws_s3 = auto()
+
+class BlankLocCodeMethod(Enum):
+    empty_string = ("")
+    # this defines a single char filler as done by CI.  Highly conceivable
+    # someone would use a two character fill to match SEED loc size of 2
+    # if that happens add a fill_string option here and set self.fill_string 
+    # to that 2 character code 
+    fill_character = ("_")
+    def __init__(self,filler: str = ""):
+        self.fill_string = filler
+    def set_fill_string(self,filler: str = "_"):
+        match self:
+            case BlankLocCodeMethod.empty_string:
+                self.fill_string = ""
+            case BlankLocCodeMethod.fill_character:
+                self.fill_string = filler
+            
+    def get_filler(self) -> str:
+        """
+        Returns the padding string representing an empty location code
+        based on the strategy.
+        """
+        match self:
+            case BlankLocCodeMethod.empty_string:
+                return ""
+            case BlankLocCodeMethod.fill_character:
+                return self.fill_string
+
+    @property
+    def default_delimiter(self) -> str:
+        """Default delimiter used when fill_string strategy is active."""
+        return "_"
+
+def safe_parse(format_str: str, objname: str, extra_types: dict = None) -> dict:
+    """
+    Regularizes error handling of variable format string parser.  
     
+    The S3SeismicProvider class in this module for some operations 
+    needs to do a form of inverse format handling.   The reason is that 
+    all current providers use an object naming convention that contains 
+    fundamental Metadata that defines the payload content.   That is 
+    used in S3SeismcProvider to build a cheap data index that doesn't 
+    require actually looking into data files to extract needed Metadata.
+    Currently that is seed network codes and time files but it is conceivable
+    similar constructs might evolve with other formats.  
+    
+    S3 providers use the s3 object names to define key attributes for 
+    data stored in individual objects.   There is no standard so every 
+    provider presntly handles this differently.  This module uses the 
+    parse module to parse a format string to extract metadata from s3 object
+    names.  That can fail in multiple ways.  This regularizes all possible 
+    failures of the parser reformatting error messages and packaging them 
+    into a MsPASSError object. That includes failure by the parser which 
+    can silently return nothing in some cases.   
+    
+    :param format_str:  the pythons format specification to be cracked.  
+    :param objname:  s3 object name that format_str would create in reverse operation
+    :param extra_types:  feature of parse.compile.  See parse module documentation
+    """
+    alg="safe_parse"
+
+    try:
+        parser = parse.compile(format_str, extra_types=extra_types)
+    except parse.RepeatNameError as e:
+        message = f"Conflicting repeated field names in format string '{format_str}'\n"
+        message += f"RepeatNameError content: {e}"
+        raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+    except ValueError as e:
+        message = f"Invalid format or syntax in format string='{format_str}'\n"
+        message += f"ValueError message content: {e}"
+        raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+    except Exception as e:
+        message = f"Unexpected exception thrown by parse.compile for format string '{format_str}': {e}"
+        raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+    try:
+        result = parser.parse(objname)
+        # parse will silently return nothing for a whole range of reasons
+        # rather than return None we wrap this in a MsPASSError object too
+        if result is None:
+            message = f"parse failed and returned a None parsing `{objname}' with format string '{format_str}'"
+            raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+        else:
+            return result.named   # converts parser output to dict
+    except MsPASSError:
+        raise
+    except (ValueError, TypeError) as e:
+        message = f"Type conversion failed while parsing '{objname}'\n"
+        message += f"parser error message content: {e}"
+        raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+    except Exception as e:
+        message = f"Unexpected runtime error while parsing '{objname}': {e}"
+        raise MsPASSError(alg,message,ErrorSeverity.Invalid)
+
 class BasicProvider(ABC):
     """
     Abstract base class defining API for a cloud data provider.
@@ -801,6 +900,9 @@ class S3SeismicProvider(BasicProvider):
 
     @classmethod
     def from_file(cls, filename: str = "S3SeismicProvider.yaml", provider: str = "Earthscope"):
+        """
+        Factor method to construct from a yaml file.
+        """
         ymlpath = datafile(filename)
         with open(ymlpath,"r") as fh:
             ymldata = yaml.safe_load(fh)
@@ -811,6 +913,9 @@ class S3SeismicProvider(BasicProvider):
                       provider: str="Earthscope", 
                       collection: str="S3Provider",
                       ):
+        """
+        Factor method to construct from a MongoDB database.
+        """
         query = {"provider" : provider}
         doc = db[collection].find_one(query)
         if doc is None:
@@ -819,7 +924,7 @@ class S3SeismicProvider(BasicProvider):
         return cls(doc, provider=provider)
     def _from_dict(self, doc: dict, key: str):
         """
-        this one does the actual work - all other are wrappers
+        this one does the actual work - all other factory methods are wrappers
         """
         if key not in doc:
             message = f"S3SeismicProvider constructor:   no data found for provider=={key}"
@@ -834,12 +939,15 @@ class S3SeismicProvider(BasicProvider):
     def is_open(self,net)->bool:
         """
         Return True if the data for network code `net` is open data.
-        Return False if additional credentials are required.
+        Return False if additional credentials are required.  This method 
+        is mostly a wrapper for the access method
         """
-        val = self._fetch_subdoc_data("is_open", net, "access",default_value=False)
-        return val
+        access = self.access(net)
+        if access == DataAccess.open_aws_s3:
+            return True
+        else:
+            return False
                 
-        
     def region(self, net)->str:
         """
         Return the AWS server farm location commonly tagged with the 
@@ -894,6 +1002,41 @@ class S3SeismicProvider(BasicProvider):
                 message = f"S3SeismicProvider.payload_format:  illegal value for data_format={f} for net={net}\n"
                 message = "Currently this method only support miniseed"
                 raise ValueError(message)
+    def loc_code_strategy(self,net)->BlankLocCodeMethod:
+        """
+        Return the strategy used to handle location (loc) code for network code net.
+        
+        There is a universal complication in FDSN data in handling the 
+        seed channel attribute called the "location code".   The other for 
+        the infamous quadralateral (net, sta, and chan) by convention are 
+        always required to be defined.   The location code (loc in MsPASS) 
+        is often left null.   The reason is that by convention it is only 
+        defined for a site with multiple sensors with comparable specs.
+        Then it is a necessary evil to define which sensor's data to use.  
+        FDSN providers serving data from S3 all encode the seed quadrilateral 
+        in s3 object names.   Because loc is optional they then need a way 
+        to set a null value in the s3 object name.   This abstracts that 
+        process by returning a BlankLocCodeMethod class that defines a finite 
+        set of rules for handling this problem.   This method is used 
+        internally for handling s3 object names, but can be useful in 
+        other workflows dealing with s3 stores by other mechanisms.  
+        """
+        blank_loc_val = self._fetch_subdoc_data("loc_code_strategy", net, "blank_loc_code_value", default_value="")
+        match blank_loc_val:
+            case "":
+                return BlankLocCodeMethod.empty_string
+            case _:
+                if isinstance(blank_loc_val,str):
+                    if len(blank_loc_val)==1:
+                        blcm = BlankLocCodeMethod.fill_character
+                        blcm.set_fill_string(blank_loc_val)
+                        return blcm
+                else:
+                    message = f'S3SeismicProvider.loc_code_strategy:  illegal value for blank_loc_code_value argument = {blank_loc_val}\n'
+                    message += 'Must be an empty string or a single character (default _ used by SCEDC)'
+                    raise ValueError(message)
+                    
+        
     def prefix(self,net,object_organization="day_volumes")->str:
         """
         Return the prefix string for specified net code.  
@@ -1272,6 +1415,10 @@ class S3SeismicProvider(BasicProvider):
           net value.  If use_net_prefix is set True (default is False) 
           the Key value is constructed by prepending the "prefix" for this 
           network code (self.prefix[net] value).  
+        :return:  tuple with 0 being the data array and 1 containing an 
+          ErrorLogger object.  On success the ErrorLogger will be empty. 
+          The size method of ErrorLogger should be test for validity of 
+          the content in 0.
         """
         alg = "S3SeismicProvider.get_object"
         # make sure s3client is valid - easy to not be so
@@ -1379,24 +1526,7 @@ class S3SeismicProvider(BasicProvider):
         chan_to_always_delete = ["LOG"]
         # make sure all the select options are turned off or only one 
         # of the options is enabled.
-        select_count = sum(arg is not None for arg in (chanlist, preferences, obspy_select_string))
-        if select_count not in (0,1):
-            message = f'{alg}:  illegal select options\n'
-            message += 'Only one of the arguments chanlist, preferences, or obspy_select_string should be defined\n'
-            message += f'{select_count} options were enabled'
-            raise ValueError(message)
-        if chanlist is not None:
-            if not isinstance(chanlist,list):
-                message = f'{alg}:  illegal type={type(chanlist)} for chanlist argument -must be a python list'
-                raise TypeError(message)
-        if preferences is not None:
-            if not isinstance(preferences,ChannelPreferences):
-                message = f'{alg}:  illegal type={type(preferences)} for preferences argument -must be a python list'
-                raise TypeError(message)
-        if chanlist is not None:
-            if not isinstance(obspy_select_string,str):
-                message = f'{alg}:  illegal type={type(obspy_select_string)} for obspy_select_string argument -must be a python list'
-                raise TypeError(message)
+        _validate_selection_method(alg, chanlist, preferences, obspy_select_string)
         ptype = self.payload_type(net)
         pfmt = self.payload_format(net)
         # for onw we only handle mseed
@@ -1437,6 +1567,248 @@ class S3SeismicProvider(BasicProvider):
         except Exception as e:
             message = f'{alg}:  Something threw an unexpected exception this message\n{e}'
         return mspass_object
+
+
+
+
+    def objname2doc(self, net: str, objname: str, verbose: bool=False) -> dict:
+        """
+        Parse an S3 object name from an FDSN provider and return the 
+        metdata parsed as a python dictionary.
+        
+        This method is the workhorse of the index_day method used to 
+        build a MongoDB index for a scalable method for handling S3 data. 
+        Currently all provider index their seismic day files with a complicated
+        s3 object name that mimics a file system.   That name string always 
+        contains a set of metadata we often want to split apart as more 
+        easily accessible values.  This function provides a generic solution 
+        to that problem returning a dictionary where the keys are any 
+        of the string in the format string defining the object name.  It 
+        fetches the format information with method of this object called 
+        "object_format".  net is required as an argument to that method 
+        as the format can be network specific.   That is essential as some 
+        providers (e.g. SCEDC is a known villain but there is no reason to 
+        think they will be the only ones to create such an abomination.) 
+        
+        This function can be thought of as the inverse of the generic 
+        function below called parse_format_string.  I creates a string 
+        from an input document.  This does the reverse and creates a 
+        document from a string with a particular format.  An example 
+        can make this clearer.  The standard yaml file to construct an 
+        S3SeismicProvider has this entry for the format for net code "TA" 
+        (Earthscope transportable array) served by provider "Earthscope":
+        "{net:2}/{year}/{jday:03d}/{sta}.{net:2}.{year}.{jday:03d}".  
+        An example full path objname handled by this function is:
+        "miniseed/TA/2004/131/109C.TA.2004.131".   Noting that 
+        "miniseed" is the result of the prefix method for the "TA" net code,
+        "TA" is the "{net:2}" field, "2004" is the "{year}", etc.   That 
+        particular example would be parsed to this dict (in json format)::
+            
+            "s3key": "miniseed/TA/2004/131/109C.TA.2004.131",
+            "net": "TA",
+            "year": 2004,
+            "jday": 131,
+            "starttime": 1084147200.0,
+            "endtime": 1084233600.0,
+            "sta": "109C",
+
+        where "s3key" is inserted by this function.  It is the value 
+        of objname passed to the function.  
+        
+        That may sound simpler than it is, but variations in the details 
+        add a huge amount of complexity to make this function bombproof. 
+        There are so many ways this can go wrong the approach used was to 
+        try a sequence of approaches to crack the format string.  It tries 
+        the following approaches in sequence.  "In sequence" means it only 
+        goes to the next approach if it fails::
+            
+            1)  Apply the format string directly.
+            2)  Edit the format string to force fixed length seed codes. 
+                i.e. net is forced to 2, chan is forced to 3, year is 
+                forced to 4, and loc (if defined) is set to 2 characters.
+            3)  The last ditch approach splits the format string into 
+                tokens using all currently used separators.  That is, 
+                "/",".", and "_".   objname is then split into tokens 
+                using the same separators.   At this point we enter the 
+                danger zone of undefined loc codes and how a provider 
+                handles that.  There are currently only two ways that is 
+                done defined by the enum subclass BlankLocCodeMethod.  
+                That is either an empty string or a single character.  
+                Currently SCEDC does that and inserts an extra "_" 
+                when the loc code is undefined.   This function 
+                handles those two examples now.  If someone does something 
+                different in the future it could easily break this parser.  
+                One more vote for why SEED is a four-letter word.   
+        
+        This function is bombproof and should never throw an exception. 
+        If none of the parsing approachs succeeed it will return an 
+        empty dictionary.   To diagnose problems with enable the verbose 
+        option that is Fale by default.  
+        """
+
+        def enforce_types(doc):
+            """
+            Force year and jday to be always be converted to integers.
+            
+            The parser used by objname2doc will sometimes return year 
+            and jday as a string.  That happens with simple strings used
+            to define the tokens like "{year}".   One an also specify a
+            specific format like "{year:04d}" and the parser will return 
+            an int.  for consistnecy this guarantee year and day are always 
+            returned by objname2doc as integers.  "doc" is assumed to be 
+            a dictionary.  It is edited in place and the edited result 
+            returend.
+            """
+            int_keys = ["year","jday"]
+            for k in int_keys:
+                if k in doc:
+                    if isinstance(doc[k],str):
+                        # if conversion fails from a parsing error
+                        # cooerce the error into a MsPASSError to be 
+                        # consistent with safe_parse
+                        try:
+                            doc[k] = int(doc[k])
+                        except ValueError:
+                            message = f"string field parsed for {k} = {doc[k]} could not be converted to an integer.  Assumed to be a parsing error"
+                            raise MsPASSError("enforce_types",message,ErrorSeverity.Invalid)
+            return doc
+        FDSN_S3_FIELD_SEPARATORS="./_"
+        format_str = self.object_format(net)
+        # Fetch prefix with prefix method and strip it if present
+        prefix = self.prefix(net).rstrip('/') + '/'
+
+        if objname.startswith(prefix):
+            objname = objname[len(prefix):]
+    
+        # 1. Strip optional leading S3 path prefixes (e.g., 'continuous_waveforms/')
+        if "/" in format_str and not format_str.startswith("/"):
+            rel_format_prefix = format_str.split("{")[0]
+            if rel_format_prefix in objname:
+                objname = objname[objname.find(rel_format_prefix):]
+        # first try to parse with what we are given. 
+        try:
+            result = safe_parse(format_str, objname)
+            result = enforce_types(result)
+            return result
+        except MsPASSError as e1:
+            if verbose:
+                print("objname2doc failed with objname=",objname, " using format=",format_str)
+                print("Error message:  ",e1)
+                print("Trying fixed field editing of format string")
+        enhanced_format_str = format_str
+    
+        # 2. Unify specifiers for fields that repeat or sit adjacent to others:
+        
+        if '{net}' in format_str:
+            enhanced_format_str = enhanced_format_str.replace('{net}', '{net:2}')
+        if '{chan}' in format_str:
+            enhanced_format_str = enhanced_format_str.replace('{chan}', '{chan:3}')
+        if '{loc}' in format_str:
+            enhanced_format_str = enhanced_format_str.replace('{loc}', '{loc:2}')
+        if '{year}' in format_str:
+            enhanced_format_str = enhanced_format_str.replace('{year}', '{year:04d}')
+        # currently all providers using leading 0s to make jday a 3 character field
+        # this is fragile as that assumption could be violated in the future
+        # with this logic it should be ok if the format string sets it correctly
+        if '{jday}' in format_str:
+            enhanced_format_str = enhanced_format_str.replace('{jday}', '{jday:03d}')
+        try:
+            result = safe_parse(enhanced_format_str, objname)
+            result = enforce_types(result)
+            return result
+        except MsPASSError as e2:
+            if verbose:
+                print("objname2doc failed with objectname=",
+                      objname,
+                      " using edited format string=",
+                      enhanced_format_str)
+                print("Error message:  ",e2)
+                print("Trying to split format string and combine pieces")
+        try:
+            # Last ditch method - split the format string into tokens 
+            # and extract what we can.  
+            result = self.split_and_parse(enhanced_format_str,objname,FDSN_S3_FIELD_SEPARATORS,verbose=verbose)
+            if result is None:
+                locstrategy = self.loc_code_strategy(net)
+                match locstrategy:
+                    case BlankLocCodeMethod.fill_character:
+                        fill_char = locstrategy.get_filler()
+                        if fill_char  not in FDSN_S3_FIELD_SEPARATORS:
+                            split_str =  FDSN_S3_FIELD_SEPARATORS + fill_char
+                        else:
+                            split_str = FDSN_S3_FIELD_SEPARATORS
+                    case BlankLocCodeMethod.empty_string:
+                        fill_char = ""
+                        split_str = FDSN_S3_FIELD_SEPARATORS
+                # remove the {loc} field in the format string
+                enhanced_format_str = re.sub(r'\{loc:2\}', fill_char, enhanced_format_str)
+                result = self.split_and_parse(enhanced_format_str,objname,split_str,verbose=verbose)
+                if result is None:
+                    if verbose:
+                        print("objname2doc:   Giving up - returning an empty dictionary")
+                    result = dict()
+                else:
+                    try:
+                        result = enforce_types(result)
+                    except MsPASSError as e:
+                        if verbose:
+                            message="objname2doc:  split and parse method failed\n"
+                            message+="year and/or jday strings could not be converted to int\n"
+                            message+= f"Error posted: {e}"
+                            print(message)
+                        return dict()
+            return result
+        except Exception as e:
+            print("objname2doc:  Something threw unexpected exception with message: ",e)
+            print("Returning emtpy dictionary")
+            return dict()
+                    
+    def split_and_parse(self,format_str,objname,separators,verbose=False)->dict | None:
+        """
+        Companion to above.  Splits format_str and objname into 
+        tokens using regex string separators to define split.  
+        Returns a None if the number of tokens from format and objname 
+        do not match - that is how we handle null loc code values
+        that will create that mismatch because the loc value is missing.
+        """
+        # Only keys matching this list will be treated as valid 
+        # It means the output may not be complete but it won't fail
+        allowed_keys = ["net","vnet","sta","chan","loc","year","jday"]
+        split_str = f"[{separators}]+"
+        f_tokens = re.split(split_str,format_str)
+        obj_tokens = re.split(split_str,objname)
+        if len(f_tokens) != len(obj_tokens):
+            return None
+        else:
+            N = len(f_tokens)
+            doc = dict()
+            for i in range(N):
+                try:
+                    tokdoc = safe_parse(f_tokens[i], obj_tokens[i])
+                    # only insert key-value paris where the key makes sense
+                    # warn if it was set before and changed
+                    for k in tokdoc:
+                        if k in allowed_keys:
+                            if k not in doc:
+                                doc[k] = tokdoc[k]
+                            elif doc[k] != tokdoc[k]:
+                                # make this bombproof
+                                # this will overwrite if ther eare more than 
+                                # one inconsistent values associated with k
+                                # not possible with an existing provider
+                                key = k + "_v2"
+                                doc[key] = tokdoc[k]
+                                if verbose:
+                                    print("Warning:  key=",k," had conflicting values of ",doc[k]," and ",tokdoc[k])
+                                    print("Saving ",tokdoc[k]," with key=",key)
+                except MsPASSError as e:
+                    if verbose:
+                        print(f"split_and_parse:  failure with format {f_tokens[i]} and {obj_tokens[i]}")
+                        print("Error message: ",e)
+                    
+            return doc
+
+ 
     @staticmethod
     def _select_channels_by_list(ens,chanlist)->TimeSeriesEnsemble:
         """
@@ -1622,9 +1994,757 @@ def is_mspass_client(obj) -> bool:
         and cls.__module__ == "mspasspy.client"
     )
     
-        
-        
+
+def index_day(net,
+              year,
+              jday,
+              dbname_or_handle,
+              provider,
+              s3_client=None,
+              dask_worker_key="geolab_s3_client",
+              collection="wf_s3",
+              parse_failure_collection="s3_parse_failures",
+              verbose=False,
+              print_summary=False,
+              )->tuple:
+    """
+    Low level function to build an index for data stored on S3 for a 
+    single net code for one day.  
     
+    Day files are currently stored by providers on s3 with object names 
+    that mimic a file system where the file names encode key metadata 
+    needed to locate a specific station's data or a particular channel of 
+    data.  Experience has shown that indexing the data objects outside 
+    a provider with MongoDB provides a very efficient way to extract 
+    pieces of the giant archive all providers maintain that are needed for 
+    a particular research project.  This function provides a generic way 
+    to do that process for any current network hosting data on S3.  
+    This function writes documents to a MongoDB in a collection that 
+    by default is called 'wf_s3'.   Those documents provide an approximate 
+    index of day volumes for a data set of interest.    This function 
+    needs be be thought of as an indexer for one network day.   i.e. what 
+    it does is create documents for each object stored for network code 
+    net for a specified year and jday.  (required args 0 and 1).  
+    The main value this adds over a simpler scheme is the documents this 
+    function produces contain the following metadata:
+        net - network code
+        starttime - approximate start of day volume
+        endtime - approximate end of day volume
+        s3key - s3 object name this index entry applies to
+        year - year the data in this day volume was recorded
+        jay - day of the year this day volume was recorded
         
+    In addition, if the object name encodes them these may be defined
+        sta - station code (this should always be defined unless there is an error)
+        chan - channel code
+        loc - location code (if applicable)  Beware it may be parsed as an empty string
+        
+    Most users should expect to use this code in some varation of this 
+    serial code:
+        
+        ..code-block:: python
+        
+            for net in network_code_list:
+                for year,day in year_day_list:
+                    nset,ndoc = index_day(net,year,day,db,provider,s3client)
     
+    For serial processing s3_client must be defined.  Default assumes 
+    parallel processing with dask with workers fetching the s3 client 
+    via the plugin using the key defined by the dask_worker_key argument.  
+    Similarly dbname_or_handle uses the standard mspass mechanism of 
+    getting a database handle via the fetch_dbhandle function.
+    
+    :param net:   network code to index.  Must be defined for S3SeismicProvider 
+       object passed by provider argument or this function will fail.
+    :type net:  string 
+    :param year:
+    :param jday:   all current providers store data in the equivalent of a day 
+       directory structure.  year and jday define what prefix is used to 
+       fetch the proper contents.  Be aware the provider.get_year_day_object_names 
+       is used to fetch the leaf object name for net, year, and day tuples.
+    :param dbname_or_handle:  As he name suggests but use the actual Database 
+       object only for serial workflows.  In a parallel workflow you must use 
+       the name only.
+    :param provider:  Instance of an S3SeismicProvider that defines data for
+       the specified network code net.  
+    :param s3_client:  parallel jobs should use the default None for this 
+       optional argument.  That usage assumes a dask worker can fetch 
+       an s3 client with the key defined by the dask_worker_key argument.
+       For serial workflows this must define an instance of an s3 client 
+       appropriate for this network code.  Normal use for serial jobs 
+       should be to create one from the provider.s3client method to a
+       assure consistency.  
+    :param dask_worker_key:  name defining s3 client for dask workers.  
+       Ignore for serial jobs.
+    :param collection:  MongoDB collection name to write documents created 
+       by this function.  Default of "wf_s3" should be changed with caution.
+    :param parse_failure_collection:  s3 object names that could not be 
+       successfully parsed to build an index entry will be inserted in this 
+       collection name.  It is a bit like the cemetery collection as it holds 
+       failures.  Necessary evil as the volume of error messages when parse 
+       errors occur can be overwhelming.  Most parsing errors result from 
+       format string errors in the yaml file so any use of that format 
+       can produce a flood of errors. Hence, they are pushed to a special 
+       collection.
+    :param verbose: as the name suggests.  Use this to debug parsing errors 
+       for s3 object names.  Best enabled after a run creates a ton of 
+       documents in the parse_failure_collection collection.   WARNING:  if 
+       you are having parsing errors it do not run verbose with a large 
+       number of days as the error output can be huge. 
+     
+    :return:  tuple of containing 3 integer values. 0 is the number of document s
+      successfully written to MongoDB and 1 is the number sent.   They should 
+      match.   Callers should test for equality and post a warning if they 
+      differ.  Component 2 is the number of failures from parsing the 
+      s3 object name to extract essential seed network codes needed for 
+      a valid wfs3 entry.   If that number gets large enable verbose 
+      to debug the problem
+    """
+    alg = "index_day"
+    db = fetch_dbhandle(dbname_or_handle)
+    if s3_client is None:
+        s3_client = fetch_s3_client(parallel=True,
+                                    worker_data_key=dask_worker_key,
+                                    )
+    elif not is_s3_client(s3_client):
+        message = f'{alg}:  Illegal value for s3_client argument={type(s3_client)}\n'
+        message += 'Must be a boto3 client object'
+        raise ValueError(message)
+    # let this throw an exception if provider is ill defined
+    s3objlist,auxmd = provider.get_year_day_object_names(s3_client,net,year,jday)
+    doclist=list()
+    number_failures=0
+    inconsistent_net_codes = dict()
+    for objname in s3objlist:
+        doc = dict()
+        doc["s3key"] = objname
+        doc["net"] = net
+        doc["year"] = year
+        doc["jday"] = jday
+        starttime = UTCDateTime(year=year, julday=jday)
+        doc["starttime"] = starttime.timestamp
+        endtime = starttime.timestamp + 86400.0
+        doc["endtime"] = endtime
+        if auxmd is not None:
+            for k in auxmd.keys():
+                # this maybe should warn if k overwrites an existing key
+                doc[k] = auxmd[k]
+        doc_from_objname = provider.objname2doc(net,objname,verbose=verbose)
+        
+        # provider.objnam2doc should never fail but if it fails completely 
+        # it returns an empty dict container. We treat those documents 
+        # a bit like dead seismic data object pushing them as we find 
+        # them to a special collection
+        if len(doc_from_objname)==0:
+            db[parse_failure_collection].insert_one(doc)
+            number_failures += 1
+        else:
+            # handle null loc codes consistently have null's not in 
+            # the document at all
+            if "loc" in doc_from_objname:
+                locstrategy = provider.loc_code_strategy(net)
+                match locstrategy:
+                    case BlankLocCodeMethod.fill_character:
+                        fill_char = locstrategy.get_filler()
+                        if doc_from_objname["loc"] == fill_char:
+                            doc_from_objname.pop("loc")
+                    case BlankLocCodeMethod.empty_string:
+                        if len(doc_from_objname["loc"])==0:
+                            doc_from_objname.pop("loc")
+                        
+            if "net" not in doc_from_objname:
+                doc_from_objname["net"] = "undefined"
+            if doc_from_objname["net"] != net:
+                badnet = doc_from_objname["net"]
+                if badnet in inconsistent_net_codes:
+                    val = inconsistent_net_codes[badnet]
+                    val += 1
+                    inconsistent_net_codes[badnet] = val
+                else:
+                    inconsistent_net_codes[badnet] = 1
+            else:
+                # add any new names parsed and verify matching ones are consistent
+                for k in doc_from_objname.keys():
+                    if k in doc:
+                        if doc[k] != doc_from_objname[k]:
+                            print(f'{alg} (WARNING):  value for {k} expected does not match that parsed from s3object={objname}. Using {doc[k]}')
+                    else:
+                        doc[k] = doc_from_objname[k]
+                # add data from provider
+                doc['payload_type'] = str(provider.payload_type(net))
+                doc['payload_format'] = str(provider.payload_format(net))
+                doc['bucket'] = provider.bucket(net)
+                doc['open_data'] = provider.is_open(net)
+                doc['s3object_format_string'] = provider.object_format(net)
+                doc['region'] = provider.region(net)
+                doc['prefix'] = provider.prefix(net)
+                doclist.append(doc)
+    if print_summary:
+        print(f"Summary result for {net} for year {year} and day {jday}")
+        print("Number of s3 objects handled for this day=",len(s3objlist))
+        print("Number of documents saved=",len(doclist))
+        print("Number dropped from parsing errors=",number_failures)
+        print("Inconsistent network code counts of dropped items:")
+        print_metadata(inconsistent_net_codes)
+    if len(doclist)==0:
+        return [0,len(s3objlist),number_failures,inconsistent_net_codes]
+    else:
+        # for some unknown reason pymongo modifies doclist content 
+        # in the insert_many method.  A weird consequence is we need to 
+        # make a deep copy of each doc send insert_many
+        unique_docs = [doc.copy() for doc in doclist]
+        result = db[collection].insert_many(unique_docs)
+        return [len(result.inserted_ids),
+                len(s3objlist),
+                number_failures,
+                inconsistent_net_codes]
+    
+def days_needed(t0, start, end, pad=100.0) -> list:
+    """
+    Computes a range of days from a time interval t0+start to t0+tend.
+    
+    Reading a particular time window from continuous data stored as day 
+    files is a generic problem.  Two common ways it comes up is needing to 
+    handle a time series longer than one day.   The other is in extracing 
+    time windows of data round a particular time period of interest like 
+    a predicted or measured arrival time or a time period relative to a 
+    source origin time.  The complication this function generalizes is 
+    that any time the time periods spans one or more day boundaries multiple
+    day volumes need to be read.  This function does nothing but return 
+    a list of year,day tuples for a time space defined by the 
+    range t0 + start - pad to t0 + end + pad.   t0 can be either a float, 
+    in which case it is assumed to be an epoch time, or a UTCDateTime object. 
+    The time ranges (start and end arguments == arg1 and arg2) are assumed 
+    to be seconds relative to t0.  
+    Optional pad in seconds.  That is, normally the function returns a list of
+    year-day pairs defined as the range t0+start-pad to t0+end+pad.
+    That is necessary because miniseed day files usually have inexact start times
+    due to compresssion.
+
+    Return as a list of (year,day) tuples.
+    """
+    alg = "days_needed"
+    if isinstance(t0,UTCDateTime):
+        t0 = t0.timestamp
+    if not isinstance(t0,float):
+        message = f'{alg}:  illegal type {type(t0)} for t0 (arg0) argument'
+        raise ValueError(message)
+    if end < start:
+        message = "{}:  start time={} is less than end time={}".format(
+            alg, start, end,
+        )
+        raise ValueError(message)
+    tsutc = UTCDateTime(t0 + start - pad)
+    teutc = UTCDateTime(t0 + end + pad)
+    result = list()
+    if tsutc.year == teutc.year:
+        yr = tsutc.year
+        for jday in range(tsutc.julday, teutc.julday + 1):
+            result.append([yr, jday])
+    else:
+        # complexity required to cross year boundary
+        # Warning is appropriate but very long period data make it only a warning
+        if (teutc.year - tsutc.year) != 1:
+            message = f"{alg} (WARNING): "
+            message += "Time window of {} -> {} spans multiple years\n".format(
+                tsutc, teutc
+            )
+            message += "Using the list returned may cause a memory allocation fault unless you are loading only low sample rate data"
+            print(message)
+        for yr in range(tsutc.year,teutc.year+1):
+            if yr == tsutc.year:
+                jdaystart = tsutc.julday
+            else:
+                jdaystart = 1
+            if yr == teutc.year:
+                jdayend = teutc.julday
+            else:
+                if calendar.isleap(yr):
+                    jdayend = 366
+                else:
+                    jdayend = 365
+            for jday in range(jdaystart,jdayend+1):
+                result.append([yr,jday])
+    return result
+
+def build_day_processing_blocks(
+    df,
+    start,
+    end,
+    dbname_or_handle,
+    pad=100.0,
+    channel_select="B*",
+    maxdays=2,
+    collection="wf_s3",
+    auxkeys=["source_id"],
+) -> list:
+    """
+    This function takes a (potentially large) DataFrame df of arrival
+    time data and returns a grouped list of documents that can be used to
+    efficiently extract waveform data segments containing those arrival
+    times.
+
+    The data structure returned is a bit complex because it provides a
+    clean, if not obvious, way to work efficiently within constraints of
+    GeoLab and the current implementation of the MsPASS Database.
+    That is, the only scalable method of output on GeoLab at present is to
+    push data to an output s3 bucket on their scratch bucket.   The only
+    way we have a present to do that is to serialize data with pickle and
+    push the bits to s3 objects.   The idea of the output of this function
+    is to organize the processing to produce ensembles that are essentially
+    segmented day files.   i.e. the groupings define all data that have a
+    starttime on a particular day.   A subtle element of this approach is
+    that some events will be split across day volumes in the rare situation
+    where the set of arrival times for that event cross a day boundary.
+
+    To handle that complexity the output is a list of lists.   The
+    outer list of the return is of the form:
+        [data_list, error_list]
+    The content of "data_list" is itself a list of pairs (2 element array/list)
+    with conetent:
+        [yearday_string,document_list]
+    where "yearday_string" is a like it sound (e.g. 2004122 for julian
+    day 122 of 2004).  document_list is a list of dictionaries that are used
+    downstream in parallel by a function called `get_s3_segments`.
+
+    The complexity of the outer list component I called `error_list` above is
+    needed as a necessary evil as an error return.   Because the input to
+    this function is normally huge the list of failures can also be huge.
+    Simply printing every failure can overwhelm the jupyter server when this
+    is run on GeoLab (the expectation).   The list is a list of MongoDB
+    queries that yield no data.  The caller should handle it appropriately.
+    The expectation at present is to save the content as a pickle file
+    in the run directory for later inspection.
+
+    This function uses the DataFrame api in combination with pymongo
+    bo build the output.  It assumes an index to the earthscope s3
+    archive already existss for the time period to be handled.
+    That index is expected to live in a collection defined by the
+    "collction" argument (default is "wf_s3").
+
+    The input DataFrame must contain the following required attributes:
+      'time' - either a theoretical or measured arrival time used as a basis for
+               what segments are generated. The functio aims to extract a
+               window of size time+start-pad to time+end+pad for each row of df.
+      'net' - SEED station net code
+      'sta' - SEED station code
+
+    Optional:   the keys defined by "auxkeys" are also expected to be in the
+      input DataFrame but will be silently ignored if they are not present.
+      The default expects "source_id" which is one way to provide a
+      cross reference to source data.  Something of that sort is
+      normally required to make the results easier to use since
+      arrivals by definition are associated with some source.
+      The idea is this function is generic, however, and it does not
+      need to be dogmatic about source data.  The main concept is to
+      extract event segments.  Use data in auxkeys as metadata that define
+      what those segments are.
+
+    A perspective on this function is it takes an input DataFrame with
+    the required metadata listed above and convert to an input that
+    can be used to implement processing by day groups.   The day groups
+    provide a reasonably managable size package to push data as pickled
+    objects to an output s3 bucket.   The primary content of each document
+    in the output structure is:
+
+        's3objects' - list of s3 object name to be retrieved as an atomic operation
+           Note when more than 1 reader needs to assume the pieces
+           need to be glued together.  Currently the list can be no longer
+           than 2.
+        'net' - SEED net code
+        'sta' - SEED station code
+        'channel_select' - echo of the channel_select argument
+           (used in s3 reader to select matching channel codes only)
+        'arrivals' - list of dictionaries defining data to extract
+        'start' - relative start time for windowing
+        'end' - relative end time for windowing
+
+    As noted any valid data match key defined by "auxdata" will also be
+    posted to those documents.
+
+    Finally, note the 'arrivals' dictionaries each contain a 'time' attribute
+    that defines the arrival time from which a window is computed.
+    Any other data in tha dictionary is treated as auxiliary Metadata that
+    is to be copied to the output.  Note downstream uses of that aux
+    data must handle it carefully to make sure the contents do not contain
+    metadata that conflict with metadata used inside children of
+    BasicTimeSeries data (e.g. starttime).  Also note the start end
+    range will be modified from input by pad value.
+
+    """
+    db = fetch_dbhandle(dbname_or_handle)
+    df = df.sort_values("time")
+    # Add two columns to the DataFrame that are used below to generate
+    # dayfiles to load to handle which arrivals.
+    yrdaylists = list()
+    yrdaystr = list()  # string version to be hashable - needed by groupby below
+    for row in df.itertuples():
+        ydlist = days_needed(row.time, start, end, pad=pad)
+        if len(ydlist) > maxdays:
+            # this should only happen if the user makes an input error for start and/or end
+            message = (
+                "Number of days for time={} and range={}-{} is too large\n".format(
+                    row.time, start, end
+                )
+            )
+            message += (
+                "Number of days this would try to return={} but maxdays={}".format(
+                    len(ydlist), maxdays
+                )
+            )
+            raise ValueError(message)
+        # ydstr = f"{ydlist[0]}{ydlist[1]}"
+        # ydstr = str(ydlist)
+        ydstr = f"{ydlist[0][0]}{ydlist[0][1]}"
+        # print(ydlist[0][0])
+        # print(ydlist[0][1])
+        yrdaylists.append(ydlist)
+        yrdaystr.append(ydstr)
+    df["yrdaylist"] = yrdaylists
+    df["yearday"] = yrdaystr
+
+    result = []
+    fail_list = []
+    for _, gdf in df.groupby("yearday", sort=False):
+        # The first window need not span all the days used by later windows.
+        required_days = sorted(
+            {tuple(day) for days in gdf["yrdaylist"] for day in days}
+        )
+        query = {"$or": [{"year": yr, "jday": day} for yr, day in required_days]}
+        holdings = {}
+        for holding in db[collection].find(query):
+            holdings.setdefault((holding["net"], holding["sta"]), []).append(holding)
+        if not holdings:
+            fail_list.append(query)
+            continue
+        first_day = gdf["yrdaylist"].iloc[0][0]
+        jday_tag = f"{first_day[0]}_{first_day[1]}"
+        daylist = []
+        for (net, sta), station_rows in gdf.groupby(["net", "sta"]):
+            objects = set()
+            arrivals, starts, ends = [], [], []
+            available = holdings.get((net, sta), [])
+            for row in station_rows.to_dict("records"):
+                days = {tuple(day) for day in row["yrdaylist"]}
+                matching = [h for h in available if (h["year"], h["jday"]) in days]
+                if not matching:
+                    fail_list.append(
+                        {
+                            "net": net,
+                            "sta": sta,
+                            "$or": [
+                                {"year": yr, "jday": day} for yr, day in sorted(days)
+                            ],
+                        }
+                    )
+                    continue
+                # An arrival appears once, even when it needs two day objects.
+                # A DataFrame join with the holdings would multiply arrivals.
+                arrival = {"time": row["time"]}
+                arrival.update({key: row[key] for key in auxkeys if key in row})
+                arrivals.append(arrival)
+                starts.append(row["time"] + start - pad)
+                ends.append(row["time"] + end + pad)
+                objects.update(h["s3key"] for h in matching)
+            if arrivals:
+                daylist.append(
+                    {
+                        "net": net,
+                        "sta": sta,
+                        "channel_select": channel_select,
+                        "s3objects": sorted(objects),
+                        "arrival": arrivals,
+                        "start": starts,
+                        "end": ends,
+                        "jday_tag": jday_tag,
+                    }
+                )
+        if daylist:
+            result.append([jday_tag, daylist])
+    return [result, fail_list]
+
+class SelectionMethod(Enum):
+    chanlist = auto()
+    select_string = auto()
+    preferences = auto()
+    invalid = auto()
+
+def _validate_selection_method(alg,chanlist,preferences,obspy_select_string)->bool:
+    """
+    Standardize handling of selection method. 
+    
+    Multiple functions need to deal with the multiple mechanisms used 
+    in this module to handle filtering extraneous waveform data from 
+    downloaded s3 objects.   Note that enteres only if PayloadType is 
+    stationc_days.  
+    
+    The arg names match those used in all functions in this module.  
+    The error messages returned in illegal conditions docment what they 
+    are expected to be as well.  The only exception is alg which is the 
+    used to post the name of the calling function on messages
+    
+    Returns True on success.  Failure will currently always cause an 
+    exceotion to be raised
+    """
+    test_tuple = (chanlist, preferences, obspy_select_string)
+    if test_tuple == (None, None, None):
+        # this is acceptable and means no filtering will be done
+        # that is, all are None
+        return True
+    if sum(v is not None for v in test_tuple) != 1:
+        message = f'{alg}:  illegal data filter options specified\n'
+        message += 'Only one of the options "chanlist", "preferences", or "obspy_select_string" can be defined'
+        # This could be a MsPASSError but ValueError is stock and suffici8ent
+        # here as this is not special to MsPASS
+        raise ValueError(message)
+    if chanlist is not None:
+        if not isinstance(chanlist,list):
+            message = f'{alg}:  Illegal input for chanlist option.\n'
+            message += 'Should be a list but received an object of type={type(chanlist)}'
+            raise TypeError(message)
+    if preferences is not None:
+        if not isinstance(preferences,ChannelPreferences):
+            message = f'{alg}:  Illegal input for preferences option.\n'
+            message += 'Should be a ChannelPreferences object but received an object of type={type(preferences)}'
+            raise TypeError(message)
+    if obspy_select_string is not None:
+        if not isinstance(obspy_select_string,str):
+            message = f'{alg}:  Illegal input for obspy_select_string option.\n'
+            message += 'Should be a string but received an object of type={type(obspy_select_string)}'
+            raise TypeError(message)
+    return True
+
+def merge_channels(tsvector,
+                   fix_overlaps=True,
+                   zero_gaps=False,
+                   )->TimeSeriesVector:
+    """
+    Helper for get_s3_segments to merge multiple channels in when 
+    multiple day volumes are being processed.
+    
+    Complication is that we have to split out different channel codes 
+    before we run merge when the payload has multiple channels together. 
+    This algorithm is only useful for (mini)seed data where we can 
+    assume the attributes "chan" and "loc" mean something.  The 
+    algorith also ASSUMES net and sta are the same for all the 
+    TimeSeries data in tsvector.   It works by assembling all data 
+    with a common chan and loc combination and running merge on 
+    each unique chan-loc combination it finds.  Result is a new 
+    TimeSeriesVector with the multiple day segments merged.
+    
+    fix_overlap and zero_gaps are arguments to merge and are passed 
+    directly.  See the docstring for merge to understand what they do.  
+    
+    This could be marked as an internal function but there are likely 
+    other uses of the function outside of the FDSN module for working 
+    with data stored on s3.  Be warned it has no safeties, however, 
+    as it isn't really intended for public use.  '
+    """
+    def chan_loc_key(md):
+        sta = md['sta']
+        if "loc" not in md:
+            loc=""
+        return f"_{sta}_{loc}_"
+    index = dict()
+    i = 0
+    for ts in tsvector:
+        key = chan_loc_key(ts)
+        if key in index:
+            val = index[key] 
+            val.append(i)
+            index[key] = val 
+        i += 1
+    result = TimeSeriesVector()
+    for key in index:
+        ivals = index[key]
+        tsv_k = TimeSeriesVector()
+        for i in ivals:
+            tsv_k.append(tsvector[i])
+        # don't call merge unless there are multiple TimeSeries to be merged
+        # I think merge handles that but this is cleaner and clearer
+        # note this does nothing if tsv_k is empty.  That shouldn't happen 
+        # but a useful feature
+        if len(tsv_k)==1:
+            result.append(tsv_k[0])
+        else:    
+            ts = merge(tsv_k,
+                   fix_overlaps=fix_overlaps,
+                   zero_gaps=zero_gaps,
+                   )
+        result.append(ts)
+        # manually clear the debris here as tgese cab be large
+        del tsv_k
+    # note result may contain dead bodies from merge failures
+    return result
+    
+def get_s3_segments(
+    doc,
+    provider,
+    s3_client=None,
+    dask_worker_key="geolab_s3_client",
+    chanlist=None,
+    preferences=None,
+    obspy_select_string=None,
+    metadata_copy_list=None,
+    detrend_type="None",
+    short_segment_handling="kill",
+    fix_overlaps=True,
+    zero_gaps=False,
+    jday_tag_key="jday_tag",
+) -> TimeSeriesEnsemble:
+    """
+    Companion to build_day_processing_blocks to load data defined by 
+    each document that function creates.  
+    
+    
+    
+    Low level function to take content of doc, which is assumed to
+    be a componet of the output of run_by_days, and return a
+    TimeSeries ensemble of waveform segments the doc defines.
+    
+    
+    TODO:   needs a generic way to handle lists of metadata when 
+    multiple segments are loaded from day volumes.  prototype used a
+    list linked to a particular key, but tha seems a bit complex for the 
+    average user to handle.  That is the fallback but need some 
+    thought on alternatives. Currently set as fixed key "segment_metadata"
+    """
+    alg = "get_s3_segments"
+    IMMUTABLE_METADATA = [
+        "starttime",
+        "endtime",
+        "delta",
+        "npts",
+        "utc_convertible",
+        "time_standard",
+    ]
+    if s3_client is None:
+        s3_client = fetch_s3_client(parallel=True,
+                                    worker_data_key=dask_worker_key,
+                                    )
+    elif not is_s3_client(s3_client):
+        message = f'{alg}:  Illegal value for s3_client argument={type(s3_client)}\n'
+        message += 'Must be a boto3 client object'
+        raise ValueError(message)
+    if not isinstance(provider, S3SeismicProvider):
+        message = f'{alg}:  provider (arg1) is type={type(provider)}.   Must be a S3SeismicProvider object'
+        raise ValueError(message)
+    # this function does return a boolean but we ignore it for now as 
+    # failures always raise an exdeption and we want exceptions to abort 
+    # a workflow using this function if they are thrown by this function.
+    _validate_selection_method(alg, chanlist, preferences, obspy_select_string)
+    # defined here so if the strm is empty we return a default
+    # constructed ensemble with error log content
+    result = TimeSeriesEnsemble()
+    # assume net is defined as none of this works without it 
+    net = doc['net']
+    # Always add the bucket name to the doc so it will be saved for both success and failure
+    bucket = provider.bucket(net)
+    doc["Bucket"] = bucket
+    # need this in loop below to control behavior 
+    payload_type = provider.payload_type(net)
+    # always put this in the ensemble metadata so there is always a way to identify a problem child
+    auxmd = Metadata()
+    auxmd["s3_request_document"] = doc
+    if metadata_copy_list is not None:
+        for k in metadata_copy_list:
+            if k in doc and k not in IMMUTABLE_METADATA:
+                auxmd[k] = doc[k]
+                
+    s3objects = doc["s3objects"]
+    if len(s3objects) == 0:
+        message = "Request document had no entries in the list defined by the s3objects key"
+        result.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        return result
+    alldata=TimeSeriesVector()
+    for s3key in s3objects:
+        rawbytes,elog = provider.get_raw_object_data(s3_client,
+                                                     net,
+                                                     s3key,
+                                                     )
+        if elog.size()>0:
+            # if the log is empty it means the function above failed. 
+            # push the entires there to the empty, dead ensemble and 
+            # return that in this condition
+            result.elog += elog
+            return result 
+        
+        match payload_type:
+            case PayloadType.channel_day:
+                daydata = provider.decode_waveform_data(rawbytes,net,auxmd=auxmd)
+                # in this case daydata is a TimeSeries so we just append it if live
+                if daydata.live:
+                    alldata.append(daydata)
+            case PayloadType.station_day:
+                daydata = provider.decode_waveform_data(rawbytes,
+                                                    net,
+                                                    chanlist=chanlist,
+                                                    preferences=preferences,
+                                                    obspy_select_string=obspy_select_string,
+                                                    auxmd=auxmd,
+                                                    )
+                # here daydata is an ensemble so we need a loop 
+                for d in daydata.member:
+                    if d.live:
+                        alldata.append(d)
+            case _:
+                message = f'{alg}:  S3SeismicProvider defined an illegal Payload_type = {payload_type}\n'
+                message += f'Error in S3SeismicProfider likely for net code={net}'
+                raise ValueError(message)
+    # now we have to handle merging data if the data span multiple days
+    if len(s3objects)>1:
+        match payload_type:
+            case PayloadType.channel_day:
+                # this logic handles the case where only  one of expected 
+                # mulltiple days were actually loaded
+                if len(alldata)>1:
+                    d = merge(alldata,
+                              fix_overlaps=fix_overlaps,
+                              zero_gaps=zero_gaps,
+                              )
+                alldata = TimeSeriesVector()
+                alldata.append(d)
+            case PayloadType.station_day:
+                alldata = merge_channels(alldata,
+                                         fix_overlaps=fix_overlaps,
+                                         zero_gaps=zero_gaps,
+                                         )
+    # alldata should now contain one or more continuous time series 
+    # that we can cut up using the time windows defined by the input 
+    # document
+    if detrend_type in ("simple", "constant", "linear", "polynomial", "spline"):
+        for i in range(len(alldata)):
+            alldata[i] = detrend(alldata[i], type=detrend_type)
+    result = TimeSeriesEnsemble(len(alldata))
+    stlist = doc["start"]
+    etlist = doc["end"]
+    # this should maybe be optional
+    segmdlist = doc['segment_metadata']
+    # assume stlist and etlist are always the same size
+    for i in range(len(stlist)):
+        stime = stlist[i]
+        etime = etlist[i]
+        segmd = segmdlist[i]
+        for d in alldata:
+            d_seg_i = WindowData(d,
+                                 stime,
+                                 etime,
+                                 short_segment_handling=short_segment_handling,
+                                 )
+            # append the living and the dead to allow sorting out after the funeral
+            for k in segmd:
+                if k not in IMMUTABLE_METADATA:
+                    d_seg_i[k] = segmd[i]
+            result.member.append(d_seg_i)
+    # alldata can be huge so delete it now since we are done with hit
+    del alldata
+    if has_live_data(result):
+        result.set_live()
+        if jday_tag_key in doc:
+            result[jday_tag_key] = doc[jday_tag_key]
+        else:
+            message = f"No value found for key={jday_tag_key} - may cause problems downstream"
+            result.elog.log_error(alg, message, ErrorSeverity.Complaint)
+    return result
+
 
