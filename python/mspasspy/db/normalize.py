@@ -953,6 +953,7 @@ class DataFrameCacheMatcher(BasicMatcher):
             should be subset before construction when filtering is needed.
         :type query: dict or None
         """
+        alg = "DataFrameCacheMatcher.__init__"
         self.prepend_collection_name = prepend_collection_name
         self.require_unique_match = require_unique_match
         self.custom_null_values = custom_null_values
@@ -968,34 +969,41 @@ class DataFrameCacheMatcher(BasicMatcher):
             )
         # this is a necessary sanity check
         if collection is None:
-            raise TypeError(
+            if prepend_collection_name:
+                raise TypeError(
                 "DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"
-            )
+                )
         elif isinstance(collection, str):
             self.collection = collection
 
         else:
             raise TypeError(
-                "DataFrameCacheMatcher constructor:   collection argument must be a string type"
+                "DataFrameCacheMatcher constructor:  if defined collection argument must be a string type"
             )
         # We have to reference the base class pymongo.database.Database here because
         # the MsPASS subclass name is also Database.  That make this
         # conditional fail in some uses.   Using the base class is totally
         # appropriate here anyway as no MsPASS extension methods are used
-        if not isinstance(db_or_df, (type_pdd, type_ddd, pymongo.database.Database)):
-            raise TypeError(
-                "DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle"
-            )
-        if attributes_to_load is None:
-            if load_if_defined is None:
-                raise MsPASSError(
-                    "DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined"
-                )
-            aload = list()
-            for key in db_or_df.columns:
-                aload.append(key)
+        if isinstance(db_or_df, (type_pdd, type_ddd)):
+            if attributes_to_load is None:
+                aload = db_or_df.columns.tolist()
+            else:
+                aload = attributes_to_load     
+        elif isinstance(db_or_df, pymongo.database.Database):
+            if attributes_to_load is None:
+                if load_if_defined is None:
+                    message = f'{alg}: Usage error.  attributes_to_load and load_if_defined are both default None type\n'
+                    message += 'Lists of keys must be given when using a Database to construct this object'
+                    raise ValueError(message)
+                else:
+                    aload=list()
+            else:
+                aload = attributes_to_load
+                
         else:
-            aload = attributes_to_load
+            message = f'{alg}: arg0 has invalid type={type(db_or_df)}\n'
+            message += 'arg0 must be either a DataFrame implementation or a Database object'
+            raise TypeError(message)
 
         super().__init__(
             attributes_to_load=aload,
@@ -1024,6 +1032,7 @@ class DataFrameCacheMatcher(BasicMatcher):
         null load_if_defined into one Metadata container for each
         row of the returned DataFrame.
         """
+        alg = "DataFrameCacheMatcher.find"
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger(
                 "DataFrameCacheMatcher.find",
@@ -1046,11 +1055,18 @@ class DataFrameCacheMatcher(BasicMatcher):
             # one Metadata container.
             mdlist = list()
             elog = None
-            for index, row in subset_df.iterrows():
+            for row in subset_df.itertuples():
                 md = Metadata()
-                notnulltest = row.notnull()
+                row_dict = row._asdict()
+                if hasattr(row,'Index'):
+                    index_names = subset_df.index.names
+                    index_values = row.Index if isinstance(row.Index, tuple) else (row.Index,)
+                    row_index_dict = dict(zip(index_names, index_values))
+                else:
+                   row_index_dict = dict()  
                 for k in self.attributes_to_load:
-                    if notnulltest[k]:
+                    #if notnulltest[k]:
+                    if k in subset_df.index.names or k in row_dict:
                         if k in self.aliases:
                             key = self.aliases[k]
                         else:
@@ -1062,20 +1078,25 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[k]
+                        if k in row_dict:
+                            val = row_dict[k]
+                            if pd.isnull(val):
+                                message = f'WARNING:  Found null value for attribute {k} of rquired attributes list\n'
+                                message += 'This may cause dpownstream problems'
+                                elog.log_error(alg,message,ErrorSeverity.Complaint)
+                            md[mdkey] = val
+                        else:
+                            # index entries cannot be null so no test needed here
+                            md[mdkey] = row_index_dict[k]
+                            
                     else:
-                        if elog is None:
-                            elog = PyErrorLogger()
-                        error_message = "Encountered Null value for required attribute {key} - repairs of the input DataFrame are required".format(
-                            key=k
-                        )
-                        elog.log_error(
-                            error_message,
-                            ErrorSeverity.Invalid,
-                        )
-                        return [None, elog]
+                        message = f'{alg}:  Implementation error.\n'
+                        message += 'DataFrame used as cache in this class is not internally consistent\n'
+                        message += f'Attribute {k} is defined in self.attributes_to_load but is not defined for the DataFrame self.cache\n'
+                        message += 'Likely error in implementation of abstract subset method by child of this class'
+                        raise RuntimeError(message)
                 for k in self.load_if_defined:
-                    if notnulltest[k]:
+                    if k in subset_df.index.names or k in row_index_dict:
                         if k in self.aliases:
                             key = self.aliases[k]
                         else:
@@ -1087,7 +1108,12 @@ class DataFrameCacheMatcher(BasicMatcher):
                                 mdkey = self.collection + "_" + key
                         else:
                             mdkey = key
-                        md[mdkey] = row[k]
+                        if k in subset_df.index.names:
+                            val = row_dict[k]
+                        else:
+                            val = row_index_dict[k]
+                            
+                        md[mdkey] = val
                 mdlist.append(md)
             return [mdlist, None]
 
