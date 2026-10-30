@@ -13,6 +13,7 @@ import io
 import re   # regular expression module
 import yaml
 import calendar
+import fnmatch
 import obspy
 import pandas as pd
 from abc import ABC, abstractmethod
@@ -2002,6 +2003,7 @@ def index_day(net,
               provider,
               s3_client=None,
               dask_worker_key="geolab_s3_client",
+              channel_select=None,
               collection="wf_s3",
               parse_failure_collection="s3_parse_failures",
               verbose=False,
@@ -2076,6 +2078,17 @@ def index_day(net,
        assure consistency.  
     :param dask_worker_key:  name defining s3 client for dask workers.  
        Ignore for serial jobs.
+    :param channel_select:   string defining a "standard glob pattern" 
+       for selection of channels.   By default (set None) all channels 
+       for a day will be indexed.   Use this with and expression like 
+       "BH?" or "H*" to limit channel codes indexed.   Note this 
+       has no effect with station_day payloads as available channels 
+       can only be determined by examining the payload content.  
+       For station_day formats it is almost always desirable as providers
+       like SCEDC have large numbers of channels on each data that are 
+       not normally desired (e.g. state of health channels). The index 
+       can get huge if all channels are included from providres with 
+       channel_day payloads. 
     :param collection:  MongoDB collection name to write documents created 
        by this function.  Default of "wf_s3" should be changed with caution.
     :param parse_failure_collection:  s3 object names that could not be 
@@ -2091,14 +2104,20 @@ def index_day(net,
        documents in the parse_failure_collection collection.   WARNING:  if 
        you are having parsing errors it do not run verbose with a large 
        number of days as the error output can be huge. 
-     
-    :return:  tuple of containing 3 integer values. 0 is the number of document s
-      successfully written to MongoDB and 1 is the number sent.   They should 
-      match.   Callers should test for equality and post a warning if they 
-      differ.  Component 2 is the number of failures from parsing the 
-      s3 object name to extract essential seed network codes needed for 
-      a valid wfs3 entry.   If that number gets large enable verbose 
-      to debug the problem
+       
+     :return: tuple containing a summery of results::  
+         
+         component 0 - number of documents saved to wf_s3
+         component 1 - number of s3 object names handled
+         component 2 - number dropped from parsing failures
+         component 3 - number skipped based on channel_select option
+         component 4 - dictionary of inconsistent net codes
+    
+      You should find 0+2+3 = 1.  Any content of the dictionary returne din 
+      component 4 should be viewed as bad.  If the dictionary in 4 is not 
+      empty it means there is a naming issue of s3 objects for the net 
+      codes with counts there.  The values are the number of object names 
+      with a net value encoded that does not match the net code expected.  
     """
     alg = "index_day"
     db = fetch_dbhandle(dbname_or_handle)
@@ -2114,6 +2133,7 @@ def index_day(net,
     s3objlist,auxmd = provider.get_year_day_object_names(s3_client,net,year,jday)
     doclist=list()
     number_failures=0
+    n_skipped=0
     inconsistent_net_codes = dict()
     for objname in s3objlist:
         doc = dict()
@@ -2163,6 +2183,12 @@ def index_day(net,
                 else:
                     inconsistent_net_codes[badnet] = 1
             else:
+                # apply the channel_select clause if defined
+                if "chan" in doc_from_objname and channel_select is not None:
+                    chan = doc_from_objname['chan']
+                    if not fnmatch.fnmatch(chan,channel_select):
+                        n_skipped += 1
+                        continue
                 # add any new names parsed and verify matching ones are consistent
                 for k in doc_from_objname.keys():
                     if k in doc:
@@ -2184,10 +2210,11 @@ def index_day(net,
         print("Number of s3 objects handled for this day=",len(s3objlist))
         print("Number of documents saved=",len(doclist))
         print("Number dropped from parsing errors=",number_failures)
+        print("Number of documents removed by select_channel filter=",n_skipped)
         print("Inconsistent network code counts of dropped items:")
         print_metadata(inconsistent_net_codes)
     if len(doclist)==0:
-        return [0,len(s3objlist),number_failures,inconsistent_net_codes]
+        return [0,len(s3objlist),number_failures,n_skipped,inconsistent_net_codes]
     else:
         # for some unknown reason pymongo modifies doclist content 
         # in the insert_many method.  A weird consequence is we need to 
@@ -2197,6 +2224,7 @@ def index_day(net,
         return [len(result.inserted_ids),
                 len(s3objlist),
                 number_failures,
+                n_skipped,
                 inconsistent_net_codes]
     
 def days_needed(t0, start, end, pad=100.0) -> list:
