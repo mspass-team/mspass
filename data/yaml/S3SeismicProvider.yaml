@@ -140,3 +140,21 @@ Earthscope:
         data_format: miniseed
         access:  earthscope-sdk
 
+    NN: 
+        region: us-east-2
+        bucket: earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3
+        prefix: miniseed/
+        object_format: "{net:2}/{year}/{jday:03d}/{sta}.{net:2}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  earthscope-sdk
+
+    US: 
+        region: us-east-2
+        bucket: earthscope-mseed-res-na3mtd4fq5kz7pntcyr1uh46use2a--ol-s3
+        prefix: miniseed/
+        object_format: "{net:2}/{year}/{jday:03d}/{sta}.{net:2}.{year}.{jday:03d}"
+        payload_structure: station_day
+        data_format: miniseed
+        access:  earthscope-sdk
+

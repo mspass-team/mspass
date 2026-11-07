@@ -31,10 +31,10 @@ from earthscope_sdk import EarthScopeClient
 from obspy import UTCDateTime
 
 from mspasspy.ccore.utility import MsPASSError,ErrorLogger,ErrorSeverity,Metadata 
-from mspasspy.ccore.seismic import TimeSeriesEnsemble,TimeSeriesVector
+from mspasspy.ccore.seismic import TimeSeries,TimeSeriesEnsemble,TimeSeriesVector
 from mspasspy.util.seismic import has_live_data
 from mspasspy.db.normalize import DataFrameCacheMatcher
-from mspasspy.db.database import Database
+from mspasspy.db.database import Database, elog2doc
 from mspasspy.util.converter import Trace2TimeSeries, Stream2TimeSeriesEnsemble
 from mspasspy.util.db_utils import fetch_dbhandle
 from mspasspy.util.seismic import print_metadata
@@ -44,7 +44,7 @@ from mspasspy.algorithms.signals import detrend
 #from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
 # temporary for testing - this didn't exist in io when I first pulled this branch
 # remove me and uncomment above for final use
-from s3client import GeoLabS3Worker, AnonymousS3Worker
+from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
 # for testing - will be installed eventually
 from stock import datafile
 
@@ -1104,6 +1104,8 @@ class S3SeismicProvider(BasicProvider):
         
         :param net:  net code of the network the client should be set up 
         to access.
+        :param max_pool_connections:  set boto3.Config parameter with this name to 
+           specified value.   Current default is 10 but 
         """
         # this key-value pair is not hidden behind a method.  
         # is_open could beused the access is intended to be ore open 
@@ -1113,7 +1115,11 @@ class S3SeismicProvider(BasicProvider):
             case DataAccess.open_aws_s3:
                 region=self.region(net)
                 session = boto3.Session(region_name=region)
-                s3client = session.client("s3",config=Config(signature_version=UNSIGNED))
+                s3client = session.client("s3",
+                                          config=Config(
+                                              signature_version=UNSIGNED,
+                                          )
+                                         )
             case DataAccess.earthscope_aws_s3:
                 esclient = EarthScopeClient()
                 creds = esclient.user.get_aws_credentials()
@@ -1123,7 +1129,13 @@ class S3SeismicProvider(BasicProvider):
                     aws_session_token=creds.aws_session_token.get_secret_value(),
                     region_name = self.region(net)
                 )
-                
+                s3client = session.client(
+                    "s3",
+                    config=Config(
+                        request_checksum_calculation="when_required",
+                        response_checksum_validation="when_required",
+                    ),
+                )
             case _:
                 message = f'S3SeismicProvider.s3client:  access velue = {access} not supported\n'
                 message += 'Must be one of:  open, earthscope-sdk'
@@ -1144,18 +1156,26 @@ class S3SeismicProvider(BasicProvider):
         defined in the objects self attributes.   When running parallel 
         jobs the way this should be used is a variant of the following:
             
-        ..code-block:: python
+        .. code-block:: python
         
-          # instantiate an instance of this object - change myconfiguration.yaml as appropriate
-          provider = S3SeismicProvider('mmyconfiguration.yaml')
-          for net in provider.networks():
-              provider.initialize_dask_workers(net)
+           # instantiate an instance of this object - change myconfiguration.yaml as appropriate
+           provider = S3SeismicProvider('mmyconfiguration.yaml')
+           for net in provider.networks():
+               provider.initialize_dask_workers(net)
               
         For single net code providers like SCEDC the loop is not necessary
         and a more rational approach is to only run this method for net 
-        codes your workflow actually requires.   
+        codes your workflow actually requires.   When a provider like Earthscope 
+        serves multiple net codes it is a bit inefficient to define multiple worker
+        plugins for each net code, but that is a necessary evil to separate different 
+        classes of data Earthscope serves.  That is, open data with anonymous access,
+        other open data, and temporary net codes for experimental data with a proprietary 
+        access time period.  
+
+        TODO:   Plugins need an argument to set max_pool_connections.  That may or may not be
+        a performance bottleneck with dask
         
-        :param client:  client to that defines the dask cluster to use.
+        :param client:  client that defines the dask cluster to use.
         :type client:  Can be either a mspasspy.client.Client 
            (what we call a MsPASS client) or a dask.distributed.Client 
            object (what we commonly call a dask client).  If anything else 
@@ -1173,17 +1193,28 @@ class S3SeismicProvider(BasicProvider):
         if net not in self.networks():
             message = f'{alg}:  provider={self.provider} does not have data for net code={net}'
             raise ValueError(message)
-        worker_key = f"S3client_{net}"
+        worker_key = self.get_worker_key(net)
         access = self.access(net)
         match access:
             # note default is not needed for this match block as we can't get 
             # here without a valid access value being set via the access method
+            # TODO:  These were temporarily changed to work on GeoLab - these have been updated
             case DataAccess.open_aws_s3:
-                plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
-                dask_client.register_client(plugin)
+                plugin = AnonymousS3Client(key=worker_key)
+                #plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
+                dask_client.register_plugin(plugin)
             case DataAccess.earthscope_aws_s3:
-                plugin = GeoLabS3Worker(key=worker_key,region=self.region(net))
-                dask_client.register_client(plugin)
+                plugin = GeoLabS3Worker(key=worker_key)
+                #plugin = GeoLabS3Worker(key=worker_key,region=self.region(net))
+                dask_client.register_plugin(plugin)
+    def get_worker_key(self,net):
+        """
+        Fetch worker key to use for parallel processing for network code net.  
+        Just returns what the key should be.  It doesn't test if a worker plugin 
+        with that keys is actually available.   Use is mainly to put that 
+        definition in one place to make this code more maintainable. 
+        """
+        return f"S3client_{net}"
                 
     def leaf_content(self,s3client,doc,server_data_key="server_data",)->list:
         """
@@ -1538,7 +1569,30 @@ class S3SeismicProvider(BasicProvider):
             raise ValueError(message)
         try:
             with io.BytesIO(rawbytes) as buffer:
-                stream = obspy.read(buffer, format=fmt)
+                try:
+                    stream = obspy.read(buffer, format=fmt)
+                except TypeError as te:
+                    message = f"obspy.read threw a TypeError with this message:  {te}."
+                    match ptype:
+                        case PayloadType.station_day:
+                            baddata=TimeSeriesEnsemble() # assume default constructor result is marked dead
+                            baddate.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                        case PayloadType.channel_day:
+                            baddate = TimeSeries()
+                            baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                    del rawbytes
+                    return baddata
+                except Exception as ex:
+                    message = f"obspy.read threw an unexpected exception with this content:  {ex}"
+                    match ptype:
+                        case PayloadType.station_day:
+                            baddata=TimeSeriesEnsemble() # assume default constructor result is marked dead
+                            baddate.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                        case PayloadType.channel_day:
+                            baddate = TimeSeries()
+                            baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
+                    del rawbytes
+                    return baddata
             del rawbytes
             match ptype:
                 case PayloadType.station_day:
@@ -1566,11 +1620,10 @@ class S3SeismicProvider(BasicProvider):
             if auxmd is not None:
                 mspass_object += auxmd
         except Exception as e:
-            message = f'{alg}:  Something threw an unexpected exception this message\n{e}'
+            mspass_object = TimeSeriesEnsemble()
+            message = f'Something threw an unexpected exception with this message\n{e}'
+            mspass_object.elog.log_error(alg,message,ErrorSeverity.Invalid)
         return mspass_object
-
-
-
 
     def objname2doc(self, net: str, objname: str, verbose: bool=False) -> dict:
         """
@@ -1978,9 +2031,9 @@ def is_dask_client(obj) -> bool:
     import the monster dask.distributed module.  
     """
     # Check class name and module path without requiring dask to be pre-imported
-    return (
-        type(obj).__name__ == "Client"
-        and type(obj).__module__ == "dask.distributed.client"
+    return any(
+        cls.__name__ == "Client" and cls.__module__.startswith("distributed")
+        for cls in type(obj).mro()
     )
 def is_mspass_client(obj) -> bool:
     """
@@ -2301,7 +2354,7 @@ def build_day_processing_blocks(
     end,
     dbname_or_handle,
     pad=100.0,
-    channel_select="B*",
+    channel_select=None,
     maxdays=2,
     collection="wf_s3",
     auxkeys=["source_id"],
@@ -2325,7 +2378,7 @@ def build_day_processing_blocks(
     that some events will be split across day volumes in the rare situation
     where the set of arrival times for that event cross a day boundary.
 
-    To handle that complexity the output is a list of lists.   The
+    To handle the complexity of day volume groupings the output is a list of lists.   The
     outer list of the return is of the form:
         [data_list, error_list]
     The content of "data_list" is itself a list of pairs (2 element array/list)
@@ -2339,16 +2392,14 @@ def build_day_processing_blocks(
     needed as a necessary evil as an error return.   Because the input to
     this function is normally huge the list of failures can also be huge.
     Simply printing every failure can overwhelm the jupyter server when this
-    is run on GeoLab (the expectation).   The list is a list of MongoDB
-    queries that yield no data.  The caller should handle it appropriately.
-    The expectation at present is to save the content as a pickle file
-    in the run directory for later inspection.
+    is run on GeoLab (the norm).   The list is a list of MongoDB
+    queries that yielded no data.  The caller should handle it appropriately.
 
     This function uses the DataFrame api in combination with pymongo
-    bo build the output.  It assumes an index to the earthscope s3
+    to build the output.  It assumes an index to the earthscope s3
     archive already existss for the time period to be handled.
     That index is expected to live in a collection defined by the
-    "collction" argument (default is "wf_s3").
+    "collection" argument (default is "wf_s3").
 
     The input DataFrame must contain the following required attributes:
       'time' - either a theoretical or measured arrival time used as a basis for
@@ -2390,15 +2441,50 @@ def build_day_processing_blocks(
     As noted any valid data match key defined by "auxdata" will also be
     posted to those documents.
 
-    Finally, note the 'arrivals' dictionaries each contain a 'time' attribute
+    Finally, note the 'arrivals' dictionaries must each contain a 'time' attribute
     that defines the arrival time from which a window is computed.
     Any other data in tha dictionary is treated as auxiliary Metadata that
     is to be copied to the output.  Note downstream uses of that aux
     data must handle it carefully to make sure the contents do not contain
     metadata that conflict with metadata used inside children of
-    BasicTimeSeries data (e.g. starttime).  Also note the start end
-    range will be modified from input by pad value.
+    BasicTimeSeries data (e.g. starttime).  Also note the start to end
+    range will be modified by a pad value.
 
+    :param df:   input DataFrame that is the table of required (see above) attribute
+    :type df:  pandas DataFrame
+    :param start:  time relative to each arrival time for defining start of data time windows.
+       Critical to realize this is relative to an arrival time but the output are converted 
+       to absolute times.
+    :type start:  float
+    :param end:  time relative to each arrival time for defining end of data time windows.
+       Critical to realize this is relative to an arrival time but the output are converted 
+       to absolute times.
+    :type end:  float
+    :param dbname_or_handle:  like the name says either a Database object for serial processing 
+       or a database name for parallel processing.  Which you use much match the model 
+       (serial or parallel) or the function will fail.   This function is normally run serial 
+       as a data preparation for input to a parallel workflow.
+    :type dbname_or_handle: Database object or a string defining database to be used.
+    :param pad:  Each time window defined in output will be extended by pad seconds on each end.
+      i.e. if T is the arrival time the time window will be [T+start-pad,T+end+pad].
+    :type pad:  float (default 100.0)
+    :param channel_select:  When defined only channels matching the glob string this defines 
+      will be included in s3 object lists.  WARNING: never use this parameter with a provider
+      who packages data as station-days as channels are not known in the index collection.  
+      You will silently get nothing and corresponding rows in the dataframe will be in 
+      the error list.
+    :type channel_list:  default is None meaning it is ignored.  Otherwise an str defining a
+      unix style glob wildcard string. 
+    :param maxdays:  maximum number of days to load per transaction.   Default of 2 should 
+      be used unless you are aiming to extract very long time series from low sample rate
+      data.  
+    :type maxdays:  integer (default 2 should not be changed except for special cases)
+    :parameter collection:  MongoDB collection name where the s3 index is stored.   
+    :type collection:  string (default "wf_s3" should not be change except for special cases.)
+    :param auxkeys:  list of Metadata keys to be extracted from the DataFrame and written to output
+      documents.  As noted above use this list to push metadata not in standard miniseed files to 
+      be associated with output waveform segment that are derived from the output of this function.
+    :type auxkeys:  list of str values defining df keys to copy (default ["source_id"])
     """
     db = fetch_dbhandle(dbname_or_handle)
     df = df.sort_values("time")
@@ -2439,6 +2525,8 @@ def build_day_processing_blocks(
             {tuple(day) for days in gdf["yrdaylist"] for day in days}
         )
         query = {"$or": [{"year": yr, "jday": day} for yr, day in required_days]}
+        if channel_select is not None:
+            query["chan"] = {"$regex" : fnmatch.translate(channel_select)}
         holdings = {}
         for holding in db[collection].find(query):
             holdings.setdefault((holding["net"], holding["sta"]), []).append(holding)
@@ -2572,7 +2660,14 @@ def merge_channels(tsvector,
         sta = md['sta']
         if "loc" not in md:
             loc=""
-        return f"_{sta}_{loc}_"
+        else:
+            loc = md['loc']
+        if "chan" in md:
+            chan = md['chan']
+            key = f"_{sta}_{chan}_{loc}_"
+        else:
+            key = f"_{sta}_{loc}_"
+        return key
     index = dict()
     i = 0
     for ts in tsvector:
@@ -2580,7 +2675,9 @@ def merge_channels(tsvector,
         if key in index:
             val = index[key] 
             val.append(i)
-            index[key] = val 
+            index[key] = val
+        else:
+            index[key] = [i]
         i += 1
     result = TimeSeriesVector()
     for key in index:
@@ -2599,7 +2696,7 @@ def merge_channels(tsvector,
                    fix_overlaps=fix_overlaps,
                    zero_gaps=zero_gaps,
                    )
-        result.append(ts)
+            result.append(ts)
         # manually clear the debris here as tgese cab be large
         del tsv_k
     # note result may contain dead bodies from merge failures
@@ -2613,8 +2710,8 @@ def get_s3_segments(
     chanlist=None,
     preferences=None,
     obspy_select_string=None,
-    metadata_copy_list=None,
-    detrend_type="None",
+    auxmd_key="arrival",
+    detrend_type="constant",
     short_segment_handling="kill",
     fix_overlaps=True,
     zero_gaps=False,
@@ -2622,20 +2719,192 @@ def get_s3_segments(
 ) -> TimeSeriesEnsemble:
     """
     Companion to build_day_processing_blocks to load data defined by 
-    each document that function creates.  
+    each document that function creates.  It returns a TimeSeriesEnsemble 
+    containing one or more time segments carved from day files 
+    defined by a list of object names defined in the input doc.   
     
-    
-    
-    Low level function to take content of doc, which is assumed to
-    be a componet of the output of run_by_days, and return a
-    TimeSeries ensemble of waveform segments the doc defines.
-    
-    
-    TODO:   needs a generic way to handle lists of metadata when 
-    multiple segments are loaded from day volumes.  prototype used a
-    list linked to a particular key, but tha seems a bit complex for the 
-    average user to handle.  That is the fallback but need some 
-    thought on alternatives. Currently set as fixed key "segment_metadata"
+    This function has to handle a number of complications to work 
+    consistently in as generic a manner as possible:
+        
+        1.  Needs to behave the same run serial or parallel.  That is 
+            handled with the fetch_s3_client function.
+        2.  providers can return multiple payload types.  currently that 
+            reduces to station_day and channel_day.   That is a huge 
+            complication as they need to be treated differently.   The 
+            logic of the function aims to create a consistent bundle of 
+            waveform objects that are then segmented to create the 
+            output ensemble. 
+        3.  The way to handle auxiliary metadata to be pushed to the 
+            outputs is not trivial.   Item 2 complicates the issue but 
+            the key point is to be most useful segmented data almost 
+            always need auxiliary metadata to avoid nasty association 
+            problems downstream.  A perfect example is if the segments 
+            are event data you always need a way to provide some metadata
+            that defines the source (either the actual hypocenter or an id).
+            To make that clean auxilliary metadata must be defined by 
+            a list of dictionary objects inside doc that can be 
+            accessed with the key defined by the`auxmd_key` argument.  
+            Note that must yield a list with one document per 
+            segment defined by the "start" and "end" keys.  There is 
+            currently no way to associate input global auxiliary metadata. 
+            i.e. Metadata that would be posted to the output ensemble's 
+            Metadata container.   I (GLP) don't see why one would want that
+            so it is not currently a feature of this function.  
+            
+    This function was designed to be stateless so it could serve as 
+    input to a lambda service on AWS.   For the same reason it was designed 
+    to be as bombproof as possible.  It will throw an exception only 
+    for usage errors that would cause all calls to the function to fail. 
+    Otherise it use the MsPASS model of returning something with an ErrorLogger 
+    container that describes what went wrong.  In this case, that means 
+    this function always returns a TimeSeriesEnsemble.  If that ensemble 
+    is marked dead the problems can be found in the ensembles ErrorLogger 
+    container and/or dead members.   The following conditions can 
+    result in total or partial failures:
+        
+        1.  If the required key "s3objects" is missing or has an empty list 
+            a dead ensemble with no data is returned.
+        2.  Five keys are required in doc.  If any of them are missing 
+            an emtpy ensemble with appropriate error messages is returned.  
+            The required keys are:  "net","sta","start", and "end"
+        3.  The "start" and "end" keys must define lists of the same length. 
+            Note that length is the length of segment intervals to extract 
+            not the number of objects the function needs to handle.  This
+            function will extract time windows defined by the 
+            range of each pair (start[i],end[i]).
+        4.  A partial failure can occur related to the "auxmd_key" argument.  
+            The expectation is that doc[auxmd_key] will return a list of 
+            python dictionary (aka MongoDB document) objects.  The purpose of 
+            that list is to add critical Metadata that is not part of a 
+            miniseed format data stream.  Type examples for segmenting data 
+            are source data for event data or something more exotic like 
+            PP bound point coordinates.   The key point is waveform segments 
+            derived from miniseed data almost always require additional 
+            Metadata for them to be used in the workflow for which the 
+            segments are being created.  The list of dictionaries defined 
+            by the auxmd_key attribute is where you put that data to be
+            load with the correct segment (intervals define by "start" and "end" list).  
+            With that long winded background the condition the function handles 
+            is it demands the length of the list returned by doc[auxmd_key]
+            match the lenghts of lists returned by doc["start"] and doc["end"].
+            the reason is the contents of the ith auxmd are posted to the ith 
+            waveform segment extracted from the continuous data.
+
+    Normal procedure should be to separate the living from the dead in returns 
+    from this function.   We recommend writing the Metadata from dead data to 
+    MongoDB with the "handle_s3_read_errors" function found in this module.  
+    A sample code fragment to do that is:
+
+      .. code-block:: python
+
+         d = get_s3_segments(doc,provider)
+         if d.dead():
+             handle_s3_read_errors(d)
+         else:
+             # save d or run additional processing functions on d 
+        
+            
+    A final complication of note is channel filtering.   Most FDSN networks 
+    today provide a long list of possible channels of data they store in 
+    continuous day objects.  One almost never want all of them for cutting 
+    up into waveform segments with this function.   There are three different 
+    ways to handle this.   You should only define one, but that rule is not 
+    enforced.  If you define more than one they will be processed in 
+    this order which also defines briefly what they do:
+        
+        1. chanlist - filters the data by a specific list of channel codes.  
+           For example, ["HH1","HH2","HHZ"]
+        2. obspy_select_string is a "glob" expression that will be passed to 
+           the obspy Stream.select method created as an intermediate 
+           container inside the function.   Note that string is passed to the 
+           "channel=" select clause for Stream.   This approach is most useful 
+           for providers that store data in station-day objects.   For 
+           providers that save  channel-day objects it is preferable to 
+           make sure the s3objects list is clean to start with as this 
+           method does not work well in that situation. 
+        3. The most elaborate method is to use the `preferences` argument. 
+           That requires an instance of a `ChannelPreferences` object.  
+           That allows more elaborate filtering with a hierarchy of channel 
+           choices.  See the docstring for that class in this same module
+           for usage and concepts. 
+            
+    :param doc:  dictionary like container holding key-value pairs that define 
+       how to create a set of waveform segments from one or more days of 
+       continuous waveform s3 object day volumes.  The following keys 
+       must be defined in doc or the function will immediately return an 
+       empty, dead TimeSeriesEnsemble: "net", "sta", "start", and "end".
+       Further the length of segment start and end times ("start" and "end")
+       values must be equal and are assumed to be pairs defining intervals 
+       to extract. 
+    :type doc:  dictionary like container 
+    :param provder: S3SeismicProvider object that knows how to handle 
+       data the object names defined by the values defined by doc["s3objects"].
+    :type doc:  S3SeismicProvider object.  A type check is made and if this 
+       arg is anything else a ValueError exception is thrown. 
+    :param s3_client: In a serial workflow it should be just what the 
+       name suggests - an instance of a boto3 Client configured to 
+       access data defined by provider.  Note in a serial workflow best 
+       practice is to create this once before the retrieve loop using 
+       the `s3client` method of provider.   For parallel workflows the 
+       default None should be used. 
+    :type s3_client:  a valid boto3 Client object or None. 
+    :param dask_worker_key:   if this key is set the job is assumed to be 
+       running on a worker in a dask cluster.  In that case it assumes
+       a worker plugin has been generated that holds a valid client that 
+       can be fetch with this key.  
+    :type dask_worker_key:  str
+    :param chanlist:  optional list of channels to handle.   If set it is 
+       assumed to be a list of seed channel codes to use to filter the 
+       input.   
+    :type chanlist:  iterable container of strings or None. None (default) 
+       that option for cleaning output is disabled. 
+    :param obspy_select_string:  glob expression to pass to obspy.Stream.select 
+       to filter out a limited subset of data.  Should be used only for 
+       providers that serve station-day objects.
+    :type obspby_select_string:  str if None (default) that option is disabled.
+    :param preferences:  filter data using a `ChannelPreferences` object.
+    :type preferences:  must be a `ChannelPreferences` object or None.  If 
+       None this option is disabled.
+    :param auxmd_key:  doc[auxmd_key] is expected to contain a list of 
+       dictionaries of the same lengh as doc["start"] and doc["end"].
+       the contents are copied to the ith segment extraced from the 
+       continuous waveforms loaded into memory during processing with this function. 
+    :type auxmd_key:  str.  Default is "Arrival".  Note if this key is not 
+       found no auxiliary metadata is loaded so if there is no auxiliary 
+       metadata to load the default is harmless.  
+    :param detrend_type:  It is nearly always wise to detrend continuous 
+       data before segmentation.   The reason is that the long time series 
+       of a full day provides solid statistics on dc offsets.  For that 
+       reason the default is "constant" which removes an estimet of a dc 
+       offset from the data before cutting segments.  If you cant the 
+       default it must match this list defined by the obspy detrend 
+       function as it is passed directly to the "type" kwarg of that function. 
+       (Note the function actually uses the mspass wrapper that runs the obspy function).
+    :type detrend_type:  str (default "constant")
+    :param short_segement_handling:  Defines how to handle various issues 
+       that can happen when extracting waveform segments from a longer 
+       time series.  The value is passed directly to the `WindowData` funtion 
+       with say key for the kwarg.  See the docstring for `WindowData` for 
+       allowed values. 
+    :type short_segment_handling: str (default "kill")
+    :param fix_overlaps:  When the range of the segments defined by the "start"="end"
+       lists span multiple days this function needs to glue (merge) day files 
+       before cutting out the segments.  A complication there there can be a 
+       data problem with time jerks where the day files overlap at the day 
+       boundary.   The value set by this argument is passed to a kwarg 
+       with the same name in the mspass merge function where is referenced. 
+    :type fix_overlaps:  boolean.  When True (default) merge will try to 
+       repair overlapping waveforms.  If set False data with near overlaps 
+       may be dropped.  This is a rare problem and you should accept the 
+       default unless you have a problem running with this enabled.  
+    :param zero_gaps:  A more common problem with continuous data are data 
+       gaps from various ideosyncacies of data acquisition systems.  
+       When this is set True, any datas will be filled with zeroes before 
+       segmentation.  When False (default) the input will be segmented and 
+       any time segments containing a data gap will be dropped.  
+    :param jday_tag_key:  normally the year and day are posted as a string 
+       "year_jday" (e.g. "2010_020") with this key.  Users should not 
+       normally expect to need to change this argument default.
     """
     alg = "get_s3_segments"
     IMMUTABLE_METADATA = [
@@ -2662,30 +2931,69 @@ def get_s3_segments(
     # a workflow using this function if they are thrown by this function.
     _validate_selection_method(alg, chanlist, preferences, obspy_select_string)
     # defined here so if the strm is empty we return a default
-    # constructed ensemble with error log content
+    # constructed ensemble with error log content.  Not this assumes 
+    # default constructor initializes the ensemble as marked dead
     result = TimeSeriesEnsemble()
+    # all payloads must define this set of metadata or we return a dead 
+    # ensemble error messages posted
+    missing_required_keys=list()
+    if "start" in doc:
+        stlist=doc["start"]
+    else:
+        missing_required_keys.append("start")
+    if "end" in doc:
+        etlist=doc["end"]
+    else:
+        missing_required_keys.append("end")
+    if "net" not in doc:
+        missing_required_keys.append("net")
+    if "sta" not in doc:
+        missing_required_keys.append("sta")
+        if len(missing_required_keys)>0:
+            message = "The following required keys were missing from input dictionary: {missing_required_keys}"
+            result.elog.log_error(alg,message,ErrorSeverity.Invalid)
+            return result
     # assume net is defined as none of this works without it 
     net = doc['net']
     # Always add the bucket name to the doc so it will be saved for both success and failure
     bucket = provider.bucket(net)
     doc["Bucket"] = bucket
-    # need this in loop below to control behavior 
-    payload_type = provider.payload_type(net)
-    # always put this in the ensemble metadata so there is always a way to identify a problem child
-    auxmd = Metadata()
-    auxmd["s3_request_document"] = doc
-    if metadata_copy_list is not None:
-        for k in metadata_copy_list:
-            if k in doc and k not in IMMUTABLE_METADATA:
-                auxmd[k] = doc[k]
-                
     s3objects = doc["s3objects"]
     if len(s3objects) == 0:
         message = "Request document had no entries in the list defined by the s3objects key"
         result.elog.log_error(alg, message, ErrorSeverity.Invalid)
         return result
+    # This validation may not be necessary but make it more bombproof
+    if len(stlist)!=len(etlist):
+        message = f"Start time list length {len(stlist)} and end time list length {len(etlist)} do not match"
+        result.elog.log_erro(alg,message,ErrorSeverity.Invalid)
+        return result
+    # guarantee auxmd_list always exists.  Fill it will null dictionaries 
+    # if it isn't defined or there are problems
+    nsegs = len(stlist)
+    if auxmd_key in doc:
+        auxmd_list = doc[auxmd_key]
+        if len(auxmd_list) != nsegs:
+            message = f'Inconsistent content for key={auxmd_key}.\n'
+            message += f'Expected list of dictionaries of length {nsegs} but found {len(auxmd_list)} items.\n'
+            message += 'Auxiliary metadata will be set null for any data returned in this ensemble'
+            result.elog.log_error(alg,message,ErrorSeverity.Complaint)
+            auxmd_list=list()
+            for i in range(nsegs):
+                auxmd_list.append(dict())    
+    else:
+        auxmd_list=list()
+        for i in range(nsegs):
+            auxmd_list.append(dict())
+
+        
     alldata=TimeSeriesVector()
-    for s3key in s3objects:
+    # need this in loop below to control behavior 
+    payload_type = provider.payload_type(net)
+    nobjects = len(s3objects)
+
+    for i in range(nobjects):
+        s3key = s3objects[i]
         rawbytes,elog = provider.get_raw_object_data(s3_client,
                                                      net,
                                                      s3key,
@@ -2695,61 +3003,60 @@ def get_s3_segments(
             # push the entires there to the empty, dead ensemble and 
             # return that in this condition
             result.elog += elog
-            return result 
-        
-        match payload_type:
-            case PayloadType.channel_day:
-                daydata = provider.decode_waveform_data(rawbytes,net,auxmd=auxmd)
-                # in this case daydata is a TimeSeries so we just append it if live
-                if daydata.live:
-                    alldata.append(daydata)
-            case PayloadType.station_day:
-                daydata = provider.decode_waveform_data(rawbytes,
-                                                    net,
-                                                    chanlist=chanlist,
-                                                    preferences=preferences,
-                                                    obspy_select_string=obspy_select_string,
-                                                    auxmd=auxmd,
-                                                    )
-                # here daydata is an ensemble so we need a loop 
-                for d in daydata.member:
-                    if d.live:
-                        alldata.append(d)
-            case _:
-                message = f'{alg}:  S3SeismicProvider defined an illegal Payload_type = {payload_type}\n'
-                message += f'Error in S3SeismicProfider likely for net code={net}'
-                raise ValueError(message)
-    # now we have to handle merging data if the data span multiple days
-    if len(s3objects)>1:
-        match payload_type:
-            case PayloadType.channel_day:
-                # this logic handles the case where only  one of expected 
-                # mulltiple days were actually loaded
-                if len(alldata)>1:
-                    d = merge(alldata,
-                              fix_overlaps=fix_overlaps,
-                              zero_gaps=zero_gaps,
-                              )
-                alldata = TimeSeriesVector()
-                alldata.append(d)
-            case PayloadType.station_day:
-                alldata = merge_channels(alldata,
-                                         fix_overlaps=fix_overlaps,
-                                         zero_gaps=zero_gaps,
-                                         )
+            continue
+        daydata = provider.decode_waveform_data(rawbytes,
+                                            net,
+                                            chanlist=chanlist,
+                                            preferences=preferences,
+                                            obspy_select_string=obspy_select_string,
+                                            )
+        # if decode_waveform_data fails it returns a data with no useful data 
+        # but messages in elog we need to preserve.  Because both ensembles 
+        # and TimeSeries have an elog container and the live concept we don't 
+        # need to handle the distinction for dead data.
+        if daydata.elog.size()>0:
+            result.elog += daydata.elog
+        if daydata.live:
+            match payload_type:
+                case PayloadType.station_day:
+                    # daydata returned is an ensemble so we push all live 
+                    # members to alldata list
+                    for d in daydata.member:
+                        if d.live:
+                            # push a copy to assure safe delete below
+                            alldata.append(TimeSeries(d))
+                case PayloadType.channel_day:
+                    if daydata.live:
+                        alldata.append(TimeSeries(daydata))
+        del rawbytes
+        del daydata
+    # alldata is a raw list of data we have loaded.  We now have to 
+    # sort out which channels we want to keep and if necessary glue 
+    # multiple day segments together.  This common function works 
+    # for all cases that land here
+    alldata = merge_channels(alldata,
+                             fix_overlaps=fix_overlaps,
+                             zero_gaps=zero_gaps,
+                             )
+                
     # alldata should now contain one or more continuous time series 
     # that we can cut up using the time windows defined by the input 
     # document
     if detrend_type in ("simple", "constant", "linear", "polynomial", "spline"):
         for i in range(len(alldata)):
             alldata[i] = detrend(alldata[i], type=detrend_type)
-    result = TimeSeriesEnsemble(len(alldata))
-    stlist = doc["start"]
-    etlist = doc["end"]
-    # this should maybe be optional
-    segmdlist = doc['segment_metadata']
+    result["s3_request_document"] = doc
+    # make sure all auxmd content is kosher and create a lst of Metadata objects 
+    # for auxiliary metadata for each segment
+    segmdlist=list()
+    for i in range(nsegs):
+        md=Metadata()
+        for k in auxmd_list[i]:
+            if k not in IMMUTABLE_METADATA:
+                md[k] = auxmd_list[i][k]
+        segmdlist.append(md)
     # assume stlist and etlist are always the same size
-    for i in range(len(stlist)):
+    for i in range(nsegs):
         stime = stlist[i]
         etime = etlist[i]
         segmd = segmdlist[i]
@@ -2759,10 +3066,9 @@ def get_s3_segments(
                                  etime,
                                  short_segment_handling=short_segment_handling,
                                  )
-            # append the living and the dead to allow sorting out after the funeral
             for k in segmd:
-                if k not in IMMUTABLE_METADATA:
-                    d_seg_i[k] = segmd[i]
+                d_seg_i[k] = segmd[k]
+            # append the living and the dead to allow sorting out after the funeral
             result.member.append(d_seg_i)
     # alldata can be huge so delete it now since we are done with hit
     del alldata
@@ -2776,3 +3082,28 @@ def get_s3_segments(
     return result
 
 
+def handle_s3_read_errors(mspass_object,
+                          dbhandle_or_name,
+                          collection="s3_read_failures",
+                         ):
+    """
+    Standardize handling of any failures to read an s3 object.  
+
+    Cracking s3 data objects and converting them to useful seismic data can fail in many 
+    different ways.   In this module all data dependent errors (i.e. problems with a single 
+    data object and not a usage error) are caught and informational messages are posted to 
+    a (dead) mspass seismic data object.  The definition of what that means for this 
+    function is that it has an `ErrorLogger` object in it referenced with the symbold "elog".  
+    This function acts a bit like the MsPASS Undertaker but the difference here is the 
+    data it handles were never constructed successfully.  (A bit like an "abortion" in concept 
+    but from failures at a different level.)   In any case, what is preserved in the 
+    collection (default "s3_read_failures") is a copy of mspass_object's Metadata container 
+    and a dump of the elog container.   The idea of this function is it provides a way to 
+    recover failed data if possible without rerunning an entire huge data assembly workflow. 
+
+    """
+    db = fetch_dbhandle(dbhandle_or_name)
+    doc = dict(mspass_object)
+    elogdoc = elog2doc(mspass_object.elog)
+    doc['elog_content'] = elogdoc
+    db[collection].insert_one(doc)
