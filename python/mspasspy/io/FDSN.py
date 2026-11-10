@@ -30,6 +30,8 @@ from botocore.exceptions import ClientError
 from earthscope_sdk import EarthScopeClient
 from obspy import UTCDateTime
 
+from bson import ObjectId
+
 from mspasspy.ccore.utility import MsPASSError,ErrorLogger,ErrorSeverity,Metadata 
 from mspasspy.ccore.seismic import TimeSeries,TimeSeriesEnsemble,TimeSeriesVector
 from mspasspy.util.seismic import has_live_data
@@ -38,13 +40,14 @@ from mspasspy.db.database import Database, elog2doc
 from mspasspy.util.converter import Trace2TimeSeries, Stream2TimeSeriesEnsemble
 from mspasspy.util.db_utils import fetch_dbhandle
 from mspasspy.util.seismic import print_metadata
-from mspasspy.io.s3client import fetch_s3_client
+#from mspasspy.io.s3client import fetch_s3_client
+from s3client import fetch_s3_client,GeoLabS3Worker, AnonymousS3Worker
 from mspasspy.algorithms.window import merge, WindowData
 from mspasspy.algorithms.signals import detrend
 #from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
 # temporary for testing - this didn't exist in io when I first pulled this branch
 # remove me and uncomment above for final use
-from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
+#from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
 # for testing - will be installed eventually
 from stock import datafile
 
@@ -919,10 +922,13 @@ class S3SeismicProvider(BasicProvider):
         """
         query = {"provider" : provider}
         doc = db[collection].find_one(query)
+
         if doc is None:
             message = f"S3SeismicProvider constructor:  collection={collection} has no documents for provider={provider}"
             raise ValueError(message)
-        return cls(doc, provider=provider)
+        # need to repackage doc to mate with class constructor
+        doc2add={provider : doc}
+        return cls(doc2add, provider=provider)
     def _from_dict(self, doc: dict, key: str):
         """
         this one does the actual work - all other factory methods are wrappers
@@ -932,6 +938,17 @@ class S3SeismicProvider(BasicProvider):
             raise ValueError(message)
         self.provider = key
         self.nets = doc[key]
+    def dbsave(self, db: Database, collection: str="S3Provider")->ObjectId:
+        """
+        This is more-or-less the inverse of self.from_database. It saves
+        the attributes that define this object to MongoDB database db 
+        with optional collection name (default matches from_datatase).
+        """
+        doc={"provider": self.provider}
+        doc["nets"] = self.nets
+        # for this context let ths throw an exception if it fails
+        insout = db.insert_one(doc)
+        return insout.inserted_id
     def networks(self)->list:
         """
         Return a list of net codes served by this provider.
@@ -1071,13 +1088,17 @@ class S3SeismicProvider(BasicProvider):
         useful to end users.   The return is a class that is a child of enum 
         to allow cleaner limits on the allowed values.   
         """
+        alg="S3SeismicProvider.access"
+        if net not in self.nets.keys():
+            message = f"{alg}:  This provider={self.provider} does not supply data for net code={net}"
+            raise ValueError(message)
         if 'access' in self.nets[net]:
             access = self.nets[net]['access']
         else:
             # let earhscope be the default
-            access = 'earthscope-sdk'
-            print(f"S3SeismicProvider.access:  Warning, {self.provider} access value is not defined for network code={net} ")
-            print("Using default='earthscope'")
+            access = 'open_s3'
+            print(f"{alg}:  Warning, {self.provider} access value is not defined for network code={net} ")
+            print("Using default of open data")
         match access:
             # insist on qualifiers in case other open data portals come 
             # into existence.  Note the weird python anomaly of needing the 
@@ -1088,7 +1109,7 @@ class S3SeismicProvider(BasicProvider):
             case "earthscope-sdk":
                 return DataAccess.earthscope_aws_s3
             case _:
-                message = f"S3SeismicProvider.access:  illegal value provided for access={access} for net code {net}.  Fix configuration in yaml file or Database"
+                message = f"{alg}:  illegal value provided for access={access} for net code {net}.  Fix configuration in yaml file or Database"
                 raise ValueError(message)
 
     def s3client(self,net):
@@ -1198,9 +1219,8 @@ class S3SeismicProvider(BasicProvider):
         match access:
             # note default is not needed for this match block as we can't get 
             # here without a valid access value being set via the access method
-            # TODO:  These were temporarily changed to work on GeoLab - these have been updated
             case DataAccess.open_aws_s3:
-                plugin = AnonymousS3Client(key=worker_key)
+                plugin = AnonymousS3Worker(key=worker_key)
                 #plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
                 dask_client.register_plugin(plugin)
             case DataAccess.earthscope_aws_s3:
@@ -1576,24 +1596,21 @@ class S3SeismicProvider(BasicProvider):
                     match ptype:
                         case PayloadType.station_day:
                             baddata=TimeSeriesEnsemble() # assume default constructor result is marked dead
-                            baddate.elog.log_error(alg,message,ErrorSeverity.Invalid)
-                        case PayloadType.channel_day:
-                            baddate = TimeSeries()
                             baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
-                    del rawbytes
+                        case PayloadType.channel_day:
+                            baddata = TimeSeries()
+                            baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
                     return baddata
                 except Exception as ex:
                     message = f"obspy.read threw an unexpected exception with this content:  {ex}"
                     match ptype:
                         case PayloadType.station_day:
                             baddata=TimeSeriesEnsemble() # assume default constructor result is marked dead
-                            baddate.elog.log_error(alg,message,ErrorSeverity.Invalid)
-                        case PayloadType.channel_day:
-                            baddate = TimeSeries()
                             baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
-                    del rawbytes
+                        case PayloadType.channel_day:
+                            baddata = TimeSeries()
+                            baddata.elog.log_error(alg,message,ErrorSeverity.Invalid)
                     return baddata
-            del rawbytes
             match ptype:
                 case PayloadType.station_day:
                     # note the logic her only works because we guarantee 
@@ -3107,3 +3124,60 @@ def handle_s3_read_errors(mspass_object,
     elogdoc = elog2doc(mspass_object.elog)
     doc['elog_content'] = elogdoc
     db[collection].insert_one(doc)
+    
+class Dispatcher:
+    """
+    Container for working with requests that access multiple providers. 
+    
+    A large data request often needs to hit multiple s3 data providers.  
+    This object is a simple container to provide access to the right 
+    provider for a particular network.   
+    """
+    def __init__(self,
+                 netlist:list,
+                 provider_names=None,
+                 db=None,
+                 file="S3SeismicProvider.yaml",
+                 ):
+        """
+        Construct from a list of net codes passed with arg0(netlist).
+        Default will read from default yaml file.  Change the file 
+        name to read from a custom yaml file.  Alternately, if the 
+        configuration data has been loaded into MongoDB use the db 
+        argument.   When db is set it always overrides file input. 
+        """
+        alg = "Dispatcher__init__"
+        tuplist = list()
+        self.nets=dict()
+        if provider_names is None:
+            for net in netlist:
+                tuplist.append((net,"Earthscope"))
+        else:
+            if len(provider_names) != len(netlist):
+                message = f'{alg}:  length of provider_names list={len(provider_names)} does not match length of network codes={len(netlist)}'
+                raise ValueError(message)
+            else:
+                for i in range(len(netlist)):
+                    tuplist.append((netlist[i],provider_names[i]))
+                
+        # TODO  needs arg sanity checks
+        for netcode,provider in tuplist:
+            if db is None:
+                this_provider = S3SeismicProvider.from_file(file,provider)
+            else:
+                this_provider = S3SeismicProvider.from_database(db,provider)
+            self.nets[netcode] = this_provider
+    def provider(self,net:str):
+        if net in self.nets:
+            return self.nets[net]
+        else:
+            message = f"Dispatcher.provider:  no provider available for net code={net}"
+            raise ValueError(message)
+    def add_net(self, net:str, provider:S3SeismicProvider):
+        self.nets[net] = provider
+    def initialize_dask_workers(self,dask_client):
+        for netcode in self.nets.keys():
+            provider = self.nets[netcode]
+            provider.initialize_dask_workers(dask_client,netcode)
+    def netcodes(self)->list:
+        return self.nets.keys()
