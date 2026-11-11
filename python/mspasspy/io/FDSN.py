@@ -3131,13 +3131,20 @@ class Dispatcher:
     
     A large data request often needs to hit multiple s3 data providers.  
     This object is a simple container to provide access to the right 
-    provider for a particular network.   
+    provider for a particular network.   It is the access point most 
+    users will likely use to fetch FDSN miniseed data with MsPASS.  
+    A good way to think of this is the S3SeismicProvider objects are the 
+    metadata that define the properties of a data provider that supplie
+    data on S3.  This object is used to fetch the handles needed to 
+    interact with that provider.  
     """
     def __init__(self,
                  netlist:list,
-                 provider_names=None,
+                 preferred_provider_file:str ="PreferredS3SeismicProviders.yaml",
+                 provider_file:str="S3SeismicProvider.yaml",
                  db=None,
-                 file="S3SeismicProvider.yaml",
+                 parallel=False,
+                 dask_client=None,
                  ):
         """
         Construct from a list of net codes passed with arg0(netlist).
@@ -3147,37 +3154,137 @@ class Dispatcher:
         argument.   When db is set it always overrides file input. 
         """
         alg = "Dispatcher__init__"
-        tuplist = list()
-        self.nets=dict()
-        if provider_names is None:
-            for net in netlist:
-                tuplist.append((net,"Earthscope"))
-        else:
-            if len(provider_names) != len(netlist):
-                message = f'{alg}:  length of provider_names list={len(provider_names)} does not match length of network codes={len(netlist)}'
-                raise ValueError(message)
+        self.parallel=parallel
+        ymlpath = datafile(preferred_provider_file)
+        with open(ymlpath,"r") as fh:
+            preferences = yaml.safe_load(fh)
+        # TODO:  trap undefined dask-client when parallel is True
+        self.providers=dict()
+        # this will have data only if parallel is set True
+        self.s3clients=dict()
+        for net in netlist:
+            if net in preferences:
+                provider_name=preferences[net]
             else:
-                for i in range(len(netlist)):
-                    tuplist.append((netlist[i],provider_names[i]))
-                
-        # TODO  needs arg sanity checks
-        for netcode,provider in tuplist:
+                provider_name="Earthscope"
+                print(f"{alg}(WARNING):  net code {net} was not found in {preferred_provider_file}.  Defaulting to 'Earthscope'")
             if db is None:
-                this_provider = S3SeismicProvider.from_file(file,provider)
+                this_provider = S3SeismicProvider.from_file(provider_file,provider_name)
             else:
-                this_provider = S3SeismicProvider.from_database(db,provider)
-            self.nets[netcode] = this_provider
+                this_provider = S3SeismicProvider.from_database(db,provider_name)
+            self.providers[net] = this_provider
+            if parallel:
+                this_provider.initialize_dask_workers(dask_client, net)
+            if not parallel:
+                self.s3clients[net] = this_provider.s3client(net)
+        
     def provider(self,net:str):
-        if net in self.nets:
-            return self.nets[net]
+        """
+        Return the Provider object for requested network code.  
+        
+        This method with throw a ValueError exception if not provider
+        has been defined for net.
+        """
+        if net in self.providers:
+            return self.providers[net]
         else:
             message = f"Dispatcher.provider:  no provider available for net code={net}"
             raise ValueError(message)
-    def add_net(self, net:str, provider:S3SeismicProvider):
-        self.nets[net] = provider
+    def add_net(self, net:str, provider:S3SeismicProvider,dask_client=None):
+        """
+        Add a new provider to an already constructed Dispatcher object. 
+        
+        Sometimes it may be useful to add support for a new network of the 
+        fly after a Dispatcher object is constructed.  Use this method 
+        to add data for a new net code.  Not if that net code had previously 
+        been defined this method will silently replace it with the new data
+        passed through the args. 
+        
+        :param net:  network code to attached to provider.
+        :param provider:  Instance of an S3SeismicProvider to be associated
+           with this net coce.   
+        :param dask-client:  require if the object was initialized in 
+          parallel mode.  If running serial this argument will be silenetly 
+          ignored.  If the object is running parallel it must be given as 
+          a valid dask.distributed.Client or the method will throw a 
+          RuntimeError.
+        """
+        alg = "Dispatcher.add_net"
+        if isinstance(provider,S3SeismicProvider):
+            self.providers[net] = provider
+        else:
+            message = f'{alg}:  Illegal type for arg1 (provider)={type(provider)}.\n'
+            message += 'Must be an instance of an S3SeismicProvider object'
+            raise ValueError(message)
+        if self.parallel:
+            if is_dask_client(dask_client):
+                provider.initialize_dask_workers(dask_client, net)
+            else:
+                message = f'{alg}:  illegal type for argument dask_client={type(dask_client)}\n'
+                message += 'Must be an instance of a dask client (output of mspass_client.get_scheduler)'
+                raise RuntimeError(message)
+        else:
+            self.s3clients[net] = provider.s3client(net)
+    def s3client(self,net:str):
+        """
+        Return the s3client that can be used to access data for given net code.
+        
+        In serial data downloading from s3 we always need a client to 
+        handle the interactions with s3.  This standardizes access for 
+        serial operations.   This method should only be used for serial 
+        processing.  If the object was initialized on construction as 
+        a parallel engine (specifying parallel=True in the constructor) 
+        calls to this method by an object running parallel will throw a
+        RuntimeError and abort your workflow.  That is because in a parallel 
+        setting the clients are cached to workers by running the 
+        `initialize_dask_workers` method.  
+        """
+        alg = "Dispatcher.s3client"
+        if self.parallel:
+            message = f'{alg}:  illegal request\n'
+            message += 'Dispatcher was constructed in parallel mode so request for s3client is not allowed\n'
+            raise RuntimeError(message)
+        if net in self.s3clients:
+            return self.s3clients[net]
+        else:
+            message = f'{alg}:  no s3 client has been defined for net={net}'
+            raise ValueError(message)
     def initialize_dask_workers(self,dask_client):
+        """
+        Initialize s3 for parallel operations. 
+        
+        When this object is used in parallel operations the cluster needs 
+        to first be initialized to handle the expected connections.   In 
+        MsPASS we do that through a worker plugin with different implementations 
+        for different types of s3 access.   That information is defined 
+        in the provider objects stored in the attributes of this object, 
+        but before running a parallel data operation this method needs to 
+        be run to set up the worker plugins.  
+        
+        This behaves like the s3client method in that it will abort 
+        immediately with a RuntimeError exception if the object was constructed 
+        in a way inconsistent with the call to this function.  In this case 
+        that means the object must have been constructed with the option 
+        `parallel=True`.  
+        
+        :param dask_client:  instance of a dask distributed client.   
+          Normal MsPASS operation fetches this with the `get_scheduler` 
+          method of the mspass client.  The method will throw a ValueError
+          exception if there is a type mismatch.
+        """
+        alg = "Dispatcher.initialize_dask_workers"
+        if not self.parallel:
+            message = f'{alg}:  illegal request\n'
+            message += 'Dispatcher was constructed in serial mode so request to run this method is not allowed\n'
+            raise RuntimeError(message)
+        if not is_dask_client(dask_client):
+            message = f'{alg}:  arg0 must be an instance of a dask_client.\n'
+            message = f'Received value of type={type(dask_client)}'
         for netcode in self.nets.keys():
             provider = self.nets[netcode]
             provider.initialize_dask_workers(dask_client,netcode)
     def netcodes(self)->list:
-        return self.nets.keys()
+        """
+        Returns a list of net codes this object has been configured the handle.
+        """
+        return self.providers.keys()
