@@ -819,7 +819,7 @@ def safe_parse(format_str: str, objname: str, extra_types: dict = None) -> dict:
 
     try:
         parser = parse.compile(format_str, extra_types=extra_types)
-    except parse.RepeatNameError as e:
+    except parse.RepeatedNameError as e:
         message = f"Conflicting repeated field names in format string '{format_str}'\n"
         message += f"RepeatNameError content: {e}"
         raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
@@ -1278,7 +1278,7 @@ class S3SeismicProvider(BasicProvider):
             dask_client = client
         else:
             message = f"{alg}:  client(arg0) must be either a mspass client or a dask client\n"
-            message = "Received an object of type={type(client)}"
+            message += f"Received an object of type={type(client)}"
             raise ValueError(message)
         if net not in self.networks():
             message = f"{alg}:  provider={self.provider} does not have data for net code={net}"
@@ -2212,7 +2212,7 @@ def index_day(
     dbname_or_handle,
     provider,
     s3_client=None,
-    dask_worker_key="geolab_s3_client",
+    dask_worker_key=None,
     channel_select=None,
     collection="wf_s3",
     parse_failure_collection="s3_parse_failures",
@@ -2286,8 +2286,9 @@ def index_day(
        appropriate for this network code.  Normal use for serial jobs
        should be to create one from the provider.s3client method to a
        assure consistency.
-    :param dask_worker_key:  name defining s3 client for dask workers.
-       Ignore for serial jobs.
+    :param dask_worker_key:  optional override of the worker plugin key.
+       Defaults to the key registered by provider.initialize_dask_workers.
+       Ignored for serial jobs.
     :param channel_select:   string defining a "standard glob pattern"
        for selection of channels.   By default (set None) all channels
        for a day will be indexed.   Use this with and expression like
@@ -2332,9 +2333,14 @@ def index_day(
     alg = "index_day"
     db = fetch_dbhandle(dbname_or_handle)
     if s3_client is None:
+        worker_key = (
+            provider.get_worker_key(net)
+            if dask_worker_key is None
+            else dask_worker_key
+        )
         s3_client = fetch_s3_client(
             parallel=True,
-            worker_data_key=dask_worker_key,
+            worker_data_key=worker_key,
         )
     elif not is_s3_client(s3_client):
         message = f"{alg}:  Illegal value for s3_client argument={type(s3_client)}\n"
@@ -2882,7 +2888,7 @@ def get_s3_segments(
     doc,
     provider,
     s3_client=None,
-    dask_worker_key="geolab_s3_client",
+    dask_worker_key=None,
     chanlist=None,
     preferences=None,
     obspy_select_string=None,
@@ -3024,11 +3030,10 @@ def get_s3_segments(
        the `s3client` method of provider.   For parallel workflows the
        default None should be used.
     :type s3_client:  a valid boto3 Client object or None.
-    :param dask_worker_key:   if this key is set the job is assumed to be
-       running on a worker in a dask cluster.  In that case it assumes
-       a worker plugin has been generated that holds a valid client that
-       can be fetch with this key.
-    :type dask_worker_key:  str
+    :param dask_worker_key:  optional override of the registered Dask worker
+       plugin key.  By default uses provider.get_worker_key(net) when
+       s3_client is not supplied.
+    :type dask_worker_key:  str or None
     :param chanlist:  optional list of channels to handle.   If set it is
        assumed to be a list of seed channel codes to use to filter the
        input.
@@ -3091,15 +3096,6 @@ def get_s3_segments(
         "utc_convertible",
         "time_standard",
     ]
-    if s3_client is None:
-        s3_client = fetch_s3_client(
-            parallel=True,
-            worker_data_key=dask_worker_key,
-        )
-    elif not is_s3_client(s3_client):
-        message = f"{alg}:  Illegal value for s3_client argument={type(s3_client)}\n"
-        message += "Must be a boto3 client object"
-        raise ValueError(message)
     if not isinstance(provider, S3SeismicProvider):
         message = f"{alg}:  provider (arg1) is type={type(provider)}.   Must be a S3SeismicProvider object"
         raise ValueError(message)
@@ -3111,26 +3107,18 @@ def get_s3_segments(
     # constructed ensemble with error log content.  Not this assumes
     # default constructor initializes the ensemble as marked dead
     result = TimeSeriesEnsemble()
-    # all payloads must define this set of metadata or we return a dead
-    # ensemble error messages posted
-    missing_required_keys = list()
-    if "start" in doc:
-        stlist = doc["start"]
-    else:
-        missing_required_keys.append("start")
-    if "end" in doc:
-        etlist = doc["end"]
-    else:
-        missing_required_keys.append("end")
-    if "net" not in doc:
-        missing_required_keys.append("net")
-    if "sta" not in doc:
-        missing_required_keys.append("sta")
-        if len(missing_required_keys) > 0:
-            message = "The following required keys were missing from input dictionary: {missing_required_keys}"
-            result.elog.log_error(alg, message, ErrorSeverity.Invalid)
-            return result
-    # assume net is defined as none of this works without it
+    # Validate requests before opening an S3 client, especially on Dask workers.
+    required_keys = ("start", "end", "net", "sta", "s3objects")
+    missing_required_keys = [key for key in required_keys if key not in doc]
+    if missing_required_keys:
+        message = (
+            "The following required keys were missing from input dictionary: "
+            f"{missing_required_keys}"
+        )
+        result.elog.log_error(alg, message, ErrorSeverity.Invalid)
+        return result
+    stlist = doc["start"]
+    etlist = doc["end"]
     net = doc["net"]
     # Always add the bucket name to the doc so it will be saved for both success and failure
     bucket = provider.bucket(net)
@@ -3145,8 +3133,21 @@ def get_s3_segments(
     # This validation may not be necessary but make it more bombproof
     if len(stlist) != len(etlist):
         message = f"Start time list length {len(stlist)} and end time list length {len(etlist)} do not match"
-        result.elog.log_erro(alg, message, ErrorSeverity.Invalid)
+        result.elog.log_error(alg, message, ErrorSeverity.Invalid)
         return result
+    if s3_client is None:
+        worker_key = (
+            provider.get_worker_key(net)
+            if dask_worker_key is None
+            else dask_worker_key
+        )
+        s3_client = fetch_s3_client(
+            parallel=True,
+            worker_data_key=worker_key,
+        )
+    elif not is_s3_client(s3_client):
+        message = f"{alg}: illegal s3_client of type {type(s3_client)}"
+        raise ValueError(message)
     # guarantee auxmd_list always exists.  Fill it will null dictionaries
     # if it isn't defined or there are problems
     nsegs = len(stlist)
@@ -3456,10 +3457,10 @@ class Dispatcher:
             message += "Dispatcher was constructed in serial mode so request to run this method is not allowed\n"
             raise RuntimeError(message)
         if not is_dask_client(dask_client):
-            message = f"{alg}:  arg0 must be an instance of a dask_client.\n"
-            message = f"Received value of type={type(dask_client)}"
-        for netcode in self.nets.keys():
-            provider = self.nets[netcode]
+            raise ValueError(
+                f"{alg}: expected a dask.distributed.Client; got {type(dask_client)}"
+            )
+        for netcode, provider in self.providers.items():
             provider.initialize_dask_workers(dask_client, netcode)
 
     def netcodes(self) -> list:

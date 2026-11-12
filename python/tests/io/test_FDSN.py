@@ -7,14 +7,18 @@ import pandas as pd
 import pytest
 import yaml
 
+import mspasspy.io.FDSN as fdsn_module
 from mspasspy.ccore.seismic import TimeSeries, TimeSeriesEnsemble
 from mspasspy.ccore.utility import Metadata, MsPASSError
 from mspasspy.io.FDSN import (
     ChannelPreferences,
     DataAccess,
+    Dispatcher,
     EnsembleMatcher,
     S3SeismicProvider,
     clean_ensemble,
+    get_s3_segments,
+    index_day,
     is_s3_client,
     parse_format_string,
     safe_parse,
@@ -250,3 +254,115 @@ def test_format_parsing_preserves_fields_and_diagnostics():
     }
     with pytest.raises(MsPASSError, match="safe_parse"):
         safe_parse("net/{net}", "different/prefix")
+
+def test_mismatched_repeated_parse_fields_report_mspass_error():
+    # parse exports RepeatedNameError (not RepeatNameError).
+    with pytest.raises(MsPASSError, match="Conflicting repeated field names"):
+        safe_parse("{net}/{net:d}", "XX/02")
+
+
+@pytest.mark.parametrize("missing", ["start", "end", "net", "sta", "s3objects"])
+def test_segments_reject_missing_fields_before_s3_access(provider, monkeypatch, missing):
+    fetch_client = Mock(side_effect=AssertionError("must not access S3"))
+    monkeypatch.setattr(fdsn_module, "fetch_s3_client", fetch_client)
+    doc = {
+        "start": [0.0],
+        "end": [10.0],
+        "net": "XX",
+        "sta": "AAA",
+        "s3objects": ["archive/dummy.ms"],
+    }
+    del doc[missing]
+
+    result = get_s3_segments(doc, provider)
+
+    assert result.elog.size() > 0
+    assert missing in str(result.elog.get_error_log())
+    fetch_client.assert_not_called()
+
+
+def test_segments_reject_mismatched_windows_without_s3_access(provider, monkeypatch):
+    fetch_client = Mock(side_effect=AssertionError("must not access S3"))
+    monkeypatch.setattr(fdsn_module, "fetch_s3_client", fetch_client)
+    result = get_s3_segments(
+        {
+            "start": [0.0, 10.0],
+            "end": [5.0],
+            "net": "XX",
+            "sta": "AAA",
+            "s3objects": ["archive/dummy.ms"],
+        },
+        provider,
+    )
+
+    assert result.elog.size() > 0
+    assert "do not match" in str(result.elog.get_error_log())
+    fetch_client.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "key,expected", [(None, "S3client_XX"), ("custom-key", "custom-key")]
+)
+def test_index_day_resolves_registered_worker_key(provider, monkeypatch, key, expected):
+    monkeypatch.setattr(fdsn_module, "fetch_dbhandle", lambda _: {})
+    fake_client = object()
+    fetch_client = Mock(return_value=fake_client)
+    monkeypatch.setattr(fdsn_module, "fetch_s3_client", fetch_client)
+    list_objects = Mock(return_value=([], {}))
+    monkeypatch.setattr(provider, "get_year_day_object_names", list_objects)
+
+    summary = index_day(
+        "XX",
+        2026,
+        15,
+        "unused",
+        provider,
+        dask_worker_key=key,
+    )
+
+    assert summary == [0, 0, 0, 0, {}]
+    fetch_client.assert_called_once_with(parallel=True, worker_data_key=expected)
+    list_objects.assert_called_once_with(fake_client, "XX", 2026, 15)
+
+
+def test_segments_resolves_registered_worker_key(provider, monkeypatch):
+    fetch_client = Mock(side_effect=RuntimeError("captured worker access"))
+    monkeypatch.setattr(fdsn_module, "fetch_s3_client", fetch_client)
+
+    with pytest.raises(RuntimeError, match="captured worker access"):
+        get_s3_segments(
+            {
+                "start": [0.0],
+                "end": [10.0],
+                "net": "XX",
+                "sta": "AAA",
+                "s3objects": ["archive/dummy.ms"],
+            },
+            provider,
+        )
+
+    fetch_client.assert_called_once_with(
+        parallel=True, worker_data_key="S3client_XX"
+    )
+
+
+def test_dispatcher_initializes_registered_providers_and_rejects_bad_clients(
+    provider, monkeypatch
+):
+    dispatcher = object.__new__(Dispatcher)
+    dispatcher.parallel = True
+    dispatcher.providers = {"XX": provider}
+    valid_client = object()
+    monkeypatch.setattr(
+        fdsn_module,
+        "is_dask_client",
+        lambda client: client is valid_client,
+    )
+    initializer = Mock()
+    monkeypatch.setattr(provider, "initialize_dask_workers", initializer)
+
+    dispatcher.initialize_dask_workers(valid_client)
+    initializer.assert_called_once_with(valid_client, "XX")
+
+    with pytest.raises(ValueError, match="dask.distributed.Client"):
+        dispatcher.initialize_dask_workers(object())
