@@ -216,7 +216,9 @@ double scale_ensemble(mspass::seismic::Ensemble<Tdata> &d,
     amps.reserve(d.member.size());
     for (dptr = d.member.begin(); dptr != d.member.end(); ++dptr) {
       double amplitude;
-      if (dptr->dead())
+      // A live but empty trace cannot define an amplitude.  PeakAmplitude
+      // on an empty vector may abort instead of raising a C++ exception.
+      if (dptr->dead() || dptr->npts() == 0)
         continue;
       switch (method) {
       case ScalingMethod::Peak:
@@ -259,7 +261,7 @@ double scale_ensemble(mspass::seismic::Ensemble<Tdata> &d,
     double dscale = level / avgamp;
     /* Now scale the data and apply calib */
     for (dptr = d.member.begin(); dptr != d.member.end(); ++dptr) {
-      if (dptr->live()) {
+      if (dptr->live() && dptr->npts() > 0) {
         double calib;
         (*dptr) *= dscale;
         if (dptr->is_defined(scale_factor_key)) {

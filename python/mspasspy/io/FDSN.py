@@ -608,14 +608,19 @@ def clean_ensemble(ens, chanpref, require_3C=True):
         d = ens.member[i]
         if d.live:
             if "net" in d and "sta" in d:
-                doc = {"net": d["net"], "sta": d["sta"]}
-                if "chan" in d:
-                    doc["chan"] = d["chan"]
-                if "loc" in d:
-                    doc["loc"] = d["loc"]
-                doc["member_index"] = i
+                if "chan" not in d:
+                    continue
+                doc = {
+                    "net": d["net"],
+                    "sta": d["sta"],
+                    "chan": d["chan"],
+                    "loc": d["loc"] if "loc" in d else "",
+                    "member_index": i,
+                }
                 doclist.append(doc)
     df = pd.DataFrame(doclist)
+    if not doclist:
+        return ensout
     matcher = EnsembleMatcher(df, matchkeys=["net", "sta"])
     # create a set of all unique net-sta combinations
     netsta = dict()
@@ -646,10 +651,11 @@ def clean_ensemble(ens, chanpref, require_3C=True):
             else:
                 # initialize a list with empty dictionaries
                 # we fill in the dictionaries with mdlist
-                MAXCODES = 5
-                this_sta = list()
-                for i in range(MAXCODES):
-                    this_sta.append(dict())
+                try:
+                    maxcodes = len(chanpref.preference(net, sta, "X"))
+                except KeyError:
+                    continue
+                this_sta = [dict() for _ in range(maxcodes)]
                 for md in mdlist:
                     chan = md["chan"]
                     if "loc" in md:
@@ -670,7 +676,7 @@ def clean_ensemble(ens, chanpref, require_3C=True):
                 # the logic of this loop is a bit weird and maybe could
                 # be done a cleaner way
                 members2keep = list()
-                for i in range(MAXCODES):
+                for i in range(maxcodes):
                     comps = this_sta[i]
                     # these two conditionals could be combined with an or
                     # but this layout makes the logic clearer
