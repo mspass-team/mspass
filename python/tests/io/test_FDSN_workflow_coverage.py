@@ -96,9 +96,7 @@ def test_s3_read_returns_bytes_and_closes_stream(provider, include_prefix):
     assert elog.size() == 0
     assert body.closed
     expected_key = "archive/key.ms" if include_prefix else "key.ms"
-    client.get_object.assert_called_once_with(
-        Bucket="example-bucket", Key=expected_key
-    )
+    client.get_object.assert_called_once_with(Bucket="example-bucket", Key=expected_key)
 
 
 @pytest.mark.parametrize(
@@ -211,9 +209,7 @@ def test_object_name_roundtrip_and_secondary_component_parse(provider):
     assert parsed["chan"] == "BHZ"
     assert parsed["loc"] == "00"
 
-    pieces = provider.split_and_parse(
-        "{net}/{year:04d}/{net}", "XX/2026/YY", "/"
-    )
+    pieces = provider.split_and_parse("{net}/{year:04d}/{net}", "XX/2026/YY", "/")
     assert pieces["net"] == "XX"
     assert pieces["net_v2"] == "YY"
     assert pieces["year"] == 2026
@@ -257,11 +253,13 @@ def test_index_day_separates_bad_names_filtered_channels_and_mismatched_nets(
         "ok2": {"net": "XX", "sta": "BBB", "chan": "BHN", "loc": "00"},
     }
     monkeypatch.setattr(
-        provider, "get_year_day_object_names",
+        provider,
+        "get_year_day_object_names",
         lambda *args: (objects, {"server_data": {"request": 3}}),
     )
     monkeypatch.setattr(
-        provider, "objname2doc",
+        provider,
+        "objname2doc",
         lambda net, name, verbose=False: parser_results[name].copy(),
     )
     db = {"wf_s3": Mock(), "s3_parse_failures": Mock()}
@@ -328,9 +326,7 @@ def test_processing_blocks_group_arrivals_without_duplicate_day_objects(
     ]
     assert len(request["start"]) == len(request["end"]) == 2
     assert request["jday_tag"] == "2026_15"
-    assert failed == [
-        {"net": "XX", "sta": "BBB", "$or": [{"year": 2026, "jday": 15}]}
-    ]
+    assert failed == [{"net": "XX", "sta": "BBB", "$or": [{"year": 2026, "jday": 15}]}]
 
 
 def test_processing_blocks_reject_excessive_day_span(monkeypatch):
@@ -499,9 +495,7 @@ def test_dispatcher_uses_configurations_and_exposes_serial_provider(
     preferred_path = tmp_path / "preferred.yaml"
     preferred_path.write_text("XX: Demo\n", encoding="utf-8")
     providers_path = tmp_path / "providers.yaml"
-    providers_path.write_text(
-        yaml.safe_dump({"Demo": provider.nets}), encoding="utf-8"
-    )
+    providers_path.write_text(yaml.safe_dump({"Demo": provider.nets}), encoding="utf-8")
     client = s3_client()
     monkeypatch.setattr(fdsn.S3SeismicProvider, "s3client", lambda self, net: client)
 
