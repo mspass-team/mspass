@@ -226,7 +226,7 @@ def test_day_calculation_handles_leap_year_midnight_and_invalid_time():
         [2024, 366],
         [2025, 1],
     ]
-    assert fdsn.days_needed(float(UTCDateTime(2026, 1, 15)), 0, 10, pad=0) == [
+    assert fdsn.days_needed(UTCDateTime(2026, 1, 15).timestamp, 0, 10, pad=0) == [
         [2026, 15]
     ]
     with pytest.raises(ValueError, match="illegal type"):
@@ -237,7 +237,7 @@ def test_day_calculation_handles_leap_year_midnight_and_invalid_time():
 
 def test_day_calculation_returns_all_days_across_longer_year_boundaries():
     t0 = UTCDateTime(2023, 12, 31, 23, 59, 0)
-    result = fdsn.days_needed(t0, 0, 366 * 86400, pad=0)
+    result = fdsn.days_needed(t0, 0, 367 * 86400, pad=0)
     assert result[0] == [2023, 365]
     assert [2024, 366] in result
     assert result[-1][0] == 2025
@@ -292,7 +292,7 @@ def test_index_day_separates_bad_names_filtered_channels_and_mismatched_nets(
 def test_processing_blocks_group_arrivals_without_duplicate_day_objects(
     monkeypatch,
 ):
-    epoch = float(UTCDateTime(2026, 1, 15, 12))
+    epoch = UTCDateTime(2026, 1, 15, 12).timestamp
     events = pd.DataFrame(
         [
             {"time": epoch + 40, "net": "XX", "sta": "AAA", "source_id": "event1"},
@@ -336,7 +336,7 @@ def test_processing_blocks_group_arrivals_without_duplicate_day_objects(
 def test_processing_blocks_reject_excessive_day_span(monkeypatch):
     monkeypatch.setattr(fdsn, "fetch_dbhandle", lambda value: {})
     events = pd.DataFrame(
-        [{"time": float(UTCDateTime(2026, 1, 15)), "net": "XX", "sta": "AAA"}]
+        [{"time": UTCDateTime(2026, 1, 15).timestamp, "net": "XX", "sta": "AAA"}]
     )
     with pytest.raises(ValueError, match="maxdays"):
         fdsn.build_day_processing_blocks(
