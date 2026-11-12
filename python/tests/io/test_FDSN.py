@@ -81,7 +81,11 @@ def test_channel_preferences_reject_missing_default(tmp_path):
     path = tmp_path / "bad.yaml"
     path.write_text(
         yaml.safe_dump(
-            {"XX": {"AAA": {"X": ["BH1 00 40"], "Y": ["BH2 00 40"], "Z": ["BHZ 00 40"]}}}
+            {
+                "XX": {
+                    "AAA": {"X": ["BH1 00 40"], "Y": ["BH2 00 40"], "Z": ["BHZ 00 40"]}
+                }
+            }
         ),
         encoding="utf-8",
     )
@@ -149,15 +153,20 @@ def test_clean_ensemble_handles_missing_station_metadata(preferences):
 
 
 def test_provider_object_name_uses_explicit_and_blank_location(provider):
-    assert provider.day_volume_object_name(
-        "XX", "AAA", 2026, 15, "BHZ", "00"
-    ) == "archive/2026/2026_015/XXAAA_BHZ_00.ms"
-    assert provider.day_volume_object_name(
-        "XX", "AAA", 2026, 15, "BHZ", None
-    ) == "archive/2026/2026_015/XXAAA_BHZ__.ms"
-    assert provider.day_volume_object_name(
-        "XX", "AAA", 2026, 15, "BHZ", "00", include_prefix=False
-    ) == "2026/2026_015/XXAAA_BHZ_00.ms"
+    assert (
+        provider.day_volume_object_name("XX", "AAA", 2026, 15, "BHZ", "00")
+        == "archive/2026/2026_015/XXAAA_BHZ_00.ms"
+    )
+    assert (
+        provider.day_volume_object_name("XX", "AAA", 2026, 15, "BHZ", None)
+        == "archive/2026/2026_015/XXAAA_BHZ__.ms"
+    )
+    assert (
+        provider.day_volume_object_name(
+            "XX", "AAA", 2026, 15, "BHZ", "00", include_prefix=False
+        )
+        == "2026/2026_015/XXAAA_BHZ_00.ms"
+    )
     with pytest.raises(ValueError, match="chan"):
         provider.day_volume_object_name("XX", "AAA", 2026, 15)
 
@@ -203,9 +212,7 @@ def test_provider_from_file_uses_yaml_definition(tmp_path, provider):
 def test_s3_client_validation_handles_missing_service_model():
     assert not is_s3_client(None)
     assert not is_s3_client(SimpleNamespace(meta=SimpleNamespace()))
-    assert not is_s3_client(
-        SimpleNamespace(meta=SimpleNamespace(service_model=None))
-    )
+    assert not is_s3_client(SimpleNamespace(meta=SimpleNamespace(service_model=None)))
 
 
 def test_leaf_content_paginates_and_deduplicates_objects(provider):
