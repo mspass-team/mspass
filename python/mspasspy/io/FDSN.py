@@ -2334,9 +2334,7 @@ def index_day(
     db = fetch_dbhandle(dbname_or_handle)
     if s3_client is None:
         worker_key = (
-            provider.get_worker_key(net)
-            if dask_worker_key is None
-            else dask_worker_key
+            provider.get_worker_key(net) if dask_worker_key is None else dask_worker_key
         )
         s3_client = fetch_s3_client(
             parallel=True,
@@ -3137,9 +3135,7 @@ def get_s3_segments(
         return result
     if s3_client is None:
         worker_key = (
-            provider.get_worker_key(net)
-            if dask_worker_key is None
-            else dask_worker_key
+            provider.get_worker_key(net) if dask_worker_key is None else dask_worker_key
         )
         s3_client = fetch_s3_client(
             parallel=True,

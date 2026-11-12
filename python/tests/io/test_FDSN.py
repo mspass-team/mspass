@@ -255,6 +255,7 @@ def test_format_parsing_preserves_fields_and_diagnostics():
     with pytest.raises(MsPASSError, match="safe_parse"):
         safe_parse("net/{net}", "different/prefix")
 
+
 def test_mismatched_repeated_parse_fields_report_mspass_error():
     # parse exports RepeatedNameError (not RepeatNameError).
     with pytest.raises(MsPASSError, match="Conflicting repeated field names"):
@@ -262,7 +263,9 @@ def test_mismatched_repeated_parse_fields_report_mspass_error():
 
 
 @pytest.mark.parametrize("missing", ["start", "end", "net", "sta", "s3objects"])
-def test_segments_reject_missing_fields_before_s3_access(provider, monkeypatch, missing):
+def test_segments_reject_missing_fields_before_s3_access(
+    provider, monkeypatch, missing
+):
     fetch_client = Mock(side_effect=AssertionError("must not access S3"))
     monkeypatch.setattr(fdsn_module, "fetch_s3_client", fetch_client)
     doc = {
@@ -341,9 +344,7 @@ def test_segments_resolves_registered_worker_key(provider, monkeypatch):
             provider,
         )
 
-    fetch_client.assert_called_once_with(
-        parallel=True, worker_data_key="S3client_XX"
-    )
+    fetch_client.assert_called_once_with(parallel=True, worker_data_key="S3client_XX")
 
 
 def test_dispatcher_initializes_registered_providers_and_rejects_bad_clients(
