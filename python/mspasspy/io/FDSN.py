@@ -1719,7 +1719,9 @@ class S3SeismicProvider(BasicProvider):
                     ]
                     mspass_object = Stream2TimeSeriesEnsemble(stream)
                     if chanlist is not None:
-                        mspass_object = self._select_channels_by_list(mspass_object, chanlist)
+                        mspass_object = self._select_channels_by_list(
+                            mspass_object, chanlist
+                        )
                     if preferences is not None:
                         mspass_object = clean_ensemble(mspass_object, preferences)
                 case PayloadType.channel_day:

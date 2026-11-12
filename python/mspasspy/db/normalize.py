@@ -1163,7 +1163,9 @@ class DataFrameCacheMatcher(BasicMatcher):
             )
         )
         # Index/MultiIndex fields must not be replaced by synthetic null columns.
-        columns = [key for key in fulllist if key in df.columns or key not in df.index.names]
+        columns = [
+            key for key in fulllist if key in df.columns or key not in df.index.names
+        ]
         self.cache = df.reindex(columns=columns).copy()
         if self.custom_null_values is not None:
             for col, nul_val in self.custom_null_values.items():
