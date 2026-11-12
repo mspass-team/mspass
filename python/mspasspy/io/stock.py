@@ -1,37 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Oct 18 05:18:47 2026
+"""Locate packaged or user-supplied MsPASS data files."""
 
-@author: pavlis
-"""
 import os
 from pathlib import Path
 
 
 def datafile(dfname, filetype="yaml", verbose=False) -> Path:
-    # build search path
-    searchpath = list()
-    nextpath = Path(".").resolve()
-    searchpath.append(nextpath)
-    nextpath = nextpath / "data"
-    nextpath = nextpath / filetype
+    """Find a readable file in the working directory or MsPASS data locations."""
+    cwd = Path.cwd()
+    searchpath = [cwd, cwd / "data" / filetype]
     if "MSPASS_HOME" in os.environ:
-        nextpath = Path(os.environ["MSPASS_HOME"]).resolve()
-        searchpath.append(nextpath)
-    nextpath = Path(__file__).resolve().parent.parent
-    nextpath = nextpath / "data"
-    nextpath = nextpath / filetype
-    searchpath.append(nextpath)
-    # now work though this list until we find a file that exists
-    # and is writable
-    for p in searchpath:
-        f2test = p / dfname
+        home = Path(os.environ["MSPASS_HOME"]).expanduser().resolve()
+        searchpath.extend([home, home / "data" / filetype])
+    searchpath.append(Path(__file__).resolve().parent.parent / "data" / filetype)
+
+    for directory in searchpath:
+        candidate = directory / dfname
         if verbose:
-            print("Trying path=", f2test)
-        if f2test.is_file() and os.access(f2test, os.R_OK):
-            return f2test
-    message = f"datafile:  could not find file {dfname}.  List of directories search:\n"
-    for p in searchpath:
-        message += f"{p}\n"
-    raise FileNotFoundError(message)
+            print("Trying path=", candidate)
+        if candidate.is_file() and os.access(candidate, os.R_OK):
+            return candidate
+
+    searched = "\n".join(str(directory) for directory in searchpath)
+    raise FileNotFoundError(
+        f"datafile: could not find file {dfname}. Searched:\n{searched}"
+    )

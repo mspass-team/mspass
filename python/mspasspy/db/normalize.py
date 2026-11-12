@@ -1011,103 +1011,77 @@ class DataFrameCacheMatcher(BasicMatcher):
         self._load_dataframe_cache(df)
 
     def find(self, mspass_object) -> list:
-        """
-        DataFrame generic implementation of find method.
-
-        This method uses content in any part of the mspass_object
-        (data object) to subset the internal DataFrame cache to
-        return subset of tuples matching some condition defined
-        computed through the abstract (virtual) methdod subset.
-        It then copies entries in attributes_to_load and when not
-        null load_if_defined into one Metadata container for each
-        row of the returned DataFrame.
-        """
+        """Return matching DataFrame rows as Metadata and an optional error log."""
         alg = "DataFrameCacheMatcher.find"
         if not isinstance(mspass_object, Metadata):
             elog = PyErrorLogger(
-                "DataFrameCacheMatcher.find",
+                alg,
                 "Received an object that is not a Metadata instance",
                 ErrorSeverity.Invalid,
             )
             return [None, elog]
 
         subset_df = self.subset(mspass_object)
-        # assume all implementations will return a 0 length dataframe
-        # if the subset failed.
-        if len(subset_df) <= 0:
-            error_message = "subset method found no match for this datum"
+        if len(subset_df) == 0:
             elog = PyErrorLogger()
-            elog.log_error(error_message, ErrorSeverity.Invalid)
+            elog.log_error(
+                "subset method found no match for this datum", ErrorSeverity.Invalid
+            )
             return [None, elog]
-        else:
-            # This loop cautiously fills one or more Metadata
-            # containers with each row of the DataFrame generating
-            # one Metadata container.
-            mdlist = list()
-            elog = None
-            for row in subset_df.itertuples():
-                md = Metadata()
-                row_dict = row._asdict()
-                if hasattr(row, "Index"):
-                    index_names = subset_df.index.names
-                    index_values = (
-                        row.Index if isinstance(row.Index, tuple) else (row.Index,)
+
+        # itertuples() with named fields renames columns such as "_id".
+        # Positional tuples preserve source names and array-valued attributes.
+        index_names = subset_df.index.names
+        available = set(subset_df.columns) | set(index_names)
+        missing = [key for key in self.attributes_to_load if key not in available]
+        if missing:
+            raise RuntimeError(
+                f"{alg}: required attributes missing from DataFrame cache: {missing}"
+            )
+
+        mdlist = []
+        elog = None
+        rows = subset_df.itertuples(index=False, name=None)
+        for index_value, row_values in zip(subset_df.index, rows):
+            values = dict(zip(subset_df.columns, row_values))
+            index_values = (
+                index_value
+                if isinstance(subset_df.index, pd.MultiIndex)
+                else (index_value,)
+            )
+            for key, value in zip(index_names, index_values):
+                if key is not None and key not in values:
+                    values[key] = value
+
+            md = Metadata()
+            for key in self.attributes_to_load + self.load_if_defined:
+                if key not in values:
+                    continue
+                value = values[key]
+                # pd.isna on lists/ndarrays returns an array, not a bool.
+                is_null = pd.api.types.is_scalar(value) and bool(pd.isna(value))
+                if is_null:
+                    if key in self.load_if_defined:
+                        continue
+                    if elog is None:
+                        elog = PyErrorLogger()
+                    elog.log_error(
+                        alg,
+                        f"Required attribute {key} contains a null value",
+                        ErrorSeverity.Complaint,
                     )
-                    row_index_dict = dict(zip(index_names, index_values))
-                else:
-                    row_index_dict = dict()
-                for k in self.attributes_to_load:
-                    # if notnulltest[k]:
-                    if k in subset_df.index.names or k in row_dict:
-                        if k in self.aliases:
-                            key = self.aliases[k]
-                        else:
-                            key = k
-                        if self.prepend_collection_name:
-                            if key == "_id":
-                                mdkey = self.collection + key
-                            else:
-                                mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
-                        if k in row_dict:
-                            val = row_dict[k]
-                            if pd.isnull(val):
-                                message = f"WARNING:  Found null value for attribute {k} of rquired attributes list\n"
-                                message += "This may cause dpownstream problems"
-                                elog.log_error(alg, message, ErrorSeverity.Complaint)
-                            md[mdkey] = val
-                        else:
-                            # index entries cannot be null so no test needed here
-                            md[mdkey] = row_index_dict[k]
 
-                    else:
-                        message = f"{alg}:  Implementation error.\n"
-                        message += "DataFrame used as cache in this class is not internally consistent\n"
-                        message += f"Attribute {k} is defined in self.attributes_to_load but is not defined for the DataFrame self.cache\n"
-                        message += "Likely error in implementation of abstract subset method by child of this class"
-                        raise RuntimeError(message)
-                for k in self.load_if_defined:
-                    if k in subset_df.index.names or k in row_index_dict:
-                        if k in self.aliases:
-                            key = self.aliases[k]
-                        else:
-                            key = k
-                        if self.prepend_collection_name:
-                            if key == "_id":
-                                mdkey = self.collection + key
-                            else:
-                                mdkey = self.collection + "_" + key
-                        else:
-                            mdkey = key
-                        if k in subset_df.index.names:
-                            val = row_dict[k]
-                        else:
-                            val = row_index_dict[k]
+                output_key = self.aliases.get(key, key)
+                if self.prepend_collection_name:
+                    output_key = (
+                        self.collection + output_key
+                        if output_key == "_id"
+                        else self.collection + "_" + output_key
+                    )
+                md[output_key] = value
+            mdlist.append(md)
 
-                        md[mdkey] = val
-                mdlist.append(md)
-            return [mdlist, None]
+        return [mdlist, elog]
 
     def find_one(self, mspass_object) -> list:
         """
@@ -1188,7 +1162,9 @@ class DataFrameCacheMatcher(BasicMatcher):
                 self.attributes_to_load + self.load_if_defined + self._cache_columns
             )
         )
-        self.cache = df.reindex(columns=fulllist)[fulllist]
+        # Index/MultiIndex fields must not be replaced by synthetic null columns.
+        columns = [key for key in fulllist if key in df.columns or key not in df.index.names]
+        self.cache = df.reindex(columns=columns).copy()
         if self.custom_null_values is not None:
             for col, nul_val in self.custom_null_values.items():
                 self.cache[col] = self.cache[col].replace(nul_val, np.nan)
@@ -2309,7 +2285,16 @@ class EqualityMatcher(DataFrameCacheMatcher):
             if mspass_object.is_defined(key):
                 testval = mspass_object[key]
                 # this allows an alias between data and dataframe keys
-                dfret = dfret[dfret[self.match_keys[key]] == testval]
+                source_key = self.match_keys[key]
+                if source_key in dfret.columns:
+                    candidates = dfret[source_key]
+                elif source_key in dfret.index.names:
+                    candidates = dfret.index.get_level_values(source_key)
+                else:
+                    raise RuntimeError(
+                        f"EqualityMatcher.subset: missing match key {source_key}"
+                    )
+                dfret = dfret[candidates == testval]
             else:
                 return pd.DataFrame()
         return dfret

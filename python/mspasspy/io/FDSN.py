@@ -41,7 +41,7 @@ from mspasspy.util.db_utils import fetch_dbhandle
 from mspasspy.util.seismic import print_metadata
 
 # from mspasspy.io.s3client import fetch_s3_client
-from s3client import fetch_s3_client, GeoLabS3Worker, AnonymousS3Worker
+from mspasspy.io.s3client import fetch_s3_client, GeoLabS3Worker, AnonymousS3Worker
 from mspasspy.algorithms.window import merge, WindowData
 from mspasspy.algorithms.signals import detrend
 
@@ -50,7 +50,7 @@ from mspasspy.algorithms.signals import detrend
 # remove me and uncomment above for final use
 # from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
 # for testing - will be installed eventually
-from stock import datafile
+from mspasspy.io.stock import datafile
 
 
 class ChannelPreferences:
@@ -394,7 +394,7 @@ class ChannelPreferences:
                     tuple_list = list()
                     for cl in clist:
                         seedchan, loc, srstr = cl.split()
-                        if len(loc) == 0 or loc in null_loc_strings:
+                        if len(loc) == 0 or loc.lower() in null_loc_strings:
                             loc = ""
                         elif len(loc) != 2:
                             error_message += (
@@ -461,7 +461,9 @@ class ChannelPreferences:
                         [chan, loc, sr] = self.cp[net][sta][generic_chan][pref]
 
                         nsclkey = self._cross_reference_key(net, sta, chan, loc)
-                        self.chanloc[nsclkey] = [pref, generic_chan, sr]
+                        # Keep the highest-priority occurrence of a channel code.
+                        if nsclkey not in self.chanloc:
+                            self.chanloc[nsclkey] = [pref, generic_chan, sr]
 
 
 class EnsembleMatcher(DataFrameCacheMatcher):
@@ -532,7 +534,7 @@ class EnsembleMatcher(DataFrameCacheMatcher):
             if k in mspass_object:
                 vals2match.append(mspass_object[k])
             else:
-                vals2match.append(self.defaults[k])
+                return self.cache.iloc[0:0]
         valid_key = self.cache.index.intersection([tuple(vals2match)])
         result_df = self.cache.loc[valid_key]
         return result_df
@@ -814,21 +816,21 @@ def safe_parse(format_str: str, objname: str, extra_types: dict = None) -> dict:
     except parse.RepeatNameError as e:
         message = f"Conflicting repeated field names in format string '{format_str}'\n"
         message += f"RepeatNameError content: {e}"
-        raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
     except ValueError as e:
         message = f"Invalid format or syntax in format string='{format_str}'\n"
         message += f"ValueError message content: {e}"
-        raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
     except Exception as e:
         message = f"Unexpected exception thrown by parse.compile for format string '{format_str}': {e}"
-        raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
     try:
         result = parser.parse(objname)
         # parse will silently return nothing for a whole range of reasons
         # rather than return None we wrap this in a MsPASSError object too
         if result is None:
             message = f"parse failed and returned a None parsing `{objname}' with format string '{format_str}'"
-            raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+            raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
         else:
             return result.named  # converts parser output to dict
     except MsPASSError:
@@ -836,10 +838,10 @@ def safe_parse(format_str: str, objname: str, extra_types: dict = None) -> dict:
     except (ValueError, TypeError) as e:
         message = f"Type conversion failed while parsing '{objname}'\n"
         message += f"parser error message content: {e}"
-        raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
     except Exception as e:
         message = f"Unexpected runtime error while parsing '{objname}': {e}"
-        raise MsPASSError(alg, message, ErrorSeverity.Invalid)
+        raise MsPASSError(f"{alg}: {message}", ErrorSeverity.Invalid)
 
 
 class BasicProvider(ABC):
@@ -969,7 +971,7 @@ class S3SeismicProvider(BasicProvider):
             message = f"S3SeismicProvider constructor:  collection={collection} has no documents for provider={provider}"
             raise ValueError(message)
         # need to repackage doc to mate with class constructor
-        doc2add = {provider: doc}
+        doc2add = {provider: doc["nets"]}
         return cls(doc2add, provider=provider)
 
     def _from_dict(self, doc: dict, key: str):
@@ -993,7 +995,7 @@ class S3SeismicProvider(BasicProvider):
         doc = {"provider": self.provider}
         doc["nets"] = self.nets
         # for this context let ths throw an exception if it fails
-        insout = db.insert_one(doc)
+        insout = db[collection].insert_one(doc)
         return insout.inserted_id
 
     def networks(self) -> list:
@@ -1421,13 +1423,13 @@ class S3SeismicProvider(BasicProvider):
         # this validates input and handles anomalies using optional data
         # from the yaml file
         if "loc" in unique_keys:
-            if loc is None and "blank_loc_code_value" in self.nets[net]:
+            if loc is None:
+                if "blank_loc_code_value" not in self.nets[net]:
+                    raise ValueError(
+                        f"{alg}: loc is required for network {net} and no "
+                        "blank_loc_code_value is configured"
+                    )
                 loc = self.nets[net]["blank_loc_code_value"]
-            else:
-                message = "S3SeismicProvider.day_volume_object_name:  "
-                message = f"{alg}:  loc code is required by net {net} but object has no definition for handling a null loc code\n"
-                message += "Edit yaml file used to build this object"
-                raise ValueError(message)
             doc["loc"] = loc
         if "chan" in unique_keys:
             if chan is None:
@@ -1711,7 +1713,7 @@ class S3SeismicProvider(BasicProvider):
                     ]
                     mspass_object = Stream2TimeSeriesEnsemble(stream)
                     if chanlist is not None:
-                        mspass_object = self._select_channels(mspass_object, chanlist)
+                        mspass_object = self._select_channels_by_list(mspass_object, chanlist)
                     if preferences is not None:
                         mspass_object = clean_ensemble(mspass_object, preferences)
                 case PayloadType.channel_day:
@@ -2043,7 +2045,7 @@ class S3SeismicProvider(BasicProvider):
         can be used if an attribute is not defined in self.nets for net code net
         """
         if net not in self.nets:
-            message = f"{self.__name__}.{method_name}:  This provider has no data for net code={net}"
+            message = f"{type(self).__name__}.{method_name}:  This provider has no data for net code={net}"
             raise ValueError(message)
         else:
             doc = self.nets[net]
@@ -2052,7 +2054,7 @@ class S3SeismicProvider(BasicProvider):
             elif default_value is not None:
                 return default_value
             else:
-                message = f"{self.__name__}.{method_name}:  provider data for net code={net} is missing required attribute={key}"
+                message = f"{type(self).__name__}.{method_name}:  provider data for net code={net} is missing required attribute={key}"
                 raise ValueError(message)
 
 
@@ -2161,7 +2163,7 @@ def is_s3_client(obj: object) -> bool:
     if not hasattr(obj, "meta"):
         return False
     service_model = getattr(obj.meta, "service_model", None)
-    if service_model.service_name != "s3":
+    if service_model is None or getattr(service_model, "service_name", None) != "s3":
         return False
     # these are methods the clients used here must have defined do
     # we check they exist too
