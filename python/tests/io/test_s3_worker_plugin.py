@@ -84,7 +84,7 @@ def test_parallel_errors_include_cause_and_key(monkeypatch):
     assert isinstance(error.value.__cause__, KeyError)
 
 
-@pytest.mark.parametrize("plugin_type", [s3.AnonymousS3Client, s3.StockS3Client])
+@pytest.mark.parametrize("plugin_type", [s3.AnonymousS3Worker, s3.StockS3Worker])
 def test_standard_plugin_configuration_and_lifecycle(monkeypatch, plugin_type):
     client = Mock()
     factory = Mock(return_value=client)
@@ -97,7 +97,7 @@ def test_standard_plugin_configuration_and_lifecycle(monkeypatch, plugin_type):
     args, kwargs = factory.call_args
     assert args == ("s3",)
     assert kwargs["region_name"] == "us-west-1"
-    if plugin_type is s3.AnonymousS3Client:
+    if plugin_type is s3.AnonymousS3Worker:
         assert kwargs["config"].signature_version is UNSIGNED
     else:
         assert "config" not in kwargs
@@ -113,7 +113,7 @@ class RejectWrites(dict):
         raise RuntimeError("registration failed")
 
 
-@pytest.mark.parametrize("plugin_type", [s3.AnonymousS3Client, s3.StockS3Client])
+@pytest.mark.parametrize("plugin_type", [s3.AnonymousS3Worker, s3.StockS3Worker])
 def test_standard_plugin_setup_failures(monkeypatch, plugin_type):
     plugin = plugin_type()
     worker = SimpleNamespace(data=RejectWrites())
@@ -205,7 +205,7 @@ def test_geolab_does_not_reuse_closed_serial_cached_client(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "plugin_type", [s3.AnonymousS3Client, s3.StockS3Client, s3.GeoLabS3Worker]
+    "plugin_type", [s3.AnonymousS3Worker, s3.StockS3Worker, s3.GeoLabS3Worker]
 )
 def test_teardown_preserves_replacement_client(monkeypatch, plugin_type):
     if plugin_type is s3.GeoLabS3Worker:

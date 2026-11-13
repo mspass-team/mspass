@@ -74,8 +74,8 @@ def fetch_s3_client(
        with different default key values.
 
        1.  GeoLabS3Worker uses the key "geolab_s3client" by default.
-       2.  AnonymousS3Client uses the key "anonymous_s3client" by default
-       3.  StockS3Client uses the key "stock_s3client" as default.
+       2.  AnonymousS3Worker uses the key "anonymous_s3worker" by default
+       3.  StockS3Worker uses the key "stock_s3worker" as default.
 
        Those keys, however, are not frozen.   When any of the worker plugins
        are instatiated you can set the value for that key with the
@@ -211,7 +211,7 @@ class GeoLabS3Worker(WorkerPlugin):
             cleanup.close()
 
 
-class AnonymousS3Client(WorkerPlugin):
+class AnonymousS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
     This instance works only for anonymous access.
@@ -223,7 +223,7 @@ class AnonymousS3Client(WorkerPlugin):
     python script is:
     ```
         dask_client = mspass_client.get_scheduler()
-        s3plugin = GeoLabS3Worker()
+        s3plugin = AnonymousS3Worker()
         dask_client.register_plugin(s3plugin)
     ```
     That creates and loads a memory resident s3 client in each worker's memory space.
@@ -237,7 +237,7 @@ class AnonymousS3Client(WorkerPlugin):
     you will need to change calls to fetch_s3_client appropriately if you do.
     """
 
-    def __init__(self, key="anonymous_s3client", region="us-east-2"):
+    def __init__(self, key="anonymous_s3worker", region="us-east-2"):
         self.worker_key = key
         self.region = region
         self.s3_client = None
@@ -263,7 +263,7 @@ class AnonymousS3Client(WorkerPlugin):
             s3_client.close()
 
 
-class StockS3Client(WorkerPlugin):
+class StockS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
     This instance should be used for conventional AWS login accounts where
@@ -276,7 +276,7 @@ class StockS3Client(WorkerPlugin):
     python script is:
     ```
         dask_client = mspass_client.get_scheduler()
-        s3plugin = GeoLabS3Worker()
+        s3plugin = StockS3Worker()
         dask_client.register_plugin(s3plugin)
     ```
     That creates and loads a memory resident s3 client in each worker's memory space.
@@ -290,7 +290,7 @@ class StockS3Client(WorkerPlugin):
     you will need to change calls to fetch_s3_client appropriately if you do.
     """
 
-    def __init__(self, key="stock_s3client", region="us-east-2"):
+    def __init__(self, key="stock_s3worker", region="us-east-2"):
         self.worker_key = key
         self.region = region
         self.s3_client = None

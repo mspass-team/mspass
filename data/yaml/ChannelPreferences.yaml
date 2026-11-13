@@ -1,0 +1,82 @@
+# ChannelPreferences.yaml template file 
+# Most use will require extension of this file to add data for particular stations that need 
+# to use the ChannelPreferences object to sort out ambiguous channels.
+# II and IU are GSN stations that are type examples of stations with multiple loc codes and 
+# sample intervals.   The TA block is an example of a simple setup without loc codes and 
+# only ambiguous channel codes with different sample rates
+II:
+    PFO: 
+        X:
+            - BH1 00 20.0
+            - BH1 10 40.0 
+            - BHE 00 20.0
+        Y:
+            - BH2 00 20.0
+            - BH2 10 40.0
+            - BHN 20 40.0
+        Z:
+            - BHZ 00 20.0
+            - BHZ 10 40.0
+            - BHZ 20 40.0
+    default:
+        X:
+            - BH1 00 20.0
+            - BH1 10 40.0 
+            - BHE 20 40.0
+        Y:
+            - BH2 00 20.0
+            - BH2 10 40.0
+            - BHN 20 40.0
+        Z:
+            - BHZ 00 20.0
+            - BHZ 10 40.0
+            - BHZ 20 40.0
+IU:
+    ANMO: 
+        X:
+            - BH1 00 40.0
+            - BH1 10 40.0 
+            - HH1 00 100.0
+            - HH1 10 100.0
+        Y:
+            - BH2 00 40.0
+            - BH2 10 40.0
+            - HH2 00 100.0
+            - HH2 10 100.0
+        Z:
+            - BHZ 00 40.0
+            - BHZ 10 40.0
+            - HHZ 00 100.0
+            - HHZ 10 100.0
+    default:
+        X:
+            - BH1 00 40.0
+            - BH1 10 40.0 
+            - HH1 00 100.0
+            - HH1 10 100.0
+        Y:
+            - BH2 00 40.0
+            - BH2 10 40.0
+            - HH2 00 100.0
+            - HH2 10 100.0
+        Z:
+            - BHZ 00 40.0
+            - BHZ 10 40.0
+            - HHZ 00 100.0
+            - HHZ 10 100.0
+# Notice Z data repeats BHZ.  You must do that to make sure X, Y, and Z 
+# section lists are the same length for all generic channels
+TA:
+    default:
+        X:
+            - BH1 none 40.0
+            - BHE none 40.0
+            - LHE none 1.0
+        Y:
+            - BH2 none 40.0
+            - BHN none 40.0
+            - LHN none 1.0
+        Z:
+            - BHZ none 40.0
+            - BHZ none 40.0
+            - LHZ none 1.0

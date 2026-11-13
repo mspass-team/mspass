@@ -215,3 +215,19 @@ def test_ensemble_scale_handles_one_eligible_member(atomic_type, use_mean):
     assert _first_sample(ensemble.member[1]) == pytest.approx(0.0)
     assert ensemble.member[0]["calib"] == pytest.approx(1.0)
     assert ensemble.member[1]["calib"] == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize("atomic_type", (TimeSeries, Seismogram))
+def test_ensemble_scale_skips_live_empty_members(atomic_type):
+    """A zero-sample member must neither abort nor change the section gain."""
+    ensemble = _ensemble_for(atomic_type)
+    ensemble.member.append(_make_datum(atomic_type, [2.0, -4.0]))
+    ensemble.member.append(_make_datum(atomic_type, []))
+    empty_before = _snapshot(ensemble.member[1])
+
+    amplitude = _scale_ensemble(ensemble, ScalingMethod.Peak, 2.0, True)
+
+    assert amplitude == pytest.approx(4.0)
+    assert _first_sample(ensemble.member[0]) == pytest.approx(1.0)
+    assert ensemble.member[0]["calib"] == pytest.approx(4.0)
+    _assert_snapshot(ensemble.member[1], empty_before)
