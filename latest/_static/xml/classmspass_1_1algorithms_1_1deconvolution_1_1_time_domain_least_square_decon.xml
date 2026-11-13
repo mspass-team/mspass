@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
@@ -119,6 +119,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="38" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="64" bodyend="66"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a629c6ddaab0c199b2b5e26b9c78c436c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -127,7 +128,7 @@
         <name>TimeDomainLeastSquareDecon</name>
         <qualifiedname>mspass::algorithms::deconvolution::TimeDomainLeastSquareDecon::TimeDomainLeastSquareDecon</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon" kindref="compound">TimeDomainLeastSquareDecon</ref> &amp;</type>
+          <type>const TimeDomainLeastSquareDecon &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -138,6 +139,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="40" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="68" bodyend="73"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a50472278b22bbe99722c55cccf4c1a13" compoundref="_time_domain_least_square_decon_8cc" startline="64" endline="66">TimeDomainLeastSquareDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1af848aa78fa9d0e44674e3a157830cc0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -152,11 +155,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from Metadata parameters. </para>
+<para>Construct from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> parameters. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="42" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="75" bodyend="79"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a44ebe61ab8dfe745d1b5b4e01cad7a7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -179,12 +183,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from Metadata plus wavelet and data vectors. </para>
+<para>Construct from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> plus wavelet and data vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="44" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="81" bodyend="87"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" compoundref="_scalar_decon_8h" startline="142">mspass::algorithms::deconvolution::ScalarDecon::data</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a50472278b22bbe99722c55cccf4c1a13" compoundref="_time_domain_least_square_decon_8cc" startline="64" endline="66">TimeDomainLeastSquareDecon</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="144">mspass::algorithms::deconvolution::ScalarDecon::wavelet</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1a4c359d9b0db253b3e31e57d42e53ebcd" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -201,7 +206,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Update operator parameters from Metadata. </para>
+<para>Update operator parameters from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -241,6 +246,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="52" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="233" bodyend="256"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a6a56723473c76bdfc64a96ab16a5cb0a" compoundref="_scalar_decon_8h" startline="92" endline="95">mspass::algorithms::deconvolution::ScalarDecon::output_shaping_wavelet</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="146">mspass::algorithms::deconvolution::ScalarDecon::result</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_least_square_decon_1af931a3299fe55b71fe53243b22ab0e50" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -258,6 +264,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="54" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="276" bodyend="308"/>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="146">mspass::algorithms::deconvolution::ScalarDecon::result</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="144">mspass::algorithms::deconvolution::ScalarDecon::wavelet</references>
       </memberdef>
@@ -280,6 +287,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/TimeDomainLeastSquareDecon.h" line="56" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/TimeDomainLeastSquareDecon.cc" bodystart="311" bodyend="332"/>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="146">mspass::algorithms::deconvolution::ScalarDecon::result</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="144">mspass::algorithms::deconvolution::ScalarDecon::wavelet</references>
       </memberdef>
@@ -440,9 +448,11 @@
     </briefdescription>
     <detaileddescription>
 <para>This class solves the linear convolution problem <verbatim>d_i = sum_j s_{i-j} m_j + n_i
-</verbatim> directly in the time domain. The convolution matrix is the cropped linear Toeplitz operator implied by the loaded wavelet and data vectors. The default model length is the loaded data length, so output samples have the same zero-lag convention as the input window, but the computation is not circular: samples outside the wavelet support are treated as zero.</para>
+</verbatim></para>
+<para>directly in the time domain. The convolution matrix is the cropped linear Toeplitz operator implied by the loaded wavelet and data vectors. The default model length is the loaded data length, so output samples have the same zero-lag convention as the input window, but the computation is not circular: samples outside the wavelet support are treated as zero.</para>
 <para>The normal equations are regularized as <verbatim>(S^T S + lambda I) m = S^T d
-</verbatim> where lambda is <computeroutput>damping_factor * max(diag(S^T S))</computeroutput>. <computeroutput>damping_factor</computeroutput> must be positive; smaller values give higher resolution but amplify noise and conditioning errors, while larger values suppress noise at the cost of resolution. The solve uses LAPACK Cholesky with LU fallback; it does not explicitly invert the normal-equation matrix. </para>
+</verbatim></para>
+<para>where lambda is <computeroutput>damping_factor * max(diag(S^T S))</computeroutput>. <computeroutput>damping_factor</computeroutput> must be positive; smaller values give higher resolution but amplify noise and conditioning errors, while larger values suppress noise at the cost of resolution. The solve uses LAPACK Cholesky with LU fallback; it does not explicitly invert the normal-equation matrix. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">

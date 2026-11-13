@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_algorithm_definition" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AlgorithmDefinition</compoundname>
     <includes refid="_process_manager_8h" local="no">ProcessManager.h</includes>
@@ -72,8 +72,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Default constructor.</para>
-<para>This consructor is realy the same as what would be automatically generated. We define it to be clear and because I think pybind11 may need this declaration to allow a python wrapper for a default constructor. <linebreak/>
- </para>
+<para>This consructor is realy the same as what would be automatically generated. We define it to be clear and because I think pybind11 may need this declaration to allow a python wrapper for a default constructor. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -154,7 +153,7 @@
         <name>AlgorithmDefinition</name>
         <qualifiedname>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+          <type>const AlgorithmDefinition &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -165,6 +164,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="73" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="73" bodyend="78"/>
+        <references refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" compoundref="_process_manager_8h" startline="50" endline="50">AlgorithmDefinition</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a450718baca75f269b4e5305a221a6e0c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>std::string</type>
@@ -219,13 +219,13 @@
         <references refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" compoundref="_process_manager_8h" startline="88" endline="88">id</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a440cf34cfdad5ef177475b570cfe5df6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref> &amp;</type>
         <definition>AlgorithmDefinition &amp; mspass::utility::AlgorithmDefinition::operator=</definition>
         <argsstring>(const AlgorithmDefinition &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::utility::AlgorithmDefinition::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" kindref="member">AlgorithmDefinition</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -236,6 +236,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" line="99" column="23" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="99" bodyend="107"/>
+        <references refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" compoundref="_process_manager_8h" startline="50" endline="50">AlgorithmDefinition</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::CNR3CDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::Base3CDecon</basecompoundref>
@@ -485,6 +485,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="97" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="44" bodyend="62"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" compoundref="_f_f_t_decon_operator_8cc" startline="16" endline="21">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1acd414b6432d322bfb2c7a05a6f3cd725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -497,7 +498,7 @@
           <declname>pf</declname>
         </param>
         <briefdescription>
-<para>Construct from a tree of parameters loaded into an AntelopePf object. </para>
+<para>Construct from a tree of parameters loaded into an <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> object. </para>
         </briefdescription>
         <detaileddescription>
 <para>There number of inputs to construct this operator are quite large. An AntelelopePf is one way to store this information and the format assumed by this constructor. Note this object could be constructed from a yaml or xml file, in principle, but for the present we use Antelope&apos;s pf file \ format. i.e. a typical program would read a pf file and to construct the object passed as pf. </para>
@@ -505,6 +506,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="107" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="63" bodyend="70"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" compoundref="_f_f_t_decon_operator_8cc" startline="16" endline="21">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a923e4dc68c1c50500a08e0d0c5907489" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -513,7 +515,7 @@
         <name>CNR3CDecon</name>
         <qualifiedname>mspass::algorithms::deconvolution::CNR3CDecon::CNR3CDecon</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+          <type>const CNR3CDecon &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -524,6 +526,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="109" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="246" bodyend="276"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" compoundref="_c_n_r3_c_decon_8cc" startline="44" endline="62">CNR3CDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0892388be3850c342df4792c662751f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -541,13 +544,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="111" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="318" bodyend="321"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aaf66a37adf3ab2a38e9b4c4b08a82bb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref> &amp;</type>
         <definition>CNR3CDecon &amp; mspass::algorithms::deconvolution::CNR3CDecon::operator=</definition>
         <argsstring>(const CNR3CDecon &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::algorithms::deconvolution::CNR3CDecon::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" kindref="member">CNR3CDecon</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -558,6 +561,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="113" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="277" bodyend="317"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" compoundref="_c_n_r3_c_decon_8cc" startline="44" endline="62">CNR3CDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab14420b7e2766c58d2846cdc112fabad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -573,7 +577,7 @@
 <para>Change the setup of the operator on the fly. </para>
         </briefdescription>
         <detaileddescription>
-<para>Sometimes an operator needs to have it&apos;s properties adjusted on the fly. this method can be used to redefine its operational properties instead of creating a new instance with the constructor. Use this method with care as it requires the same set of parameters as the AntelopePf constructor. The data are actually passed through the base class for an AntelopePF but currently it is implicitly expected to be data compatible with the pf constructor. </para>
+<para>Sometimes an operator needs to have it&apos;s properties adjusted on the fly. this method can be used to redefine its operational properties instead of creating a new instance with the constructor. Use this method with care as it requires the same set of parameters as the <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> constructor. The data are actually passed through the base class for an AntelopePF but currently it is implicitly expected to be data compatible with the pf constructor. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -633,7 +637,7 @@
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw an MsPASSError for a number of potential problems that can arise. All such errors will have an invalid condition set. </para>
+<para>throw an <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> for a number of potential problems that can arise. All such errors will have an invalid condition set. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -685,7 +689,7 @@
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>MsPASSError</parametername>
+<parametername><ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
 <para>may be thrown for a number of potential error conditions. </para>
@@ -702,11 +706,7 @@
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" compoundref="_c_n_r3_c_decon_8cc" startline="587" endline="597">loadnoise_data</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1049" endline="1074">mspass::seismic::CoreSeismogram::set_npts</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="1032" endline="1048">mspass::seismic::CoreSeismogram::set_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" compoundref="_basic_time_series_8h" startline="62" endline="64">mspass::seismic::BasicTimeSeries::time</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="102" endline="102">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -741,10 +741,10 @@
           <declname>n</declname>
         </param>
         <briefdescription>
-<para>Load noise estimate directly as a PowerSpectrum object. </para>
+<para>Load noise estimate directly as a <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> object. </para>
         </briefdescription>
         <detaileddescription>
-<para>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. For instance, one might want to use a robust form of Welch&apos;s method to estimate preevent noise that would be immune to spikes and sporatic noise bursts. </para>
+<para>The actual noise regularization is computed by this algorithm from an internally stored <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. For instance, one might want to use a robust form of Welch&apos;s method to estimate preevent noise that would be immune to spikes and sporatic noise bursts. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -780,20 +780,13 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="211" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="490" bodyend="586"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" compoundref="_m_t_power_spectrum_engine_8cc" startline="178" endline="244">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1adf84c339f3b540543ee8c3487997908a" compoundref="_f_f_t_decon_operator_8h" startline="80" endline="84">mspass::algorithms::deconvolution::FFTDeconOperator::df</references>
-        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
-        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="196" endline="219">mspass::seismic::CoreTimeSeries::set_npts</references>
-        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="180" endline="195">mspass::seismic::CoreTimeSeries::set_t0</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" compoundref="_m_t_power_spectrum_engine_8h" startline="100" endline="100">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" compoundref="_basic_time_series_8h" startline="62" endline="64">mspass::seismic::BasicTimeSeries::time</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="102" endline="102">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -814,12 +807,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="228" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="606" bodyend="627"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" compoundref="_m_t_power_spectrum_engine_8cc" startline="178" endline="244">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" compoundref="_m_t_power_spectrum_engine_8h" startline="104" endline="104">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" compoundref="_m_t_power_spectrum_engine_8h" startline="100" endline="100">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="102" endline="102">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a17af91b35a03c0a87a01e6ddb525e6ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -832,10 +821,10 @@
           <declname>n</declname>
         </param>
         <briefdescription>
-<para>Load noise estimate for wavelet signal directly as a PowerSpectrum object. </para>
+<para>Load noise estimate for wavelet signal directly as a <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> object. </para>
         </briefdescription>
         <detaileddescription>
-<para>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. </para>
+<para>The actual noise regularization is computed by this algorithm from an internally stored <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -857,7 +846,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="242" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="803" bodyend="927"/>
-        <references refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a5037fb7d7410bedc194135eae1894f8b" compoundref="amplitudes_8h" startline="332" endline="343">mspass::algorithms::amplitudes::BandwidthData::bandwidth</references>
+        <references refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data_1a5037fb7d7410bedc194135eae1894f8b" compoundref="amplitudes_8h" startline="334" endline="345">mspass::algorithms::amplitudes::BandwidthData::bandwidth</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1adf84c339f3b540543ee8c3487997908a" compoundref="_f_f_t_decon_operator_8h" startline="80" endline="84">mspass::algorithms::deconvolution::FFTDeconOperator::df</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
@@ -865,12 +854,10 @@
         <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
-        <references refid="classmspass_1_1seismic_1_1_power_spectrum_1a3d1e72618b8e88c5929839c5e8885859" compoundref="_power_spectrum_8cc" startline="75" endline="98">mspass::seismic::PowerSpectrum::power</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" compoundref="_complex_array_8cc" startline="111" endline="113">mspass::algorithms::deconvolution::ComplexArray::ptr</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" compoundref="_f_f_t_decon_operator_8h" startline="103">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" compoundref="_f_f_t_decon_operator_8h" startline="105">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</references>
@@ -906,7 +893,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="253" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="928" bodyend="935"/>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1a5d213e187ff91de27d96e65b643bd71b" compoundref="_shaping_wavelet_8cc" startline="268" endline="302">mspass::algorithms::deconvolution::ShapingWavelet::impulse_response</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -926,14 +912,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="260" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="936" bodyend="976"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" compoundref="_complex_array_8cc" startline="111" endline="113">mspass::algorithms::deconvolution::ComplexArray::ptr</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" compoundref="_core_time_series_8cc" startline="165" endline="179">mspass::seismic::CoreTimeSeries::set_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="151" endline="151">mspass::seismic::BasicTimeSeries::set_live</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="196" endline="219">mspass::seismic::CoreTimeSeries::set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="180" endline="195">mspass::seismic::CoreTimeSeries::set_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="235" endline="235">mspass::seismic::BasicTimeSeries::set_tref</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" compoundref="_complex_array_8cc" startline="275" endline="275">mspass::algorithms::deconvolution::ComplexArray::size</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" compoundref="_f_f_t_decon_operator_8h" startline="103">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" compoundref="_f_f_t_decon_operator_8h" startline="105">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</references>
@@ -969,8 +954,7 @@
 <para>Return a FIR represention of the inverse filter. </para>
         </briefdescription>
         <detaileddescription>
-<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
- </para>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -978,8 +962,6 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" compoundref="_f_f_t_decon_operator_8cc" startline="190" endline="232">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -999,11 +981,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="285" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1000" bodyend="1021"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" compoundref="_f_f_t_decon_operator_8h" startline="101">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
@@ -1182,12 +1162,12 @@
     <detaileddescription>
 <para>This algorithm is somewhat of a synthesis of the best features from the various frequency comain methods currently in use for receiver function estimation. Key features are:<orderedlist>
 <listitem><para>Data are tapered by a generic function with a range of options.</para>
-</listitem><listitem><para>The output is always a Seismogram, which in MsPASS means 3C data</para>
+</listitem><listitem><para>The output is always a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>, which in MsPASS means 3C data</para>
 </listitem><listitem><para>The inverse is regularized by a scaled 3C noise estimate.</para>
 </listitem><listitem><para>Perhaps most importantly the shaping wavelet is computed dynamically based on bandwidth estimated from the combination power spectrum estimates of the signal and noise for both the data being deconvolved and the wavelet used to compute the inverse. For array methods the two noise estimates can be drastically different.</para>
 </listitem></orderedlist>
 </para>
-<para>This object is what might be called a processing object. That is, it does not use the model of construction creating the thing it defines (Seismogram, for example, uses that paradigm). Instead the constructor defines the operator. Data are processed by first calling one of the loaddata and loadnoise methods. Once valid data is loaded call the process method to deconvolve the loaded data. Note this approach assumes the data, wavelet, and noise used for the processing are internally consistent. The user is warned there a limited safeties to validate any consistency because it would be hard to do so without causing more problems that it would solve. In MsPASS we expect to hide this a bit behind some python wrappers to create more safety mechanisms. </para>
+<para>This object is what might be called a processing object. That is, it does not use the model of construction creating the thing it defines (<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>, for example, uses that paradigm). Instead the constructor defines the operator. Data are processed by first calling one of the loaddata and loadnoise methods. Once valid data is loaded call the process method to deconvolve the loaded data. Note this approach assumes the data, wavelet, and noise used for the processing are internally consistent. The user is warned there a limited safeties to validate any consistency because it would be hard to do so without causing more problems that it would solve. In MsPASS we expect to hide this a bit behind some python wrappers to create more safety mechanisms. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="2">

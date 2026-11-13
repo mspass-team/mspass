@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="_ms_p_a_s_s_error_8h" kind="file" language="C++">
     <compoundname>MsPASSError.h</compoundname>
     <includes local="no">exception</includes>
@@ -626,7 +626,7 @@
 <codeline lineno="25"><highlight class="normal">mspass::utility::ErrorSeverity<sp/>string2severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>howbad);</highlight></codeline>
 <codeline lineno="27"><highlight class="normal">std::string<sp/>severity2string(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>es);</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
-<codeline lineno="38" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception<sp/>{</highlight></codeline>
+<codeline lineno="38" refid="classmspass_1_1algorithms_1_1amplitudes_1_1_ms_p_a_s_s_error" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" kindref="member">MsPASSError</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::exception<sp/>{</highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="43" refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" kindref="member">MsPASSError</ref>()<sp/>{</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kindref="member">message</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;MsPASS<sp/>library<sp/>error\n&quot;</highlight><highlight class="normal">;</highlight></codeline>
@@ -665,7 +665,7 @@
 <codeline lineno="117"><highlight class="comment">what<sp/>method<sp/>writes<sp/>a<sp/>string<sp/>representation<sp/>of<sp/>badness<sp/>to<sp/>the<sp/>message.<sp/><sp/><sp/>Bound</highlight></codeline>
 <codeline lineno="118"><highlight class="comment">versions<sp/>of<sp/>the<sp/>functions<sp/>below<sp/>can<sp/>be<sp/>used<sp/>in<sp/>python<sp/>programs<sp/>to<sp/>test<sp/>severity</highlight></codeline>
 <codeline lineno="119"><highlight class="comment">of<sp/>a<sp/>thrown<sp/>MsPASSError.</highlight></codeline>
-<codeline lineno="120"><highlight class="comment">*/</highlight></codeline>
+<codeline lineno="120"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="126"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>error_says_data_bad(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref><sp/>&amp;err);</highlight></codeline>
 <codeline lineno="127"><highlight class="normal"></highlight></codeline>
 <codeline lineno="137"><highlight class="normal">std::string</highlight></codeline>

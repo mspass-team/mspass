@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="fileio_8cc" kind="file" language="C++">
     <compoundname>fileio.cc</compoundname>
     <includes refid="fileio_8h" local="yes">mspass/io/fileio.h</includes>
@@ -355,6 +355,7 @@
         <label>vector</label>
       </node>
     </incdepgraph>
+    <innerclass refid="classmspass_1_1io_1_1_ms_p_a_s_s_error" prot="public">mspass::io::MsPASSError</innerclass>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1io">mspass::io</innernamespace>
     <briefdescription>
@@ -375,9 +376,9 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::io<sp/>{</highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>using<sp/>namespace<sp/>mspass::io;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::seismic;</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">mspass::utility::ErrorSeverity;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">mspass::utility::MsPASSError;</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">/*This<sp/>is<sp/>a<sp/>file<sp/>scope<sp/>function<sp/>to<sp/>allow<sp/>the<sp/>overlaoded<sp/>fwrite_to_file</highlight></codeline>
@@ -461,7 +462,7 @@
 <codeline lineno="108"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(foff);</highlight></codeline>
 <codeline lineno="109"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="122"><highlight class="normal">std::vector&lt;long<sp/>int&gt;</highlight></codeline>
-<codeline lineno="123"><highlight class="normal">fwrite_to_file(<ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;</ref><sp/>&amp;d,</highlight></codeline>
+<codeline lineno="123"><highlight class="normal">fwrite_to_file(mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;<sp/>&amp;d,</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dir,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dfile)<sp/>{</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>FILE<sp/>*fp;</highlight></codeline>
@@ -521,7 +522,7 @@
 <codeline lineno="180"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="181"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="194"><highlight class="normal">std::vector&lt;long<sp/>int&gt;</highlight></codeline>
-<codeline lineno="195"><highlight class="normal">fwrite_to_file(<ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;</ref><sp/>&amp;d,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">fwrite_to_file(mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;<sp/>&amp;d,</highlight></codeline>
 <codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dir,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dfile)<sp/>{</highlight></codeline>
 <codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>FILE<sp/>*fp;</highlight></codeline>
@@ -628,7 +629,7 @@
 <codeline lineno="299"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="300"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="301"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>fread_from_file(</highlight></codeline>
-<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;</ref><sp/>&amp;de,</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/>mspass::seismic::LoggingEnsemble&lt;mspass::seismic::Seismogram&gt;<sp/>&amp;de,</highlight></codeline>
 <codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dir,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dfile,</highlight></codeline>
 <codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;long<sp/>int&gt;<sp/>indexes)<sp/>{</highlight></codeline>
 <codeline lineno="305"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>ns_read_sum;</highlight></codeline>
@@ -690,7 +691,7 @@
 <codeline lineno="361"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ns_read_sum;</highlight></codeline>
 <codeline lineno="362"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="363"><highlight class="normal"></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>fread_from_file(</highlight></codeline>
-<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;</ref><sp/>&amp;de,</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/>mspass::seismic::LoggingEnsemble&lt;mspass::seismic::TimeSeries&gt;<sp/>&amp;de,</highlight></codeline>
 <codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dir,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>dfile,</highlight></codeline>
 <codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;long<sp/>int&gt;<sp/>indexes)</highlight></codeline>
 <codeline lineno="367"><highlight class="normal"></highlight></codeline>

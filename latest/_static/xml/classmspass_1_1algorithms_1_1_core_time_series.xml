@@ -1,0 +1,513 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
+  <compounddef id="classmspass_1_1algorithms_1_1_core_time_series" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::CoreTimeSeries</compoundname>
+    <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
+    <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
+    <derivedcompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</derivedcompoundref>
+    <includes refid="_core_time_series_8h" local="no">CoreTimeSeries.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::seismic::CoreTimeSeries::s</definition>
+        <argsstring></argsstring>
+        <name>s</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::s</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Actual data stored as an STL vector container. Note the STL guarantees the data elements of vector container are contiguous in memory like FORTRAN vectors. As a result things like the BLAS can be used with data object by using a syntax like this: if d is a <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object, the address of the first sample of the data is &amp;(d.s[0]). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="27" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::CoreTimeSeries::CoreTimeSeries</definition>
+        <argsstring>()</argsstring>
+        <name>CoreTimeSeries</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::CoreTimeSeries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. Initializes object data to zeros and sets the initial STL vector size to 0 length. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="32" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="14" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a0cb99b254e48280ff9fd674976e53c4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::CoreTimeSeries::CoreTimeSeries</definition>
+        <argsstring>(const size_t nsin)</argsstring>
+        <name>CoreTimeSeries</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::CoreTimeSeries</qualifiedname>
+        <param>
+          <type>const size_t</type>
+          <declname>nsin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Similar to the default constructor but creates a vector of data with nsin samples and initializes all samples to 0.0. This vector can safely be accessed with the vector index operator (i.e. operator []). A corollary is that push_back or push_front applied to this vector will alter it&apos;s length so use this only if the size of the data to fill the object is already known. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="42" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="20" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::CoreTimeSeries::CoreTimeSeries</definition>
+        <argsstring>(const BasicTimeSeries &amp;bts, const Metadata &amp;md)</argsstring>
+        <name>CoreTimeSeries</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::CoreTimeSeries</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" kindref="member">BasicTimeSeries</ref> &amp;</type>
+          <declname>bts</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" kindref="member">Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Partially construct from components.</para>
+<para>There are times one wants to use the <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> area as a template to flesh out a <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> as what might be called skin and bones: skin is <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> and bones as BasicTimeSeries data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(&quot;npts&quot;)). It then creates the data vector of that length and initialzies it to all zeros. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="54" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="49" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::CoreTimeSeries::CoreTimeSeries</definition>
+        <argsstring>(const CoreTimeSeries &amp;)</argsstring>
+        <name>CoreTimeSeries</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::CoreTimeSeries</qualifiedname>
+        <param>
+          <type>const CoreTimeSeries &amp;</type>
+          <defname>tsi</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="58" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="34" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a89c257008450ceb6d96e0cdb95e24673" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::seismic::CoreTimeSeries::~CoreTimeSeries</definition>
+        <argsstring>()</argsstring>
+        <name>~CoreTimeSeries</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::~CoreTimeSeries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="43" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::CoreTimeSeries::set_dt</definition>
+        <argsstring>(const double sample_interval)</argsstring>
+        <name>set_dt</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::set_dt</qualifiedname>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8">set_dt</reimplements>
+        <param>
+          <type>const double</type>
+          <declname>sample_interval</declname>
+        </param>
+        <briefdescription>
+<para>Set the sample interval. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is complicated by the need to sync the changed value with <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is further complicated by the need to support aliases for the keys used to defined dt in <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is handled by first setting the internal dt value and then going through a fixed list of valid alias keys for dt. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sample_interval</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="72" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="165" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::CoreTimeSeries::set_npts</definition>
+        <argsstring>(const size_t npts)</argsstring>
+        <name>set_npts</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::set_npts</qualifiedname>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c">set_npts</reimplements>
+        <param>
+          <type>const size_t</type>
+          <declname>npts</declname>
+        </param>
+        <briefdescription>
+<para>Set the number of samples attribute for data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is complicated by the need to sync the changed value with <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is further complicated by the need to support aliases for the keys used to defined npts in <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is handled by first setting the internal npts value (actually ns) and then going through a fixed list of valid alias keys for npts. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>.</para>
+<para>This attribute has an additional complication compared to other setter that are overrides from BasicTimeSeries. That is, the number of points define the data buffer size to hold the sample data. To guarantee the buffer size and the internal remain consistent this method clears any existing content of the vector s and initializes npts points to 0.0. Note this means if one is using this to assemble a data object in pieces you MUST call this method before loading any data or it will be cleared and you will mysteriously find the data are all zeros.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>npts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the new number of points to set. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="94" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="196" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::CoreTimeSeries::sync_npts</definition>
+        <argsstring>()</argsstring>
+        <name>sync_npts</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::sync_npts</qualifiedname>
+        <briefdescription>
+<para>Sync the number of samples attribute with actual data size. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method syncs the npts attribute with the actual size of the vector s. It also syncs aliases in the same way as the set_npts method. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="101" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="220" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::CoreTimeSeries::set_t0</definition>
+        <argsstring>(const double t0in)</argsstring>
+        <name>set_t0</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::set_t0</qualifiedname>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1abe29da17a295b2b439951d3ab6378caf">set_t0</reimplements>
+        <param>
+          <type>const double</type>
+          <declname>t0in</declname>
+        </param>
+        <briefdescription>
+<para>Set the data start time. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is complicated by the need to sync the changed value with <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is further complicated by the need to support aliases for the keys used to defined npts in <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. That is handled by first setting the internal t0 value and then going through a fixed list of valid alias keys for it. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>.</para>
+<para>This is a dangerous method to use on real data as it can mess up the time if not handled correctly. It should be used only when that sharp knife is needed such as in assembling data outside of constructors in a test program.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>t0in</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="118" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="180" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+        <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator=</definition>
+        <argsstring>(const CoreTimeSeries &amp;parent)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="133" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="57" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+        <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator+=</definition>
+        <argsstring>(const CoreTimeSeries &amp;d)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Summation operator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to add to this. The overlap boundaries are rounded to nearby sample indices, then samples are paired consecutively. This approximate operation does not resample either signal; differences in sample interval or start-time grid are accepted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if lhs and rhs have incompatible time standards. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="152" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="67" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref></type>
+        <definition>const CoreTimeSeries mspass::seismic::CoreTimeSeries::operator+</definition>
+        <argsstring>(const CoreTimeSeries &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Addition operator.</para>
+<para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="160" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="150" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+        <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator*=</definition>
+        <argsstring>(const double)</argsstring>
+        <name>operator*=</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator*=</qualifiedname>
+        <param>
+          <type>const double</type>
+          <defname>scale</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Multiply data by a scalar. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="163" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="161" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+        <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator-=</definition>
+        <argsstring>(const CoreTimeSeries &amp;d)</argsstring>
+        <name>operator-=</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator-=</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Subtraction operator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to subract from this. The overlap boundaries are rounded to nearby sample indices, then samples are paired consecutively. This approximate operation does not resample either signal; differences in sample interval or start-time grid are accepted. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if lhs and rhs have incompatible time standards. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="182" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="110" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref></type>
+        <definition>const CoreTimeSeries mspass::seismic::CoreTimeSeries::operator-</definition>
+        <argsstring>(const CoreTimeSeries &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" kindref="member">CoreTimeSeries</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtraction operator.</para>
+<para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="190" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="156" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::CoreTimeSeries::operator[]</definition>
+        <argsstring>(size_t const sample) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>mspass::algorithms::CoreTimeSeries::operator[]</qualifiedname>
+        <param>
+          <type>size_t const</type>
+          <declname>sample</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Extract a sample from data vector with range checking. Because the data vector is public in this interface this operator is simply an alterative interface to this-&gt;s[sample].</para>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>SeisppError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>exception if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sample</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the integer sample number of data desired. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="202" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="240" bodyend="251"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Scalar time series data object. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This data object extends BasicTimeSeries mainly by adding a vector of scalar data. It uses a <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> object to contain auxiliary parameters that aren&apos;t essential to define the data object, but which are necessary for some algorithms. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>mspass::algorithms::CoreTimeSeries</label>
+        <link refid="classmspass_1_1algorithms_1_1_core_time_series"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="5">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="3">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>mspass::algorithms::CoreTimeSeries</label>
+        <link refid="classmspass_1_1algorithms_1_1_core_time_series"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="4">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="3">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="17" bodyend="203"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a0cb99b254e48280ff9fd674976e53c4e" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator*=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>s</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" virt="virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>set_dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" virt="virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>set_npts</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" virt="virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>set_t0</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" virt="non-virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>sync_npts</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_core_time_series_1a89c257008450ceb6d96e0cdb95e24673" prot="public" virt="virtual"><scope>mspass::algorithms::CoreTimeSeries</scope><name>~CoreTimeSeries</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

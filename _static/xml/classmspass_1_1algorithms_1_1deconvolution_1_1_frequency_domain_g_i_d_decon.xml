@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
@@ -440,7 +440,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="224" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="224" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad0531663f0eb76c0ed473f9ac697c8ff" prot="private" static="no" mutable="no">
-        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref> &gt;</type>
+        <type>std::unique_ptr&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" kindref="member">ScalarDecon</ref> &gt;</type>
         <definition>std::unique_ptr&lt;ScalarDecon&gt; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::preprocessor</definition>
         <argsstring></argsstring>
         <name>preprocessor</name>
@@ -2641,7 +2641,6 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="41" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="121" bodyend="341"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a8cf90914fa1571e88978b0b810fad805" compoundref="_scalar_decon_8cc" startline="63" endline="65">mspass::algorithms::deconvolution::ScalarDecon::changeparameter</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" compoundref="_antelope_pf_8cc" startline="399" endline="406">mspass::utility::AntelopePf::get_branch</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" compoundref="_metadata_8h" startline="189" endline="197">mspass::utility::Metadata::get_string</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
@@ -2649,8 +2648,8 @@
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="148">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ad95404c43160c186963ecef1f52dc1e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -2659,7 +2658,7 @@
         <name>FrequencyDomainGIDDecon</name>
         <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::FrequencyDomainGIDDecon</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+          <type>const FrequencyDomainGIDDecon &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -2671,13 +2670,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="42" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aaa20a6c5b90063c21cad2cc433267063" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6e6b9438e8f3dbbfb90eb6ccbd6b0ae3" kindref="member">FrequencyDomainGIDDecon</ref> &amp;</type>
         <definition>FrequencyDomainGIDDecon &amp; mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::operator=</definition>
         <argsstring>(const FrequencyDomainGIDDecon &amp;parent)=delete</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::algorithms::deconvolution::FrequencyDomainGIDDecon::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon" kindref="compound">FrequencyDomainGIDDecon</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a6e6b9438e8f3dbbfb90eb6ccbd6b0ae3" kindref="member">FrequencyDomainGIDDecon</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -2714,7 +2713,7 @@
           <declname>md</declname>
         </param>
         <briefdescription>
-<para>Update operator parameters from a Metadata container. </para>
+<para>Update operator parameters from a <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> container. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -2765,11 +2764,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="56" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="526" bodyend="550"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a3a3db37d48b38f496ff94b6892c54924" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -2816,7 +2812,6 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="64" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="552" bodyend="576"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
       </memberdef>
@@ -2872,7 +2867,7 @@
 <parametername>wavelet</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>core time series converted to a TimeSeries wavelet. </para>
+<para>core time series converted to a <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> wavelet. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -2919,18 +2914,10 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="90" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="610" bodyend="670"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" compoundref="_basic_time_series_8h" startline="142" endline="142">mspass::seismic::BasicTimeSeries::live</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" compoundref="_core_seismogram_8cc" startline="1016" endline="1031">mspass::seismic::CoreSeismogram::set_dt</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="151" endline="151">mspass::seismic::BasicTimeSeries::set_live</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="1032" endline="1048">mspass::seismic::CoreSeismogram::set_t0</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="235" endline="235">mspass::seismic::BasicTimeSeries::set_tref</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" compoundref="_basic_time_series_8h" startline="169" endline="169">mspass::seismic::BasicTimeSeries::timetype</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae43d810838110f19da2a5144a13fb7ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -2951,7 +2938,7 @@
 <parametername>noise</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>core time series converted to a TimeSeries noise waveform. </para>
+<para>core time series converted to a <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> noise waveform. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -2995,7 +2982,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="105" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="677" bodyend="717"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a2b0da5ef2a6c963da13ac57a1d885eef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -3026,7 +3012,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="109" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="723" bodyend="734"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ae066e5e8248fb19bd1bdf0f58952646d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3042,7 +3027,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="111" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="111" bodyend="111"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1acfa7e4562906c6250b7b7b740aa25b18" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3058,7 +3042,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="113" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="113" bodyend="113"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7cfb5172bd4d8b9daa5f1cbe77fe620b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3074,7 +3057,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="115" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="115" bodyend="115"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a63d985e1ba91e8d21ba322d5bdddea4f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3090,7 +3072,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="117" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="117" bodyend="117"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a5d0fa390445146d8a8e62b64476cb07b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3106,7 +3087,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="119" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="119" bodyend="119"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a7c79f572d355959fe99158fc5bb5ee50" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3122,7 +3102,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="121" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" bodystart="121" bodyend="121"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1aa9352c030b00b668025ba2d43db9fc4b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -3255,7 +3234,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the loaded external wavelet, or an empty TimeSeries if absent. </para>
+<para>Return the loaded external wavelet, or an empty <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> if absent. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -3270,7 +3249,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the loaded external noise, or an empty TimeSeries if absent. </para>
+<para>Return the loaded external noise, or an empty <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> if absent. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -3346,11 +3325,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="173" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="736" bodyend="755"/>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" compoundref="_basic_time_series_8h" startline="147" endline="147">mspass::seismic::BasicTimeSeries::kill</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a19864a0f707e634ed34681f958e69a6d" compoundref="_frequency_domain_g_i_d_decon_8cc" startline="526" endline="550">load</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a3a3db37d48b38f496ff94b6892c54924" compoundref="_frequency_domain_g_i_d_decon_8cc" startline="552" endline="576">loadnoise</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a0ba726fca54819bc138cf9e813e494ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -3373,18 +3349,12 @@
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" compoundref="_three_c_spike_8h" startline="23">mspass::algorithms::deconvolution::ThreeCSpike::amp</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" compoundref="_three_c_spike_8h" startline="19">mspass::algorithms::deconvolution::ThreeCSpike::col</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ac9737ebde5afda00b5ca1c837652b422" compoundref="_g_i_d_decon_util_8h" startline="27">mspass::algorithms::deconvolution::GroupSparseDeconResult::converged</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a319622351d1f6dea08a3adaca8852392" compoundref="_g_i_d_decon_util_8h" startline="36">mspass::algorithms::deconvolution::GroupSparseDeconResult::fractional_improvement_final</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1af4ea5eeef16c9f7926f6094b66bf4024" compoundref="_g_i_d_decon_util_8h" startline="25">mspass::algorithms::deconvolution::GroupSparseDeconResult::iterations</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1ad2229033d337af5db1eb8c1acbf271d0" compoundref="_g_i_d_decon_util_8h" startline="35">mspass::algorithms::deconvolution::GroupSparseDeconResult::objective_final</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a51fb7cf4573e7b287eaa6cc51f62e738" compoundref="_g_i_d_decon_util_8h" startline="34">mspass::algorithms::deconvolution::GroupSparseDeconResult::objective_initial</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" compoundref="_ms_p_a_s_s_error_8h" startline="102" endline="102">mspass::utility::MsPASSError::severity</references>
         <references refid="structmspass_1_1algorithms_1_1deconvolution_1_1_group_sparse_decon_result_1a9270d562897ab545c9b4f58015dec967" compoundref="_g_i_d_decon_util_8h" startline="23">mspass::algorithms::deconvolution::GroupSparseDeconResult::spikes</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" compoundref="_basic_time_series_8h" startline="62" endline="64">mspass::seismic::BasicTimeSeries::time</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" compoundref="_basic_time_series_8h" startline="155" endline="160">mspass::seismic::BasicTimeSeries::time_is_UTC</references>
-        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">mspass::seismic::CoreSeismogram::u</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" compoundref="_ms_p_a_s_s_error_8h" startline="100" endline="100">mspass::utility::MsPASSError::what</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1a01c41a1013413bd61a292dbc45ff0223" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -3420,9 +3390,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="194" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="2009" bodyend="2027"/>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="146">mspass::algorithms::deconvolution::ScalarDecon::result</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_frequency_domain_g_i_d_decon_1ab4511f751ffcc8db92e33fe481618083" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -3529,23 +3497,18 @@
 <para>Return appropriate quality measures. </para>
         </briefdescription>
         <detaileddescription>
-<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FrequencyDomainGIDDecon.h" line="208" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FrequencyDomainGIDDecon.cc" bodystart="2048" bodyend="2619"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" compoundref="_three_c_spike_8h" startline="19">mspass::algorithms::deconvolution::ThreeCSpike::col</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" compoundref="_metadata_8cc" startline="392" endline="402">mspass::utility::Metadata::get_bool</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8cc" startline="352" endline="362">mspass::utility::Metadata::get_double</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" compoundref="_metadata_8cc" startline="364" endline="377">mspass::utility::Metadata::get_int</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon_1aa97c15f8672cff8bd0e8430221d7fef0" compoundref="_multi_taper_xcor_decon_8h" startline="119" endline="119">mspass::algorithms::deconvolution::MultiTaperXcorDecon::get_taperlen</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_noise_stable_decon_1a026a23ca70213ae84f7a189b3e18985a" compoundref="_noise_stable_decon_8cc" startline="290" endline="304">mspass::algorithms::deconvolution::NoiseStableDecon::QCMetrics</references>
-        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
-        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" compoundref="_three_c_spike_8h" startline="21">mspass::algorithms::deconvolution::ThreeCSpike::u</references>
       </memberdef>
     </sectiondef>
@@ -3695,7 +3658,7 @@
 <para>Frequency-domain generalized iterative deconvolution. </para>
     </briefdescription>
     <detaileddescription>
-<para>This engine shares the sparse GID iteration semantics of <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> but applies the candidate inverse operator in the frequency domain. Processing requires both a loaded signal window and residual-domain noise window. External PowerSpectrum noise is accepted by ns_gid and group_sparse because both use NS-GID inverse-operator regularization; it does not replace load(d, dwin, nwin) or loadnoise(d, nwin). </para>
+<para>This engine shares the sparse GID iteration semantics of <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_time_domain_g_i_d_decon" kindref="compound">TimeDomainGIDDecon</ref> but applies the candidate inverse operator in the frequency domain. Processing requires both a loaded signal window and residual-domain noise window. External <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> noise is accepted by ns_gid and group_sparse because both use NS-GID inverse-operator regularization; it does not replace load(d, dwin, nwin) or loadnoise(d, nwin). </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">

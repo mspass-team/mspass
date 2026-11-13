@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::algorithms::deconvolution::Base3CDecon</compoundname>
     <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::CNR3CDecon</derivedcompoundref>
@@ -67,8 +67,7 @@
 <para>Return a FIR represention of the inverse filter. </para>
         </briefdescription>
         <detaileddescription>
-<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
- </para>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -85,7 +84,7 @@
 <para>Return appropriate quality measures. </para>
         </briefdescription>
         <detaileddescription>
-<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

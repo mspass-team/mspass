@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="_taper_8cc" kind="file" language="C++">
     <compoundname>Taper.cc</compoundname>
     <includes refid="_taper_8h" local="yes">mspass/algorithms/Taper.h</includes>
@@ -327,7 +327,7 @@
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms<sp/>{</highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::seismic;</highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal">LinearTaper::LinearTaper()<sp/>{</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kindref="member">head</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
@@ -729,8 +729,8 @@
 <codeline lineno="404"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="405"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="406"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="407" refid="classmspass_1_1algorithms_1_1_top_mute_1a1abf4a2d778c70605ce11b75d1c80ddb" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute::TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;parent)<sp/>:<sp/>taper(parent.taper)<sp/>{}</highlight></codeline>
-<codeline lineno="408" refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;<ref refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kindref="member">TopMute::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
+<codeline lineno="407" refid="classmspass_1_1algorithms_1_1_top_mute_1a1abf4a2d778c70605ce11b75d1c80ddb" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute::TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref><sp/>&amp;parent)<sp/>:<sp/>taper(parent.taper)<sp/>{}</highlight></codeline>
+<codeline lineno="408" refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref><sp/>&amp;<ref refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kindref="member">TopMute::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref><sp/>&amp;parent)<sp/>{</highlight></codeline>
 <codeline lineno="409"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(&amp;parent<sp/>!=<sp/></highlight><highlight class="keyword">this</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
 <codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;taper<sp/>=<sp/>parent.taper;</highlight></codeline>
 <codeline lineno="411"><highlight class="normal"><sp/><sp/>}</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_basic_processing_history" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::BasicProcessingHistory</compoundname>
     <derivedcompoundref refid="classmspass_1_1utility_1_1_processing_history" prot="public" virt="non-virtual">mspass::utility::ProcessingHistory</derivedcompoundref>
@@ -117,7 +117,7 @@
         <name>BasicProcessingHistory</name>
         <qualifiedname>mspass::utility::BasicProcessingHistory::BasicProcessingHistory</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref> &amp;</type>
+          <type>const BasicProcessingHistory &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -222,13 +222,13 @@
         <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" compoundref="_processing_history_8h" startline="91" endline="91">jobname</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_processing_history_1a4b552f2657fdad975723d9fc73e7875a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref> &amp;</type>
+        <type>BasicProcessingHistory &amp;</type>
         <definition>BasicProcessingHistory &amp; mspass::utility::BasicProcessingHistory::operator=</definition>
         <argsstring>(const BasicProcessingHistory &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::utility::BasicProcessingHistory::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref> &amp;</type>
+          <type>const BasicProcessingHistory &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -275,8 +275,7 @@
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Base class defining core concepts. <linebreak/>
- </para>
+<para>Base class defining core concepts. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="3">

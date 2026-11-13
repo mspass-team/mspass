@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mspass::seismic::TimeSeries &#8212; MsPASS 2.4.4.dev121+ga7db94e3c documentation</title>
+    <title>mspass::seismic::TimeSeries &#8212; MsPASS 2.4.4.dev122+gb075c5a7b documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=53fd6c2d"></script>
+    <script src="../_static/documentation_options.js?v=3cc4ca13"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="mspass::utility::Metadata" href="mspass.utility.Metadata.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev121" />
+  <meta name="docsearch:version" content="2.4.4.dev122" />
   </head>
   
   
@@ -498,7 +498,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t">
 <span id="_CPPv3N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t"></span><span id="_CPPv2N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t"></span><span id="mspass::seismic::TimeSeries::TimeSeries__sC"></span><span class="target" id="classmspass_1_1seismic_1_1_time_series_1a88937f6f1cd72c8f20d8a798cf5b951a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TimeSeries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nsamples</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t" title="Link to this definition">#</a><br /></dt>
 <dd><p>Bare bones constructor allocates space and little else.</p>
-<p>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates an nsamples vector and initializes it to all zeros. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data vector, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</p>
+<p>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates an nsamples vector and initializes it to all zeros. The data are marked dead because the assumption is the caller will fill out commonly needed basic <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a>, load some kind of sample data into the data vector, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>nsamples</strong> – is the number of samples needed for storing the data vector. </p>
@@ -510,15 +510,15 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata">
 <span id="_CPPv3N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata"></span><span id="_CPPv2N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata"></span><span id="mspass::seismic::TimeSeries::TimeSeries__BasicTimeSeriesCR.MetadataCR"></span><span class="target" id="classmspass_1_1seismic_1_1_time_series_1ad50dc65d5845189ef178195589665e5e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TimeSeries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">BasicTimeSeries</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bts</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Metadata</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">md</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata" title="Link to this definition">#</a><br /></dt>
 <dd><p>Partially construct from components.</p>
-<p>There are times one wants to use the Metadata area as a template to flesh out a CoreTimeSeries as what might be called skin and bones: skin is Metadata and bones as BasicTimeSeries data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(“npts”)). It then creates the data vector of that length and initialzies it to all zeros.</p>
+<p>There are times one wants to use the <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> area as a template to flesh out a CoreTimeSeries as what might be called skin and bones: skin is <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> and bones as BasicTimeSeries data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(“npts”)). It then creates the data vector of that length and initialzies it to all zeros.</p>
 <p>This constructor is largely a wrapper for the CoreTimeSeries version with the same signature but it also initalizes the ProcessingHistory to null (calling the default constructor) </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata">
 <span id="_CPPv3N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata"></span><span id="_CPPv2N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata"></span><span id="mspass::seismic::TimeSeries::TimeSeries__MetadataCR"></span><span class="target" id="classmspass_1_1seismic_1_1_time_series_1a5c517e614529917e488eb3539da109e2"></span><span class="sig-name descname"><span class="n"><span class="pre">TimeSeries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Metadata</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">md</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK8Metadata" title="Link to this definition">#</a><br /></dt>
-<dd><p>Partially construct from Metadata alone.</p>
-<p>This constructor is useful for interaction with MongoDB where the Metadata container is constructed directly from MongoDB documents the database uses for storage. A key restrition of this constructor is that BasicTimeSeries attributes and the size of the internal array buffer, which is set by npts, are extracted from Metadata with keys fixed in the C++ code. The following keys are required or this contructor will throw a MwPASSWrror:</p>
+<dd><p>Partially construct from <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> alone.</p>
+<p>This constructor is useful for interaction with MongoDB where the <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> container is constructed directly from MongoDB documents the database uses for storage. A key restrition of this constructor is that BasicTimeSeries attributes and the size of the internal array buffer, which is set by npts, are extracted from <a class="reference internal" href="mspass.utility.Metadata.html#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> with keys fixed in the C++ code. The following keys are required or this contructor will throw a MwPASSWrror:</p>
 <p>dt - sample sample_interval t0 - data startttime npts - number of samples (s array will be initialized to this many zeros) time_standard - UTC or Relative (anything but UTC is taken as relative)</p>
 <p>It will also handle but not require the two attributes used in the mspass schema to handle shifting from absolute to relative time. These keys are t0_shift - sets amount t0 has been shiftee when originally utc but set to relative with the shift method. Ignored if time is UTC or it is not defined. </p>
 </dd></dl>

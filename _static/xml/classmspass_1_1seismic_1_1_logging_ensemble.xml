@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_logging_ensemble" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::LoggingEnsemble</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_ensemble" prot="public" virt="non-virtual">mspass::seismic::Ensemble&lt; T &gt;</basecompoundref>
     <includes refid="_ensemble_8h" local="no">Ensemble.h</includes>
     <templateparamlist>
       <param>
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref></type>
+        <type>typename T</type>
       </param>
     </templateparamlist>
     <sectiondef kind="public-attrib">
@@ -28,7 +28,7 @@
     </sectiondef>
     <sectiondef kind="private-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_logging_ensemble_1a521a3c03f39b4c2046e73723aa7e4355" prot="private" static="no" mutable="no">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::ensemble_is_live</definition>
         <argsstring></argsstring>
         <name>ensemble_is_live</name>
@@ -57,6 +57,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="146" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="146" bodyend="146"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1ab587f8981a828a4fbfefb2a7f6c61f8d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -65,7 +67,7 @@
         <name>LoggingEnsemble</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::LoggingEnsemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>n</declname>
         </param>
         <briefdescription>
@@ -77,6 +79,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="159" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="159" bodyend="161"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a37b14e0de1410d987f651d91a5a028b8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -85,11 +89,11 @@
         <name>LoggingEnsemble</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::LoggingEnsemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>n</declname>
         </param>
         <briefdescription>
@@ -101,6 +105,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="168" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="168" bodyend="173"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">mspass::utility::Metadata::md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a3095395112d63700e473ef4e6afa00f8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -109,15 +116,15 @@
         <name>LoggingEnsemble</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::LoggingEnsemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> &amp;</type>
           <declname>elogin</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>ndata</declname>
         </param>
         <briefdescription>
@@ -129,6 +136,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="180" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="180" bodyend="183"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">mspass::utility::Metadata::md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1ada03de0d9a3e1b1168ee0b77738fc023" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -137,18 +147,20 @@
         <name>LoggingEnsemble</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::LoggingEnsemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref> &gt; &amp;</type>
+          <type>const LoggingEnsemble&lt; T &gt; &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. <linebreak/>
- </para>
+<para>Standard copy constructor. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="185" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="185" bodyend="188"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a3bb4144f662b8a7e3f3d077c10d0d643" compoundref="_ensemble_8h" startline="146" endline="146">mspass::seismic::LoggingEnsemble&lt; T &gt;::LoggingEnsemble</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a2b0feca40a0c20f19d5ad4431bf5acbd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -157,7 +169,7 @@
         <name>LoggingEnsemble</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::LoggingEnsemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref> &gt; &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" kindref="member">Ensemble</ref>&lt; T &gt; &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -168,9 +180,11 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="191" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="191" bodyend="193"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" compoundref="_ensemble_8h" startline="27" endline="27">mspass::seismic::Ensemble&lt; T &gt;::Ensemble</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a41768cde10b3097bf91e69014d90a3c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::LoggingEnsemble&lt; T &gt;::kill</definition>
         <argsstring>()</argsstring>
         <name>kill</name>
@@ -185,7 +199,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="195" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="195" bodyend="195"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1ac116a50f1dabe119817a6e7ffa7a8955" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::live</definition>
         <argsstring>() const</argsstring>
         <name>live</name>
@@ -200,7 +214,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="197" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="197" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1af51f2767027498eea2e29a6eee70bb52" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::dead</definition>
         <argsstring>() const</argsstring>
         <name>dead</name>
@@ -215,7 +229,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="200" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="200" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</definition>
         <argsstring>()</argsstring>
         <name>validate</name>
@@ -229,9 +243,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="208" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="264" bodyend="271"/>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a41768cde10b3097bf91e69014d90a3c5" compoundref="_ensemble_8h" startline="195" endline="195">mspass::seismic::LoggingEnsemble&lt; T &gt;::kill</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a77c6b189bfb9914583e66d8b0f98d3b8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::LoggingEnsemble&lt; T &gt;::set_live</definition>
         <argsstring>()</argsstring>
         <name>set_live</name>
@@ -248,13 +263,13 @@
         <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" compoundref="_ensemble_8h" startline="264" endline="271">mspass::seismic::LoggingEnsemble&lt; T &gt;::validate</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a323e7e7d940babd54e9536952f7fe985" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref> &gt; &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble_1a3bb4144f662b8a7e3f3d077c10d0d643" kindref="member">LoggingEnsemble</ref>&lt; T &gt; &amp;</type>
         <definition>LoggingEnsemble&lt; T &gt; &amp; mspass::seismic::LoggingEnsemble&lt; T &gt;::operator=</definition>
         <argsstring>(const LoggingEnsemble&lt; T &gt; &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::LoggingEnsemble::operator=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">T</ref> &gt; &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_logging_ensemble_1a3bb4144f662b8a7e3f3d077c10d0d643" kindref="member">LoggingEnsemble</ref>&lt; T &gt; &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -266,11 +281,12 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="225" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="225" bodyend="234"/>
         <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" compoundref="_ensemble_8h" startline="143">mspass::seismic::LoggingEnsemble&lt; T &gt;::elog</references>
+        <references refid="classmspass_1_1seismic_1_1_logging_ensemble_1a3bb4144f662b8a7e3f3d077c10d0d643" compoundref="_ensemble_8h" startline="146" endline="146">mspass::seismic::LoggingEnsemble&lt; T &gt;::LoggingEnsemble</references>
         <references refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" compoundref="_ensemble_8h" startline="25">mspass::seismic::Ensemble&lt; Tdata &gt;::member</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="460" endline="466">mspass::utility::Metadata::operator=</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_logging_ensemble_1a3f88e04c5ded5bf7e5225f2d99ce7267" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+        <type>size_t</type>
         <definition>size_t mspass::seismic::LoggingEnsemble&lt; T &gt;::memory_use</definition>
         <argsstring>() const</argsstring>
         <name>memory_use</name>
@@ -279,7 +295,7 @@
 <para>Estimate memory used by this ensemble. </para>
         </briefdescription>
         <detaileddescription>
-<para>The estimate includes the object itself, each member object&apos;s memory_use estimate, ensemble Metadata storage, changed-or-set keys, and the ensemble error log. </para>
+<para>The estimate includes the object itself, each member object&apos;s memory_use estimate, ensemble <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> storage, changed-or-set keys, and the ensemble error log. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -293,7 +309,7 @@
 <para>Template class that extends <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> to include an error log and live tests. </para>
     </briefdescription>
     <detaileddescription>
-<para>This class extends the <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> class defined in MsPASS for bundling collections of data that can be pushed to an std::vector container. The class is actually very generic, but mspass defines it for <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> and <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> objects. This class is a necessary extension for an algorithm that take ensembles in and emits a different ensemble. In that situation we need a way to indicate the entire ensemble is invalid and not be to used and post error messages that give an explanation of why the output is invalid. This class provides that mechanism by adding a <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> and a (private) boolean defining if the ensemble has valid data. That makes the API to a <ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref> a hybrid with the atomic <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> and <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects (adds the dna of ErrorLogger and live/dead concept).</para>
+<para>This class extends the <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> class defined in MsPASS for bundling collections of data that can be pushed to an std::vector container. The class is actually very generic, but mspass defines it for <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> and <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> objects. This class is a necessary extension for an algorithm that take ensembles in and emits a different ensemble. In that situation we need a way to indicate the entire ensemble is invalid and not be to used and post error messages that give an explanation of why the output is invalid. This class provides that mechanism by adding a <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref> and a (private) boolean defining if the ensemble has valid data. That makes the API to a <ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">LoggingEnsemble</ref> a hybrid with the atomic <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> and <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects (adds the dna of <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> and live/dead concept).</para>
 <para>A secondary fundamental reason this class can be needed is to parallelize algorithms that emit an ensemble (regardless of inputs). The live/dead tests and error logger make the handlers consistent with the atomic objects of mspass. </para>
     </detaileddescription>
     <inheritancegraph>
@@ -362,9 +378,6 @@
       <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a805180a6091e44e3ccb1e53c8576ea5a" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>elog</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>end</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>Ensemble</name></member>
-      <member refid="classmspass_1_1seismic_1_1_ensemble_1aa3206817575b4239ec80237b3f4f837b" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>Ensemble</name></member>
-      <member refid="classmspass_1_1seismic_1_1_ensemble_1ae61caab62fca548faddc8c2a274b7668" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>Ensemble</name></member>
-      <member refid="classmspass_1_1seismic_1_1_ensemble_1af9d4e39db1491f8aac9d9227440216de" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>Ensemble</name></member>
       <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a521a3c03f39b4c2046e73723aa7e4355" prot="private" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>ensemble_is_live</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>erase</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>get</name></member>
@@ -405,7 +418,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator+</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a323e7e7d940babd54e9536952f7fe985" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator=</name></member>
-      <member refid="classmspass_1_1seismic_1_1_ensemble_1afb7a281036e2cf5e79203495bda54ea6" prot="public" virt="non-virtual" ambiguityscope="Ensemble&lt; T &gt;::"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1afb7a281036e2cf5e79203495bda54ea6" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::Ensemble&lt; T &gt;::"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1afc2865503398025520f34034ec5d1b66" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>operator[]</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>put</name></member>
@@ -425,7 +438,6 @@
       <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a77c6b189bfb9914583e66d8b0f98d3b8" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>set_live</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>size</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>sync_metadata</name></member>
-      <member refid="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>sync_metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>type</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1ae4fafdd7d141fcb519571e24bd803478" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>update_metadata</name></member>
       <member refid="classmspass_1_1seismic_1_1_logging_ensemble_1a7de59947da7bc5e8e4a4be2fbe01b93b" prot="public" virt="non-virtual"><scope>mspass::seismic::LoggingEnsemble</scope><name>validate</name></member>

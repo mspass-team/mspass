@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_basic_taper" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::algorithms::BasicTaper</compoundname>
     <derivedcompoundref refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public" virt="non-virtual">mspass::algorithms::CosineTaper</derivedcompoundref>
@@ -112,8 +112,8 @@
         <argsstring>(mspass::seismic::TimeSeries &amp;d)=0</argsstring>
         <name>apply</name>
         <qualifiedname>mspass::algorithms::BasicTaper::apply</qualifiedname>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb">apply</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb">apply</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b">apply</reimplementedby>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
@@ -122,7 +122,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Apply this taper to a scalar TimeSeries. </para>
+<para>Apply this taper to a scalar <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -134,8 +134,8 @@
         <argsstring>(mspass::seismic::Seismogram &amp;d)=0</argsstring>
         <name>apply</name>
         <qualifiedname>mspass::algorithms::BasicTaper::apply</qualifiedname>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56">apply</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56">apply</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103">apply</reimplementedby>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
@@ -144,7 +144,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Apply this taper to a three-component Seismogram. </para>
+<para>Apply this taper to a three-component <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -256,8 +256,8 @@
         <argsstring>() const =0</argsstring>
         <name>get_t0head</name>
         <qualifiedname>mspass::algorithms::BasicTaper::get_t0head</qualifiedname>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436">get_t0head</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1abab71d6fc9bf3e6413c831899f6078ef">get_t0head</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a0b48a3c90385cff894c9c1be8c6f3436">get_t0head</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1af4d087c6e3af62c4279e73a843144176">get_t0head</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -274,8 +274,8 @@
         <argsstring>() const =0</argsstring>
         <name>get_t1head</name>
         <qualifiedname>mspass::algorithms::BasicTaper::get_t1head</qualifiedname>
-        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81">get_t1head</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1af5f878917867d868c49965e92b997664">get_t1head</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a56c92176f8b7c425c58f11227a216e81">get_t1head</reimplementedby>
         <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1a3e34ba1539ae7b1567bbe0bbb7a8ec10">get_t1head</reimplementedby>
         <briefdescription>
         </briefdescription>

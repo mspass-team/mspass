@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_metadata_get_error" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::MetadataGetError</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" prot="public" virt="non-virtual">mspass::utility::MsPASSError</basecompoundref>
@@ -36,6 +36,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="27" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="27" bodyend="28"/>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" compoundref="_ms_p_a_s_s_error_8h" startline="43" endline="46">mspass::utility::MsPASSError::MsPASSError</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1abed3080ca93a137df98dc3586b8ac777" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -157,7 +158,7 @@
         <name>MetadataGetError</name>
         <qualifiedname>mspass::utility::MetadataGetError::MetadataGetError</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref> &amp;</type>
+          <type>const MetadataGetError &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -170,15 +171,16 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="81" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="81" bodyend="84"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_get_error_1aed2c0cb6144d56a95bceeb5176bbe569" compoundref="_metadata_8h" startline="27" endline="28">MetadataGetError</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_metadata_get_error_1add785f65915c4f138850dbf86b0a9cd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref></type>
+        <type><ref refid="classmspass_1_1utility_1_1_metadata_get_error_1aed2c0cb6144d56a95bceeb5176bbe569" kindref="member">MetadataGetError</ref></type>
         <definition>MetadataGetError mspass::utility::MetadataGetError::operator=</definition>
         <argsstring>(const MetadataGetError &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::utility::MetadataGetError::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata_get_error_1aed2c0cb6144d56a95bceeb5176bbe569" kindref="member">MetadataGetError</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -191,14 +193,14 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" line="86" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="86" bodyend="92"/>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" compoundref="_ms_p_a_s_s_error_8h" startline="110">mspass::utility::MsPASSError::badness</references>
         <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" compoundref="_ms_p_a_s_s_error_8h" startline="108">mspass::utility::MsPASSError::message</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_get_error_1aed2c0cb6144d56a95bceeb5176bbe569" compoundref="_metadata_8h" startline="27" endline="28">MetadataGetError</references>
       </memberdef>
     </sectiondef>
     <briefdescription>
 <para>Error thrown when get operators fail. </para>
     </briefdescription>
     <detaileddescription>
-<para>This is a convenience class used to construct a more informative set of errors when get operations fail. <linebreak/>
- </para>
+<para>This is a convenience class used to construct a more informative set of errors when get operations fail. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">

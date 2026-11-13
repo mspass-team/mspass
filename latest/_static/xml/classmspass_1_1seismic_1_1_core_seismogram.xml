@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_core_seismogram" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::CoreSeismogram</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
@@ -26,7 +26,7 @@
     </sectiondef>
     <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" prot="protected" static="no" mutable="no">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::components_are_orthogonal</definition>
         <argsstring></argsstring>
         <name>components_are_orthogonal</name>
@@ -42,7 +42,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="515" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="515" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" prot="protected" static="no" mutable="no">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::components_are_cardinal</definition>
         <argsstring></argsstring>
         <name>components_are_cardinal</name>
@@ -58,7 +58,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="524" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="524" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" prot="protected" static="no" mutable="no">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+        <type>double</type>
         <definition>double mspass::seismic::CoreSeismogram::tmatrix[3][3]</definition>
         <argsstring>[3][3]</argsstring>
         <name>tmatrix</name>
@@ -90,9 +90,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="60" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="27" bodyend="41"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">mspass::seismic::BasicTimeSeries::BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" compoundref="_metadata_8h" startline="105" endline="105">mspass::utility::Metadata::Metadata</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" compoundref="_core_seismogram_8cc" startline="1016" endline="1031">set_dt</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1049" endline="1074">set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="1032" endline="1048">set_t0</references>
@@ -105,7 +106,7 @@
         <name>CoreSeismogram</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::CoreSeismogram</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>nsamples</declname>
         </param>
         <briefdescription>
@@ -126,9 +127,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="69" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="42" bodyend="61"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">mspass::seismic::BasicTimeSeries::BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" compoundref="_metadata_8h" startline="105" endline="105">mspass::utility::Metadata::Metadata</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1049" endline="1074">set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
       </memberdef>
@@ -139,11 +141,11 @@
         <name>CoreSeismogram</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::CoreSeismogram</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &gt; &amp;</type>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &gt; &amp;</type>
           <declname>ts</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">unsigned</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
+          <type>const unsigned int</type>
           <declname>component_to_clone</declname>
           <defval>0</defval>
         </param>
@@ -185,23 +187,26 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="105" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="208" bodyend="377"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">mspass::seismic::BasicTimeSeries::BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" compoundref="_core_seismogram_8h" startline="500" endline="502">endtime</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" compoundref="_metadata_8cc" startline="495" endline="505">mspass::utility::Metadata::erase</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" compoundref="_basic_time_series_8h" startline="249">mspass::seismic::BasicTimeSeries::mdt</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" compoundref="_metadata_8h" startline="105" endline="105">mspass::utility::Metadata::Metadata</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
+        <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1a2c970fd569ae883e5545f81e58458ef9" compoundref="_spherical_coordinate_8h" startline="29">mspass::utility::SphericalCoordinate::phi</references>
         <references refid="namespacemspass_1_1seismic_1af6f66d6ba46332022801fc62f96168a8">mspass::seismic::SEISMICMD_hang</references>
         <references refid="namespacemspass_1_1seismic_1a477252b5b499a023541fdba2cb62bfe5">mspass::seismic::SEISMICMD_vang</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="151" endline="151">mspass::seismic::BasicTimeSeries::set_live</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1049" endline="1074">set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="1032" endline="1048">set_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="176" endline="176">mspass::seismic::BasicTimeSeries::t0</references>
+        <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1ae06e9f7deab80ef715e5a3629fbab2f7" compoundref="_spherical_coordinate_8h" startline="24">mspass::utility::SphericalCoordinate::theta</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
+        <references refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a1dd30086a986a3a0669cd974e65bd563" compoundref="_ms_p_a_s_s_error_8h" startline="100" endline="100">mspass::utility::MsPASSError::what</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a67232df3f9d1e1b5ac245f97478adee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -210,13 +215,13 @@
         <name>CoreSeismogram</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::CoreSeismogram</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+          <type>const bool</type>
           <declname>load_data</declname>
-          <defval><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">true</ref></defval>
+          <defval>true</defval>
         </param>
         <briefdescription>
 <para>Construct from Metadata definition that includes data path. </para>
@@ -246,7 +251,7 @@
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if required metadata are missing. </para>
+<para>throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if required metadata are missing. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -258,8 +263,6 @@
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" compoundref="_basic_time_series_8h" startline="109" endline="112">mspass::seismic::BasicTimeSeries::force_t0_shift</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" compoundref="_metadata_8h" startline="256" endline="263">mspass::utility::Metadata::get_any</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" compoundref="_metadata_8cc" startline="352" endline="362">mspass::utility::Metadata::get_double</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" compoundref="_metadata_8cc" startline="379" endline="390">mspass::utility::Metadata::get_long</references>
@@ -267,10 +270,11 @@
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">mspass::utility::Metadata::md</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" compoundref="_basic_time_series_8h" startline="249">mspass::seismic::BasicTimeSeries::mdt</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" compoundref="_metadata_8h" startline="105" endline="105">mspass::utility::Metadata::Metadata</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mspass::seismic::BasicTimeSeries::mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a">mspass::seismic::SEISMICMD_dfile</references>
         <references refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546">mspass::seismic::SEISMICMD_dir</references>
         <references refid="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772">mspass::seismic::SEISMICMD_dt</references>
@@ -286,7 +290,7 @@
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" compoundref="_basic_time_series_8h" startline="162" endline="167">mspass::seismic::BasicTimeSeries::time_is_relative</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" compoundref="_basic_time_series_8h" startline="15">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a9c993726c259d7a6f1c213d0d04db5ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -295,7 +299,7 @@
         <name>CoreSeismogram</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::CoreSeismogram</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const CoreSeismogram &amp;</type>
           <defname>t3c</defname>
         </param>
         <briefdescription>
@@ -306,20 +310,23 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="148" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="63" bodyend="72"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">mspass::seismic::BasicTimeSeries::BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
+        <references refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" compoundref="_metadata_8h" startline="105" endline="105">mspass::utility::Metadata::Metadata</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::set_dt</definition>
         <argsstring>(const double sample_interval)</argsstring>
         <name>set_dt</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::set_dt</qualifiedname>
         <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8">set_dt</reimplements>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>sample_interval</declname>
         </param>
         <briefdescription>
@@ -341,21 +348,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="162" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1016" bodyend="1031"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772">mspass::seismic::SEISMICMD_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8" compoundref="_basic_time_series_8h" startline="199" endline="199">mspass::seismic::BasicTimeSeries::set_dt</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::set_npts</definition>
         <argsstring>(const size_t npts)</argsstring>
         <name>set_npts</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::set_npts</qualifiedname>
         <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c">set_npts</reimplements>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>npts</declname>
         </param>
         <briefdescription>
@@ -378,17 +384,15 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="184" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1049" bodyend="1074"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="namespacemspass_1_1seismic_1ac848a79911ca1930abf265f01a6d635f">mspass::seismic::SEISMICMD_npts</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c" compoundref="_basic_time_series_8h" startline="211" endline="211">mspass::seismic::BasicTimeSeries::set_npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" compoundref="dmatrix_8cc" startline="203" endline="206">mspass::utility::dmatrix::zero</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::sync_npts</definition>
         <argsstring>()</argsstring>
         <name>sync_npts</name>
@@ -402,8 +406,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="191" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1075" bodyend="1094"/>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" compoundref="dmatrix_8cc" startline="216" endline="216">mspass::utility::dmatrix::columns</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
@@ -412,14 +414,14 @@
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::set_t0</definition>
         <argsstring>(const double t0in)</argsstring>
         <name>set_t0</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::set_t0</qualifiedname>
         <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1abe29da17a295b2b439951d3ab6378caf">set_t0</reimplements>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>t0in</declname>
         </param>
         <briefdescription>
@@ -442,20 +444,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="208" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1032" bodyend="1048"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" compoundref="_metadata_8h" startline="277" endline="281">mspass::utility::Metadata::put</references>
         <references refid="namespacemspass_1_1seismic_1a1e5b45ce0ed02e9c1d154ea0434138c0">mspass::seismic::SEISMICMD_t0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe29da17a295b2b439951d3ab6378caf" compoundref="_basic_time_series_8h" startline="223" endline="223">mspass::seismic::BasicTimeSeries::set_t0</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
         <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator=</definition>
         <argsstring>(const CoreSeismogram &amp;)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
           <defname>seisin</defname>
         </param>
         <briefdescription>
@@ -468,20 +469,20 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="212" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="898" bodyend="912"/>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" compoundref="_basic_time_series_8cc" startline="63" endline="74">mspass::seismic::BasicTimeSeries::operator=</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="460" endline="466">mspass::utility::Metadata::operator=</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
         <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator+=</definition>
         <argsstring>(const CoreSeismogram &amp;d)</argsstring>
         <name>operator+=</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator+=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
@@ -500,7 +501,7 @@
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>MsPASSError</parametername>
+<parametername><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
 <para>if lhs and rhs have incompatible time standards. </para>
@@ -512,9 +513,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="231" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="924" bodyend="960"/>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" compoundref="_core_seismogram_8h" startline="500" endline="502">endtime</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
@@ -523,13 +524,13 @@
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref></type>
         <definition>const CoreSeismogram mspass::seismic::CoreSeismogram::operator+</definition>
         <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
         <name>operator+</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator+</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <briefdescription>
@@ -541,16 +542,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="239" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1005" bodyend="1009"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
         <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator*=</definition>
         <argsstring>(const double)</argsstring>
         <name>operator*=</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator*=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <defname>scale</defname>
         </param>
         <briefdescription>
@@ -561,19 +562,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="241" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="913" bodyend="923"/>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
         <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator-=</definition>
         <argsstring>(const CoreSeismogram &amp;d)</argsstring>
         <name>operator-=</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator-=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
@@ -592,7 +593,7 @@
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>MsPASSError</parametername>
+<parametername><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
 <para>if lhs and rhs have incompatible time standards. </para>
@@ -604,8 +605,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="260" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="965" bodyend="1003"/>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" compoundref="_core_seismogram_8h" startline="500" endline="502">endtime</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mspass::seismic::BasicTimeSeries::mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="173" endline="173">mspass::seismic::BasicTimeSeries::npts</references>
@@ -615,13 +616,13 @@
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref></type>
         <definition>const CoreSeismogram mspass::seismic::CoreSeismogram::operator-</definition>
         <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
         <name>operator-</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator-</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <briefdescription>
@@ -633,16 +634,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="268" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1011" bodyend="1015"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" compoundref="_core_seismogram_8cc" startline="27" endline="41">CoreSeismogram</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref> &gt;</type>
+        <type>std::vector&lt; double &gt;</type>
         <definition>vector&lt; double &gt; mspass::seismic::CoreSeismogram::operator[]</definition>
         <argsstring>(const int sample) const</argsstring>
         <name>operator[]</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator[]</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">int</ref></type>
+          <type>const int</type>
           <declname>sample</declname>
         </param>
         <briefdescription>
@@ -661,7 +662,7 @@
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>MsPASSError</parametername>
+<parametername><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
 <para>if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead. Note the code does this by catching an error thrown by dmatrix in this situation, printing the error message from the dmatrix object, and then throwing a new SeisppError with a shorter message. </para>
@@ -675,16 +676,15 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="292" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1096" bodyend="1106"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref> &gt;</type>
+        <type>std::vector&lt; double &gt;</type>
         <definition>vector&lt; double &gt; mspass::seismic::CoreSeismogram::operator[]</definition>
         <argsstring>(const double time) const</argsstring>
         <name>operator[]</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::operator[]</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>time</declname>
         </param>
         <briefdescription>
@@ -705,7 +705,7 @@
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
-<parametername>MsPASSError</parametername>
+<parametername><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
 <para>will be thrown if the time is outside the data range. </para>
@@ -717,7 +717,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="304" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1107" bodyend="1119"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="72" endline="72">mspass::seismic::BasicTimeSeries::sample_number</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a22f733f1d159422844f3091450813445" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
@@ -736,7 +735,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="306" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="306" bodyend="306"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::rotate_to_standard</definition>
         <argsstring>()</argsstring>
         <name>rotate_to_standard</name>
@@ -761,15 +760,12 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="322" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="382" bodyend="488"/>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::rotate</definition>
         <argsstring>(mspass::utility::SphericalCoordinate &amp;sc)</argsstring>
         <name>rotate</name>
@@ -783,7 +779,7 @@
         <detaileddescription>
 <para>Rotate data using a P wave type coordinate definition.</para>
 <para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered. The transformation matrix is effectively the matrix product of two coordinate rotations: (1) rotation around x3 by angle phi and (2) rotation around x1 by theta.</para>
-<para>The sense of this transformation is confusing because of a difference in convention between spherical coordinates and standard earth coordinates. In particular, orientation on the earth uses a convention with x2 being the x2 axis and bearings are relative to that with a standard azimuth measured clockwise from north. Spherical coordinate angle phi (used here) is measured counterclockwise relative to the x1 axis, which is east in standard earth coordinates. This transformation is computed using a phi angle. To use this then to compute a transformation to standard ray coordinates with x2 pointing in the direction of wavefront advance, phi should be set to pi/2-azimuth which gives the phi angle needed to rotate x2 to radial. This is extremely confusing because in spherical coordinates it would be more intuitive to rotate x1 to radial, but this is NOT the convention used here. In general to use this feature the best way to avoid this confusion is to use the PMHalfSpaceModel procedure to compute a SphericalCoordinate object consistent with given propagation direction defined by a slowness vector. Alternatively, use the free_surface_transformation method defined below.</para>
+<para>The sense of this transformation is confusing because of a difference in convention between spherical coordinates and standard earth coordinates. In particular, orientation on the earth uses a convention with x2 being the x2 axis and bearings are relative to that with a standard azimuth measured clockwise from north. Spherical coordinate angle phi (used here) is measured counterclockwise relative to the x1 axis, which is east in standard earth coordinates. This transformation is computed using a phi angle. To use this then to compute a transformation to standard ray coordinates with x2 pointing in the direction of wavefront advance, phi should be set to pi/2-azimuth which gives the phi angle needed to rotate x2 to radial. This is extremely confusing because in spherical coordinates it would be more intuitive to rotate x1 to radial, but this is NOT the convention used here. In general to use this feature the best way to avoid this confusion is to use the PMHalfSpaceModel procedure to compute a <ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref> object consistent with given propagation direction defined by a slowness vector. Alternatively, use the free_surface_transformation method defined below.</para>
 <para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to create cummulative transformations.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -802,23 +798,21 @@
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
+        <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1a2c970fd569ae883e5545f81e58458ef9" compoundref="_spherical_coordinate_8h" startline="29">mspass::utility::SphericalCoordinate::phi</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" compoundref="_core_seismogram_8cc" startline="382" endline="488">rotate_to_standard</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
         <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1ae06e9f7deab80ef715e5a3629fbab2f7" compoundref="_spherical_coordinate_8h" startline="24">mspass::utility::SphericalCoordinate::theta</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a8bfacfda2b33e2df7938695126fbb0db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::rotate</definition>
         <argsstring>(const double nu[3])</argsstring>
         <name>rotate</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::rotate</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>nu</declname>
           <array>[3]</array>
         </param>
@@ -827,7 +821,7 @@
         <detaileddescription>
 <para>Rotate data using a P wave type coordinate definition.</para>
 <para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered.</para>
-<para>This method effectively turns nu into a SphericalCoordinate object and calles the related rotate method that has a SphericalCoordinate object as an argument. The potential confusion of orientation is not as extreme here. After the transformation x3prime will point in the direction of nu, x2 will be in the x3-x3prime plane (rotation by theta) and orthogonal to x3prime, and x1 will be horizontal and perpendicular to x2prime and x3prime.</para>
+<para>This method effectively turns nu into a <ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref> object and calles the related rotate method that has a <ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref> object as an argument. The potential confusion of orientation is not as extreme here. After the transformation x3prime will point in the direction of nu, x2 will be in the x3-x3prime plane (rotation by theta) and orthogonal to x3prime, and x1 will be horizontal and perpendicular to x2prime and x3prime.</para>
 <para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
@@ -843,60 +837,53 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="393" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="597" bodyend="602"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" compoundref="_core_seismogram_8cc" startline="526" endline="596">rotate</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a895a06c26825e8abe8c8617622cf8d5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::rotate</definition>
         <argsstring>(const double phi)</argsstring>
         <name>rotate</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::rotate</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>phi</declname>
         </param>
         <briefdescription>
 <para>Rotate horizontals by a simple angle in degrees. </para>
         </briefdescription>
         <detaileddescription>
-<para><verbatim>A common transformation in 3C processing is a rotation of the
-horizontal components by an angle.  This leaves the vertical
-(assumed here x3) unaltered.   This routine rotates the horizontals
-by angle phi using with positive phi counterclockwise as in
-polar coordinates and the azimuth angle of spherical coordinates.
-
-Note this transformation is cummulative.  i.e. this transformation
-is cumulative.  The internal transformation matrix will be updated.
-This is a useful feature for things like incremental horizontal
-rotation in rotational angle grid searches.
-
-\param phi rotation angle around x3 axis in counterclockwise
-  direction (in radians).
-</verbatim> </para>
+<para>A common transformation in 3C processing is a rotation of the horizontal components by an angle. This leaves the vertical (assumed here x3) unaltered. This routine rotates the horizontals by angle phi using with positive phi counterclockwise as in polar coordinates and the azimuth angle of spherical coordinates.</para>
+<para>Note this transformation is cummulative. i.e. this transformation is cumulative. The internal transformation matrix will be updated. This is a useful feature for things like incremental horizontal rotation in rotational angle grid searches.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>phi</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>rotation angle around x3 axis in counterclockwise direction (in radians). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="410" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="611" bodyend="656"/>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::transform</definition>
         <argsstring>(const double a[3][3])</argsstring>
         <name>transform</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::transform</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>a</declname>
           <array>[3][3]</array>
         </param>
@@ -921,29 +908,26 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">mspass::seismic::BasicTimeSeries::nsamp</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::CoreSeismogram::free_surface_transformation</definition>
         <argsstring>(const mspass::seismic::SlownessVector u, const double vp0, const double vs0)</argsstring>
         <name>free_surface_transformation</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::free_surface_transformation</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">mspass::seismic::SlownessVector</ref></type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">mspass::seismic::SlownessVector</ref></type>
           <declname>u</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>vp0</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>vs0</declname>
         </param>
         <briefdescription>
@@ -981,15 +965,19 @@ rotation in rotational angle grid searches.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="432" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="710" bodyend="784"/>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1a6ae77a796e8927aa61c01821a89ea944" compoundref="_slowness_vector_8cc" startline="59" endline="70">mspass::seismic::SlownessVector::azimuth</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="145" endline="145">mspass::seismic::BasicTimeSeries::dead</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1a2e1d2b9fb9e0267ffa99ccf3291f5540" compoundref="_slowness_vector_8cc" startline="58" endline="58">mspass::seismic::SlownessVector::mag</references>
         <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1a2c970fd569ae883e5545f81e58458ef9" compoundref="_spherical_coordinate_8h" startline="29">mspass::utility::SphericalCoordinate::phi</references>
+        <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1a8f9f987e89e175fecb85c9cbe5bdbc13" compoundref="_spherical_coordinate_8h" startline="19">mspass::utility::SphericalCoordinate::radius</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" compoundref="_core_seismogram_8cc" startline="526" endline="596">rotate</references>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" compoundref="dmatrix_8cc" startline="207" endline="212">mspass::utility::dmatrix::size</references>
+        <references refid="structmspass_1_1utility_1_1_spherical_coordinate_1ae06e9f7deab80ef715e5a3629fbab2f7" compoundref="_spherical_coordinate_8h" startline="24">mspass::utility::SphericalCoordinate::theta</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" compoundref="_core_seismogram_8cc" startline="657" endline="695">transform</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" compoundref="_slowness_vector_8h" startline="21">mspass::seismic::SlownessVector::ux</references>
+        <references refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" compoundref="_slowness_vector_8h" startline="25">mspass::seismic::SlownessVector::uy</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aae2950b408052bda849ba07c4ea9b018" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref></type>
@@ -1012,13 +1000,13 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::set_transformation_matrix</definition>
         <argsstring>(const mspass::utility::dmatrix &amp;A)</argsstring>
         <name>set_transformation_matrix</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::set_transformation_matrix</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
           <declname>A</declname>
         </param>
         <briefdescription>
@@ -1042,7 +1030,7 @@ rotation in rotational angle grid searches.
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input matrix is not 3x3. </para>
+<para>throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if the input matrix is not 3x3. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1054,19 +1042,18 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" compoundref="_core_seismogram_8h" startline="493" endline="493">cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" compoundref="_metadata_8h" startline="346" endline="348">mspass::utility::Metadata::put_object</references>
         <references refid="namespacemspass_1_1seismic_1ab9de221412c0076cce8197b4f2e9df7a">mspass::seismic::SEISMICMD_tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ad60b2dca7acfd76ff1f8d677ef609f8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::set_transformation_matrix</definition>
         <argsstring>(const double a[3][3])</argsstring>
         <name>set_transformation_matrix</name>
         <qualifiedname>mspass::seismic::CoreSeismogram::set_transformation_matrix</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+          <type>const double</type>
           <declname>a</declname>
           <array>[3][3]</array>
         </param>
@@ -1090,7 +1077,7 @@ rotation in rotational angle grid searches.
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input matrix is not 3x3. </para>
+<para>throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if the input matrix is not 3x3. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1102,13 +1089,12 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" compoundref="_core_seismogram_8h" startline="493" endline="493">cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
         <references refid="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" compoundref="_metadata_8h" startline="346" endline="348">mspass::utility::Metadata::put_object</references>
         <references refid="namespacemspass_1_1seismic_1ab9de221412c0076cce8197b4f2e9df7a">mspass::seismic::SEISMICMD_tmatrix</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" compoundref="_core_seismogram_8h" startline="532">tmatrix</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a686a13c4938df315e175cd249a52b74e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::set_transformation_matrix</definition>
         <argsstring>(pybind11::object a)</argsstring>
         <name>set_transformation_matrix</name>
@@ -1137,7 +1123,7 @@ rotation in rotational angle grid searches.
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input type or dimension is not recognized. </para>
+<para>throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if the input type or dimension is not recognized. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -1146,11 +1132,11 @@ rotation in rotational angle grid searches.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="490" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="827" bodyend="897"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="477" endline="492">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" compoundref="dmatrix_8cc" startline="72" endline="91">mspass::utility::dmatrix::get_address</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" compoundref="_core_seismogram_8cc" startline="785" endline="805">set_transformation_matrix</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::cardinal</definition>
         <argsstring>() const</argsstring>
         <name>cardinal</name>
@@ -1166,7 +1152,7 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" compoundref="_core_seismogram_8h" startline="524">components_are_cardinal</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a41711bd9b0c88089e6e217f318c01de2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::orthogonal</definition>
         <argsstring>() const</argsstring>
         <name>orthogonal</name>
@@ -1182,7 +1168,7 @@ rotation in rotational angle grid searches.
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7e983515950366013bde880ddb740b36" compoundref="_core_seismogram_8h" startline="515">components_are_orthogonal</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">double</ref></type>
+        <type>double</type>
         <definition>double mspass::seismic::CoreSeismogram::endtime</definition>
         <argsstring>() const noexcept</argsstring>
         <name>endtime</name>
@@ -1195,7 +1181,6 @@ rotation in rotational angle grid searches.
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="500" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="500" bodyend="502"/>
-        <references refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" compoundref="dmatrix_8cc" startline="216" endline="216">mspass::utility::dmatrix::columns</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" compoundref="_basic_time_series_8h" startline="249">mspass::seismic::BasicTimeSeries::mdt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mspass::seismic::BasicTimeSeries::mt0</references>
         <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="52">u</references>
@@ -1203,7 +1188,7 @@ rotation in rotational angle grid searches.
     </sectiondef>
     <sectiondef kind="private-func">
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a6b524450abe7e5089051a045bb81af5f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">bool</ref></type>
+        <type>bool</type>
         <definition>bool mspass::seismic::CoreSeismogram::tmatrix_is_cardinal</definition>
         <argsstring>()</argsstring>
         <name>tmatrix_is_cardinal</name>

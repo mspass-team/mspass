@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1io_1_1_m_s_e_e_d__sid" kind="class" language="C++" prot="public">
     <compoundname>mspass::io::MSEED_sid</compoundname>
     <sectiondef kind="public-attrib">
@@ -110,7 +110,7 @@
         <name>MSEED_sid</name>
         <qualifiedname>mspass::io::MSEED_sid::MSEED_sid</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
+          <type>const MSEED_sid &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -136,13 +136,13 @@
         <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="48">sta</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1io_1_1_m_s_e_e_d__sid_1ab1347d1f7347e363358ecdd0395bcc7b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a95ad8bc3242340d973b6bb99241bb6fe" kindref="member">MSEED_sid</ref> &amp;</type>
         <definition>MSEED_sid &amp; mspass::io::MSEED_sid::operator=</definition>
         <argsstring>(const MSEED_sid &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::io::MSEED_sid::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a95ad8bc3242340d973b6bb99241bb6fe" kindref="member">MSEED_sid</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -176,7 +176,7 @@
         <name>operator!=</name>
         <qualifiedname>mspass::io::MSEED_sid::operator!=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a95ad8bc3242340d973b6bb99241bb6fe" kindref="member">MSEED_sid</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <briefdescription>
@@ -216,7 +216,7 @@
           <declname>os</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid" kindref="compound">MSEED_sid</ref> &amp;</type>
+          <type><ref refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a95ad8bc3242340d973b6bb99241bb6fe" kindref="member">MSEED_sid</ref> &amp;</type>
           <declname>self</declname>
         </param>
         <briefdescription>
@@ -246,6 +246,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="76" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="76" bodyend="80"/>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a11db25870debc12cb89aaea4facecc1b" compoundref="mseed__file__indexer_8cc" startline="50">chan</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a9dc1f9b4c1c1b2ef16f0edca5ec86b12" compoundref="mseed__file__indexer_8cc" startline="52">loc</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a0dc305a3ce20c48250896d1072b2e7c1" compoundref="mseed__file__indexer_8cc" startline="46">net</references>
+        <references refid="classmspass_1_1io_1_1_m_s_e_e_d__sid_1a6cc4090cfe00a64df96f4b2abe5e1473" compoundref="mseed__file__indexer_8cc" startline="48">sta</references>
       </memberdef>
     </sectiondef>
     <briefdescription>

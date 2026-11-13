@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::deconvolution::WaterLevelDecon</compoundname>
     <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::FFTDeconOperator</basecompoundref>
@@ -50,6 +50,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" line="21" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" bodystart="21" bodyend="24"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" compoundref="_f_f_t_decon_operator_8cc" startline="16" endline="21">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a97941faa20ad56216c8b39b3aa326d4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -58,7 +60,7 @@
         <name>WaterLevelDecon</name>
         <qualifiedname>mspass::algorithms::deconvolution::WaterLevelDecon::WaterLevelDecon</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon" kindref="compound">WaterLevelDecon</ref> &amp;</type>
+          <type>const WaterLevelDecon &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -69,6 +71,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" line="26" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/WaterLevelDecon.cc" bodystart="11" bodyend="15"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" compoundref="_f_f_t_decon_operator_8cc" startline="16" endline="21">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" compoundref="_scalar_decon_8h" startline="34" endline="34">mspass::algorithms::deconvolution::ScalarDecon::ScalarDecon</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1acdd1977764c40e89da3d3fb6417f3f37" compoundref="_water_level_decon_8h" startline="21" endline="24">WaterLevelDecon</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1ace5b7a4b9b395e2ae2e2f80a1742ace5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -83,11 +88,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from Metadata parameters. </para>
+<para>Construct from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> parameters. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" line="28" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/WaterLevelDecon.cc" bodystart="47" bodyend="53"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" compoundref="_f_f_t_decon_operator_8cc" startline="16" endline="21">mspass::algorithms::deconvolution::FFTDeconOperator::FFTDeconOperator</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a67d5c52ff180b007d669807e8dfdd797" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -110,7 +116,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from Metadata plus wavelet and data vectors. </para>
+<para>Construct from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> plus wavelet and data vectors. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -132,7 +138,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Update operator parameters from Metadata. </para>
+<para>Update operator parameters from <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -161,7 +167,6 @@
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" compoundref="_f_f_t_decon_operator_8h" startline="101">mspass::algorithms::deconvolution::FFTDeconOperator::sample_shift</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="148">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="144">mspass::algorithms::deconvolution::ScalarDecon::wavelet</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" compoundref="_f_f_t_decon_operator_8h" startline="103">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" compoundref="_f_f_t_decon_operator_8h" startline="105">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</references>
@@ -184,13 +189,11 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" line="43" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/WaterLevelDecon.cc" bodystart="147" bodyend="185"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" compoundref="_f_f_t_decon_operator_8h" startline="99">mspass::algorithms::deconvolution::FFTDeconOperator::nfft</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" compoundref="_complex_array_8cc" startline="111" endline="113">mspass::algorithms::deconvolution::ComplexArray::ptr</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" compoundref="_scalar_decon_8h" startline="146">mspass::algorithms::deconvolution::ScalarDecon::result</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" compoundref="_shaping_wavelet_8h" startline="92" endline="92">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</references>
-        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="180" endline="195">mspass::seismic::CoreTimeSeries::set_t0</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="148">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" compoundref="_complex_array_8cc" startline="275" endline="275">mspass::algorithms::deconvolution::ComplexArray::size</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" compoundref="_scalar_decon_8h" startline="144">mspass::algorithms::deconvolution::ScalarDecon::wavelet</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" compoundref="_f_f_t_decon_operator_8h" startline="103">mspass::algorithms::deconvolution::FFTDeconOperator::wavetable</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" compoundref="_f_f_t_decon_operator_8h" startline="105">mspass::algorithms::deconvolution::FFTDeconOperator::workspace</references>
@@ -237,9 +240,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h" line="71" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/WaterLevelDecon.cc" bodystart="187" bodyend="198"/>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" compoundref="_f_f_t_decon_operator_8cc" startline="190" endline="232">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1adf4577a4442559e6aaad9056258c2915" compoundref="_shaping_wavelet_8h" startline="92" endline="92">mspass::algorithms::deconvolution::ShapingWavelet::sample_interval</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae0fe50f72e9cea048e1fa13061c26010" compoundref="_scalar_decon_8h" startline="148">mspass::algorithms::deconvolution::ScalarDecon::shapingwavelet</references>
-        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1ac922b603ff03a691075724bcd53e396f" compoundref="_shaping_wavelet_8h" startline="85" endline="85">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
         <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" compoundref="_f_f_t_decon_operator_8h" startline="107">mspass::algorithms::deconvolution::FFTDeconOperator::winv</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a2e88549ab105200fc6eabe9071cff913" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
@@ -271,7 +272,7 @@
 <para>Return appropriate quality measures. </para>
         </briefdescription>
         <detaileddescription>
-<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -434,7 +435,7 @@
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a58cb1f9672d9f9025107fb6fa3a309ee" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>ideal_output</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a844d4d2ff34a59beb63def0751c75929" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>inverse_wavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a2e88549ab105200fc6eabe9071cff913" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>inverse_wavelet</name></member>
-      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual" ambiguityscope="mspass::"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>load</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>loaddata</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>loadwavelet</name></member>
       <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::WaterLevelDecon</scope><name>nfft</name></member>

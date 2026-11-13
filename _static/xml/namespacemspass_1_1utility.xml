@@ -1,34 +1,34 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1utility" kind="namespace" language="C++">
     <compoundname>mspass::utility</compoundname>
-    <innerclass refid="classmspass_1_1utility_1_1_algorithm_definition" prot="public">mspass::utility::AlgorithmDefinition</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_antelope_pf" prot="public">mspass::utility::AntelopePf</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_antelope_pf_error" prot="public">mspass::utility::AntelopePfError</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_attribute_cross_reference" prot="public">mspass::utility::AttributeCrossReference</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1_attribute_map" prot="public">mspass::utility::AttributeMap</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_attribute_properties" prot="public">mspass::utility::AttributeProperties</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_attribute_map" prot="public">mspass::utility::AttributeMap</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_basic_metadata" prot="public">mspass::utility::BasicMetadata</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1_basic_processing_history" prot="public">mspass::utility::BasicProcessingHistory</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1dmatrix" prot="public">mspass::utility::dmatrix</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1dmatrix__index__error" prot="public">mspass::utility::dmatrix_index_error</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1dmatrix__size__error" prot="public">mspass::utility::dmatrix_size_error</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1dmatrix" prot="public">mspass::utility::dmatrix</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1dvector" prot="public">mspass::utility::dvector</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1_error_logger" prot="public">mspass::utility::ErrorLogger</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_log_data" prot="public">mspass::utility::LogData</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_error_logger" prot="public">mspass::utility::ErrorLogger</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_metadata_get_error" prot="public">mspass::utility::MetadataGetError</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_metadata" prot="public">mspass::utility::Metadata</innerclass>
     <innerclass refid="structmspass_1_1utility_1_1_metadata__typedef" prot="public">mspass::utility::Metadata_typedef</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_metadata_definitions" prot="public">mspass::utility::MetadataDefinitions</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1_metadata_get_error" prot="public">mspass::utility::MetadataGetError</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" prot="public">mspass::utility::MsPASSError</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_basic_processing_history" prot="public">mspass::utility::BasicProcessingHistory</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_node_data" prot="public">mspass::utility::NodeData</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_processing_history" prot="public">mspass::utility::ProcessingHistory</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_algorithm_definition" prot="public">mspass::utility::AlgorithmDefinition</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_process_manager" prot="public">mspass::utility::ProcessManager</innerclass>
-    <innerclass refid="classmspass_1_1utility_1_1sort__by__stage" prot="public">mspass::utility::sort_by_stage</innerclass>
     <innerclass refid="structmspass_1_1utility_1_1_spherical_coordinate" prot="public">mspass::utility::SphericalCoordinate</innerclass>
     <innerclass refid="classmspass_1_1utility_1_1_vector_statistics" prot="public">mspass::utility::VectorStatistics</innerclass>
-    <innernamespace refid="namespacemspass_1_1utility_1_1detail">mspass::utility::detail</innernamespace>
+    <innerclass refid="classmspass_1_1utility_1_1sort__by__stage" prot="public">mspass::utility::sort_by_stage</innerclass>
     <innernamespace refid="namespacemspass_1_1utility_1_1memory__constants">mspass::utility::memory_constants</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility_1_1detail">mspass::utility::detail</innernamespace>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" prot="public" static="no" strong="yes">
         <type></type>
@@ -122,8 +122,7 @@
 <para>Define standard types for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. </para>
         </briefdescription>
         <detaileddescription>
-<para>Attributes in <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> here can be any type that boost::any supports. However, 99% of attributes one normally wants to work with can be cast into the stock language types defined by this enum. This is derived form seispp in antelope contrib but adapted to the new form with boost::any. <linebreak/>
- </para>
+<para>Attributes in <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> here can be any type that boost::any supports. However, 99% of attributes one normally wants to work with can be cast into the stock language types defined by this enum. This is derived form seispp in antelope contrib but adapted to the new form with boost::any. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -348,10 +347,24 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="15" bodyend="22"/>
       </memberdef>
+      <memberdef kind="enum" id="_metadata_definitions_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>MDtype</name>
+        <qualifiedname>mspass::utility::MDtype</qualifiedname>
+        <briefdescription>
+<para>Define standard types for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Attributes in <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> here can be any type that boost::any supports. However, 99% of attributes one normally wants to work with can be cast into the stock language types defined by this enum. This is derived form seispp in antelope contrib but adapted to the new form with boost::any. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MetadataDefinitions.h" line="10" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h" bodystart="521" bodyend="534"/>
+      </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="_metadata_8h_1af422eedc4bcae87065cc9b9a48d2766f" prot="public" static="no">
-        <type>struct <ref refid="structmspass_1_1utility_1_1_metadata__typedef" kindref="compound">mspass::utility::Metadata_typedef</ref></type>
+        <type>struct mspass::utility::Metadata_typedef</type>
         <definition>typedef struct mspass::utility::Metadata_typedef mspass::utility::Metadata_typedef</definition>
         <argsstring></argsstring>
         <name>Metadata_typedef</name>
@@ -375,8 +388,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Container to drive selected copies.</para>
-<para>Often it is necessary to define a list of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> elements that are to be copied or accessed sequentially. This is common enough we use this typedef to reduce the ugly syntax. <linebreak/>
- </para>
+<para>Often it is necessary to define a list of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> elements that are to be copied or accessed sequentially. This is common enough we use this typedef to reduce the ugly syntax. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1324,10 +1336,10 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" line="140" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="140" bodyend="158"/>
       </memberdef>
-      <memberdef kind="function" id="dmatrix_8cc_1ad21826b998178c3c11da805d6f836e34" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+      <memberdef kind="function" id="dmatrix_8cc_1a0c368ec8baf7bd142d618679ee1293b3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
         <definition>dmatrix mspass::utility::operator*</definition>
-        <argsstring>(const double &amp;s, const dmatrix &amp;A) noexcept</argsstring>
+        <argsstring>(const double &amp;s, const dmatrix &amp;A)</argsstring>
         <name>operator*</name>
         <qualifiedname>mspass::utility::operator*</qualifiedname>
         <param>
@@ -1367,10 +1379,10 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" line="160" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="160" bodyend="173"/>
       </memberdef>
-      <memberdef kind="function" id="dmatrix_8cc_1a24fb63c28a7278506929f603bad0f3e6" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+      <memberdef kind="function" id="dmatrix_8cc_1a412b71276830020cee85f2864c6b3afd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
         <definition>dmatrix mspass::utility::tr</definition>
-        <argsstring>(const dmatrix &amp;A) noexcept</argsstring>
+        <argsstring>(const dmatrix &amp;A)</argsstring>
         <name>tr</name>
         <qualifiedname>mspass::utility::tr</qualifiedname>
         <param>

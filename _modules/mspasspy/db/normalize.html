@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev121+ga7db94e3c documentation</title>
+    <title>mspasspy.db.normalize &#8212; MsPASS 2.4.4.dev122+gb075c5a7b documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=53fd6c2d"></script>
+    <script src="../../../_static/documentation_options.js?v=3cc4ca13"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,7 +56,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev121" />
+  <meta name="docsearch:version" content="2.4.4.dev122" />
   </head>
   
   
@@ -1470,6 +1470,7 @@
 <span class="sd">            should be subset before construction when filtering is needed.</span>
 <span class="sd">        :type query: dict or None</span>
 <span class="sd">        """</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="s2">"DataFrameCacheMatcher.__init__"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span> <span class="o">=</span> <span class="n">prepend_collection_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">require_unique_match</span> <span class="o">=</span> <span class="n">require_unique_match</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">custom_null_values</span> <span class="o">=</span> <span class="n">custom_null_values</span>
@@ -1485,34 +1486,43 @@
             <span class="p">)</span>
         <span class="c1"># this is a necessary sanity check</span>
         <span class="k">if</span> <span class="n">collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">prepend_collection_name</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">"DataFrameCacheMatcher constructor:  collection name must be defined when prepend_collection_name is set True"</span>
+                <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"DataFrameCacheMatcher constructor:   collection argument must be a string type"</span>
+                <span class="s2">"DataFrameCacheMatcher constructor:  if defined collection argument must be a string type"</span>
             <span class="p">)</span>
         <span class="c1"># We have to reference the base class pymongo.database.Database here because</span>
         <span class="c1"># the MsPASS subclass name is also Database.  That make this</span>
         <span class="c1"># conditional fail in some uses.   Using the base class is totally</span>
         <span class="c1"># appropriate here anyway as no MsPASS extension methods are used</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="p">(</span><span class="n">type_pdd</span><span class="p">,</span> <span class="n">type_ddd</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">"DataFrameCacheMatcher constructor:  required arg0 must be either a pandas, dask Dataframe, or database handle"</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">attributes_to_load</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">load_if_defined</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
-                    <span class="s2">"DataFrameCacheMatcher constructor:  usage error.  Cannot use default of attributes_to_load (triggers loading all columns) and define a list of names for argument load_if_defined"</span>
-                <span class="p">)</span>
-            <span class="n">aload</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">db_or_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                <span class="n">aload</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="p">(</span><span class="n">type_pdd</span><span class="p">,</span> <span class="n">type_ddd</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">attributes_to_load</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">aload</span> <span class="o">=</span> <span class="n">db_or_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aload</span> <span class="o">=</span> <span class="n">attributes_to_load</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">attributes_to_load</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">load_if_defined</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">: Usage error.  attributes_to_load and load_if_defined are both default None type</span><span class="se">\n</span><span class="s2">"</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Lists of keys must be given when using a Database to construct this object"</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">aload</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aload</span> <span class="o">=</span> <span class="n">attributes_to_load</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">aload</span> <span class="o">=</span> <span class="n">attributes_to_load</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">: arg0 has invalid type=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">db_or_df</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">"arg0 must be either a DataFrame implementation or a Database object"</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">attributes_to_load</span><span class="o">=</span><span class="n">aload</span><span class="p">,</span>
@@ -1532,83 +1542,77 @@
 <div class="viewcode-block" id="DataFrameCacheMatcher.find">
 <a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.normalize.DataFrameCacheMatcher.find">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        DataFrame generic implementation of find method.</span>
-
-<span class="sd">        This method uses content in any part of the mspass_object</span>
-<span class="sd">        (data object) to subset the internal DataFrame cache to</span>
-<span class="sd">        return subset of tuples matching some condition defined</span>
-<span class="sd">        computed through the abstract (virtual) methdod subset.</span>
-<span class="sd">        It then copies entries in attributes_to_load and when not</span>
-<span class="sd">        null load_if_defined into one Metadata container for each</span>
-<span class="sd">        row of the returned DataFrame.</span>
-<span class="sd">        """</span>
+<span class="w">        </span><span class="sd">"""Return matching DataFrame rows as Metadata and an optional error log."""</span>
+        <span class="n">alg</span> <span class="o">=</span> <span class="s2">"DataFrameCacheMatcher.find"</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">):</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">(</span>
-                <span class="s2">"DataFrameCacheMatcher.find"</span><span class="p">,</span>
+                <span class="n">alg</span><span class="p">,</span>
                 <span class="s2">"Received an object that is not a Metadata instance"</span><span class="p">,</span>
                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span>
 
         <span class="n">subset_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
-        <span class="c1"># assume all implementations will return a 0 length dataframe</span>
-        <span class="c1"># if the subset failed.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_df</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">error_message</span> <span class="o">=</span> <span class="s2">"subset method found no match for this datum"</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
-            <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">error_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                <span class="s2">"subset method found no match for this datum"</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># This loop cautiously fills one or more Metadata</span>
-            <span class="c1"># containers with each row of the DataFrame generating</span>
-            <span class="c1"># one Metadata container.</span>
-            <span class="n">mdlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-            <span class="n">elog</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-                <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
-                <span class="n">notnulltest</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">notnull</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">notnulltest</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
-                            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">key</span> <span class="o">=</span> <span class="n">k</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"_id"</span><span class="p">:</span>
-                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">elog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
-                        <span class="n">error_message</span> <span class="o">=</span> <span class="s2">"Encountered Null value for required attribute </span><span class="si">{key}</span><span class="s2"> - repairs of the input DataFrame are required"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">key</span><span class="o">=</span><span class="n">k</span>
-                        <span class="p">)</span>
-                        <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-                            <span class="n">error_message</span><span class="p">,</span>
-                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">notnulltest</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
-                            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">key</span> <span class="o">=</span> <span class="n">k</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"_id"</span><span class="p">:</span>
-                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">key</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">mdkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">key</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">mdkey</span> <span class="o">=</span> <span class="n">key</span>
-                        <span class="n">md</span><span class="p">[</span><span class="n">mdkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                <span class="n">mdlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
+
+        <span class="c1"># itertuples() with named fields renames columns such as "_id".</span>
+        <span class="c1"># Positional tuples preserve source names and array-valued attributes.</span>
+        <span class="n">index_names</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">subset_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">index_names</span><span class="p">)</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">alg</span><span class="si">}</span><span class="s2">: required attributes missing from DataFrame cache: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="n">mdlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">elog</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index_value</span><span class="p">,</span> <span class="n">row_values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">subset_df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">row_values</span><span class="p">))</span>
+            <span class="n">index_values</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">index_value</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">index_value</span><span class="p">,)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">index_names</span><span class="p">,</span> <span class="n">index_values</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="c1"># pd.isna on lists/ndarrays returns an array, not a bool.</span>
+                <span class="n">is_null</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">is_scalar</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">is_null</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">elog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">elog</span> <span class="o">=</span> <span class="n">PyErrorLogger</span><span class="p">()</span>
+                    <span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+                        <span class="n">alg</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"Required attribute </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> contains a null value"</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="n">output_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepend_collection_name</span><span class="p">:</span>
+                    <span class="n">output_key</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="n">output_key</span>
+                        <span class="k">if</span> <span class="n">output_key</span> <span class="o">==</span> <span class="s2">"_id"</span>
+                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="n">output_key</span>
+                    <span class="p">)</span>
+                <span class="n">md</span><span class="p">[</span><span class="n">output_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">mdlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">mdlist</span><span class="p">,</span> <span class="n">elog</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="DataFrameCacheMatcher.find_one">
@@ -1696,7 +1700,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">attributes_to_load</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_if_defined</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_columns</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">fulllist</span><span class="p">)[</span><span class="n">fulllist</span><span class="p">]</span>
+        <span class="c1"># Index/MultiIndex fields must not be replaced by synthetic null columns.</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">fulllist</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_null_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">nul_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_null_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">nul_val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span></div>
@@ -2865,7 +2873,16 @@
             <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
                 <span class="n">testval</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                 <span class="c1"># this allows an alias between data and dataframe keys</span>
-                <span class="n">dfret</span> <span class="o">=</span> <span class="n">dfret</span><span class="p">[</span><span class="n">dfret</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">match_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">==</span> <span class="n">testval</span><span class="p">]</span>
+                <span class="n">source_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_keys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">source_key</span> <span class="ow">in</span> <span class="n">dfret</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">candidates</span> <span class="o">=</span> <span class="n">dfret</span><span class="p">[</span><span class="n">source_key</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">source_key</span> <span class="ow">in</span> <span class="n">dfret</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+                    <span class="n">candidates</span> <span class="o">=</span> <span class="n">dfret</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="n">source_key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"EqualityMatcher.subset: missing match key </span><span class="si">{</span><span class="n">source_key</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="p">)</span>
+                <span class="n">dfret</span> <span class="o">=</span> <span class="n">dfret</span><span class="p">[</span><span class="n">candidates</span> <span class="o">==</span> <span class="n">testval</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">dfret</span></div>

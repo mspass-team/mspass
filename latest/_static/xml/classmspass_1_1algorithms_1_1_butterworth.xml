@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_butterworth" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::Butterworth</compoundname>
     <includes refid="_butterworth_8h" local="no">Butterworth.h</includes>
@@ -311,9 +311,9 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct using tagged valus created from a Metadata container.</para>
-<para>This behaves exactly like the fully parameterized contructor except it gets the parameters from metadata. Metadata keys in initial implementation are identical to the argument names defined above. The best guidance for using this constuctor is to look a the comments in the default parameter file.</para>
-<para>Construct using tagged valus created from a Metadata container </para>
+<para>Construct using tagged valus created from a <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> container.</para>
+<para>This behaves exactly like the fully parameterized contructor except it gets the parameters from metadata. <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> keys in initial implementation are identical to the argument names defined above. The best guidance for using this constuctor is to look a the comments in the default parameter file.</para>
+<para>Construct using tagged valus created from a <ref refid="classmspass_1_1algorithms_1_1_metadata" kindref="compound">Metadata</ref> container </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -442,7 +442,7 @@
         <name>Butterworth</name>
         <qualifiedname>mspass::algorithms::Butterworth::Butterworth</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> &amp;</type>
+          <type>const Butterworth &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -453,15 +453,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="134" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="194" bodyend="203"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" compoundref="_butterworth_8cc" startline="19" endline="38">Butterworth</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a7602075f3fe8f56e891331c98264d1a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref> &amp;</type>
         <definition>Butterworth &amp; mspass::algorithms::Butterworth::operator=</definition>
         <argsstring>(const Butterworth &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::algorithms::Butterworth::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -472,6 +473,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="136" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="204" bodyend="216"/>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" compoundref="_butterworth_8cc" startline="19" endline="38">Butterworth</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a7b54d5d5966a85092d45ebebd0b88498" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -493,7 +495,7 @@
 <parametername>n</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the number of samples to generate to characterize the impulse response. The function is always returned centered on the vector of length n and t0 of the TimeSeries is set to make that impulse point be time 0. </para>
+<para>is the number of samples to generate to characterize the impulse response. The function is always returned centered on the vector of length n and t0 of the <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> is set to make that impulse point be time 0. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -503,6 +505,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="153" column="35" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="217" bodyend="229"/>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
         <references refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" compoundref="_core_time_series_8cc" startline="165" endline="179">mspass::seismic::CoreTimeSeries::set_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="151" endline="151">mspass::seismic::BasicTimeSeries::set_live</references>
@@ -520,11 +523,11 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>pply the filter to a CoreTimeSeries object. </para>
+<para>pply the filter to a <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object. </para>
         </briefdescription>
         <detaileddescription>
 <para>This method alters the data vector inside d in place and changes no other parts of the data. Automatic switching of data sample rate is used on the operator. That is, if the sample rate of the data is different than the operator sample rate the internal operator coefficients will be adjusted to the new sample rate. The operator sample rate will also be changed to the sample rate of d whenever the sample rate changes from the previous call.</para>
-<para>This method has a safety to prevent irrational sample rate changes. The IRR filter used to compute a <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filter becomes unstable if the low pass filter component (high corner) approach Nyquist or worse exceed Nyquist. This method will throw a MsPASSError exception if the sample rate of d is too low for the filter high corner. (current 90% of Nyquist). When this error is throw the data will be unaltered and the internal sample rate will be left in the previous state.</para>
+<para>This method has a safety to prevent irrational sample rate changes. The IRR filter used to compute a <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filter becomes unstable if the low pass filter component (high corner) approach Nyquist or worse exceed Nyquist. This method will throw a <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> exception if the sample rate of d is too low for the filter high corner. (current 90% of Nyquist). When this error is throw the data will be unaltered and the internal sample rate will be left in the previous state.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
@@ -539,7 +542,7 @@
 <parametername>throws</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>a MsPASSError if the hi corner is inconsistent with the sample rate of d </para>
+<para>a <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if the hi corner is inconsistent with the sample rate of d </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -565,7 +568,7 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Apply the filter to a CoreTimeSeries object. </para>
+<para>Apply the filter to a <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object. </para>
         </briefdescription>
         <detaileddescription>
 <para>This method alters the data vector inside d in place and changes no other parts of the data. Automatic switching of data sample rate is used on the operator. That is, if the sample rate of the data is different than the operator sample rate the internal operator coefficients will be adjusted to the new sample rate. The operator sample rate will also be changed to the sample rate of d whenever the sample rate changes from the previous call.</para>
@@ -595,6 +598,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="199" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="256" bodyend="284"/>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" compoundref="_butterworth_8cc" startline="19" endline="38">Butterworth</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
@@ -644,11 +648,11 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Apply the filter to a CoreSeismogram object. </para>
+<para>Apply the filter to a <ref refid="classmspass_1_1algorithms_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> object. </para>
         </briefdescription>
         <detaileddescription>
 <para>This method alters the data vector inside d in place and changes no other parts of the data. Automatic switching of data sample rate is used on the operator. That is, if the sample rate of the data is different than the operator sample rate the internal operator coefficients will be adjusted to the new sample rate. The operator sample rate will also be changed to the sample rate of d whenever the sample rate changes from the previous call.</para>
-<para>This method has a safety to prevent irrational sample rate changes. The IRR filter used to compute a <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filter becomes unstable if the low pass filter component (high corner) approach Nyquist or worse exceed Nyquist. This method will throw a MsPASSError exception if the sample rate of d is too low for the filter high corner. (current 90% of Nyquist). When this error is throw the data will be unaltered and the internal sample rate will be left in the previous state.</para>
+<para>This method has a safety to prevent irrational sample rate changes. The IRR filter used to compute a <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filter becomes unstable if the low pass filter component (high corner) approach Nyquist or worse exceed Nyquist. This method will throw a <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> exception if the sample rate of d is too low for the filter high corner. (current 90% of Nyquist). When this error is throw the data will be unaltered and the internal sample rate will be left in the previous state.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
@@ -663,7 +667,7 @@
 <parametername>throws</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>a MsPASSError if the hi corner is inconsistent with the sample rate of d </para>
+<para>a <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if the hi corner is inconsistent with the sample rate of d </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -690,7 +694,7 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Apply the filter to a CoreTimeSeries object. </para>
+<para>Apply the filter to a <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object. </para>
         </briefdescription>
         <detaileddescription>
 <para>This method alters the data vector inside d in place and changes no other parts of the data. Automatic switching of data sample rate is used on the operator. That is, if the sample rate of the data is different than the operator sample rate the internal operator coefficients will be adjusted to the new sample rate. The operator sample rate will also be changed to the sample rate of d whenever the sample rate changes from the previous call.</para>
@@ -720,6 +724,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="257" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="363" bodyend="403"/>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" compoundref="_butterworth_8cc" startline="232" endline="253">apply</references>
+        <references refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" compoundref="_butterworth_8cc" startline="19" endline="38">Butterworth</references>
         <references refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" compoundref="_butterworth_8h" startline="293" endline="297">change_dt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="153" endline="153">mspass::seismic::BasicTimeSeries::dt</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">mspass::utility::ProcessingHistory::elog</references>
@@ -778,7 +783,7 @@
         </briefdescription>
         <detaileddescription>
 <para>This function can be used when running with raw data vectors if the sample interval of the data series is different from that called on construction or set previously. This is a nontrivial change because the filter coefficients depend upon sample interval. In particular, for this implementation npoles and the 3db frequency points stored internally are altered when this function is called. If the frequency intervals change the expectation is the user will create a new instance of this object.</para>
-<para>Warning: this routine does not implement the safeties built into TimeSeries and Seismogram apply methods. It will silently change the upper corner to an unstable position if called inappropriately.</para>
+<para>Warning: this routine does not implement the safeties built into <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> and <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> apply methods. It will silently change the upper corner to an unstable position if called inappropriately.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>dtnew</parametername>
@@ -1078,7 +1083,7 @@
     <detaileddescription>
 <para>MsPASS has an existing filter routine that can implement buterworth filters via obspy. This class was created to allow a clean interface to <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filtering from C++ code that needs such an operator. The original use was an experimental deconvolution code, but there will likely be others because simple, efficient filters are a common internal need for potential applications.</para>
 <para>This C++ class can be viewed as a wrapper for Seismic Unix functions that implement <ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> filters. The parent functions were found in the cwp lib and were called bfdesign, bfhighpass, and bflowpass. Those three functions are the central tools used to implement this class. All the rest is really just a wrapper to provide an object oriented api to the su functions.</para>
-<para>This class implements a processing object concept. That is, it is intended to be constructed and then used for processing multiple data objects with fixed parameters. For Butterwoth filtering the parameters are relatively simple (mainly two corner frequencies and number of poles defining the filter rolloff). A complexity, however, is that the class was designed to allow automatic handling of multiple sample rate data. That is handled internally by caching the sample interval of the data and automatically adjusting the coefficients when the sample interval changes. Note that feature only works for MsPASS data objects CoreTimeSeries and Seismogram where the sample interval is embedded in the object. The raw interface with a simple vector cannot know that. The method to change the expected sample interval has some sanity checks to reduce, but not eliminate the possibility of mistakes that will create unstable filters. </para>
+<para>This class implements a processing object concept. That is, it is intended to be constructed and then used for processing multiple data objects with fixed parameters. For Butterwoth filtering the parameters are relatively simple (mainly two corner frequencies and number of poles defining the filter rolloff). A complexity, however, is that the class was designed to allow automatic handling of multiple sample rate data. That is handled internally by caching the sample interval of the data and automatically adjusting the coefficients when the sample interval changes. Note that feature only works for MsPASS data objects <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> and <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> where the sample interval is embedded in the object. The raw interface with a simple vector cannot know that. The method to change the expected sample interval has some sanity checks to reduce, but not eliminate the possibility of mistakes that will create unstable filters. </para>
     </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="35" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" bodystart="35" bodyend="369"/>
     <listofallmembers>

@@ -1,11 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1seismic" kind="namespace" language="C++">
     <compoundname>mspass::seismic</compoundname>
     <innerclass refid="classmspass_1_1seismic_1_1_basic_spectrum" prot="public">mspass::seismic::BasicSpectrum</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public">mspass::seismic::BasicTimeSeries</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public">mspass::seismic::CoreSeismogram</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_core_time_series" prot="public">mspass::seismic::CoreTimeSeries</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_data_gap" prot="public">mspass::seismic::DataGap</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_ensemble" prot="public">mspass::seismic::Ensemble</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_logging_ensemble" prot="public">mspass::seismic::LoggingEnsemble</innerclass>
@@ -15,7 +16,6 @@
     <innerclass refid="classmspass_1_1seismic_1_1_slowness_vector" prot="public">mspass::seismic::SlownessVector</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_time_series" prot="public">mspass::seismic::TimeSeries</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_time_series_w_gaps" prot="public">mspass::seismic::TimeSeriesWGaps</innerclass>
-    <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no" strong="yes">
         <type></type>
@@ -58,7 +58,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Useful alias for Ensemble&lt;TimeSeries&gt; </para>
+<para>Useful alias for <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -73,7 +73,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Useful alias for Ensemble&lt;Seismogram&gt; </para>
+<para>Useful alias for <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref> </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -435,8 +435,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Holds transformation matrix in MsPASS use for <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. <linebreak/>
- </para>
+<para>Holds transformation matrix in MsPASS use for <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -454,8 +453,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Universal Unique Identifier used for history. <linebreak/>
- </para>
+<para>Universal Unique Identifier used for history. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -610,7 +608,7 @@
 <para>Define metadata keys. </para>
     </briefdescription>
     <detaileddescription>
-<para>This include file defines a set ofconst std::string values that serve as keys to Metadata get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map Metadata keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>
+<para>This include file defines a set ofconst std::string values that serve as keys to <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>
     </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="6" column="1"/>
   </compounddef>

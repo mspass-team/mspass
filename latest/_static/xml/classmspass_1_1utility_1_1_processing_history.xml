@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_processing_history" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::ProcessingHistory</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_basic_processing_history" prot="public" virt="non-virtual">mspass::utility::BasicProcessingHistory</basecompoundref>
@@ -142,6 +142,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="248" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="82" bodyend="90"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a225e2e1941f342f3764c2c27854ad2f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -183,6 +184,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="254" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="91" bodyend="101"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">mspass::utility::BasicProcessingHistory::jid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a15ba29e0a5323e27104c2cc3075c9429" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -218,6 +221,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="256" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="102" bodyend="112"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
+        <references refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" compoundref="_processing_history_8h" startline="105">mspass::utility::BasicProcessingHistory::jid</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
         <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="136">mspass::utility::NodeData::stage</references>
         <references refid="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" compoundref="_processing_history_8h" startline="129">mspass::utility::NodeData::status</references>
         <references refid="classmspass_1_1utility_1_1_node_data_1aa7c6f56ceca095d0af31f456d75954a4" compoundref="_processing_history_8h" startline="133">mspass::utility::NodeData::type</references>
@@ -230,7 +236,7 @@
         <name>ProcessingHistory</name>
         <qualifiedname>mspass::utility::ProcessingHistory::ProcessingHistory</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const ProcessingHistory &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -241,6 +247,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="260" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="113" bodyend="120"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -428,7 +437,6 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="345" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="161" bodyend="183"/>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" compoundref="_processing_history_8cc" startline="644" endline="651">clear</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -450,7 +458,7 @@
           <declname>typ</declname>
         </param>
         <param>
-          <type>const std::vector&lt; <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> * &gt;</type>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> * &gt;</type>
           <declname>parents</declname>
         </param>
         <param>
@@ -519,7 +527,6 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="625" endline="643">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="121" endline="125">is_empty</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="664" endline="670">newid</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
         <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="136">mspass::utility::NodeData::stage</references>
@@ -531,7 +538,7 @@
         <name>add_one_input</name>
         <qualifiedname>mspass::utility::ProcessingHistory::add_one_input</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
           <declname>data_to_add</declname>
         </param>
         <briefdescription>
@@ -558,8 +565,8 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="625" endline="643">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="603" endline="603">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="121" endline="125">is_empty</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -568,7 +575,7 @@
         <name>add_many_inputs</name>
         <qualifiedname>mspass::utility::ProcessingHistory::add_many_inputs</qualifiedname>
         <param>
-          <type>const std::vector&lt; <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> * &gt; &amp;</type>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> * &gt; &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
@@ -591,6 +598,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="427" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="316" bodyend="323"/>
         <references refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" compoundref="_processing_history_8cc" startline="275" endline="313">add_one_input</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -599,7 +607,7 @@
         <name>merge</name>
         <qualifiedname>mspass::utility::ProcessingHistory::merge</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
           <declname>data_to_add</declname>
         </param>
         <briefdescription>
@@ -624,8 +632,8 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="625" endline="643">get_nodes</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="603" endline="603">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="121" endline="125">is_empty</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -646,7 +654,7 @@
           <declname>typ</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
           <declname>newinput</declname>
         </param>
         <briefdescription>
@@ -669,6 +677,7 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" compoundref="_processing_history_8cc" startline="452" endline="485">merge</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="664" endline="670">newid</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
         <references refid="classmspass_1_1utility_1_1_basic_processing_history_1abe8702f0b485cea3357b92c9f0226023" compoundref="_processing_history_8h" startline="89" endline="89">mspass::utility::BasicProcessingHistory::set_jobid</references>
         <references refid="classmspass_1_1utility_1_1_basic_processing_history_1af6c7149734faa2c0b4d51fa8e317db27" compoundref="_processing_history_8h" startline="93" endline="93">mspass::utility::BasicProcessingHistory::set_jobname</references>
         <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="136">mspass::utility::NodeData::stage</references>
@@ -769,7 +778,6 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="603" endline="603">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="121" endline="125">is_empty</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="664" endline="670">newid</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
       </memberdef>
@@ -792,7 +800,7 @@
           <declname>typ</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
           <declname>data_to_clone</declname>
         </param>
         <param>
@@ -855,9 +863,9 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" compoundref="_processing_history_8cc" startline="672" endline="681">current_nodedata</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" compoundref="_processing_history_8cc" startline="625" endline="643">get_nodes</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="664" endline="670">newid</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1ab5152d2f6a4706e635d6ca16e68b9bcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -923,7 +931,6 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="603" endline="603">id</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="121" endline="125">is_empty</references>
-        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="72" endline="76">mspass::utility::ErrorLogger::log_error</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -952,8 +959,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Retrieve the nodes multimap that defines the tree stucture branches.</para>
-<para>This method does more than just get the protected multimap called nodes. It copies the map and then pushes the &quot;current&quot; contents to the map before returning the copy. This allows the data defines as current to not be pushed into the tree until they are needed. <linebreak/>
- </para>
+<para>This method does more than just get the protected multimap called nodes. It copies the map and then pushes the &quot;current&quot; contents to the map before returning the copy. This allows the data defines as current to not be pushed into the tree until they are needed. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1174,20 +1180,19 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
         <definition>ProcessingHistory &amp; mspass::utility::ProcessingHistory::operator=</definition>
         <argsstring>(const ProcessingHistory &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::utility::ProcessingHistory::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" kindref="member">ProcessingHistory</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Assignment operator. <linebreak/>
- </para>
+<para>Assignment operator. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -1195,6 +1200,7 @@
         <references refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" compoundref="_processing_history_8h" startline="246">elog</references>
         <references refid="classmspass_1_1utility_1_1_processing_history_1a31ee1661077d22932b4002f617b19a8f" compoundref="_processing_history_8h" startline="676">nodes</references>
         <references refid="classmspass_1_1utility_1_1_basic_processing_history_1a4b552f2657fdad975723d9fc73e7875a" compoundref="_processing_history_8h" startline="95" endline="101">mspass::utility::BasicProcessingHistory::operator=</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" compoundref="_processing_history_8cc" startline="82" endline="90">ProcessingHistory</references>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">

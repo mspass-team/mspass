@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1io_1_1mseed__index" kind="class" language="C++" prot="public">
     <compoundname>mspass::io::mseed_index</compoundname>
     <includes refid="mseed__index_8h" local="no">mseed_index.h</includes>
@@ -204,7 +204,7 @@
         <name>mseed_index</name>
         <qualifiedname>mspass::io::mseed_index::mseed_index</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
+          <type>const mseed_index &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -215,22 +215,27 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="39" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" bodystart="39" bodyend="48"/>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a056427385ac5dfbdd271d6cacbfbabb7" compoundref="mseed__index_8h" startline="14">chan</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a0b33fceb0d51997d0b1b06736ee07b95" compoundref="mseed__index_8h" startline="20">endtime</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a7ddc690e23ab045a1b21def90209fa1a" compoundref="mseed__index_8h" startline="15">foff</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a7476ff41f76820f284911be7f0a130c0" compoundref="mseed__index_8h" startline="21">last_packet_time</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" compoundref="mseed__index_8h" startline="13">loc</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" compoundref="mseed__index_8h" startline="25" endline="37">mseed_index</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" compoundref="mseed__index_8h" startline="16">nbytes</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" compoundref="mseed__index_8h" startline="11">net</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" compoundref="mseed__index_8h" startline="17">npts</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a2f34fc7dca12e7af7f9bf459462af9b4" compoundref="mseed__index_8h" startline="18">samprate</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a645d459857a3b3c9afa1f6a5cf252a66" compoundref="mseed__index_8h" startline="12">sta</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a9dc0248ef24184cb4b0cf7b40aaa2ec8" compoundref="mseed__index_8h" startline="19">starttime</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1io_1_1mseed__index_1a3df03b536f3e6a800a06dc00f9133417" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" kindref="member">mseed_index</ref> &amp;</type>
         <definition>mseed_index &amp; mspass::io::mseed_index::operator=</definition>
         <argsstring>(const mseed_index &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::io::mseed_index::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" kindref="member">mseed_index</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -246,6 +251,7 @@
         <references refid="classmspass_1_1io_1_1mseed__index_1a7ddc690e23ab045a1b21def90209fa1a" compoundref="mseed__index_8h" startline="15">foff</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a7476ff41f76820f284911be7f0a130c0" compoundref="mseed__index_8h" startline="21">last_packet_time</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" compoundref="mseed__index_8h" startline="13">loc</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" compoundref="mseed__index_8h" startline="25" endline="37">mseed_index</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" compoundref="mseed__index_8h" startline="16">nbytes</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" compoundref="mseed__index_8h" startline="11">net</references>
         <references refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" compoundref="mseed__index_8h" startline="17">npts</references>
@@ -266,7 +272,7 @@
           <declname>ss</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" kindref="member">mseed_index</ref> &amp;</type>
           <declname>ind</declname>
         </param>
         <briefdescription>
@@ -277,6 +283,19 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="67" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" bodystart="6" bodyend="16"/>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a056427385ac5dfbdd271d6cacbfbabb7" compoundref="mseed__index_8h" startline="14">chan</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a0b33fceb0d51997d0b1b06736ee07b95" compoundref="mseed__index_8h" startline="20">endtime</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a7ddc690e23ab045a1b21def90209fa1a" compoundref="mseed__index_8h" startline="15">foff</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a7476ff41f76820f284911be7f0a130c0" compoundref="mseed__index_8h" startline="21">last_packet_time</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" compoundref="mseed__index_8h" startline="13">loc</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" compoundref="mseed__index_8h" startline="25" endline="37">mseed_index</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" compoundref="mseed__index_8h" startline="16">nbytes</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" compoundref="mseed__index_8h" startline="11">net</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" compoundref="mseed__index_8h" startline="17">npts</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a23274f67eb264f6219a663efe53aab57" compoundref="mseed__index_8cc" startline="6" endline="16">operator&lt;&lt;</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a2f34fc7dca12e7af7f9bf459462af9b4" compoundref="mseed__index_8h" startline="18">samprate</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a645d459857a3b3c9afa1f6a5cf252a66" compoundref="mseed__index_8h" startline="12">sta</references>
+        <references refid="classmspass_1_1io_1_1mseed__index_1a9dc0248ef24184cb4b0cf7b40aaa2ec8" compoundref="mseed__index_8h" startline="19">starttime</references>
       </memberdef>
     </sectiondef>
     <briefdescription>

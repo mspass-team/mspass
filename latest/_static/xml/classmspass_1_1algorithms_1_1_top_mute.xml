@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1algorithms_1_1_top_mute" kind="class" language="C++" prot="public">
     <compoundname>mspass::algorithms::TopMute</compoundname>
     <includes refid="_taper_8h" local="no">Taper.h</includes>
@@ -88,7 +88,7 @@
 <parametername>This</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>function will throw a MsPASSError if t1&lt;=t0. </para>
+<para>function will throw a <ref refid="classmspass_1_1algorithms_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if t1&lt;=t0. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -105,7 +105,7 @@
         <name>TopMute</name>
         <qualifiedname>mspass::algorithms::TopMute::TopMute</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref> &amp;</type>
+          <type>const TopMute &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -116,6 +116,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="260" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="407" bodyend="407"/>
+        <references refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" compoundref="_taper_8cc" startline="377" endline="377">TopMute</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_top_mute_1a2876093ac8e1862b706848170ff5060b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -133,13 +134,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="262" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="378" bodyend="378"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref> &amp;</type>
         <definition>TopMute &amp; mspass::algorithms::TopMute::operator=</definition>
         <argsstring>(const TopMute &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::algorithms::TopMute::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -150,6 +151,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="264" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="408" bodyend="413"/>
+        <references refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" compoundref="_taper_8cc" startline="377" endline="377">TopMute</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -164,7 +166,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Apply the operator to a TimeSeries object. </para>
+<para>Apply the operator to a <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -183,7 +185,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Apply the operator to a Seismogram object. </para>
+<para>Apply the operator to a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

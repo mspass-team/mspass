@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_basic_time_series" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::BasicTimeSeries</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="non-virtual">mspass::seismic::CoreSeismogram</derivedcompoundref>
@@ -131,7 +131,7 @@
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mt0</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" compoundref="_basic_time_series_8h" startline="257">nsamp</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">t0shift</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">t0shift_is_valid</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
@@ -143,7 +143,7 @@
         <name>BasicTimeSeries</name>
         <qualifiedname>mspass::seismic::BasicTimeSeries::BasicTimeSeries</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> &amp;</type>
+          <type>const BasicTimeSeries &amp;</type>
           <defname>tsin</defname>
         </param>
         <briefdescription>
@@ -154,6 +154,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="47" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="54" bodyend="62"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" compoundref="_basic_time_series_8h" startline="249">mdt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mt0</references>
@@ -307,7 +308,7 @@
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">t0shift</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">t0shift_is_valid</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" compoundref="_basic_time_series_8h" startline="15">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -371,7 +372,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="123" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="9" bodyend="19"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mt0</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">t0shift</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">t0shift_is_valid</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
@@ -397,7 +398,7 @@
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" compoundref="_basic_time_series_8h" startline="274">t0shift</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" compoundref="_basic_time_series_8h" startline="271">t0shift_is_valid</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" compoundref="_basic_time_series_8h" startline="15">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a35bf7426cc825e9b3dcf3226816d8316" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -433,8 +434,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns true of data are marked valid (live). <linebreak/>
- </para>
+<para>Returns true of data are marked valid (live). </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -520,7 +520,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="155" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="155" bodyend="160"/>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961">mspass::seismic::UTC</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" compoundref="_basic_time_series_8h" startline="15">mspass::seismic::UTC</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -536,7 +536,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="162" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="162" bodyend="167"/>
-        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0">mspass::seismic::Relative</references>
+        <references refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" compoundref="_basic_time_series_8h" startline="17">mspass::seismic::Relative</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
@@ -596,7 +596,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return time of first data sample. An epoch time or relative time depending on TimeReferenceType private variable tref </para>
+<para>Return time of first data sample. An epoch time or relative time depending on <ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref> private variable tref </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -627,6 +627,8 @@
         <argsstring>(const double sample_interval)</argsstring>
         <name>set_dt</name>
         <qualifiedname>mspass::seismic::BasicTimeSeries::set_dt</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2">set_dt</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841">set_dt</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2">set_dt</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841">set_dt</reimplementedby>
         <param>
@@ -637,7 +639,7 @@
 <para>Set the sample interval. </para>
         </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the sample interval attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define sample interval in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para>This is a simple setter for the sample interval attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> attributes that define sample interval in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample_interval</parametername>
@@ -660,6 +662,8 @@
         <argsstring>(const size_t npts)</argsstring>
         <name>set_npts</name>
         <qualifiedname>mspass::seismic::BasicTimeSeries::set_npts</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79">set_npts</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8">set_npts</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79">set_npts</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8">set_npts</reimplementedby>
         <param>
@@ -670,7 +674,7 @@
 <para>Set the number of samples attribute for data. </para>
         </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the number of samples attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define the number of points in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para>This is a simple setter for the number of samples attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> attributes that define the number of points in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>npts</parametername>
@@ -694,6 +698,8 @@
         <argsstring>(const double t0in)</argsstring>
         <name>set_t0</name>
         <qualifiedname>mspass::seismic::BasicTimeSeries::set_t0</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e">set_t0</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0">set_t0</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e">set_t0</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0">set_t0</reimplementedby>
         <param>
@@ -704,7 +710,7 @@
 <para>Set the data start time. </para>
         </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the start time attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define t0 in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para>This is a simple setter for the start time attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> attributes that define t0 in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>t0in</parametername>
@@ -735,7 +741,7 @@
 <para>Force the time standard. </para>
         </briefdescription>
         <detaileddescription>
-<para>Time series data may have multiple concepts of what the time standard is. In MsPASS the allowed values currently are UTC and relative defined by the TimeReferenceType enum class. Other implementations might need to use some other standard (e.g. raw gps time is not utc). This method allows forcing a standard. It is not recommended for normal use, but only as a brutal solution for assembling a data object outside normal constructors.</para>
+<para>Time series data may have multiple concepts of what the time standard is. In MsPASS the allowed values currently are UTC and relative defined by the <ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref> enum class. Other implementations might need to use some other standard (e.g. raw gps time is not utc). This method allows forcing a standard. It is not recommended for normal use, but only as a brutal solution for assembling a data object outside normal constructors.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>newtref</parametername>
@@ -753,13 +759,13 @@
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" compoundref="_basic_time_series_8h" startline="267">tref</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" kindref="member">BasicTimeSeries</ref> &amp;</type>
         <definition>BasicTimeSeries &amp; mspass::seismic::BasicTimeSeries::operator=</definition>
         <argsstring>(const BasicTimeSeries &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::BasicTimeSeries::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" kindref="member">BasicTimeSeries</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -770,6 +776,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="237" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="63" bodyend="74"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" compoundref="_basic_time_series_8cc" startline="45" endline="53">BasicTimeSeries</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" compoundref="_basic_time_series_8h" startline="249">mdt</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" compoundref="_basic_time_series_8h" startline="245">mlive</references>
         <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" compoundref="_basic_time_series_8h" startline="253">mt0</references>

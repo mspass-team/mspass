@@ -1,8 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="namespacemspass_1_1algorithms_1_1amplitudes" kind="namespace" language="C++">
     <compoundname>mspass::algorithms::amplitudes</compoundname>
     <innerclass refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" prot="public">mspass::algorithms::amplitudes::BandwidthData</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1amplitudes_1_1_ms_p_a_s_s_error" prot="public">mspass::algorithms::amplitudes::MsPASSError</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1amplitudes_1_1_power_spectrum" prot="public">mspass::algorithms::amplitudes::PowerSpectrum</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1amplitudes_1_1_metadata" prot="public">mspass::algorithms::amplitudes::Metadata</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1amplitudes_1_1_vector_statistics" prot="public">mspass::algorithms::amplitudes::VectorStatistics</innerclass>
     <sectiondef kind="enum">
       <memberdef kind="enum" id="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991" prot="public" static="no" strong="yes">
         <type></type>
@@ -47,6 +51,20 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="26" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="26" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="enum" id="amplitudes_8cc_1a5b3d616387780ce356bfde3578e6386a" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>ErrorSeverity</name>
+        <qualifiedname>mspass::algorithms::amplitudes::ErrorSeverity</qualifiedname>
+        <briefdescription>
+<para>Severity code for error messages. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>C++11 added the construct of a enum class that we use here. It makes the enum more strongly typed to avoid collisions for these common words that would be trouble otherwise. This class is used in all <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> objects. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/amplitudes.cc" line="10" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="14" bodyend="21"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -250,13 +268,13 @@
 <para>Scaling function for atomic data objects in mspass. </para>
         </briefdescription>
         <detaileddescription>
-<para>An atomic data object in this case means a class that is a child of Metadata and BasictimeSeries. The function pulls the existing value for scale_factor_key (calib), computes a scale factor based on computed amplitude metric by specified method, scales the to have that metric be that defined by level, and then sets the value associated with scale_factor_key appropriately to define conversion back to the original units.</para>
+<para>An atomic data object in this case means a class that is a child of <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_metadata" kindref="compound">Metadata</ref> and BasictimeSeries. The function pulls the existing value for scale_factor_key (calib), computes a scale factor based on computed amplitude metric by specified method, scales the to have that metric be that defined by level, and then sets the value associated with scale_factor_key appropriately to define conversion back to the original units.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for d. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for d. Currently that means <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> and <ref refid="classmspass_1_1algorithms_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. Note in mspass this assumes history preservation is handled in python wrappers. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -280,7 +298,7 @@
 <parametername>win</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>defines a time window to use for computing the amplitude. If the window exceeds the data range it is clipped to the physical intersection. A reversed window selects the full data range. Window endpoints are inclusive, so an intersection whose start equals its end measures one sample. A disjoint intersection raises MsPASSError with Invalid severity before the datum is changed. </para>
+<para>defines a time window to use for computing the amplitude. If the window exceeds the data range it is clipped to the physical intersection. A reversed window selects the full data range. Window endpoints are inclusive, so an intersection whose start equals its end measures one sample. A disjoint intersection raises <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> with Invalid severity before the datum is changed. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -329,7 +347,7 @@
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> and <ref refid="classmspass_1_1algorithms_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. Note in mspass this assumes history preservation is handled in python wrappers. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -402,7 +420,7 @@
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PercAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means <ref refid="classmspass_1_1algorithms_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> and <ref refid="classmspass_1_1algorithms_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. Note in mspass this assumes history preservation is handled in python wrappers. </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -436,7 +454,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="202" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="202" bodyend="278"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="202" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="202" bodyend="280"/>
       </memberdef>
       <memberdef kind="function" id="amplitudes_8h_1aa36e3f957a482419623f74ab5fe86732" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -460,7 +478,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="280" column="25" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="280" bodyend="294"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="282" column="25" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="282" bodyend="296"/>
       </memberdef>
       <memberdef kind="function" id="amplitudes_8h_1ad039f2d3481d729366d68f20079fd37b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
@@ -567,7 +585,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" line="17" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" bodystart="17" bodyend="137" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" declline="400" declcolumn="15"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" line="17" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" bodystart="17" bodyend="137" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" declline="402" declcolumn="15"/>
       </memberdef>
       <memberdef kind="function" id="amplitudes_8h_1aea8b84ecc03027a4080df59548bf0dc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
@@ -591,7 +609,7 @@
 <para>Create summary statistics of snr data based on signal and noise spectra. </para>
         </briefdescription>
         <detaileddescription>
-<para>This function is a close companion to EstimateBandwidth. EstimateBandwidth aims only to find the upper and lower range of a frequency range it judges to be signal. This function takes the output of EstimateBandwidth and uses it to compute a vector of snr values across the bandwidth defined by the output of EstimateBandwidth. It returns the results in a Metadata container with the following keys and the concepts they defines: &quot;median_snr&quot; - median value of snr in the band &quot;maximum_snr&quot; - largest snr in the band &quot;minimum_snr&quot; - smallest snr in the band &quot;q1_4_snr&quot; - lower quartile (25% point of the distribution) of snr values &quot;q3_4_snr&quot; - upper quartile (75% point of the distribution) of snr values &quot;mean_snr&quot; - arithmetic mean ofsnr values &quot;stats_are_valid&quot; - booelan caller should used as the name suggests. That is, caller should first fetch this attribute and handle the resulting null condition. When this is false it means the data have not detectable signal based on the computed spectra.</para>
+<para>This function is a close companion to EstimateBandwidth. EstimateBandwidth aims only to find the upper and lower range of a frequency range it judges to be signal. This function takes the output of EstimateBandwidth and uses it to compute a vector of snr values across the bandwidth defined by the output of EstimateBandwidth. It returns the results in a <ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_metadata" kindref="compound">Metadata</ref> container with the following keys and the concepts they defines: &quot;median_snr&quot; - median value of snr in the band &quot;maximum_snr&quot; - largest snr in the band &quot;minimum_snr&quot; - smallest snr in the band &quot;q1_4_snr&quot; - lower quartile (25% point of the distribution) of snr values &quot;q3_4_snr&quot; - upper quartile (75% point of the distribution) of snr values &quot;mean_snr&quot; - arithmetic mean ofsnr values &quot;stats_are_valid&quot; - booelan caller should used as the name suggests. That is, caller should first fetch this attribute and handle the resulting null condition. When this is false it means the data have not detectable signal based on the computed spectra.</para>
 <para>Signal and noise spectra are normalized PSD estimates, so their values are compared directly even when the analysis windows have different lengths.</para>
 <para>Note the function does attempt to avoid Inf and NaN values that are possible if the noise value at some frequency is zero (negative is treated like 0). If the signal amplitude is nonzero and the noise amplitude is 0 snr is set to large value (actually 999999.9). If the signal amplitude is also zero the snr value is set to -1.0. If you find minimum_snr is -1.0 it means at least one frequency bin had the equivalent of a NaN condition.</para>
 <para><parameterlist kind="param"><parameteritem>
@@ -619,13 +637,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>Metadata container with summary statistics keyed as described above </para>
+<simplesect kind="return"><para><ref refid="classmspass_1_1algorithms_1_1amplitudes_1_1_metadata" kindref="compound">Metadata</ref> container with summary statistics keyed as described above </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" line="138" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" bodystart="138" bodyend="183" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" declline="445" declcolumn="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" line="138" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/snr.cc" bodystart="138" bodyend="183" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h" declline="447" declcolumn="1"/>
       </memberdef>
       <memberdef kind="function" id="snr_8cc_1a2263165e2b87a65863029a4beaa6dfc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const double</type>

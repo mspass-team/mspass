@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1utility_1_1_error_logger" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::ErrorLogger</compoundname>
     <includes refid="_error_logger_8h" local="no">ErrorLogger.h</includes>
@@ -107,7 +107,7 @@
         <name>ErrorLogger</name>
         <qualifiedname>mspass::utility::ErrorLogger::ErrorLogger</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+          <type>const ErrorLogger &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -329,13 +329,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="124" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="124" bodyend="124"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a1168408b473c80d078bfc2e8bd98bb75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+        <type>ErrorLogger &amp;</type>
         <definition>ErrorLogger &amp; mspass::utility::ErrorLogger::operator=</definition>
         <argsstring>(const ErrorLogger &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::utility::ErrorLogger::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+          <type>const ErrorLogger &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -359,13 +359,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="129" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="56" bodyend="62"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a4c0ac6e0e59fa842e3ce065352edb82e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+        <type>ErrorLogger &amp;</type>
         <definition>ErrorLogger &amp; mspass::utility::ErrorLogger::operator+=</definition>
         <argsstring>(const ErrorLogger &amp;parent)</argsstring>
         <name>operator+=</name>
         <qualifiedname>mspass::utility::ErrorLogger::operator+=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+          <type>const ErrorLogger &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -426,8 +426,7 @@
 <para>Container to hold error logs for a data object. </para>
     </briefdescription>
     <detaileddescription>
-<para>This class is intended mainly to be added to data objects in mspass to provide a scalable, thread safe method for logging errors. Atomic mspass data objects (e.g. seismograms and time series objects) all use this class to log errors and mark data with ambiguous states. The log can explain why data is an invalid state, but can also contain debug information normally enabled by something like a verbose option to a program. <linebreak/>
- </para>
+<para>This class is intended mainly to be added to data objects in mspass to provide a scalable, thread safe method for logging errors. Atomic mspass data objects (e.g. seismograms and time series objects) all use this class to log errors and mark data with ambiguous states. The log can explain why data is an invalid state, but can also contain debug information normally enabled by something like a verbose option to a program. </para>
     </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="63" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="63" bodyend="145"/>
     <listofallmembers>

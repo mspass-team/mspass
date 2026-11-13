@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_data_gap" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::DataGap</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" prot="public" virt="non-virtual">mspass::seismic::SeismogramWGaps</derivedcompoundref>
@@ -13,7 +13,7 @@
         <name>gaps</name>
         <qualifiedname>mspass::seismic::DataGap::gaps</qualifiedname>
         <briefdescription>
-<para>Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a TimeWindow which allows a simple, fast way to define a time range with invalid data. </para>
+<para>Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> which allows a simple, fast way to define a time range with invalid data. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -65,7 +65,7 @@
         <name>DataGap</name>
         <qualifiedname>mspass::seismic::DataGap::DataGap</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+          <type>const DataGap &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -76,6 +76,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="37" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="37" bodyend="37"/>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" compoundref="_data_gap_8h" startline="33" endline="33">DataGap</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">gaps</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_data_gap_1af79b8d0091f6b5dce87cc8086b268b27" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -143,7 +145,7 @@
 <parametername>twin</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>time window of data to test defined by a TimeWindow object </para>
+<para>time window of data to test defined by a <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> object </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -244,7 +246,7 @@
         <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">gaps</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_data_gap_1afd6343a1dc097ea5676239f62125af18" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref></type>
+        <type><ref refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kindref="member">DataGap</ref></type>
         <definition>DataGap mspass::seismic::DataGap::subset</definition>
         <argsstring>(const mspass::algorithms::TimeWindow tw) const</argsstring>
         <name>subset</name>
@@ -262,7 +264,7 @@
 <parametername>tw</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>TimeWindow defining range to be returned. Note overlaps with the edge will be returned with range outside the range defined by tw. If the tw is larger than the range of the current content returns a copy of itself. </para>
+<para><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> defining range to be returned. Note overlaps with the edge will be returned with range outside the range defined by tw. If the tw is larger than the range of the current content returns a copy of itself. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -272,6 +274,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="95" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/DataGap.cc" bodystart="62" bodyend="75"/>
         <references refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" compoundref="_data_gap_8cc" startline="14" endline="33">add_gap</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" compoundref="_data_gap_8h" startline="33" endline="33">DataGap</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="21">mspass::algorithms::TimeWindow::end</references>
         <references refid="classmspass_1_1seismic_1_1_data_gap_1ac1a5133f17e4e741f8b7560c46d1d204" compoundref="_data_gap_8cc" startline="56" endline="61">get_gaps</references>
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
@@ -302,13 +305,13 @@
         <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="17">mspass::algorithms::TimeWindow::start</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_data_gap_1a23f2f494e7932e012097309c8e08b901" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kindref="member">DataGap</ref> &amp;</type>
         <definition>DataGap &amp; mspass::seismic::DataGap::operator=</definition>
         <argsstring>(const DataGap &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::DataGap::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kindref="member">DataGap</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -319,28 +322,29 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="107" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/DataGap.cc" bodystart="98" bodyend="103"/>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" compoundref="_data_gap_8h" startline="33" endline="33">DataGap</references>
         <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">gaps</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_data_gap_1a5108ed469b93d3bf4da693da6af0972b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kindref="member">DataGap</ref> &amp;</type>
         <definition>DataGap &amp; mspass::seismic::DataGap::operator+=</definition>
         <argsstring>(const DataGap &amp;other)</argsstring>
         <name>operator+=</name>
         <qualifiedname>mspass::seismic::DataGap::operator+=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" kindref="member">DataGap</ref> &amp;</type>
           <declname>other</declname>
         </param>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Add contents of another <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> container to this one. <linebreak/>
- </para>
+<para>Add contents of another <ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> container to this one. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="109" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/DataGap.cc" bodystart="104" bodyend="108"/>
         <references refid="classmspass_1_1seismic_1_1_data_gap_1a29bd754c4f58ce811c4e6e1e4056927c" compoundref="_data_gap_8cc" startline="14" endline="33">add_gap</references>
+        <references refid="classmspass_1_1seismic_1_1_data_gap_1aa2a1e74ae7bf6ef9f3ff79153b890146" compoundref="_data_gap_8h" startline="33" endline="33">DataGap</references>
         <references refid="classmspass_1_1seismic_1_1_data_gap_1a7cb06f3ead8475c9527c2248968a2c83" compoundref="_data_gap_8h" startline="118">gaps</references>
       </memberdef>
     </sectiondef>
@@ -348,7 +352,7 @@
 <para>Container defining invalid time spans for gappy seismic data. </para>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> stores TimeWindow intervals in a set so algorithms can query whether samples or windows overlap known gaps. </para>
+<para><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref> stores <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> intervals in a set so algorithms can query whether samples or windows overlap known gaps. </para>
     </detaileddescription>
     <inheritancegraph>
       <node id="1">

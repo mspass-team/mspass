@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_seismogram_w_gaps" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::SeismogramWGaps</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_seismogram" prot="public" virt="non-virtual">mspass::seismic::Seismogram</basecompoundref>
@@ -29,7 +29,7 @@
         <name>SeismogramWGaps</name>
         <qualifiedname>mspass::seismic::SeismogramWGaps::SeismogramWGaps</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" kindref="compound">SeismogramWGaps</ref> &amp;</type>
+          <type>const SeismogramWGaps &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -40,15 +40,16 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="17" column="3"/>
+        <references refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b">SeismogramWGaps</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a8af6fce0c26b13f072582416cc5e1966" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" kindref="compound">SeismogramWGaps</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b" kindref="member">SeismogramWGaps</ref> &amp;</type>
         <definition>SeismogramWGaps &amp; mspass::seismic::SeismogramWGaps::operator=</definition>
         <argsstring>(const SeismogramWGaps &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::SeismogramWGaps::operator=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" kindref="compound">SeismogramWGaps</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b" kindref="member">SeismogramWGaps</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -59,6 +60,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="19" column="19"/>
+        <references refid="classmspass_1_1seismic_1_1_seismogram_w_gaps_1adf038f77f4e75979ed1debe1b13d2c5b">SeismogramWGaps</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a4136f6b13d9c5a4151f3efabebf10f87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -76,7 +78,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h" line="21" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_w_gaps_1a976c7e2ae15527497d22fa9e82fcb4ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::SeismogramWGaps::zero_gaps</definition>
         <argsstring>()</argsstring>
         <name>zero_gaps</name>

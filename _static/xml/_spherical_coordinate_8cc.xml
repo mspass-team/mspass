@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="_spherical_coordinate_8cc" kind="file" language="C++">
     <compoundname>SphericalCoordinate.cc</compoundname>
     <includes refid="_spherical_coordinate_8h" local="yes">mspass/utility/SphericalCoordinate.h</includes>
@@ -42,8 +42,8 @@
 <codeline lineno="6"><highlight class="comment">to<sp/>a<sp/>SphericalCoordinate<sp/>structure<sp/>which<sp/>is<sp/>returned.<sp/><sp/>The</highlight></codeline>
 <codeline lineno="7"><highlight class="comment">input<sp/>coordinates<sp/>are<sp/>assume<sp/>to<sp/>be<sp/>standard,<sp/>right<sp/>handed</highlight></codeline>
 <codeline lineno="8"><highlight class="comment">cartesian<sp/>coordinates<sp/>in<sp/>1,2,3<sp/>order<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">SphericalCoordinate<sp/>UnitVectorToSpherical(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu[3])<sp/>{</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"><sp/><sp/>SphericalCoordinate<sp/>xsc;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref><sp/>UnitVectorToSpherical(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu[3])<sp/>{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref><sp/>xsc;</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"><sp/><sp/>xsc.<ref refid="structmspass_1_1utility_1_1_spherical_coordinate_1a8f9f987e89e175fecb85c9cbe5bdbc13" kindref="member">radius</ref><sp/>=<sp/>1.0;</highlight></codeline>
 <codeline lineno="13"><highlight class="normal"><sp/><sp/>xsc.theta<sp/>=<sp/>acos(nu[2]);</highlight></codeline>
@@ -56,7 +56,7 @@
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Reciprocal<sp/>of<sp/>above.<sp/><sp/>A<sp/>bit<sp/>harder<sp/>as<sp/>it<sp/>has<sp/>to<sp/>handle<sp/>singular</highlight></codeline>
 <codeline lineno="21"><highlight class="comment">case.<sp/><sp/>Note<sp/>the<sp/>double<sp/>vector<sp/>of<sp/>3<sp/>is<sp/>allocated<sp/>here<sp/>and<sp/>externally</highlight></codeline>
 <codeline lineno="22"><highlight class="comment">needs<sp/>to<sp/>be<sp/>free<sp/>using<sp/>C++<sp/>delete<sp/>NOT<sp/>free.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*SphericalToUnitVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SphericalCoordinate<sp/>&amp;scor)<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*SphericalToUnitVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref><sp/>&amp;scor)<sp/>{</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*nu<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">[3];</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>vertical<sp/>vector<sp/>case</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(scor.theta)<sp/>&lt;=<sp/>DBL_EPSILON)<sp/>{</highlight></codeline>

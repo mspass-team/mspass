@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_ensemble" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::Ensemble</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
     <includes refid="_ensemble_8h" local="no">Ensemble.h</includes>
     <templateparamlist>
       <param>
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">typename</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Tdata</ref></type>
+        <type>typename Tdata</type>
       </param>
     </templateparamlist>
     <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" prot="public" static="no" mutable="no">
-        <type>std::vector&lt; <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Tdata</ref> &gt;</type>
+        <type>std::vector&lt; Tdata &gt;</type>
         <definition>std::vector&lt;Tdata&gt; mspass::seismic::Ensemble&lt; Tdata &gt;::member</definition>
         <argsstring></argsstring>
         <name>member</name>
@@ -50,7 +50,7 @@
         <name>Ensemble</name>
         <qualifiedname>mspass::seismic::Ensemble::Ensemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>n</declname>
         </param>
         <briefdescription>
@@ -72,7 +72,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="36" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="36" bodyend="36"/>
-        <references refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" compoundref="_ensemble_8h" startline="25">mspass::seismic::Ensemble&lt; Tdata &gt;::member</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1ae61caab62fca548faddc8c2a274b7668" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -81,11 +80,11 @@
         <name>Ensemble</name>
         <qualifiedname>mspass::seismic::Ensemble::Ensemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>md</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>n</declname>
         </param>
         <briefdescription>
@@ -96,7 +95,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="38" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="38" bodyend="41"/>
-        <references refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" compoundref="_ensemble_8h" startline="25">mspass::seismic::Ensemble&lt; Tdata &gt;::member</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1af9d4e39db1491f8aac9d9227440216de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -105,7 +103,7 @@
         <name>Ensemble</name>
         <qualifiedname>mspass::seismic::Ensemble::Ensemble</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+          <type>const Ensemble &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -118,13 +116,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="43" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="43" bodyend="46"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1afb7a281036e2cf5e79203495bda54ea6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" kindref="member">Ensemble</ref> &amp;</type>
         <definition>Ensemble &amp; mspass::seismic::Ensemble&lt; Tdata &gt;::operator=</definition>
         <argsstring>(const Ensemble &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::Ensemble::operator=</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" kindref="member">Ensemble</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -135,17 +133,15 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="48" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="48" bodyend="54"/>
-        <references refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" compoundref="_ensemble_8h" startline="25">mspass::seismic::Ensemble&lt; Tdata &gt;::member</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" compoundref="_metadata_8cc" startline="460" endline="466">mspass::utility::Metadata::operator=</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1afc2865503398025520f34034ec5d1b66" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">Tdata</ref> &amp;</type>
+        <type>Tdata &amp;</type>
         <definition>Tdata &amp; mspass::seismic::Ensemble&lt; Tdata &gt;::operator[]</definition>
         <argsstring>(const size_t n) const</argsstring>
         <name>operator[]</name>
         <qualifiedname>mspass::seismic::Ensemble::operator[]</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">size_t</ref></type>
+          <type>const size_t</type>
           <declname>n</declname>
         </param>
         <briefdescription>
@@ -169,13 +165,13 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="66" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="66" bodyend="70"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1ae4fafdd7d141fcb519571e24bd803478" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::update_metadata</definition>
         <argsstring>(const mspass::utility::Metadata &amp;newmd)</argsstring>
         <name>update_metadata</name>
         <qualifiedname>mspass::seismic::Ensemble::update_metadata</qualifiedname>
         <param>
-          <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">const</ref> <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
           <declname>newmd</declname>
         </param>
         <briefdescription>
@@ -197,10 +193,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="82" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="82" bodyend="88"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1a8be7decfdbefb7aa8c3d9e977ac26f0b" compoundref="_metadata_8h" startline="473">mspass::utility::Metadata::md</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::sync_metadata</definition>
         <argsstring>()</argsstring>
         <name>sync_metadata</name>
@@ -216,7 +211,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="97" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="97" bodyend="103"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">void</ref></type>
+        <type>void</type>
         <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::sync_metadata</definition>
         <argsstring>(std::vector&lt; std::string &gt; exclude)</argsstring>
         <name>sync_metadata</name>
@@ -233,8 +228,6 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="106" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="106" bodyend="117"/>
-        <references refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" compoundref="_metadata_8cc" startline="495" endline="505">mspass::utility::Metadata::erase</references>
-        <references refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" compoundref="_metadata_8cc" startline="342" endline="350">mspass::utility::Metadata::is_defined</references>
       </memberdef>
     </sectiondef>
     <briefdescription>

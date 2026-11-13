@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="classmspass_1_1seismic_1_1_basic_spectrum" kind="class" language="C++" prot="public" abstract="yes">
     <compoundname>mspass::seismic::BasicSpectrum</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_power_spectrum" prot="public" virt="non-virtual">mspass::seismic::PowerSpectrum</derivedcompoundref>
@@ -176,7 +176,7 @@
         <name>BasicSpectrum</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::BasicSpectrum</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
+          <type>const BasicSpectrum &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -187,6 +187,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="44" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="44" bodyend="50"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" compoundref="_basic_spectrum_8h" startline="22" endline="25">BasicSpectrum</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
@@ -194,13 +195,13 @@
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a2f2d159e0b767fac81f7b755e5debbc8" compoundref="_basic_spectrum_8h" startline="173">parent_npts</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1aa63e2972ed9ef383efdf76a9b6f837a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
+        <type><ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" kindref="member">BasicSpectrum</ref> &amp;</type>
         <definition>BasicSpectrum &amp; mspass::seismic::BasicSpectrum::operator=</definition>
         <argsstring>(const BasicSpectrum &amp;parent)</argsstring>
         <name>operator=</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::operator=</qualifiedname>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_spectrum" kindref="compound">BasicSpectrum</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" kindref="member">BasicSpectrum</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <briefdescription>
@@ -211,6 +212,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="52" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" bodystart="52" bodyend="61"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1ae2c68571058526795e0424e0a76e4e76" compoundref="_basic_spectrum_8h" startline="22" endline="25">BasicSpectrum</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1aa8b09300420826a09dcfd44783cce21b" compoundref="_basic_spectrum_8h" startline="167">dfval</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a3889a47eac3ae9c201f95eb70d9518a4" compoundref="_basic_spectrum_8h" startline="169">f0val</references>
         <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a266cf681e4001dffaf775aa223f8438b" compoundref="_basic_spectrum_8h" startline="175">is_live</references>
@@ -395,7 +397,7 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the integer sample number of the closest sample to the specified frequency. Uses rounding. Will throw a MsPASSError object if the specified frequency is not within the range of the data. </para>
+<para>Return the integer sample number of the closest sample to the specified frequency. Uses rounding. Will throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> object if the specified frequency is not within the range of the data. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -490,6 +492,7 @@
         <argsstring>() const =0</argsstring>
         <name>frequencies</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::frequencies</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1amplitudes_1_1_power_spectrum_1a1ef20f133212a6288e301e5d80f87a85">frequencies</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1a1ef20f133212a6288e301e5d80f87a85">frequencies</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -506,6 +509,7 @@
         <argsstring>(const int sample_number) const =0</argsstring>
         <name>frequency</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::frequency</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1amplitudes_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d">frequency</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d">frequency</reimplementedby>
         <param>
           <type>const int</type>
@@ -514,12 +518,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return frequency at a specified sample number. Virtual to allow subclasses to throw an error for illegal value. <linebreak/>
- </para>
+<para>Return frequency at a specified sample number. Virtual to allow subclasses to throw an error for illegal value. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicSpectrum.h" line="157" column="18"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_spectrum_1a1cb29c54744c06553765a3966c8b970f" compoundref="_basic_spectrum_8h" startline="125" endline="140">sample_number</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_spectrum_1a830fc9c8135253aeae01ffd80746b413" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
         <type>size_t</type>
@@ -527,6 +531,7 @@
         <argsstring>() const =0</argsstring>
         <name>nf</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::nf</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1amplitudes_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb">nf</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1a7675c66d7f1aa8d7b4e9437564af4beb">nf</reimplementedby>
         <briefdescription>
         </briefdescription>
@@ -543,6 +548,7 @@
         <argsstring>() const =0</argsstring>
         <name>Nyquist</name>
         <qualifiedname>mspass::seismic::BasicSpectrum::Nyquist</qualifiedname>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1amplitudes_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87">Nyquist</reimplementedby>
         <reimplementedby refid="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87">Nyquist</reimplementedby>
         <briefdescription>
         </briefdescription>

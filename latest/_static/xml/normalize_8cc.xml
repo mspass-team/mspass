@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.15.0" xml:lang="en-US">
   <compounddef id="normalize_8cc" kind="file" language="C++">
     <compoundname>normalize.cc</compoundname>
     <includes refid="blas_8h" local="yes">misc/blas.h</includes>
@@ -110,7 +110,7 @@
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility<sp/>{</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">vector&lt;double&gt;<sp/>normalize_rows(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>dmatrix<sp/>&amp;d)<sp/>{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">vector&lt;double&gt;<sp/>normalize_rows(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>&amp;d)<sp/>{</highlight></codeline>
 <codeline lineno="10"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nrows<sp/>=<sp/>d.rows();</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ncols<sp/>=<sp/>d.columns();</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nrm,<sp/>scl;</highlight></codeline>
@@ -119,7 +119,7 @@
 <codeline lineno="15"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>nrows;<sp/>++i)<sp/>{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>nrm<sp/>=<sp/>dnrm2(ncols,<sp/>d.get_address(i,<sp/>0),<sp/>nrows);</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(nrm)<sp/>&lt;<sp/>DBL_EPSILON)</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>MsPASSError(</highlight><highlight class="stringliteral">&quot;normalize_rows:<sp/><sp/>cannot<sp/>normalize<sp/>a<sp/>row<sp/>of<sp/>all<sp/>zeros&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;normalize_rows:<sp/><sp/>cannot<sp/>normalize<sp/>a<sp/>row<sp/>of<sp/>all<sp/>zeros&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>scl<sp/>=<sp/>1.0<sp/>/<sp/>nrm;</highlight></codeline>
 <codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>dscal(ncols,<sp/>scl,<sp/>d.get_address(i,<sp/>0),<sp/>nrows);</highlight></codeline>
@@ -127,7 +127,7 @@
 <codeline lineno="23"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allnrms;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="26"><highlight class="normal">vector&lt;double&gt;<sp/>normalize_columns(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>dmatrix<sp/>&amp;d)<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">vector&lt;double&gt;<sp/>normalize_columns(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>&amp;d)<sp/>{</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nrows<sp/>=<sp/>d.rows();</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ncols<sp/>=<sp/>d.columns();</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nrm,<sp/>scl;</highlight></codeline>
@@ -136,7 +136,7 @@
 <codeline lineno="32"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>ncols;<sp/>++i)<sp/>{</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>nrm<sp/>=<sp/>dnrm2(nrows,<sp/>d.get_address(0,<sp/>i),<sp/>1);</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(nrm)<sp/>&lt;<sp/>DBL_EPSILON)</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>MsPASSError(</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;normalize_columns:<sp/><sp/>cannot<sp/>normalize<sp/>a<sp/>column<sp/>of<sp/>all<sp/>zeros&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>scl<sp/>=<sp/>1.0<sp/>/<sp/>nrm;</highlight></codeline>
