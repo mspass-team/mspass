@@ -19,6 +19,7 @@ from botocore.config import Config
 from botocore import UNSIGNED
 from functools import lru_cache
 from earthscope_sdk import EarthScopeClient
+from earthscope_sdk.config.settings import SdkSettings
 from dask.distributed import WorkerPlugin, get_worker
 
 
@@ -129,6 +130,7 @@ fetch_s3_client.cache_clear = _serial_s3_client.cache_clear
 fetch_s3_client.cache_info = _serial_s3_client.cache_info
 
 
+
 class GeoLabS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
@@ -157,51 +159,57 @@ class GeoLabS3Worker(WorkerPlugin):
     s3 clients with different credentialsl run on GeoLab simultaneously that
     would require distinguishing the multiple instances.
     """
-
-    def __init__(self, key="geolab_s3client"):
-        """
-        Standard constructor.
-
-        Normal use requires no arguments.
-        """
-        # probably unnecessary initializations but makes clear these are two attributes
-        # managed by this class
+    def __init__(self, key="geolab_s3client", profile_name=None):
         self.worker_key = key
         self.s3_client = None
         self._cleanup = None
 
+        # Load settings in the client/notebook process where ~/.earthscope exists
+        settings = (
+            SdkSettings(profile_name=profile_name)
+            if profile_name is not None
+            else SdkSettings()
+        )
+        self.profile_name = settings.profile_name
+
+        # Extract plaintext secret strings BEFORE Dask pickles this plugin,
+        # because Pydantic SecretStr masks its value during serialization.
+        rt = settings.oauth2.refresh_token
+        at = settings.oauth2.access_token
+        if rt is None:
+            raise RuntimeError(
+                "No EarthScope refresh token found in client environment. "
+                "Run `es login` before registering GeoLabS3Worker."
+            )
+        self._refresh_token = rt.get_secret_value()
+        self._access_token = at.get_secret_value() if at is not None else None
+
     def setup(self, worker):
         """
-        Required method for a worker plugin.  This acts like a secondary constructor.
-        It is involked on each worker when this object is pushed to
-        each worker with the register_plugin method of the dask client.
+        Reconstruct SdkSettings with plaintext tokens in memory on the worker
+        and initialize a worker-resident S3 client.
         """
-        # Gemini's comment on why this complication is needed here:
-        # Keep the SDK's refresh provider and real expiration intact.  A frozen
-        # credential snapshot has no expiration, and a new SDK session may reuse
-        # cached credentials; inventing a new expiry would extend their lifetime
-        # locally without extending their actual AWS validity.
+        oauth2_data = {"refresh_token": self._refresh_token}
+        if self._access_token is not None:
+            oauth2_data["access_token"] = self._access_token
+
+        worker_settings = SdkSettings(
+            profile_name=self.profile_name,
+            oauth2=oauth2_data,
+        )
+
         with ExitStack() as cleanup:
-            esclient = EarthScopeClient()
+            esclient = EarthScopeClient(settings=worker_settings)
             cleanup.callback(esclient.close)
             session = esclient.user.get_boto3_session()
-            # Plugin clients have their own lifetime; never reuse a serial
-            # cached client that another owner may already have closed.
             s3_client = _create_s3_client(session=session)
-            # Retain cleanup after successful registration, or release resources
-            # immediately if setup fails.
             cleanup.callback(s3_client.close)
-            # Publish under the configurable key, retaining ownership for teardown.
+
             worker.data[self.worker_key] = s3_client
             self.s3_client = s3_client
             self._cleanup = cleanup.pop_all()
 
     def teardown(self, worker):
-        """
-        Required method for a worker plugin.  This method is effectively a destructor
-        called when the class goes out of scope.   It is essential in this case to
-        avoid a resource leak as it properly closes the clients connections to s3.
-        """
         if worker.data.get(self.worker_key) is self.s3_client:
             worker.data.pop(self.worker_key, None)
         cleanup = self._cleanup
@@ -209,8 +217,6 @@ class GeoLabS3Worker(WorkerPlugin):
         self.s3_client = None
         if cleanup is not None:
             cleanup.close()
-
-
 class AnonymousS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
