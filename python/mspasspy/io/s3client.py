@@ -130,7 +130,6 @@ fetch_s3_client.cache_clear = _serial_s3_client.cache_clear
 fetch_s3_client.cache_info = _serial_s3_client.cache_info
 
 
-
 class GeoLabS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
@@ -159,6 +158,7 @@ class GeoLabS3Worker(WorkerPlugin):
     s3 clients with different credentialsl run on GeoLab simultaneously that
     would require distinguishing the multiple instances.
     """
+
     def __init__(self, key="geolab_s3client", profile_name=None):
         self.worker_key = key
         self.s3_client = None
@@ -217,6 +217,8 @@ class GeoLabS3Worker(WorkerPlugin):
         self.s3_client = None
         if cleanup is not None:
             cleanup.close()
+
+
 class AnonymousS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
