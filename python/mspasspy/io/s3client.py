@@ -5,14 +5,9 @@ Prototype worker plugin for using dask on AWS to allow workers to
 not have to instantiate an s3 client on each submit.   Modeled after
 the mongodb worker plugin.
 
-Specific to the supplied EarthScope/GeoLab workflow. Live deployment validation
-is still required; the tests exercise credential lifecycle without AWS access.
-
-Created on Mon Mar 23 09:26:00 2026
-
 @author: pavlis
 """
-
+import os
 import boto3
 from contextlib import ExitStack
 from botocore.config import Config
@@ -24,7 +19,7 @@ from dask.distributed import WorkerPlugin, get_worker
 
 
 def fetch_s3_client(
-    parallel=True, session=None, session_config=None, worker_data_key="geolab_s3client"
+    parallel=True, session=None, session_config=None, worker_data_key="earthscope_s3client"
 ):
     """
     Generic tool to fetch s3 client access S3 data.
@@ -74,15 +69,14 @@ def fetch_s3_client(
        credentials.   There are currently three distinct plugin implementations
        with different default key values.
 
-       1.  GeoLabS3Worker uses the key "geolab_s3client" by default.
+       1.  EarthscopeS3Worker uses the key "earthscope_s3client" by default.
        2.  AnonymousS3Worker uses the key "anonymous_s3worker" by default
        3.  StockS3Worker uses the key "stock_s3worker" as default.
 
        Those keys, however, are not frozen.   When any of the worker plugins
        are instatiated you can set the value for that key with the
        common argument "key=".   If you do, the driver code will need to
-       change worker_data_key appropriately as well.  You will need to
-       set worker_data_key running parallel on anywhere but on geolab.
+       change worker_data_key appropriately as well.  
     """
     if parallel:
         try:
@@ -131,10 +125,13 @@ fetch_s3_client.cache_info = _serial_s3_client.cache_info
 
 
 
-class GeoLabS3Worker(WorkerPlugin):
+class EarthscopeS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
-    This instance works only with earthscope_sdk used on GeoLab.
+    This version is used for access to Earthscope S3 archives outside the 
+    open data collectoin.  Use it to access any earthscope data via their 
+    SDK that is not open data.  It handles credentials with the special 
+    earthscope mechanism. 
 
     An S3 client requires significant time to construct for a variety of reasons.
     It is known to be a really serious bottleneck if s3 clients are instantiated
@@ -143,7 +140,7 @@ class GeoLabS3Worker(WorkerPlugin):
     python script is:
     ```
         dask_client = mspass_client.get_scheduler()
-        s3plugin = GeoLabS3Worker()
+        s3plugin = EarthscopeS3Worker()
         dask_client.register_plugin(s3plugin)
     ```
     That creates and loads a memory resident s3 client in each worker's memory space.
@@ -152,37 +149,47 @@ class GeoLabS3Worker(WorkerPlugin):
     That produces near zero overhead in a worker process particularly compared to
     the time needed to instantiate a new instance of an s3 client.
 
-    Note this plugin differs from it's siblings in this module as it caches the
-    s3 client as an attribute of this class.  That is a necessary evil to deal with
-    timeout issues in GeoLab that complicate this code.   Since this plugin is
-    only of use on GeoLab this should not matter as one would not expect multiple
-    s3 clients with different credentialsl run on GeoLab simultaneously that
-    would require distinguishing the multiple instances.
+    Note this plugin differs from it's siblings in this module as it caches 
+    special login token earthscope's SDK uses to handle authentication and 
+    access control for data that is not open.  
     """
-    def __init__(self, key="geolab_s3client", profile_name=None):
+    def __init__(self, key="earthscope_s3client", profile_name=None):
         self.worker_key = key
         self.s3_client = None
         self._cleanup = None
 
-        # Load settings in the client/notebook process where ~/.earthscope exists
-        settings = (
-            SdkSettings(profile_name=profile_name)
-            if profile_name is not None
-            else SdkSettings()
-        )
-        self.profile_name = settings.profile_name
+        env_refresh_token = os.environ.get("ES_OAUTH2__REFRESH_TOKEN", "").strip()
 
-        # Extract plaintext secret strings BEFORE Dask pickles this plugin,
-        # because Pydantic SecretStr masks its value during serialization.
-        rt = settings.oauth2.refresh_token
-        at = settings.oauth2.access_token
-        if rt is None:
-            raise RuntimeError(
-                "No EarthScope refresh token found in client environment. "
-                "Run `es login` before registering GeoLabS3Worker."
+        if env_refresh_token:
+            #  First try to use environment variable directly and ignore any stale
+            #    ~/.earthscope/tokens.json access_token on the client filesystem.
+            self.profile_name = profile_name or "default"
+            self._refresh_token = env_refresh_token
+            self._access_token = (
+                os.environ.get("ES_OAUTH2__ACCESS_TOKEN", "").strip() or None
             )
-        self._refresh_token = rt.get_secret_value()
-        self._access_token = at.get_secret_value() if at is not None else None
+        else:
+            # Fallback approach: load from .env or ~/.earthscope via SdkSettings directly
+            settings = (
+                SdkSettings(profile_name=profile_name)
+                if profile_name is not None
+                else SdkSettings()
+            )
+            self.profile_name = settings.profile_name
+
+            rt = settings.oauth2.refresh_token
+            at = settings.oauth2.access_token
+            if rt is None or not rt.get_secret_value().strip():
+                raise RuntimeError(
+                    "No EarthScope refresh token found. Set ES_OAUTH2__REFRESH_TOKEN "
+                    "or run `es login` before registering EarthscopeS3Worker with dask scheduler."
+                )
+            self._refresh_token = rt.get_secret_value().strip()
+            self._access_token = (
+                at.get_secret_value().strip()
+                if (at is not None and at.get_secret_value().strip())
+                else None
+            )
 
     def setup(self, worker):
         """
