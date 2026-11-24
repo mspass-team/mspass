@@ -41,15 +41,9 @@ from mspasspy.util.db_utils import fetch_dbhandle
 from mspasspy.util.seismic import print_metadata
 
 # from mspasspy.io.s3client import fetch_s3_client
-from mspasspy.io.s3client import fetch_s3_client, GeoLabS3Worker, AnonymousS3Worker
+from mspasspy.io.s3client import fetch_s3_client, EarthscopeS3Worker, AnonymousS3Worker
 from mspasspy.algorithms.window import merge, WindowData
 from mspasspy.algorithms.signals import detrend
-
-# from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
-# temporary for testing - this didn't exist in io when I first pulled this branch
-# remove me and uncomment above for final use
-# from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
-# for testing - will be installed eventually
 from mspasspy.io.stock import datafile
 
 
@@ -1293,8 +1287,7 @@ class S3SeismicProvider(BasicProvider):
                 # plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
                 dask_client.register_plugin(plugin)
             case DataAccess.earthscope_aws_s3:
-                plugin = GeoLabS3Worker(key=worker_key)
-                # plugin = GeoLabS3Worker(key=worker_key,region=self.region(net))
+                plugin = EarthscopeS3Worker(key=worker_key)
                 dask_client.register_plugin(plugin)
 
     def get_worker_key(self, net):

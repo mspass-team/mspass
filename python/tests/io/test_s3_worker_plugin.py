@@ -54,7 +54,7 @@ import mspasspy.io.s3client as s3
 #def test_parallel_looks_up_current_worker_and_registration(monkeypatch):
 #    first, second, replacement = Mock(), Mock(), Mock()
 #    workers = [
-#        SimpleNamespace(data={"geolab_s3client": first}),
+#        SimpleNamespace(data={"earthscope_s3client": first}),
 #        SimpleNamespace(data={"geolab_s3client": second}),
 #    ]
 #    get_worker = Mock(side_effect=workers)
@@ -140,7 +140,7 @@ import mspasspy.io.s3client as s3
 #
 #def test_geolab_lifecycle_and_refresh_provider(monkeypatch):
 #    sdk, session, client = geolab_mocks(monkeypatch)
-#    plugin = s3.GeoLabS3Worker(key="custom")
+#    plugin = s3.EarthscopeS3Worker(key="custom")
 #    worker = SimpleNamespace(data={})
 #    plugin.teardown(worker)
 #    plugin.setup(worker)
@@ -164,7 +164,7 @@ import mspasspy.io.s3client as s3
 #        sdk.user.get_boto3_session.side_effect = RuntimeError("failed")
 #    elif stage == "client":
 #        session.client.side_effect = RuntimeError("failed")
-#    plugin = s3.GeoLabS3Worker()
+#    plugin = s3.EarthscopeS3Worker()
 #    with pytest.raises(RuntimeError):
 #        plugin.setup(worker)
 #    sdk.close.assert_called_once_with()
@@ -178,7 +178,7 @@ import mspasspy.io.s3client as s3
 #
 #def test_geolab_cleanup_continues_when_s3_close_fails(monkeypatch):
 #    sdk, session, client = geolab_mocks(monkeypatch)
-#    plugin = s3.GeoLabS3Worker()
+#    plugin = s3.EarthscopeS3Worker()
 #    worker = SimpleNamespace(data={})
 #    plugin.setup(worker)
 #    client.close.side_effect = RuntimeError("close failed")
@@ -195,7 +195,7 @@ import mspasspy.io.s3client as s3
 #    closed.close()
 #    fresh = Mock()
 #    session.client.return_value = fresh
-#    plugin = s3.GeoLabS3Worker()
+#    plugin = s3.EarthscopeS3Worker()
 #    worker = SimpleNamespace(data={})
 #    plugin.setup(worker)
 #    assert worker.data["geolab_s3client"] is fresh
@@ -205,10 +205,10 @@ import mspasspy.io.s3client as s3
 #
 #
 #@pytest.mark.parametrize(
-#    "plugin_type", [s3.AnonymousS3Worker, s3.StockS3Worker, s3.GeoLabS3Worker]
+#    "plugin_type", [s3.AnonymousS3Worker, s3.StockS3Worker, s3.EarthscopeS3Worker]
 #)
 #def test_teardown_preserves_replacement_client(monkeypatch, plugin_type):
-#    if plugin_type is s3.GeoLabS3Worker:
+#    if plugin_type is s3.EarthscopeS3Worker:
 #        _, _, client = geolab_mocks(monkeypatch)
 #    else:
 #        client = Mock()
