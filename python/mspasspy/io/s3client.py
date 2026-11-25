@@ -103,6 +103,11 @@ def fetch_s3_client(
 
 
 def _create_s3_client(session=None, session_config=None):
+    """
+    Internal function used to instatiatge a serial client from a 
+    boto3 Session and Config object.  It a pure convenciece function 
+    to reduce repetitous code.  
+    """
     if session is None:
         session = boto3.Session()
     if session_config is None:
@@ -115,6 +120,11 @@ def _create_s3_client(session=None, session_config=None):
 
 @lru_cache(maxsize=1)
 def _serial_s3_client(session=None, session_config=None):
+    """
+    Thin wrapper used in combination with fetch_s3_client to 
+    efficiently create an s3 client.  It is a necessary evil to 
+    exploit the chaching method using the lru_cache decorator.
+    """
     return _create_s3_client(session, session_config)
 
 
@@ -129,7 +139,7 @@ class EarthscopeS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
     This version is used for access to Earthscope S3 archives outside the 
-    open data collectoin.  Use it to access any earthscope data via their 
+    open data collection.  Use it to access any earthscope data via their 
     SDK that is not open data.  It handles credentials with the special 
     earthscope mechanism. 
 
@@ -146,12 +156,12 @@ class EarthscopeS3Worker(WorkerPlugin):
     That creates and loads a memory resident s3 client in each worker's memory space.
     Processing functions that need access to s3 should then use the function
     `fetch_s3_client` to get a reference to the memory resident s3 client.
-    That produces near zero overhead in a worker process particularly compared to
+    That produces near zero overhead in a worker process compared to
     the time needed to instantiate a new instance of an s3 client.
 
     Note this plugin differs from it's siblings in this module as it caches 
     special login token earthscope's SDK uses to handle authentication and 
-    access control for data that is not open.  
+    access control for data that is not open. It can fail if 
     """
     def __init__(self, key="earthscope_s3client", profile_name=None):
         self.worker_key = key
@@ -193,8 +203,20 @@ class EarthscopeS3Worker(WorkerPlugin):
 
     def setup(self, worker):
         """
-        Reconstruct SdkSettings with plaintext tokens in memory on the worker
-        and initialize a worker-resident S3 client.
+        Secondary constructor for Earthscope client setup.
+        
+        A dask worker plugin requires this method.  It acts as a 
+        secondary constructor which in this case actually instantiates 
+        an instance of an EarthscopeClient which is pushed to the 
+        workers.  
+        
+        Extra complexity enters in this plugin to handle the special 
+        way Earthscope handles access credentials.   See the user manual 
+        and online sources to understand that complex process.  
+        To understand this code you need to realize the incantations 
+        here load the two keys called "access_token" and "refresh_token" 
+        in a way that they can be serialized and loaded into the 
+        workers data area.   
         """
         oauth2_data = {"refresh_token": self._refresh_token}
         if self._access_token is not None:
@@ -217,6 +239,11 @@ class EarthscopeS3Worker(WorkerPlugin):
             self._cleanup = cleanup.pop_all()
 
     def teardown(self, worker):
+        """
+        This method acts like a destructor for the class.   
+        It is nontrivial as it has to close up any active AWS connections
+        and clear the worker data area where the plugin was loaded.
+        """
         if worker.data.get(self.worker_key) is self.s3_client:
             worker.data.pop(self.worker_key, None)
         cleanup = self._cleanup
@@ -256,6 +283,13 @@ class AnonymousS3Worker(WorkerPlugin):
         self.s3_client = None
 
     def setup(self, worker):
+        """
+        Secondary constructor.
+        
+        Like all plugins this required method sets up the actual 
+        process.  This one instantiates an open data s3 access client 
+        which is trivial compared to any other s3 client.  
+        """
         s3_client = boto3.client(
             "s3", region_name=self.region, config=Config(signature_version=UNSIGNED)
         )
@@ -268,6 +302,11 @@ class AnonymousS3Worker(WorkerPlugin):
         self.s3_client = s3_client
 
     def teardown(self, worker):
+        """
+        This method acts like a destructor for the class.   
+        It is nontrivial as it has to close up any active AWS connections
+        and clear the worker data area where the plugin was loaded.
+        """
         s3_client = self.s3_client
         self.s3_client = None
         if s3_client is not None:
@@ -301,6 +340,9 @@ class StockS3Worker(WorkerPlugin):
     Note the default key the fetch_s3_client function needs to use
     this client is "stock_s3client".  It can be changed if desired but
     you will need to change calls to fetch_s3_client appropriately if you do.
+    
+    WARNING:   this plugin is not as well tested as the other plugins in 
+    this module.
     """
 
     def __init__(self, key="stock_s3worker", region="us-east-2"):
