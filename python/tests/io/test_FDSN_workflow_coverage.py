@@ -236,7 +236,7 @@ def test_missing_earthscope_credentials_fail_before_registration(provider, monke
         "SdkSettings",
         lambda **_: SimpleNamespace(
             profile_name="default",
-            oauth2=SimpleNamespace(refresh_token=None, access_token=None),
+            oauth2=s3client.AuthFlowSettings(),
         ),
     )
 

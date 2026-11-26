@@ -316,6 +316,10 @@ def test_local_profile_survives_serialization_to_worker(monkeypatch, tmp_path):
     profile_dir.mkdir(parents=True)
     (driver / "config.toml").write_text(
         '[profile.science.http.extra_headers]\nExample = "synthetic-unrelated-header"\n'
+        '[profile.science.oauth2]\nclient_id = "synthetic-public-client"\n'
+        'client_secret = "synthetic-unrelated-secret"\n'
+        'domain = "https://login.example.org"\n'
+        'allowed_hosts = ["example.org"]\n'
     )
     (profile_dir / "tokens.json").write_text(
         '{"refresh_token": "synthetic-local-refresh", "access_token": "synthetic-local-access", "id_token": "synthetic-unrelated-id"}'
@@ -327,6 +331,7 @@ def test_local_profile_survives_serialization_to_worker(monkeypatch, tmp_path):
     payload = cloudpickle.dumps(s3.EarthscopeS3Worker(profile_name="science"))
     assert b"synthetic-unrelated-header" not in payload
     assert b"synthetic-unrelated-id" not in payload
+    assert b"synthetic-unrelated-secret" not in payload
     plugin = cloudpickle.loads(payload)
 
     monkeypatch.setattr(settings, "_LOCAL_APP_DIR", tmp_path / "blank-worker")
@@ -338,6 +343,10 @@ def test_local_profile_survives_serialization_to_worker(monkeypatch, tmp_path):
         assert resolved.profile_name == "science"
         assert not resolved.http.extra_headers
         assert resolved.oauth2.id_token is None
+        assert resolved.oauth2.client_secret is None
+        assert resolved.oauth2.client_id == "synthetic-public-client"
+        assert str(resolved.oauth2.domain) == "https://login.example.org/"
+        assert resolved.oauth2.allowed_hosts == {"example.org"}
         assert (
             resolved.oauth2.refresh_token.get_secret_value()
             == "synthetic-local-refresh"

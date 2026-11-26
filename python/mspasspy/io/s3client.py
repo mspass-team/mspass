@@ -173,7 +173,9 @@ class EarthscopeS3Worker(WorkerPlugin):
     Resolve credentials on the driver before registration. Dask serializes the
     resolved credentials to its scheduler and workers, so register this plugin
     only with a trusted cluster. Log in again and re-register the plugin when
-    the driver's credentials need to be replaced.
+    the driver's credentials need to be replaced. Environment tokens use the
+    SDK's default public OAuth application. A driver SDK profile can supply
+    public OAuth settings for refreshing its tokens on workers.
     """
 
     def __init__(self, key="earthscope_s3client", profile_name=None):
@@ -181,6 +183,7 @@ class EarthscopeS3Worker(WorkerPlugin):
         self.s3_client = None
         self._cleanup = None
 
+        self._oauth2_options = {}
         refresh_token = os.environ.get("ES_OAUTH2__REFRESH_TOKEN", "").strip()
         if refresh_token:
             # Never combine an explicit refresh token with a stale access
@@ -196,8 +199,17 @@ class EarthscopeS3Worker(WorkerPlugin):
                 else SdkSettings()
             )
             self.profile_name = settings.profile_name
-            sdk_refresh = settings.oauth2.refresh_token
-            sdk_access = settings.oauth2.access_token
+            oauth2 = settings.oauth2
+            # Refresh tokens are bound to the issuing OAuth application.
+            self._oauth2_options = {
+                "client_id": oauth2.client_id,
+                "domain": str(oauth2.domain),
+                "scope": oauth2.scope,
+                "audience": oauth2.audience,
+                "allowed_hosts": oauth2.allowed_hosts,
+            }
+            sdk_refresh = oauth2.refresh_token
+            sdk_access = oauth2.access_token
             refresh_token = (
                 sdk_refresh.get_secret_value().strip() if sdk_refresh else ""
             )
@@ -238,6 +250,7 @@ class EarthscopeS3Worker(WorkerPlugin):
                 oauth2=AuthFlowSettings(
                     refresh_token=self._refresh_token,
                     access_token=self._access_token,
+                    **self._oauth2_options,
                 ),
             ).model_copy(
                 update={
