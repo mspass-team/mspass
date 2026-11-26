@@ -14,7 +14,10 @@ from contextlib import ExitStack
 from botocore.config import Config
 from botocore import UNSIGNED
 from functools import lru_cache
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from earthscope_sdk import EarthScopeClient
+from earthscope_sdk.config.models import AuthFlowSettings
 from earthscope_sdk.config.settings import SdkSettings
 from dask.distributed import WorkerPlugin, get_worker
 
@@ -95,6 +98,11 @@ def fetch_s3_client(
             s3_client = worker.data[worker_data_key]
 
         except KeyError as e:
+            if (
+                worker_data_key == "earthscope_s3client"
+                and "geolab_s3client" in worker.data
+            ):
+                return worker.data["geolab_s3client"]
             message = "fetch_s3_client:  dask worker has no S3 plugin registered with name={}\n".format(
                 worker_data_key
             )
@@ -162,9 +170,10 @@ class EarthscopeS3Worker(WorkerPlugin):
     That produces near zero overhead in a worker process compared to
     the time needed to instantiate a new instance of an s3 client.
 
-    Note this plugin differs from it's siblings in this module as it caches
-    special login token earthscope's SDK uses to handle authentication and
-    access control for data that is not open. It can fail if
+    Resolve credentials on the driver before registration. Dask serializes the
+    resolved credentials to its scheduler and workers, so register this plugin
+    only with a trusted cluster. Log in again and re-register the plugin when
+    the driver's credentials need to be replaced.
     """
 
     def __init__(self, key="earthscope_s3client", profile_name=None):
@@ -172,38 +181,34 @@ class EarthscopeS3Worker(WorkerPlugin):
         self.s3_client = None
         self._cleanup = None
 
-        env_refresh_token = os.environ.get("ES_OAUTH2__REFRESH_TOKEN", "").strip()
-
-        if env_refresh_token:
-            #  First try to use environment variable directly and ignore any stale
-            #    ~/.earthscope/tokens.json access_token on the client filesystem.
-            self.profile_name = profile_name or "default"
-            self._refresh_token = env_refresh_token
-            self._access_token = (
-                os.environ.get("ES_OAUTH2__ACCESS_TOKEN", "").strip() or None
+        refresh_token = os.environ.get("ES_OAUTH2__REFRESH_TOKEN", "").strip()
+        if refresh_token:
+            # Never combine an explicit refresh token with a stale access
+            # token from another identity in the driver's SDK profile.
+            access_token = os.environ.get("ES_OAUTH2__ACCESS_TOKEN", "").strip()
+            self.profile_name = (
+                profile_name or os.environ.get("ES_PROFILE") or "default"
             )
         else:
-            # Fallback approach: load from .env or ~/.earthscope via SdkSettings directly
             settings = (
                 SdkSettings(profile_name=profile_name)
                 if profile_name is not None
                 else SdkSettings()
             )
             self.profile_name = settings.profile_name
-
-            rt = settings.oauth2.refresh_token
-            at = settings.oauth2.access_token
-            if rt is None or not rt.get_secret_value().strip():
-                raise RuntimeError(
-                    "No EarthScope refresh token found. Set ES_OAUTH2__REFRESH_TOKEN "
-                    "or run `es login` before registering EarthscopeS3Worker with dask scheduler."
-                )
-            self._refresh_token = rt.get_secret_value().strip()
-            self._access_token = (
-                at.get_secret_value().strip()
-                if (at is not None and at.get_secret_value().strip())
-                else None
+            sdk_refresh = settings.oauth2.refresh_token
+            sdk_access = settings.oauth2.access_token
+            refresh_token = (
+                sdk_refresh.get_secret_value().strip() if sdk_refresh else ""
             )
+            access_token = sdk_access.get_secret_value().strip() if sdk_access else ""
+        if not refresh_token:
+            raise RuntimeError(
+                "No EarthScope refresh token found. Set ES_OAUTH2__REFRESH_TOKEN "
+                "or run `es login` before registering EarthscopeS3Worker with Dask."
+            )
+        self._refresh_token = refresh_token
+        self._access_token = access_token or None
 
     def setup(self, worker):
         """
@@ -222,16 +227,24 @@ class EarthscopeS3Worker(WorkerPlugin):
         in a way that they can be serialized and loaded into the
         workers data area.
         """
-        oauth2_data = {"refresh_token": self._refresh_token}
-        if self._access_token is not None:
-            oauth2_data["access_token"] = self._access_token
-
-        worker_settings = SdkSettings(
-            profile_name=self.profile_name,
-            oauth2=oauth2_data,
-        )
-
         with ExitStack() as cleanup:
+            # Copy resolved driver settings without loading worker-local settings.
+            # Separate SDK token and AWS grant caches for each plugin instance.
+            profile_dir = Path(
+                cleanup.enter_context(TemporaryDirectory(prefix="mspass-earthscope-"))
+            )
+            worker_settings = SdkSettings.model_construct(
+                profile_name=self.profile_name,
+                oauth2=AuthFlowSettings(
+                    refresh_token=self._refresh_token,
+                    access_token=self._access_token,
+                ),
+            ).model_copy(
+                update={
+                    "profile_dir": profile_dir,
+                    "tokens_file": profile_dir / "tokens.json",
+                }
+            )
             esclient = EarthScopeClient(settings=worker_settings)
             cleanup.callback(esclient.close)
             session = esclient.user.get_boto3_session()
@@ -255,6 +268,13 @@ class EarthscopeS3Worker(WorkerPlugin):
         self.s3_client = None
         if cleanup is not None:
             cleanup.close()
+
+
+class GeoLabS3Worker(EarthscopeS3Worker):
+    """Backward-compatible name and default registration key."""
+
+    def __init__(self, key="geolab_s3client", profile_name=None):
+        super().__init__(key=key, profile_name=profile_name)
 
 
 class AnonymousS3Worker(WorkerPlugin):

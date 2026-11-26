@@ -67,6 +67,7 @@ services:
         condition: service_healthy
     environment:
       MSPASS_ROLE: frontend
+      ES_OAUTH2__REFRESH_TOKEN:
       MSPASS_SCHEDULER: dask
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
       MSPASS_DB_ADDRESS: mspass-db
