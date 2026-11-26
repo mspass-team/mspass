@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.4.dev122+gb075c5a7b documentation</title>
+    <title>Command Line Docker Desktop Operation &#8212; MsPASS 2.4.4.dev123+gaab900e90 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=3cc4ca13"></script>
+    <script src="../_static/documentation_options.js?v=00505888"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
     <link rel="prev" title="Running MsPASS on a Desktop Computer" href="mspass_desktop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="2.4.4.dev122" />
+  <meta name="docsearch:version" content="2.4.4.dev123" />
   </head>
   
   
@@ -710,14 +710,15 @@ repository supplies this standard Dask configuration:</p>
 <span class="linenos">67</span><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
 <span class="linenos">68</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="linenos">69</span><span class="w">      </span><span class="nt">MSPASS_ROLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend</span>
-<span class="linenos">70</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
-<span class="linenos">71</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
-<span class="linenos">72</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
-<span class="linenos">73</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
-<span class="linenos">74</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
-<span class="linenos">75</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
-<span class="linenos">76</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
-<span class="linenos">77</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+<span class="linenos">70</span><span class="w">      </span><span class="nt">ES_OAUTH2__REFRESH_TOKEN</span><span class="p">:</span>
+<span class="linenos">71</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dask</span>
+<span class="linenos">72</span><span class="w">      </span><span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
+<span class="linenos">73</span><span class="w">      </span><span class="nt">MSPASS_DB_ADDRESS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass-db</span>
+<span class="linenos">74</span><span class="w">      </span><span class="nt">MSPASS_MONGO_AUTH</span><span class="p">:</span><span class="w"> </span><span class="s">"${MSPASS_MONGO_AUTH:-false}"</span>
+<span class="linenos">75</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_USERNAME:-}"</span>
+<span class="linenos">76</span><span class="w">      </span><span class="nt">MONGO_INITDB_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="s">"${MONGO_INITDB_ROOT_PASSWORD:-}"</span>
+<span class="linenos">77</span><span class="w">      </span><span class="nt">MSPASS_JUPYTER_PWD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mspass</span>
+<span class="linenos">78</span><span class="w">      </span><span class="nt">JUPYTER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 </pre></div>
 </div>
 </div>
