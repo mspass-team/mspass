@@ -57,14 +57,14 @@ def test_parallel_looks_up_current_worker_and_registration(monkeypatch):
     first, second, replacement = Mock(), Mock(), Mock()
     workers = [
         SimpleNamespace(data={"earthscope_s3client": first}),
-        SimpleNamespace(data={"geolab_s3client": second}),
+        SimpleNamespace(data={"earthscope_s3client": second}),
     ]
     get_worker = Mock(side_effect=workers)
     monkeypatch.setattr(s3, "get_worker", get_worker)
     assert s3.fetch_s3_client() is first
     assert s3.fetch_s3_client() is second
     monkeypatch.setattr(s3, "get_worker", lambda: workers[1])
-    workers[1].data["geolab_s3client"] = replacement
+    workers[1].data["earthscope_s3client"] = replacement
     assert s3.fetch_s3_client() is replacement
     workers[1].data["custom"] = first
     # Ignored serial parameters need not be hashable in worker mode.
@@ -132,7 +132,7 @@ def test_standard_plugin_setup_failures(monkeypatch, plugin_type):
     plugin.teardown(worker)
 
 
-def geolab_mocks(monkeypatch):
+def earthscope_mocks(monkeypatch):
     sdk = Mock()
     session = sdk.user.get_boto3_session.return_value
     client = session.client.return_value
@@ -140,8 +140,8 @@ def geolab_mocks(monkeypatch):
     return sdk, session, client
 
 
-def test_geolab_lifecycle_and_refresh_provider(monkeypatch):
-    sdk, session, client = geolab_mocks(monkeypatch)
+def test_earthscope_lifecycle_and_refresh_provider(monkeypatch):
+    sdk, session, client = earthscope_mocks(monkeypatch)
     plugin = s3.EarthscopeS3Worker(key="custom")
     worker = SimpleNamespace(data={})
     plugin.teardown(worker)
@@ -159,8 +159,8 @@ def test_geolab_lifecycle_and_refresh_provider(monkeypatch):
 
 
 @pytest.mark.parametrize("stage", ["session", "client", "registration"])
-def test_geolab_setup_failure_releases_acquired_resources(monkeypatch, stage):
-    sdk, session, client = geolab_mocks(monkeypatch)
+def test_earthscope_setup_failure_releases_acquired_resources(monkeypatch, stage):
+    sdk, session, client = earthscope_mocks(monkeypatch)
     worker = SimpleNamespace(data=RejectWrites() if stage == "registration" else {})
     if stage == "session":
         sdk.user.get_boto3_session.side_effect = RuntimeError("failed")
@@ -178,8 +178,8 @@ def test_geolab_setup_failure_releases_acquired_resources(monkeypatch, stage):
     assert not worker.data
 
 
-def test_geolab_cleanup_continues_when_s3_close_fails(monkeypatch):
-    sdk, session, client = geolab_mocks(monkeypatch)
+def test_earthscope_cleanup_continues_when_s3_close_fails(monkeypatch):
+    sdk, session, client = earthscope_mocks(monkeypatch)
     plugin = s3.EarthscopeS3Worker()
     worker = SimpleNamespace(data={})
     plugin.setup(worker)
@@ -191,8 +191,8 @@ def test_geolab_cleanup_continues_when_s3_close_fails(monkeypatch):
     assert not worker.data
 
 
-def test_geolab_does_not_reuse_closed_serial_cached_client(monkeypatch):
-    sdk, session, client = geolab_mocks(monkeypatch)
+def test_earthscope_does_not_reuse_closed_serial_cached_client(monkeypatch):
+    sdk, session, client = earthscope_mocks(monkeypatch)
     closed = s3.fetch_s3_client(False, session)
     closed.close()
     fresh = Mock()
@@ -211,7 +211,7 @@ def test_geolab_does_not_reuse_closed_serial_cached_client(monkeypatch):
 )
 def test_teardown_preserves_replacement_client(monkeypatch, plugin_type):
     if plugin_type is s3.EarthscopeS3Worker:
-        _, _, client = geolab_mocks(monkeypatch)
+        _, _, client = earthscope_mocks(monkeypatch)
     else:
         client = Mock()
         monkeypatch.setattr(s3.boto3, "client", Mock(return_value=client))
@@ -288,7 +288,7 @@ def test_env_tokens_bypass_stale_driver_and_worker_settings(monkeypatch, tmp_pat
     monkeypatch.setattr(settings, "_LOCAL_APP_DIR", worker_dir)
     monkeypatch.setenv("ES_OAUTH2__REFRESH_TOKEN", "worker-refresh")
     monkeypatch.setenv("ES_OAUTH2__ACCESS_TOKEN", "worker-access")
-    geolab_mocks(monkeypatch)
+    earthscope_mocks(monkeypatch)
     worker = SimpleNamespace(data={})
     try:
         plugin.setup(worker)
@@ -335,7 +335,7 @@ def test_local_profile_survives_serialization_to_worker(monkeypatch, tmp_path):
     plugin = cloudpickle.loads(payload)
 
     monkeypatch.setattr(settings, "_LOCAL_APP_DIR", tmp_path / "blank-worker")
-    geolab_mocks(monkeypatch)
+    earthscope_mocks(monkeypatch)
     worker = SimpleNamespace(data={})
     try:
         plugin.setup(worker)
@@ -367,17 +367,3 @@ def test_missing_refresh_token_fails_before_worker_setup(monkeypatch, tmp_path):
     with pytest.raises(RuntimeError, match="No EarthScope refresh token found"):
         s3.EarthscopeS3Worker()
     s3.EarthScopeClient.assert_not_called()
-
-
-def test_legacy_geolab_plugin_remains_discoverable(monkeypatch):
-    _, _, client = geolab_mocks(monkeypatch)
-    plugin = s3.GeoLabS3Worker()
-    worker = SimpleNamespace(data={})
-    monkeypatch.setattr(s3, "get_worker", lambda: worker)
-    try:
-        plugin.setup(worker)
-        assert worker.data["geolab_s3client"] is client
-        assert s3.fetch_s3_client() is client
-        assert s3.fetch_s3_client(worker_data_key="geolab_s3client") is client
-    finally:
-        plugin.teardown(worker)

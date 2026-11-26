@@ -98,11 +98,6 @@ def fetch_s3_client(
             s3_client = worker.data[worker_data_key]
 
         except KeyError as e:
-            if (
-                worker_data_key == "earthscope_s3client"
-                and "geolab_s3client" in worker.data
-            ):
-                return worker.data["geolab_s3client"]
             message = "fetch_s3_client:  dask worker has no S3 plugin registered with name={}\n".format(
                 worker_data_key
             )
@@ -281,13 +276,6 @@ class EarthscopeS3Worker(WorkerPlugin):
         self.s3_client = None
         if cleanup is not None:
             cleanup.close()
-
-
-class GeoLabS3Worker(EarthscopeS3Worker):
-    """Backward-compatible name and default registration key."""
-
-    def __init__(self, key="geolab_s3client", profile_name=None):
-        super().__init__(key=key, profile_name=profile_name)
 
 
 class AnonymousS3Worker(WorkerPlugin):
