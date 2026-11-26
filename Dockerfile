@@ -271,6 +271,7 @@ RUN test -n "${MSPASS_VERSION}" \
 	&& test -n "${MSPASS_VCS_REF}" \
 	&& ln -s /opt/conda/include/yaml-cpp /usr/include/yaml-cpp \
 	&& SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MSPASSPY="${MSPASS_VERSION}" pip3 install /mspass -v \
+	&& es --help > /dev/null \
 	&& python -c "import importlib.metadata as md; expected='${MSPASS_VERSION}'; actual=md.version('mspasspy'); assert actual == expected, (actual, expected)" \
 	&& cmake --install /mspass/build/temp.* \
 	&& rm -rf /mspass/build && docker-clean
@@ -463,6 +464,7 @@ RUN set -eux; \
         distributed==2026.3.0 \
         dask-gateway==2026.3.0; \
     /srv/conda/envs/notebook/bin/python -c "import importlib.metadata as md; expected={'dask':'2026.3.0','distributed':'2026.3.0','dask-gateway':'2026.3.0','mspasspy':'${MSPASS_VERSION}'}; actual={name: md.version(name) for name in expected}; print(actual); assert actual == expected, actual; import mspasspy; print(mspasspy.__file__)"; \
+    /srv/conda/envs/notebook/bin/es --help > /dev/null; \
     rm -rf /mspass/build /root/.cache /tmp/geolab-dask-constraints.txt
 
 ADD scripts/start-mspass-geolab-entrypoint.sh /usr/sbin/start-mspass-geolab-entrypoint.sh

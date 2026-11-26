@@ -40,16 +40,9 @@ from mspasspy.util.converter import Trace2TimeSeries, Stream2TimeSeriesEnsemble
 from mspasspy.util.db_utils import fetch_dbhandle
 from mspasspy.util.seismic import print_metadata
 
-# from mspasspy.io.s3client import fetch_s3_client
-from mspasspy.io.s3client import fetch_s3_client, GeoLabS3Worker, AnonymousS3Worker
+from mspasspy.io.s3client import fetch_s3_client, EarthscopeS3Worker, AnonymousS3Worker
 from mspasspy.algorithms.window import merge, WindowData
 from mspasspy.algorithms.signals import detrend
-
-# from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Worker
-# temporary for testing - this didn't exist in io when I first pulled this branch
-# remove me and uncomment above for final use
-# from mspasspy.io.s3client import GeoLabS3Worker, AnonymousS3Client
-# for testing - will be installed eventually
 from mspasspy.io.stock import datafile
 
 
@@ -1290,12 +1283,16 @@ class S3SeismicProvider(BasicProvider):
             # here without a valid access value being set via the access method
             case DataAccess.open_aws_s3:
                 plugin = AnonymousS3Worker(key=worker_key)
-                # plugin = AnonymousS3Worker(key=worker_key,region=self.region(net))
-                dask_client.register_plugin(plugin)
             case DataAccess.earthscope_aws_s3:
-                plugin = GeoLabS3Worker(key=worker_key)
-                # plugin = GeoLabS3Worker(key=worker_key,region=self.region(net))
-                dask_client.register_plugin(plugin)
+                try:
+                    plugin = EarthscopeS3Worker(key=worker_key)
+                except RuntimeError as exc:
+                    raise RuntimeError(
+                        f"{alg}: EarthScope setup for {net}: {exc}"
+                    ) from exc
+        # Re-registering the same network replaces its plugin and releases
+        # its previous client instead of accumulating clients on each worker.
+        dask_client.register_plugin(plugin, name=worker_key)
 
     def get_worker_key(self, net):
         """

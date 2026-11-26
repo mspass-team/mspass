@@ -54,7 +54,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade --upgrade-strategy eager \
-          setuptools setuptools_scm wheel numpy pytest pytest-cov
+          setuptools setuptools_scm wheel numpy pytest pytest-cov poetry-core
     - name: Install Spark Python Dependencies
       env:
         PYSPARK_HADOOP_VERSION: "3"
@@ -80,6 +80,8 @@ jobs:
       env:
         MSPASS_CMAKE_BUILD_TYPE: Debug
       run: python -m pip install --no-cache-dir --no-build-isolation -v '.[seisbench,test]'
+    - name: Check EarthScope CLI installation
+      run: es --help
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)

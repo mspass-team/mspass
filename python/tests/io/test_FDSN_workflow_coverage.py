@@ -193,10 +193,57 @@ def test_provider_dask_registration_uses_matching_worker_key(provider, monkeypat
     plugin = dask.register_plugin.call_args.args[0]
     assert isinstance(plugin, fdsn.AnonymousS3Worker)
     assert plugin.worker_key == provider.get_worker_key("XX")
+    assert dask.register_plugin.call_args.kwargs == {"name": plugin.worker_key}
     with pytest.raises(ValueError, match="does not have data"):
         provider.initialize_dask_workers(dask, "ZZ")
     with pytest.raises(ValueError, match="client"):
         provider.initialize_dask_workers(object(), "XX")
+
+
+def test_provider_registers_protected_plugins_by_network(provider, monkeypatch):
+    provider.nets["XX"]["access"] = "earthscope-sdk"
+    provider.nets["YY"] = dict(provider.nets["XX"])
+    dask = Mock()
+    monkeypatch.setattr(fdsn, "is_dask_client", lambda value: value is dask)
+    monkeypatch.setattr(fdsn, "is_mspass_client", lambda value: False)
+    monkeypatch.setenv("ES_OAUTH2__REFRESH_TOKEN", "synthetic-refresh-token")
+
+    for net in ("XX", "YY", "XX"):
+        provider.initialize_dask_workers(dask, net)
+
+    registrations = dask.register_plugin.call_args_list
+    assert [call.kwargs["name"] for call in registrations] == [
+        "S3client_XX",
+        "S3client_YY",
+        "S3client_XX",
+    ]
+    for call in registrations:
+        plugin = call.args[0]
+        assert isinstance(plugin, fdsn.EarthscopeS3Worker)
+        assert plugin.worker_key == call.kwargs["name"]
+
+
+def test_missing_earthscope_credentials_fail_before_registration(provider, monkeypatch):
+    from mspasspy.io import s3client
+
+    provider.nets["XX"]["access"] = "earthscope-sdk"
+    dask = Mock()
+    monkeypatch.setattr(fdsn, "is_dask_client", lambda value: value is dask)
+    monkeypatch.setattr(fdsn, "is_mspass_client", lambda value: False)
+    monkeypatch.delenv("ES_OAUTH2__REFRESH_TOKEN", raising=False)
+    monkeypatch.setattr(
+        s3client,
+        "SdkSettings",
+        lambda **_: SimpleNamespace(
+            profile_name="default",
+            oauth2=s3client.AuthFlowSettings(),
+        ),
+    )
+
+    with pytest.raises(RuntimeError, match="EarthScope setup for XX:.*es login"):
+        provider.initialize_dask_workers(dask, "XX")
+
+    dask.register_plugin.assert_not_called()
 
 
 def test_object_name_roundtrip_and_secondary_component_parse(provider):

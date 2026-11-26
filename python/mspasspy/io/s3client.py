@@ -5,25 +5,28 @@ Prototype worker plugin for using dask on AWS to allow workers to
 not have to instantiate an s3 client on each submit.   Modeled after
 the mongodb worker plugin.
 
-Specific to the supplied EarthScope/GeoLab workflow. Live deployment validation
-is still required; the tests exercise credential lifecycle without AWS access.
-
-Created on Mon Mar 23 09:26:00 2026
-
 @author: pavlis
 """
 
+import os
 import boto3
 from contextlib import ExitStack
 from botocore.config import Config
 from botocore import UNSIGNED
 from functools import lru_cache
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from earthscope_sdk import EarthScopeClient
+from earthscope_sdk.config.models import AuthFlowSettings
+from earthscope_sdk.config.settings import SdkSettings
 from dask.distributed import WorkerPlugin, get_worker
 
 
 def fetch_s3_client(
-    parallel=True, session=None, session_config=None, worker_data_key="geolab_s3client"
+    parallel=True,
+    session=None,
+    session_config=None,
+    worker_data_key="earthscope_s3client",
 ):
     """
     Generic tool to fetch s3 client access S3 data.
@@ -73,15 +76,14 @@ def fetch_s3_client(
        credentials.   There are currently three distinct plugin implementations
        with different default key values.
 
-       1.  GeoLabS3Worker uses the key "geolab_s3client" by default.
+       1.  EarthscopeS3Worker uses the key "earthscope_s3client" by default.
        2.  AnonymousS3Worker uses the key "anonymous_s3worker" by default
        3.  StockS3Worker uses the key "stock_s3worker" as default.
 
        Those keys, however, are not frozen.   When any of the worker plugins
        are instatiated you can set the value for that key with the
        common argument "key=".   If you do, the driver code will need to
-       change worker_data_key appropriately as well.  You will need to
-       set worker_data_key running parallel on anywhere but on geolab.
+       change worker_data_key appropriately as well.
     """
     if parallel:
         try:
@@ -108,6 +110,11 @@ def fetch_s3_client(
 
 
 def _create_s3_client(session=None, session_config=None):
+    """
+    Internal function used to instatiatge a serial client from a
+    boto3 Session and Config object.  It a pure convenciece function
+    to reduce repetitous code.
+    """
     if session is None:
         session = boto3.Session()
     if session_config is None:
@@ -120,6 +127,11 @@ def _create_s3_client(session=None, session_config=None):
 
 @lru_cache(maxsize=1)
 def _serial_s3_client(session=None, session_config=None):
+    """
+    Thin wrapper used in combination with fetch_s3_client to
+    efficiently create an s3 client.  It is a necessary evil to
+    exploit the chaching method using the lru_cache decorator.
+    """
     return _create_s3_client(session, session_config)
 
 
@@ -129,10 +141,13 @@ fetch_s3_client.cache_clear = _serial_s3_client.cache_clear
 fetch_s3_client.cache_info = _serial_s3_client.cache_info
 
 
-class GeoLabS3Worker(WorkerPlugin):
+class EarthscopeS3Worker(WorkerPlugin):
     """
     Dask worker plugin to create a worker resident client on each dask worker.
-    This instance works only with earthscope_sdk used on GeoLab.
+    This version is used for access to Earthscope S3 archives outside the
+    open data collection.  Use it to access any earthscope data via their
+    SDK that is not open data.  It handles credentials with the special
+    earthscope mechanism.
 
     An S3 client requires significant time to construct for a variety of reasons.
     It is known to be a really serious bottleneck if s3 clients are instantiated
@@ -141,66 +156,118 @@ class GeoLabS3Worker(WorkerPlugin):
     python script is:
     ```
         dask_client = mspass_client.get_scheduler()
-        s3plugin = GeoLabS3Worker()
+        s3plugin = EarthscopeS3Worker()
         dask_client.register_plugin(s3plugin)
     ```
     That creates and loads a memory resident s3 client in each worker's memory space.
     Processing functions that need access to s3 should then use the function
     `fetch_s3_client` to get a reference to the memory resident s3 client.
-    That produces near zero overhead in a worker process particularly compared to
+    That produces near zero overhead in a worker process compared to
     the time needed to instantiate a new instance of an s3 client.
 
-    Note this plugin differs from it's siblings in this module as it caches the
-    s3 client as an attribute of this class.  That is a necessary evil to deal with
-    timeout issues in GeoLab that complicate this code.   Since this plugin is
-    only of use on GeoLab this should not matter as one would not expect multiple
-    s3 clients with different credentialsl run on GeoLab simultaneously that
-    would require distinguishing the multiple instances.
+    Resolve credentials on the driver before registration. Dask serializes the
+    resolved credentials to its scheduler and workers, so register this plugin
+    only with a trusted cluster. Log in again and re-register the plugin when
+    the driver's credentials need to be replaced. Environment tokens use the
+    SDK's default public OAuth application. A driver SDK profile can supply
+    public OAuth settings for refreshing its tokens on workers.
     """
 
-    def __init__(self, key="geolab_s3client"):
-        """
-        Standard constructor.
-
-        Normal use requires no arguments.
-        """
-        # probably unnecessary initializations but makes clear these are two attributes
-        # managed by this class
+    def __init__(self, key="earthscope_s3client", profile_name=None):
         self.worker_key = key
         self.s3_client = None
         self._cleanup = None
 
+        self._oauth2_options = {}
+        refresh_token = os.environ.get("ES_OAUTH2__REFRESH_TOKEN", "").strip()
+        if refresh_token:
+            # Never combine an explicit refresh token with a stale access
+            # token from another identity in the driver's SDK profile.
+            access_token = os.environ.get("ES_OAUTH2__ACCESS_TOKEN", "").strip()
+            self.profile_name = (
+                profile_name or os.environ.get("ES_PROFILE") or "default"
+            )
+        else:
+            settings = (
+                SdkSettings(profile_name=profile_name)
+                if profile_name is not None
+                else SdkSettings()
+            )
+            self.profile_name = settings.profile_name
+            oauth2 = settings.oauth2
+            # Refresh tokens are bound to the issuing OAuth application.
+            self._oauth2_options = {
+                "client_id": oauth2.client_id,
+                "domain": str(oauth2.domain),
+                "scope": oauth2.scope,
+                "audience": oauth2.audience,
+                "allowed_hosts": oauth2.allowed_hosts,
+            }
+            sdk_refresh = oauth2.refresh_token
+            sdk_access = oauth2.access_token
+            refresh_token = (
+                sdk_refresh.get_secret_value().strip() if sdk_refresh else ""
+            )
+            access_token = sdk_access.get_secret_value().strip() if sdk_access else ""
+        if not refresh_token:
+            raise RuntimeError(
+                "No EarthScope refresh token found. Set ES_OAUTH2__REFRESH_TOKEN "
+                "or run `es login` before registering EarthscopeS3Worker with Dask."
+            )
+        self._refresh_token = refresh_token
+        self._access_token = access_token or None
+
     def setup(self, worker):
         """
-        Required method for a worker plugin.  This acts like a secondary constructor.
-        It is involked on each worker when this object is pushed to
-        each worker with the register_plugin method of the dask client.
+        Secondary constructor for Earthscope client setup.
+
+        A dask worker plugin requires this method.  It acts as a
+        secondary constructor which in this case actually instantiates
+        an instance of an EarthscopeClient which is pushed to the
+        workers.
+
+        Extra complexity enters in this plugin to handle the special
+        way Earthscope handles access credentials.   See the user manual
+        and online sources to understand that complex process.
+        To understand this code you need to realize the incantations
+        here load the two keys called "access_token" and "refresh_token"
+        in a way that they can be serialized and loaded into the
+        workers data area.
         """
-        # Gemini's comment on why this complication is needed here:
-        # Keep the SDK's refresh provider and real expiration intact.  A frozen
-        # credential snapshot has no expiration, and a new SDK session may reuse
-        # cached credentials; inventing a new expiry would extend their lifetime
-        # locally without extending their actual AWS validity.
         with ExitStack() as cleanup:
-            esclient = EarthScopeClient()
+            # Copy resolved driver settings without loading worker-local settings.
+            # Separate SDK token and AWS grant caches for each plugin instance.
+            profile_dir = Path(
+                cleanup.enter_context(TemporaryDirectory(prefix="mspass-earthscope-"))
+            )
+            worker_settings = SdkSettings.model_construct(
+                profile_name=self.profile_name,
+                oauth2=AuthFlowSettings(
+                    refresh_token=self._refresh_token,
+                    access_token=self._access_token,
+                    **self._oauth2_options,
+                ),
+            ).model_copy(
+                update={
+                    "profile_dir": profile_dir,
+                    "tokens_file": profile_dir / "tokens.json",
+                }
+            )
+            esclient = EarthScopeClient(settings=worker_settings)
             cleanup.callback(esclient.close)
             session = esclient.user.get_boto3_session()
-            # Plugin clients have their own lifetime; never reuse a serial
-            # cached client that another owner may already have closed.
             s3_client = _create_s3_client(session=session)
-            # Retain cleanup after successful registration, or release resources
-            # immediately if setup fails.
             cleanup.callback(s3_client.close)
-            # Publish under the configurable key, retaining ownership for teardown.
+
             worker.data[self.worker_key] = s3_client
             self.s3_client = s3_client
             self._cleanup = cleanup.pop_all()
 
     def teardown(self, worker):
         """
-        Required method for a worker plugin.  This method is effectively a destructor
-        called when the class goes out of scope.   It is essential in this case to
-        avoid a resource leak as it properly closes the clients connections to s3.
+        This method acts like a destructor for the class.
+        It is nontrivial as it has to close up any active AWS connections
+        and clear the worker data area where the plugin was loaded.
         """
         if worker.data.get(self.worker_key) is self.s3_client:
             worker.data.pop(self.worker_key, None)
@@ -243,6 +310,13 @@ class AnonymousS3Worker(WorkerPlugin):
         self.s3_client = None
 
     def setup(self, worker):
+        """
+        Secondary constructor.
+
+        Like all plugins this required method sets up the actual
+        process.  This one instantiates an open data s3 access client
+        which is trivial compared to any other s3 client.
+        """
         s3_client = boto3.client(
             "s3", region_name=self.region, config=Config(signature_version=UNSIGNED)
         )
@@ -255,6 +329,11 @@ class AnonymousS3Worker(WorkerPlugin):
         self.s3_client = s3_client
 
     def teardown(self, worker):
+        """
+        This method acts like a destructor for the class.
+        It is nontrivial as it has to close up any active AWS connections
+        and clear the worker data area where the plugin was loaded.
+        """
         s3_client = self.s3_client
         self.s3_client = None
         if s3_client is not None:
@@ -288,6 +367,9 @@ class StockS3Worker(WorkerPlugin):
     Note the default key the fetch_s3_client function needs to use
     this client is "stock_s3client".  It can be changed if desired but
     you will need to change calls to fetch_s3_client appropriately if you do.
+
+    WARNING:   this plugin is not as well tested as the other plugins in
+    this module.
     """
 
     def __init__(self, key="stock_s3worker", region="us-east-2"):
