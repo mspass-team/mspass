@@ -184,6 +184,9 @@ def main() -> int:
 
     conda_deps = _to_conda_deps(pip_runtime, conda_name_map, pip_only)
     pip_only_installs = _pip_only_install_list(pip_runtime, pip_only)
+    pip_only_installs.extend(
+        dep_map.get("pip_only", {}).get("conda_extra_requirements", [])
+    )
 
     meta_text = Path(args.meta).read_text(encoding="utf-8")
     build_text = Path(args.conda_build_script).read_text(encoding="utf-8")
