@@ -1,27 +1,12 @@
 name: Conda build
 
 on:
-  pull_request:
-    branches: [master]
-    paths:
-      - '.github/workflows/conda-build.yml'
-      - 'cxx/**'
-      - 'meta.yaml'
-      - 'pyproject.toml'
-      - 'scripts/conda_build.sh'
-      - 'scripts/dependency_map.toml'
-      - 'scripts/Dockerfile_conda_build'
-      - 'scripts/sync_dependencies.py'
-      - 'setup.py'
   schedule:
     - cron: '21 21 * * 5'
   push:
     branches: [ master ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
-
-permissions:
-  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -70,14 +55,12 @@ jobs:
             MSPASS_VCS_REF=${{ steps.provenance.outputs.revision }}
 
       - name: Install Anaconda upload client
-        if: github.event_name == 'push' || github.event_name == 'schedule'
         shell: bash
         run: |
           python3 -m venv "${RUNNER_TEMP}/anaconda-client"
           "${RUNNER_TEMP}/anaconda-client/bin/pip" install anaconda-client
 
       - name: Upload conda package arm64
-        if: github.event_name == 'push' || github.event_name == 'schedule'
         shell: bash
         env:
           ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
@@ -129,14 +112,12 @@ jobs:
             MSPASS_VCS_REF=${{ steps.provenance.outputs.revision }}
 
       - name: Install Anaconda upload client
-        if: github.event_name == 'push' || github.event_name == 'schedule'
         shell: bash
         run: |
           python3 -m venv "${RUNNER_TEMP}/anaconda-client"
           "${RUNNER_TEMP}/anaconda-client/bin/pip" install anaconda-client
 
       - name: Upload conda package amd64
-        if: github.event_name == 'push' || github.event_name == 'schedule'
         shell: bash
         env:
           ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
@@ -175,14 +156,9 @@ jobs:
             activate-environment: ""
             auto-activate: true
 
-        - name: Install conda build
+        - name: Install conda build and upload clients
           shell: bash -el {0}
-          run: conda install -n base -y conda-build
-
-        - name: Install Anaconda upload client
-          if: github.event_name == 'push' || github.event_name == 'schedule'
-          shell: bash -el {0}
-          run: conda install -n base -y anaconda-client
+          run: conda install -n base -y conda-build anaconda-client
 
         - name: Build conda package
           id: build_package
@@ -195,7 +171,6 @@ jobs:
             printf 'package_path=%s\n' "$PACKAGE_PATH" >> "$GITHUB_OUTPUT"
 
         - name: Upload conda package osx
-          if: github.event_name == 'push' || github.event_name == 'schedule'
           shell: bash -el {0}
           env:
             ANACONDA_API_TOKEN: ${{ secrets.CONDA_TOKEN }}
