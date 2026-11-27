@@ -52,6 +52,12 @@ def test_docker_build_and_export_have_no_credential_input():
 
 def test_conda_secret_is_scoped_only_to_host_upload_steps():
     workflow = yaml.safe_load(WORKFLOW_PATH.read_text())
+    # PyYAML's default loader reads the YAML 1.1 key "on" as True.
+    trigger = workflow.get("on", workflow.get(True))
+    assert "pull_request" in trigger
+    assert "pull_request_target" not in trigger
+    assert workflow["permissions"] == {"contents": "read"}
+
     secret_paths = _secret_paths(workflow)
     assert len(secret_paths) == 3
 
@@ -62,6 +68,10 @@ def test_conda_secret_is_scoped_only_to_host_upload_steps():
         ]
         assert len(upload_steps) == 1, job_name
         upload_step = upload_steps[0]
+        assert (
+            upload_step["if"]
+            == "github.event_name == 'push' || github.event_name == 'schedule'"
+        )
         assert upload_step["env"] == {
             "ANACONDA_API_TOKEN": "${{ secrets.CONDA_TOKEN }}"
         }

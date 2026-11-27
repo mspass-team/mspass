@@ -52,6 +52,8 @@ requirements:
     - setuptools>=64,<70
     - setuptools_scm
     - wheel
+    # typer-di is distributed as an sdist and conda-build disables pip isolation.
+    - poetry-core
     - numpy>=2.2.6
     - cmake>=3.18
     - gsl
@@ -107,6 +109,8 @@ requirements:
 
 
 test:
+  imports:
+    - mspasspy.ccore.seismic
   commands:
     - es --help
 
